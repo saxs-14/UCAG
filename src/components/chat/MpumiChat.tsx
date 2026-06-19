@@ -1,6 +1,6 @@
 'use client';
 import { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Sparkles, Languages, Volume2, AlertTriangle, Loader2 } from 'lucide-react';
+import { MessageSquare, X, Send, Sparkles, Languages, Volume2, AlertTriangle, Loader2, WifiOff } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { ChatMessage, Language } from '@/types';
 
@@ -31,7 +31,17 @@ export function MpumiChat() {
   const [input, setInput] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isOnline, setIsOnline] = useState(true);
   const bottomRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setIsOnline(navigator.onLine);
+    const handleOnline  = () => setIsOnline(true);
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online',  handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => { window.removeEventListener('online', handleOnline); window.removeEventListener('offline', handleOffline); };
+  }, []);
 
   useEffect(() => {
     if (open && messages.length === 0) {
@@ -51,6 +61,10 @@ export function MpumiChat() {
 
   const send = async (text: string) => {
     if (!text.trim() || loading) return;
+    if (!isOnline) {
+      setError('You appear to be offline. Mpumi requires an internet connection. Please reconnect and try again.');
+      return;
+    }
     setInput('');
     setError(null);
 
@@ -122,7 +136,9 @@ export function MpumiChat() {
               </div>
               <div>
                 <div className="text-sm font-bold text-navy-900 dark:text-white leading-none">Mpumi AI</div>
-                <div className="text-[10px] text-ugreen-600 font-semibold mt-0.5">● Gemini-powered</div>
+                <div className={cn('text-[10px] font-semibold mt-0.5 flex items-center gap-1', isOnline ? 'text-ugreen-600' : 'text-ured-500')}>
+                  {isOnline ? '● Gemini-powered' : <><WifiOff size={9} /> Offline — reconnect to chat</>}
+                </div>
               </div>
             </div>
             <div className="flex items-center gap-2">

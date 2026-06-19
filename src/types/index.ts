@@ -88,11 +88,11 @@ export interface MentorshipMatch {
 
 export interface ThreadMessage {
   _id?: string;
-  matchId: string;
   senderUid: string;
+  recipientUid: string;
   senderName: string;
   text: string;
-  timestamp: string;
+  timestamp: number;
 }
 
 export interface SchoolRecord {
@@ -118,3 +118,25 @@ export interface ChatMessage {
 
 export type Language = 'en' | 'zu' | 'nso' | 'ts' | 'ss';
 export type Theme = 'light' | 'dark';
+
+export interface SavedCourse {
+  courseId: string;
+  courseTitle: string;
+  savedAt: string;
+}
+
+export interface ApplicationStep {
+  id: string;
+  label: string;
+  completed: boolean;
+  completedAt?: string;
+}
+
+export interface ApplicationTracker {
+  _id?: string;
+  firebaseUid: string;
+  savedCourses: SavedCourse[];
+  steps: ApplicationStep[];
+  apsSnapshot?: { subjects: { name: string; mark: number }[]; apsScore: number; savedAt: string };
+  updatedAt: string;
+}

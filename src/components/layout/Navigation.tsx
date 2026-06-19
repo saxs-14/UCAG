@@ -2,15 +2,17 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { GraduationCap, Users, Compass, BarChart3, Moon, Sun, Menu, X } from 'lucide-react';
+import { GraduationCap, Users, Compass, BarChart3, Moon, Sun, Menu, X, Award, FileText } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
 const tabs = [
-  { href: '/',             label: 'APS Calculator',  icon: GraduationCap },
-  { href: '/mentorship',   label: 'Mentorship',       icon: Users         },
-  { href: '/career',       label: 'Career Guidance',  icon: Compass       },
-  { href: '/analytics',    label: 'School Analytics', icon: BarChart3     },
+  { href: '/',           label: 'APS Calc',      icon: GraduationCap },
+  { href: '/career',     label: 'Career',         icon: Compass       },
+  { href: '/bursary',    label: 'Bursaries',      icon: Award         },
+  { href: '/roadmap',    label: 'My Roadmap',     icon: FileText      },
+  { href: '/mentorship', label: 'Mentorship',     icon: Users         },
+  { href: '/analytics',  label: 'Analytics',      icon: BarChart3     },
 ];
 
 export function Navigation() {
@@ -20,10 +22,7 @@ export function Navigation() {
 
   useEffect(() => {
     const stored = localStorage.getItem('ucag-theme');
-    if (stored === 'dark') {
-      setDark(true);
-      document.documentElement.classList.add('dark');
-    }
+    if (stored === 'dark') { setDark(true); document.documentElement.classList.add('dark'); }
   }, []);
 
   const toggleDark = () => {
@@ -33,26 +32,25 @@ export function Navigation() {
     localStorage.setItem('ucag-theme', next ? 'dark' : 'light');
   };
 
-  const isActive = (href: string) =>
-    href === '/' ? pathname === '/' : pathname.startsWith(href);
+  const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
 
   return (
     <header className="sticky top-0 z-50 bg-white dark:bg-navy-900 shadow-nav border-b border-navy-100 dark:border-navy-800">
-      {/* Top identity strip */}
+      {/* Identity strip */}
       <div className="bg-navy-800 text-center py-1 px-4">
         <p className="text-navy-200 text-[11px] font-medium tracking-wide">
           An independent student innovation project — not an official University of Mpumalanga system.
         </p>
       </div>
 
-      {/* Main nav bar */}
+      {/* Main nav */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 flex items-center justify-between h-14">
         {/* Brand */}
         <Link href="/" className="flex items-center gap-2.5 flex-shrink-0">
           <div className="relative w-9 h-9 flex-shrink-0">
             <Image
               src="/University-of-Mpumalanga-UMP-logo.png"
-              alt="UMP logo"
+              alt="University of Mpumalanga logo"
               fill
               className="object-contain"
               priority
@@ -65,7 +63,7 @@ export function Navigation() {
         </Link>
 
         {/* Desktop tabs */}
-        <nav className="hidden md:flex items-center gap-1" role="navigation" aria-label="Main navigation">
+        <nav className="hidden lg:flex items-center gap-0.5" role="navigation" aria-label="Main navigation">
           {tabs.map(tab => {
             const Icon = tab.icon;
             const active = isActive(tab.href);
@@ -74,14 +72,14 @@ export function Navigation() {
                 key={tab.href}
                 href={tab.href}
                 className={cn(
-                  'flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-[13px] font-semibold transition-all duration-150',
+                  'flex items-center gap-1.5 px-3 py-2 rounded-lg text-[12px] font-semibold transition-all duration-150',
                   active
                     ? 'bg-navy-800 text-white shadow-sm'
                     : 'text-navy-600 dark:text-navy-300 hover:bg-navy-50 dark:hover:bg-navy-800'
                 )}
                 aria-current={active ? 'page' : undefined}
               >
-                <Icon size={14} />
+                <Icon size={13} />
                 {tab.label}
               </Link>
             );
@@ -92,17 +90,16 @@ export function Navigation() {
         <div className="flex items-center gap-2">
           <button
             onClick={toggleDark}
-            aria-label="Toggle dark mode"
+            aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
             className="p-2 rounded-lg text-navy-500 dark:text-navy-400 hover:bg-navy-50 dark:hover:bg-navy-800 transition-colors"
           >
             {dark ? <Sun size={16} /> : <Moon size={16} />}
           </button>
-
-          {/* Mobile menu toggle */}
           <button
-            className="md:hidden p-2 rounded-lg text-navy-600 hover:bg-navy-50 transition-colors"
+            className="lg:hidden p-2 rounded-lg text-navy-600 dark:text-navy-300 hover:bg-navy-50 dark:hover:bg-navy-800 transition-colors"
             onClick={() => setMenuOpen(!menuOpen)}
             aria-label="Toggle menu"
+            aria-expanded={menuOpen}
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
@@ -111,7 +108,7 @@ export function Navigation() {
 
       {/* Mobile nav */}
       {menuOpen && (
-        <div className="md:hidden border-t border-navy-100 dark:border-navy-800 bg-white dark:bg-navy-900 px-4 py-3 flex flex-col gap-1 animate-fade-in">
+        <div className="lg:hidden border-t border-navy-100 dark:border-navy-800 bg-white dark:bg-navy-900 px-4 py-3 grid grid-cols-2 gap-1 animate-fade-in">
           {tabs.map(tab => {
             const Icon = tab.icon;
             const active = isActive(tab.href);
@@ -127,7 +124,7 @@ export function Navigation() {
                     : 'text-navy-700 dark:text-navy-300 hover:bg-navy-50 dark:hover:bg-navy-800'
                 )}
               >
-                <Icon size={16} />
+                <Icon size={15} />
                 {tab.label}
               </Link>
             );
