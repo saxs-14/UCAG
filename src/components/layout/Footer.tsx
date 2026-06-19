@@ -1,4 +1,5 @@
 import Image from 'next/image';
+import Link from 'next/link';
 import { MapPin, BookOpen, Globe, Shield } from 'lucide-react';
 
 export function Footer() {
@@ -21,20 +22,34 @@ export function Footer() {
           </p>
         </div>
 
-        {/* Quick facts */}
+        {/* Links */}
         <div className="flex flex-col gap-2">
           <h3 className="text-xs font-bold text-navy-700 dark:text-navy-300 uppercase tracking-widest mb-1">Platform</h3>
           {[
-            { icon: BookOpen, text: '10 UMP qualifications' },
-            { icon: Globe,    text: '5 local languages' },
-            { icon: MapPin,   text: 'Mbombela, Mpumalanga' },
-            { icon: Shield,   text: 'NSC-compliant APS logic' },
-          ].map(({ icon: Icon, text }) => (
-            <div key={text} className="flex items-center gap-2 text-xs text-navy-500 dark:text-navy-400">
-              <Icon size={13} className="text-navy-400 dark:text-navy-500 flex-shrink-0" />
+            { href: '/',           text: 'APS Calculator' },
+            { href: '/career',     text: 'Career Explorer' },
+            { href: '/bursary',    text: 'Bursary Finder' },
+            { href: '/roadmap',    text: 'My Roadmap' },
+            { href: '/mentorship', text: 'Mentorship' },
+            { href: '/analytics',  text: 'School Analytics' },
+          ].map(({ href, text }) => (
+            <Link key={href} href={href} className="text-xs text-navy-500 dark:text-navy-400 hover:text-navy-700 dark:hover:text-navy-200 transition-colors">
               {text}
-            </div>
+            </Link>
           ))}
+          <div className="flex flex-col gap-1 pt-1 border-t border-navy-100 dark:border-navy-800">
+            {[
+              { icon: BookOpen, text: '10 UMP qualifications' },
+              { icon: Globe,    text: '5 local languages' },
+              { icon: MapPin,   text: 'Mpumalanga, South Africa' },
+              { icon: Shield,   text: 'NSC-compliant APS logic' },
+            ].map(({ icon: Icon, text }) => (
+              <div key={text} className="flex items-center gap-2 text-xs text-navy-400 dark:text-navy-500">
+                <Icon size={11} className="flex-shrink-0" />
+                {text}
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Disclaimer */}
