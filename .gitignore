@@ -3,3 +3,6 @@ dist/
 screenshots/*.png
 .env
 .env.local
+
+.next/
+next-env.d.ts
