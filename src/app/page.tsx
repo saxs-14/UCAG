@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { GraduationCap, Users, Compass, BarChart3, Sparkles, ArrowRight, BookOpen, MapPin, FileText, Award } from 'lucide-react';
+import { GraduationCap, Users, Compass, BarChart3, Sparkles, ArrowRight, MapPin, FileText, Award, ClipboardList, BookOpen } from 'lucide-react';
 import { APSCalculatorShell } from '@/components/aps/APSCalculatorShell';
 
 export default function HomePage() {
@@ -62,12 +62,12 @@ export default function HomePage() {
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {[
-            { href: '/career',     icon: Compass,       color: 'text-ugold-700',  bg: 'bg-ugold-50  dark:bg-ugold-900/20',   title: 'AI Career Guidance', desc: 'Live Gemini AI analysis of your subjects → personalised career narrative and course recommendations.' },
-            { href: '/mentorship', icon: Users,         color: 'text-ured-600',   bg: 'bg-ured-50   dark:bg-ured-900/20',    title: 'Peer Mentorship',    desc: 'Connect with UMP student mentors matched to your subject needs and district.' },
-            { href: '/bursary',    icon: Award,         color: 'text-ugreen-700', bg: 'bg-ugreen-50 dark:bg-ugreen-900/20',  title: 'Bursary Finder',    desc: 'Discover NSFAS, Funza Lushaka, Sasol, and Mpumalanga Provincial bursaries relevant to your course.' },
-            { href: '/roadmap',    icon: FileText,      color: 'text-navy-700',   bg: 'bg-navy-50   dark:bg-navy-800',       title: 'My Roadmap',        desc: 'Step-by-step personal checklist from your current marks to a submitted UMP application.' },
-            { href: '/analytics',  icon: BarChart3,     color: 'text-uorange-600',bg: 'bg-uorange-50 dark:bg-uorange-900/20',title: 'School Analytics',  desc: 'Regional APS trends, struggling subjects, and application-readiness rates for Mpumalanga schools.' },
-            { href: '#aps-calculator', icon: GraduationCap, color: 'text-navy-700', bg: 'bg-navy-50 dark:bg-navy-800', title: 'APS Calculator',     desc: 'NSC-compliant APS score with stream presets, live qualification matching, and WhatsApp export.' },
+            { href: '/career',         icon: Compass,       color: 'text-ugold-700',   bg: 'bg-ugold-50   dark:bg-ugold-900/20',   title: 'AI Career Guidance',     desc: 'Live Gemini AI analysis of your subjects → personalised career narrative and course recommendations.' },
+            { href: '/mentorship',     icon: Users,         color: 'text-ured-600',    bg: 'bg-ured-50    dark:bg-ured-900/20',    title: 'Peer Mentorship',        desc: 'Connect with UMP student mentors matched to your subject needs and district.' },
+            { href: '/bursary',        icon: Award,         color: 'text-ugreen-700',  bg: 'bg-ugreen-50  dark:bg-ugreen-900/20',  title: 'Bursary Finder',         desc: 'Discover NSFAS, Funza Lushaka, Sasol, and Mpumalanga Provincial bursaries relevant to your course.' },
+            { href: '/roadmap',        icon: FileText,      color: 'text-navy-700',    bg: 'bg-navy-50    dark:bg-navy-800',        title: 'My Roadmap',             desc: 'Step-by-step personal checklist from your current marks to a submitted UMP application.' },
+            { href: '/tracker',        icon: ClipboardList, color: 'text-uorange-600', bg: 'bg-uorange-50 dark:bg-uorange-900/20', title: 'Application Tracker',    desc: 'Track your 10-step UMP application checklist, save target courses, and snapshot your APS — synced to your account.' },
+            { href: '/analytics',      icon: BarChart3,     color: 'text-navy-700',    bg: 'bg-navy-50    dark:bg-navy-800',        title: 'School Analytics',       desc: 'Regional APS trends, struggling subjects, and application-readiness rates for Mpumalanga schools.' },
           ].map(item => {
             const Icon = item.icon;
             const isAnchor = item.href.startsWith('#');

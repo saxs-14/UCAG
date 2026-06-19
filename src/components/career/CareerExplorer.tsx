@@ -1,14 +1,16 @@
 'use client';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import {
   Sparkles, Check, X, MapPin, BadgeDollarSign, TrendingUp, ChevronRight,
-  AlertTriangle, Loader2, RefreshCw
+  AlertTriangle, Loader2, RefreshCw, BookmarkPlus, BookmarkCheck
 } from 'lucide-react';
 import { APSCalculatorShell } from '@/components/aps/APSCalculatorShell';
 import { CAREER_DATABASE, BURSARIES } from '@/data/careers';
 import { checkCareerEligibility } from '@/lib/aps';
 import type { Subject, APSResult, CareerPath } from '@/types';
 import { cn } from '@/lib/utils';
+import { auth } from '@/lib/firebase-client';
+import { onAuthStateChanged, User } from 'firebase/auth';
 
 const demandClass: Record<string, string> = {
   CRITICAL: 'demand-critical',
@@ -85,6 +87,31 @@ export function CareerExplorer() {
   const [aiText, setAiText] = useState<string>('');
   const [aiLoading, setAiLoading] = useState(false);
   const [aiError, setAiError] = useState<string | null>(null);
+  const [user, setUser] = useState<User | null>(null);
+  const [savedIds, setSavedIds] = useState<Set<string>>(new Set());
+  const [savingId, setSavingId] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!auth) return;
+    const unsub = onAuthStateChanged(auth, setUser);
+    return unsub;
+  }, []);
+
+  const saveCourse = async (career: CareerPath) => {
+    if (!user) return;
+    setSavingId(career.id);
+    try {
+      const token = await user.getIdToken();
+      const res = await fetch('/api/tracker', {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
+        body: JSON.stringify({ action: 'save-course', course: { courseId: career.id, courseTitle: career.title } }),
+      });
+      if (res.ok) setSavedIds(prev => new Set([...prev, career.id]));
+    } finally {
+      setSavingId(null);
+    }
+  };
 
   const handleResult = useCallback((r: APSResult, subs: Subject[]) => {
     setApsResult(r);
@@ -227,13 +254,36 @@ export function CareerExplorer() {
         <div className="lg:col-span-3 card p-6 flex flex-col gap-5 animate-fade-in">
           {/* Header */}
           <div className="flex items-start justify-between gap-3">
-            <div>
+            <div className="min-w-0">
               <h3 className="text-lg font-bold text-navy-900 dark:text-white">{selected.title}</h3>
               <p className="text-xs text-navy-500 dark:text-navy-400 mt-0.5">{selected.faculty}</p>
             </div>
-            <span className={cn('badge text-[10px]', demandClass[selected.demandMpumalanga])}>
-              {selected.demandMpumalanga} Demand
-            </span>
+            <div className="flex items-center gap-2 flex-shrink-0">
+              <span className={cn('badge text-[10px]', demandClass[selected.demandMpumalanga])}>
+                {selected.demandMpumalanga} Demand
+              </span>
+              {user && (
+                <button
+                  onClick={() => saveCourse(selected)}
+                  disabled={!!savingId || savedIds.has(selected.id)}
+                  title={savedIds.has(selected.id) ? 'Saved to tracker' : 'Save to Application Tracker'}
+                  className={cn(
+                    'flex items-center gap-1 px-2.5 py-1.5 rounded-lg text-[11px] font-semibold transition-colors border',
+                    savedIds.has(selected.id)
+                      ? 'bg-ugreen-50 border-ugreen-200 text-ugreen-700 dark:bg-ugreen-900/20 dark:border-ugreen-800 dark:text-ugreen-400'
+                      : 'bg-navy-50 border-navy-200 text-navy-600 hover:bg-navy-100 dark:bg-navy-800 dark:border-navy-700 dark:text-navy-300'
+                  )}
+                >
+                  {savingId === selected.id
+                    ? <Loader2 size={12} className="animate-spin" />
+                    : savedIds.has(selected.id)
+                      ? <BookmarkCheck size={12} />
+                      : <BookmarkPlus size={12} />
+                  }
+                  {savedIds.has(selected.id) ? 'Saved' : 'Save'}
+                </button>
+              )}
+            </div>
           </div>
 
           <p className="text-sm text-navy-600 dark:text-navy-300 leading-relaxed">{selected.description}</p>
