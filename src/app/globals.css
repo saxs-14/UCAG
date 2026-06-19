@@ -123,3 +123,51 @@
 @keyframes fadeIn  { from { opacity: 0; } to { opacity: 1; } }
 @keyframes fadeUp  { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
 @keyframes typing  { 0%,100% { opacity: 1; } 50% { opacity: 0.2; } }
+
+/* High-contrast accessibility mode */
+html.hc,
+html.hc body {
+  background: #000 !important;
+  color: #fff !important;
+}
+
+html.hc * {
+  border-color: #fff !important;
+}
+
+html.hc a,
+html.hc button {
+  color: #FCCC24 !important;
+}
+
+html.hc .card {
+  background: #111 !important;
+  border: 2px solid #fff !important;
+}
+
+html.hc input,
+html.hc select,
+html.hc textarea {
+  background: #000 !important;
+  color: #fff !important;
+  border: 2px solid #fff !important;
+}
+
+html.hc *:focus-visible {
+  outline: 3px solid #FCCC24 !important;
+  outline-offset: 3px !important;
+}
+
+html.hc .badge,
+html.hc [class*="badge-"] {
+  background: #000 !important;
+  color: #FCCC24 !important;
+  border: 1px solid #FCCC24 !important;
+}
+
+html.hc .btn-primary,
+html.hc .btn-red {
+  background: #000 !important;
+  color: #FCCC24 !important;
+  border: 2px solid #FCCC24 !important;
+}

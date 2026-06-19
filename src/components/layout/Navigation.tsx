@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { GraduationCap, Users, Compass, BarChart3, Moon, Sun, Menu, X, Award, FileText, ClipboardList } from 'lucide-react';
+import { GraduationCap, Users, Compass, BarChart3, Moon, Sun, Menu, X, Award, FileText, ClipboardList, Contrast } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -19,11 +19,14 @@ const tabs = [
 export function Navigation() {
   const pathname = usePathname();
   const [dark, setDark] = useState(false);
+  const [hc, setHc] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const stored = localStorage.getItem('ucag-theme');
     if (stored === 'dark') { setDark(true); document.documentElement.classList.add('dark'); }
+    const storedHc = localStorage.getItem('ucag-hc');
+    if (storedHc === 'on') { setHc(true); document.documentElement.classList.add('hc'); }
   }, []);
 
   const toggleDark = () => {
@@ -31,6 +34,13 @@ export function Navigation() {
     setDark(next);
     document.documentElement.classList.toggle('dark', next);
     localStorage.setItem('ucag-theme', next ? 'dark' : 'light');
+  };
+
+  const toggleHc = () => {
+    const next = !hc;
+    setHc(next);
+    document.documentElement.classList.toggle('hc', next);
+    localStorage.setItem('ucag-hc', next ? 'on' : 'off');
   };
 
   const isActive = (href: string) => href === '/' ? pathname === '/' : pathname.startsWith(href);
@@ -88,7 +98,20 @@ export function Navigation() {
         </nav>
 
         {/* Actions */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1">
+          <button
+            onClick={toggleHc}
+            aria-label={hc ? 'Turn off high contrast' : 'Turn on high contrast'}
+            title={hc ? 'High contrast: ON' : 'High contrast: OFF'}
+            className={cn(
+              'p-2 rounded-lg transition-colors',
+              hc
+                ? 'bg-ugold-400 text-navy-900 hover:bg-ugold-500'
+                : 'text-navy-500 dark:text-navy-400 hover:bg-navy-50 dark:hover:bg-navy-800'
+            )}
+          >
+            <Contrast size={16} />
+          </button>
           <button
             onClick={toggleDark}
             aria-label={dark ? 'Switch to light mode' : 'Switch to dark mode'}
