@@ -30,6 +30,7 @@ export function Footer() {
             { href: '/career',     text: 'Career Explorer' },
             { href: '/bursary',    text: 'Bursary Finder' },
             { href: '/roadmap',    text: 'My Roadmap' },
+            { href: '/tracker',    text: 'Application Tracker' },
             { href: '/mentorship', text: 'Mentorship' },
             { href: '/analytics',  text: 'School Analytics' },
           ].map(({ href, text }) => (

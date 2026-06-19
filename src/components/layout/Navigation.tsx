@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
-import { GraduationCap, Users, Compass, BarChart3, Moon, Sun, Menu, X, Award, FileText } from 'lucide-react';
+import { GraduationCap, Users, Compass, BarChart3, Moon, Sun, Menu, X, Award, FileText, ClipboardList } from 'lucide-react';
 import { useState, useEffect } from 'react';
 import { cn } from '@/lib/utils';
 
@@ -10,7 +10,8 @@ const tabs = [
   { href: '/',           label: 'APS Calc',      icon: GraduationCap },
   { href: '/career',     label: 'Career',         icon: Compass       },
   { href: '/bursary',    label: 'Bursaries',      icon: Award         },
-  { href: '/roadmap',    label: 'My Roadmap',     icon: FileText      },
+  { href: '/roadmap',    label: 'Roadmap',        icon: FileText      },
+  { href: '/tracker',    label: 'Tracker',        icon: ClipboardList },
   { href: '/mentorship', label: 'Mentorship',     icon: Users         },
   { href: '/analytics',  label: 'Analytics',      icon: BarChart3     },
 ];
