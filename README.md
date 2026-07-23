@@ -7,7 +7,7 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: Phase 1 (foundation + data model) complete, awaiting checkpoint.**
+**Status: Phase 2 (subject taxonomy + APS engine) complete, awaiting checkpoint.**
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
@@ -52,8 +52,22 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
   verified URLs (`config/institutions.seed.ts`); NSC subject taxonomy and
   point-band config, both flagged `needsVerification` pending a DBE/Umalusi
   check; ingestion cadence config. Typecheck, lint, and tests green; dev
-  server boots with no error. Done, awaiting checkpoint before Phase 2 (the
-  APS engine).
+  server boots with no error. Done.
+- **Phase 2** — `lib/aps/engine.ts`: pure TypeScript APS calculation
+  (verified no Firebase/React imports, even transitively), one
+  implementation covering all five `ApsFormulaType`s via
+  `usesRawPercentage`/`bands` rather than five near-duplicate formulas;
+  handles every `loPolicy` branch, best-N subject selection, a
+  `mathLitPolicy` hook that's a documented no-op until a real verified
+  penalty factor exists, and bonus rules gated on applicant context (so
+  equity-bonus-style rules never silently fire on a guess). 41/41 tests
+  passing, including every boundary mark the brief called for. Subject
+  taxonomy extended with Mathematics options and a language subject-code
+  scheme (`config/subjects.ts`). `components/subject-form/` — the full
+  NSC subject-selection form (searchable/grouped elective picker, live
+  NSC-level display) — mounted on the homepage as a working demo, not the
+  final landing page. Done, awaiting checkpoint before Phase 3 (matching,
+  results, apply path).
 - **Not yet connected**: no real Firebase project exists for v2 yet — see
   `.env.example`. The app runs, but nothing that touches Firebase (auth,
   Firestore reads) will work until real credentials are added.
