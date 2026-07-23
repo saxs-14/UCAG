@@ -82,3 +82,14 @@ export function getFirebaseClientConfig(): FirebaseClientEnv {
 
   return parsed.data;
 }
+
+/** True when the app should connect to the local Firebase emulator suite
+ * (firebase emulators:start) instead of a real project -- used by
+ * lib/firebase/client.ts and lib/firebase/admin.ts. Deliberately a plain
+ * boolean-ish string check, not part of firebaseClientEnvSchema above:
+ * this flag is meaningful even with a fake "demo-*" project ID and no
+ * real Firebase credentials at all (see .firebaserc), so it must not be
+ * coupled to a schema that requires real-looking values. */
+export function isFirebaseEmulatorEnabled(): boolean {
+  return process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === "true";
+}

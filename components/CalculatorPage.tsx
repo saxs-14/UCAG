@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { SubjectForm } from "./subject-form/SubjectForm";
 import { ResultsSection } from "./results/ResultsSection";
+import { SaveMarksButton } from "./SaveMarksButton";
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
 /**
@@ -16,6 +17,7 @@ export function CalculatorPage() {
   return (
     <div className="flex w-full flex-col items-center gap-8">
       <SubjectForm onMarksChange={setMarks} />
+      <SaveMarksButton marks={marks} />
       <ResultsSection marks={marks} />
     </div>
   );

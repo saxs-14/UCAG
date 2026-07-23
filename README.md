@@ -7,7 +7,7 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: Phase 5 (bursaries, internships, statistics) complete, awaiting checkpoint.**
+**Status: Phase 6 (accounts, saved profiles, POPIA) complete, awaiting checkpoint.**
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
@@ -191,6 +191,70 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     qualify-bucket results on `/` -- carrying that state across routes
     needs Phase 6's saved-profile/shortlist persistence, which doesn't
     exist yet.
-- **Not yet connected**: no real Firebase project exists for v2 yet — see
-  `.env.example`. The app runs, but nothing that touches Firebase (auth,
-  Firestore reads) will work until real credentials are added.
+- **Phase 6** — accounts, saved profiles, POPIA. Different constraint than
+  Phases 4/5: accounts genuinely need Firebase Auth to exist at all, so
+  instead of building against sample data, this phase set up the
+  **Firebase Local Emulator Suite** (`.firebaserc`, a `demo-ucag` project
+  ID needing zero real credentials) and live-tested against it for real --
+  the strongest verification of any phase so far.
+  - `firestore.rules`: hardened `userProfiles` rules are the actual POPIA
+    enforcement, not a UI convention -- a minor's profile write is
+    **rejected by the real rules engine** unless it carries a
+    guardian-consent record (`consentedBy: "guardian"`), regardless of
+    what the client sends. `tests/firestore-rules.test.ts`: 19 tests run
+    against the live emulator (not mocked). Sanity-checked the tests
+    themselves are real, not vacuous: deliberately broke the consent rule,
+    confirmed exactly the 2 dependent tests failed and nothing else,
+    restored it, confirmed all 19 pass again.
+  - `tests/auth-integration.test.ts`: 6 more tests against the real Auth
+    emulator -- real account creation, real sign-in (and real wrong-
+    password rejection), real account deletion (both the Firestore
+    profile AND the actual Firebase Auth user, confirmed by trying to
+    sign in again afterward and having it fail).
+  - `components/auth/`: age gate → guardian-consent capture (name, email,
+    confirmation checkbox) → email/Google sign-up, and a separate sign-in
+    form. The age gate isn't just UX -- even if it had a bug, the rules
+    above would still reject an unconsented minor profile.
+  - `/account`: signed-in dashboard with saved marks, shortlist, **working
+    download-my-data** (exports exactly what's stored, nothing more --
+    data minimisation means there's nothing else to export) and
+    **working delete-my-account** (deletes the Firestore profile and the
+    real Auth account, not a stub), both live-verified against the
+    emulator.
+  - `/privacy`: a privacy notice written in plain language for a
+    teenager, not a lawyer -- covers what's collected and why, the
+    under-18 guardian-consent requirement, and how to exercise the
+    download/delete rights.
+  - Saved marks (`SaveMarksButton`) and shortlist (toggle on each
+    `ResultCard`) are wired into the actual calculator/results flow for
+    signed-in users -- both write via partial `updateDoc` calls, a
+    pattern separately confirmed against the real rules (2 more tests:
+    a user can update just their own shortlist, and cannot touch anyone
+    else's). **Not built**: reloading saved marks back into the subject-
+    selection form's dropdowns on a later visit -- that needs
+    reconstructing granular UI state (which language/Math option/electives
+    were picked) from raw subject codes, a distinct feature this phase
+    didn't reach; saved marks are visible on `/account` but not yet
+    auto-restored into the calculator.
+  - **Real infrastructure incident mid-phase**: the machine ran out of
+    memory (ESLint OOM'd) from ~30 stray `node`/`java` processes
+    accumulated across this session's many `next dev`/emulator restarts --
+    `TaskStop` doesn't reliably kill Turbopack's full process tree on
+    Windows. Diagnosed via `Get-Process`, force-killed everything, confirmed
+    it was a resource issue (not a code bug) by re-running the exact same
+    lint/test commands clean immediately after.
+  - **chrome-devtools MCP disconnected** partway through this phase (tied
+    to a browser process killed during the cleanup above) and did not
+    reconnect for the rest of the session -- the auth UI's actual React
+    rendering/interaction was **not** browser-verified this phase, unlike
+    every previous phase. What substitutes: the emulator integration tests
+    above verify the real Auth/Firestore behavior every UI action depends
+    on, and an HTTP-level check confirmed `/account` and `/privacy` render
+    without a server error. The gap: nobody has watched the age-gate →
+    guardian-consent → sign-up flow actually click through in a browser.
+- **Firebase**: no real cloud project exists for v2 yet, but the app **is**
+  genuinely tested against a real Firebase backend now -- the local
+  emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a
+  real project is still just a matter of filling in `.env.example`'s
+  `NEXT_PUBLIC_FIREBASE_*` values and setting
+  `NEXT_PUBLIC_USE_FIREBASE_EMULATOR=false`.
