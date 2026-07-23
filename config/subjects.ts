@@ -4,6 +4,13 @@
  * until it's been checked against the current DBE subject list
  * (education.gov.za/Curriculum/CurriculumAssessmentPolicyStatements).
  * Do not flip a subject to "verified" without recording its sourceUrl.
+ *
+ * Canonical subject codes used throughout the engine and UI:
+ * - Mathematics: "MATH" | "MATHLIT" | "TECHMATH"
+ * - Languages: "<LANG3>-HL" or "<LANG3>-FAL", e.g. "ENG-HL", "ZUL-FAL"
+ *   (see LANGUAGE_CODES / getLanguageSubjectCode below)
+ * - Life Orientation: "LO"
+ * - Electives: 3-letter codes, see ELECTIVE_SUBJECTS
  */
 
 import type { Subject } from "@/lib/firestore/types";
@@ -29,6 +36,29 @@ export type LanguageOption = (typeof HOME_LANGUAGE_OPTIONS)[number];
  * whichever language was chosen as Home Language. */
 export const FIRST_ADDITIONAL_LANGUAGE_OPTIONS = HOME_LANGUAGE_OPTIONS;
 
+/** 3-letter codes for the language-subject-code scheme (see file header). */
+export const LANGUAGE_CODES: Record<LanguageOption, string> = {
+  Afrikaans: "AFR",
+  English: "ENG",
+  isiNdebele: "NBL",
+  isiXhosa: "XHO",
+  isiZulu: "ZUL",
+  Sepedi: "NSO",
+  Sesotho: "SOT",
+  Setswana: "TSN",
+  siSwati: "SSW",
+  Tshivenda: "VEN",
+  Xitsonga: "TSO",
+  "South African Sign Language": "SASL",
+};
+
+export function getLanguageSubjectCode(
+  language: LanguageOption,
+  type: "home" | "firstAdditional"
+): string {
+  return `${LANGUAGE_CODES[language]}-${type === "home" ? "HL" : "FAL"}`;
+}
+
 export const MATHEMATICS_OPTIONS = [
   "Mathematics",
   "Mathematical Literacy",
@@ -37,10 +67,47 @@ export const MATHEMATICS_OPTIONS = [
 
 export type MathematicsOption = (typeof MATHEMATICS_OPTIONS)[number];
 
+export const MATHEMATICS_CODES: Record<MathematicsOption, string> = {
+  Mathematics: "MATH",
+  "Mathematical Literacy": "MATHLIT",
+  "Technical Mathematics": "TECHMATH",
+};
+
+export const MATHEMATICS_SUBJECTS: Subject[] = [
+  {
+    code: "MATH",
+    name: "Mathematics",
+    category: "mathematics",
+    isDesignated: true,
+    isCompulsory: true,
+    languageType: null,
+    verificationStatus: "needsVerification",
+  },
+  {
+    code: "MATHLIT",
+    name: "Mathematical Literacy",
+    category: "mathematics",
+    isDesignated: false,
+    isCompulsory: true,
+    languageType: null,
+    verificationStatus: "needsVerification",
+  },
+  {
+    code: "TECHMATH",
+    name: "Technical Mathematics",
+    category: "mathematics",
+    isDesignated: true,
+    isCompulsory: true,
+    languageType: null,
+    verificationStatus: "needsVerification",
+  },
+];
+
 function elective(
   code: string,
   name: string,
-  isDesignated: boolean
+  isDesignated: boolean,
+  groupLabel: string
 ): Subject {
   return {
     code,
@@ -50,48 +117,57 @@ function elective(
     isCompulsory: false,
     languageType: null,
     verificationStatus: "needsVerification",
+    groupLabel,
   };
 }
 
 /**
- * Designated-list flags below are seeded per the commonly-cited DBE
- * designated subject list (used by many institutions for faculty-specific
+ * Designated-list flags are seeded per the commonly-cited DBE designated
+ * subject list (used by many institutions for faculty-specific
  * requirements, e.g. "at least one designated subject other than Maths").
+ * groupLabel is a UI organisational aid only, not a DBE taxonomy -- see
+ * the note on Subject.groupLabel in lib/firestore/types.ts.
  * All flagged needsVerification -- confirm against DBE before Tier 1 launch.
  */
 export const ELECTIVE_SUBJECTS: Subject[] = [
-  elective("ACC", "Accounting", true),
-  elective("AMP", "Agricultural Management Practices", true),
-  elective("AGS", "Agricultural Sciences", true),
-  elective("AGT", "Agricultural Technology", false),
-  elective("BUS", "Business Studies", true),
-  elective("CIV", "Civil Technology", false),
-  elective("CAT", "Computer Applications Technology", false),
-  elective("CST", "Consumer Studies", false),
-  elective("DNC", "Dance Studies", false),
-  elective("DSN", "Design", false),
-  elective("DRA", "Dramatic Arts", false),
-  elective("ECO", "Economics", true),
-  elective("ELT", "Electrical Technology", false),
-  elective("EGD", "Engineering Graphics and Design", true),
-  elective("EQS", "Equine Studies", false),
-  elective("GEO", "Geography", true),
-  elective("HIS", "History", true),
-  elective("HSP", "Hospitality Studies", false),
-  elective("IT", "Information Technology", true),
-  elective("LFS", "Life Sciences", true),
-  elective("MAR", "Marine Sciences", false),
-  elective("MTE", "Maritime Economics", false),
-  elective("MEC", "Mechanical Technology", false),
-  elective("MUS", "Music", false),
-  elective("NAU", "Nautical Science", false),
-  elective("PHS", "Physical Sciences", true),
-  elective("REL", "Religion Studies", false),
-  elective("SAL", "Second Additional Language", false),
-  elective("SES", "Sport and Exercise Science", false),
-  elective("TES", "Technical Sciences", true),
-  elective("TOU", "Tourism", false),
-  elective("VAR", "Visual Arts", false),
+  elective("ACC", "Accounting", true, "Commerce"),
+  elective("BUS", "Business Studies", true, "Commerce"),
+  elective("ECO", "Economics", true, "Commerce"),
+
+  elective("GEO", "Geography", true, "Humanities & Social Sciences"),
+  elective("HIS", "History", true, "Humanities & Social Sciences"),
+  elective("REL", "Religion Studies", false, "Humanities & Social Sciences"),
+  elective("TOU", "Tourism", false, "Humanities & Social Sciences"),
+
+  elective("AGS", "Agricultural Sciences", true, "Sciences"),
+  elective("LFS", "Life Sciences", true, "Sciences"),
+  elective("MAR", "Marine Sciences", false, "Sciences"),
+  elective("PHS", "Physical Sciences", true, "Sciences"),
+  elective("TES", "Technical Sciences", true, "Sciences"),
+
+  elective("AMP", "Agricultural Management Practices", true, "Technology"),
+  elective("AGT", "Agricultural Technology", false, "Technology"),
+  elective("CIV", "Civil Technology", false, "Technology"),
+  elective("CAT", "Computer Applications Technology", false, "Technology"),
+  elective("ELT", "Electrical Technology", false, "Technology"),
+  elective("EGD", "Engineering Graphics and Design", true, "Technology"),
+  elective("IT", "Information Technology", true, "Technology"),
+  elective("MEC", "Mechanical Technology", false, "Technology"),
+
+  elective("DNC", "Dance Studies", false, "Arts & Culture"),
+  elective("DSN", "Design", false, "Arts & Culture"),
+  elective("DRA", "Dramatic Arts", false, "Arts & Culture"),
+  elective("MUS", "Music", false, "Arts & Culture"),
+  elective("VAR", "Visual Arts", false, "Arts & Culture"),
+
+  elective("CST", "Consumer Studies", false, "Services"),
+  elective("HSP", "Hospitality Studies", false, "Services"),
+  elective("SES", "Sport and Exercise Science", false, "Services"),
+
+  elective("EQS", "Equine Studies", false, "Specialised"),
+  elective("MTE", "Maritime Economics", false, "Specialised"),
+  elective("NAU", "Nautical Science", false, "Specialised"),
+  elective("SAL", "Second Additional Language", false, "Specialised"),
 ];
 
 export const COMPULSORY_LIFE_ORIENTATION: Subject = {
@@ -104,12 +180,15 @@ export const COMPULSORY_LIFE_ORIENTATION: Subject = {
   verificationStatus: "needsVerification",
 };
 
-/** All subjects for seeding the `subjects` Firestore collection. Language
- * and Mathematics options are represented as picklists (above), not
- * individual Subject records, since the learner's choice determines the
- * subject code (e.g. home-language choice becomes "EngHL", "ZulHL", etc.)
- * -- that mapping belongs in the Phase 2 subject-selection UI, not here. */
+/** All non-language subjects for seeding the `subjects` Firestore
+ * collection. Language subjects are derived (12 languages x 2 slots) via
+ * getLanguageSubjectCode rather than enumerated here. */
 export const ALL_SEED_SUBJECTS: Subject[] = [
   COMPULSORY_LIFE_ORIENTATION,
+  ...MATHEMATICS_SUBJECTS,
   ...ELECTIVE_SUBJECTS,
 ];
+
+export const ELECTIVE_GROUP_LABELS = Array.from(
+  new Set(ELECTIVE_SUBJECTS.map((s) => s.groupLabel).filter(Boolean))
+) as string[];
