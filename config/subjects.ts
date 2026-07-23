@@ -192,3 +192,34 @@ export const ALL_SEED_SUBJECTS: Subject[] = [
 export const ELECTIVE_GROUP_LABELS = Array.from(
   new Set(ELECTIVE_SUBJECTS.map((s) => s.groupLabel).filter(Boolean))
 ) as string[];
+
+const REVERSE_LANGUAGE_CODES: Record<string, LanguageOption> = Object.fromEntries(
+  Object.entries(LANGUAGE_CODES).map(([lang, code]) => [code, lang as LanguageOption])
+);
+
+const SUBJECT_LABEL_LOOKUP: Record<string, string> = Object.fromEntries(
+  [COMPULSORY_LIFE_ORIENTATION, ...MATHEMATICS_SUBJECTS, ...ELECTIVE_SUBJECTS].map((s) => [
+    s.code,
+    s.name,
+  ])
+);
+
+/** Resolves any canonical subject code (elective, Mathematics variant, LO,
+ * or a derived language code like "ENG-HL") to a human-readable label.
+ * Used by matching/results copy so reasons read as "Mathematics" not
+ * "MATH". Falls back to the raw code for anything unrecognised rather
+ * than throwing -- a label lookup failing shouldn't break a result page. */
+export function resolveSubjectLabel(code: string): string {
+  if (SUBJECT_LABEL_LOOKUP[code]) return SUBJECT_LABEL_LOOKUP[code];
+
+  const languageMatch = /^([A-Z]+)-(HL|FAL)$/.exec(code);
+  if (languageMatch) {
+    const [, langCode, slot] = languageMatch;
+    const language = REVERSE_LANGUAGE_CODES[langCode!];
+    if (language) {
+      return `${language} (${slot === "HL" ? "Home Language" : "First Additional Language"})`;
+    }
+  }
+
+  return code;
+}
