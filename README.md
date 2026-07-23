@@ -7,10 +7,11 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: reset for v2, pre-Phase-1.** v1 (UMP-only, simulated backend) is
-archived at git tag [`v1-archive`](../../releases/tag/v1-archive) and branch
-`archive/v1` — nothing from it was carried forward; v2 is a from-scratch,
-national-capable rebuild.
+**Status: Phase 1 (foundation + data model) complete, awaiting checkpoint.**
+v1 (UMP-only, simulated backend) is archived at git tag
+[`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
+nothing from it was carried forward; v2 is a from-scratch, national-capable
+rebuild.
 
 Owner: Phathutshedzo "Saxs" Mamagau — SaxsProjects.
 
@@ -39,9 +40,20 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
 
 ## Status
 
-Nothing is built yet — this reset (git history archive + fresh
-README/CLAUDE) is Phase 0 of `docs/MASTER_PROMPT_v2.md` §4. Phase 0's
-"first response" (read of the brief, Tier 1 institution recommendation,
-verified source register, cost estimate, any stack disagreement) is the next
-deliverable, followed by a checkpoint before Phase 1 (foundation + data
-model) begins.
+- **Phase 0** — v1 archived (`v1-archive` tag / `archive/v1` branch, pushed
+  and verified), repo reset, first-response checkpoint delivered. Done.
+- **Phase 1** — Next.js 15 + TypeScript strict + Tailwind scaffolded;
+  Firestore data model defined (`lib/firestore/types.ts`) with the
+  `sourceUrl`/`verifiedOn`/`academicYear` provenance guard enforced by
+  `isFactVerified()`, not by convention; env var handling split into
+  client-safe/server-only modules (`lib/env/`); Firebase client + Admin SDK
+  wired (no live project connected yet — needs real Firebase credentials);
+  starter Firestore security rules; Tier 1/2 institution seed data with
+  verified URLs (`config/institutions.seed.ts`); NSC subject taxonomy and
+  point-band config, both flagged `needsVerification` pending a DBE/Umalusi
+  check; ingestion cadence config. Typecheck, lint, and tests green; dev
+  server boots with no error. Done, awaiting checkpoint before Phase 2 (the
+  APS engine).
+- **Not yet connected**: no real Firebase project exists for v2 yet — see
+  `.env.example`. The app runs, but nothing that touches Firebase (auth,
+  Firestore reads) will work until real credentials are added.
