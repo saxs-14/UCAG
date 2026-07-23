@@ -7,7 +7,7 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: Phase 4 (AI ingestion pipeline -- partial) complete, awaiting checkpoint.**
+**Status: Phase 5 (bursaries, internships, statistics) complete, awaiting checkpoint.**
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
@@ -148,6 +148,49 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     statistics). These need a live Firebase project and, for anything
     beyond link-health, a real LLM key -- both genuine blockers, not
     scope I chose to skip.
+- **Phase 5** — bursaries, internships, and a statistics dashboard, same
+  honest-scoping discipline as Phase 4 (no real listings or extracted
+  statistics exist yet -- only Phase 4's link-health task is actually
+  live).
+  - `/bursaries`: filters by field of study, level
+    (matricOnly/currentlyEnrolled/completedQualification), and a
+    first-class matric-only-internships toggle (not a buried checkbox,
+    per the brief) -- live-verified in a browser: selecting "Engineering"
+    correctly narrowed 3 bursaries to 2 and correctly emptied the
+    internships section (neither sample internship is Engineering-
+    tagged). Every card shows a deadline countdown, its real provider,
+    and a source link. The brief-mandated "how to spot a bursary scam"
+    explainer renders on the page, not hidden behind a link.
+    `lib/ingestion/bursarySafety.ts` (Phase 4) is reused as a render-time
+    gate too, not just an ingestion-time check -- a listing that somehow
+    carries a risk flag never reaches the UI, defence in depth.
+  - `/statistics`: two sections (Higher Education, Schools), 8 chart
+    slots total. **7 of 8 correctly render "Data pending verification"**
+    -- this is the honest, correct state, not a placeholder I forgot to
+    fill in: extracting real numbers out of DHET/DBE's PDF-only
+    publications is unbuilt Phase 4 ingestion work. The 8th
+    (enrolments) is explicitly labelled `[Sample]`/fictional and
+    proves the render-when-verified path actually works (real Recharts
+    bar chart, source line, working CSV download) -- live-verified in a
+    browser, all 8 slots checked individually.
+  - **Real bug caught by a test, not a live check this time**: the
+    deadline-countdown function used `Math.ceil(diffMs / dayMs)` on a
+    raw millisecond difference, which bumped anything later *today* into
+    "tomorrow" (e.g. checking at 00:00 against a 12:00 same-day
+    deadline). Rewritten to compare calendar days (UTC midnight to UTC
+    midnight) instead.
+  - Added a minimal nav bar (Calculator/Bursaries/Statistics) to
+    `app/layout.tsx` so the new routes are reachable at all -- flagged
+    inline, not resolved: the brief requires the calculator's subject
+    dropdowns to be visible with no scrolling for a learner arriving from
+    a WhatsApp link (sect. 3), and a persistent nav row above the
+    calculator was never checked against that requirement. Phase 8
+    (design) should revisit whether it belongs there.
+  - Field-of-study filtering on `/bursaries` is self-service (a dropdown
+    the learner picks manually), not auto-derived from the calculator's
+    qualify-bucket results on `/` -- carrying that state across routes
+    needs Phase 6's saved-profile/shortlist persistence, which doesn't
+    exist yet.
 - **Not yet connected**: no real Firebase project exists for v2 yet — see
   `.env.example`. The app runs, but nothing that touches Firebase (auth,
   Firestore reads) will work until real credentials are added.

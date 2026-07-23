@@ -16,10 +16,13 @@ import { STANDARD_NSC_SCALE } from "./aps-scales";
 import type {
   ApplicationWindow,
   ApsRule,
+  Bursary,
   Faculty,
   Institution,
+  Internship,
   Programme,
   School,
+  Statistic,
 } from "@/lib/firestore/types";
 
 const SAMPLE_VERIFIED_ON = "2026-07-23";
@@ -199,3 +202,135 @@ export const SAMPLE_APPLICATION_WINDOWS: ApplicationWindow[] = [
     academicYear: SAMPLE_ACADEMIC_YEAR,
   },
 ];
+
+/** Fictional bursaries for demoing the Phase 5 bursaries page. Real
+ * bursary sourcing/verification is Phase 4 ingestion territory (not yet
+ * live -- see README status) -- these exist only to prove the filter/
+ * deadline/scam-safety UI works, never to be mistaken for a real offer. */
+export const SAMPLE_BURSARIES: Bursary[] = [
+  {
+    id: "sample-bursary-stem",
+    name: "[Sample] STEM Futures Bursary",
+    provider: "[Sample] Futures Trust",
+    fieldsOfStudy: ["Computer Science", "Information Technology", "Engineering"],
+    levelRequired: "matricOnly",
+    closesOn: "2027-09-30",
+    value: "Full tuition, accommodation, and a laptop allowance",
+    criteria: ["Matric with 70%+ average in Mathematics", "South African citizen"],
+    applyUrl: "https://example.test/apply/stem-bursary",
+    riskFlags: [],
+    sourceUrl: SAMPLE_SOURCE_URL,
+    verifiedOn: SAMPLE_VERIFIED_ON,
+    academicYear: SAMPLE_ACADEMIC_YEAR,
+  },
+  {
+    id: "sample-bursary-commerce",
+    name: "[Sample] Commerce Leaders Bursary",
+    provider: "[Sample] National Business Federation",
+    fieldsOfStudy: ["Accounting", "Commerce", "Business"],
+    levelRequired: "currentlyEnrolled",
+    closesOn: "2027-05-31",
+    value: "R60 000 per year",
+    criteria: ["Enrolled in a Commerce-related degree", "Household income under R450 000/year"],
+    applyUrl: "https://example.test/apply/commerce-bursary",
+    riskFlags: [],
+    sourceUrl: SAMPLE_SOURCE_URL,
+    verifiedOn: SAMPLE_VERIFIED_ON,
+    academicYear: SAMPLE_ACADEMIC_YEAR,
+  },
+  {
+    id: "sample-bursary-postgrad-engineering",
+    name: "[Sample] Postgraduate Engineering Fellowship",
+    provider: "[Sample] Engineering Council Trust",
+    fieldsOfStudy: ["Engineering"],
+    levelRequired: "completedQualification",
+    closesOn: "2027-03-15",
+    value: "Full postgraduate tuition",
+    criteria: ["Completed a Bachelor's in an Engineering field", "Accepted into a postgraduate programme"],
+    applyUrl: "https://example.test/apply/engineering-fellowship",
+    riskFlags: [],
+    sourceUrl: SAMPLE_SOURCE_URL,
+    verifiedOn: SAMPLE_VERIFIED_ON,
+    academicYear: SAMPLE_ACADEMIC_YEAR,
+  },
+];
+
+/** Fictional internships, same caveats as SAMPLE_BURSARIES above. The
+ * brief calls out matric-only internships as a first-class filter, not a
+ * buried checkbox -- sample data below deliberately includes both
+ * matric-only and post-qualification listings to exercise that filter. */
+export const SAMPLE_INTERNSHIPS: Internship[] = [
+  {
+    id: "sample-internship-it-matric",
+    title: "[Sample] IT Support Learnership",
+    provider: "[Sample] TechForward (Pty) Ltd",
+    fieldsOfStudy: ["Information Technology", "Computer Science"],
+    minQualification: "NSC (matric)",
+    matricOnly: true,
+    province: "Gauteng",
+    closesOn: "2027-08-31",
+    applyUrl: "https://example.test/apply/it-learnership",
+    sourceUrl: SAMPLE_SOURCE_URL,
+    verifiedOn: SAMPLE_VERIFIED_ON,
+    academicYear: SAMPLE_ACADEMIC_YEAR,
+  },
+  {
+    id: "sample-internship-graduate-commerce",
+    title: "[Sample] Graduate Finance Internship",
+    provider: "[Sample] National Business Federation",
+    fieldsOfStudy: ["Accounting", "Commerce"],
+    minQualification: "Completed Bachelor's degree",
+    matricOnly: false,
+    province: null,
+    closesOn: "2027-06-30",
+    applyUrl: "https://example.test/apply/finance-internship",
+    sourceUrl: SAMPLE_SOURCE_URL,
+    verifiedOn: SAMPLE_VERIFIED_ON,
+    academicYear: SAMPLE_ACADEMIC_YEAR,
+  },
+];
+
+/** Fictional statistics -- exist only to prove a chart CAN render once a
+ * statistic is fully verified. Every real dataset (DHET/DBE enrolment,
+ * graduation, NSC pass-rate figures) has zero entries here on purpose:
+ * extracting real numbers out of the PDF-only sources in
+ * config/sources.seed.ts is Phase 4 ingestion work that isn't live yet,
+ * so those charts correctly show "data pending verification" instead of
+ * a fabricated number. See lib/statistics/select.ts for the gate that
+ * enforces this. */
+export const SAMPLE_STATISTICS: Statistic[] = [
+  {
+    id: "sample-stat-enrolments-2024",
+    dataset: "sample-higher-ed-enrolments",
+    dimension: "2024",
+    metric: "Total first-time undergraduate enrolments",
+    value: 142000,
+    unit: "learners",
+    sourceUrl: SAMPLE_SOURCE_URL,
+    verifiedOn: SAMPLE_VERIFIED_ON,
+    publisher: "[Sample] Fictional Publisher",
+    year: 2024,
+  },
+  {
+    id: "sample-stat-enrolments-2023",
+    dataset: "sample-higher-ed-enrolments",
+    dimension: "2023",
+    metric: "Total first-time undergraduate enrolments",
+    value: 138500,
+    unit: "learners",
+    sourceUrl: SAMPLE_SOURCE_URL,
+    verifiedOn: SAMPLE_VERIFIED_ON,
+    publisher: "[Sample] Fictional Publisher",
+    year: 2023,
+  },
+];
+
+/** All fields of study represented in the sample bursary/internship data
+ * -- used to populate the filter dropdown. Once Phase 4 ingestion feeds
+ * real listings, this becomes a derived/aggregated value, not a fixed list. */
+export const SAMPLE_FIELDS_OF_STUDY = Array.from(
+  new Set([
+    ...SAMPLE_BURSARIES.flatMap((b) => b.fieldsOfStudy),
+    ...SAMPLE_INTERNSHIPS.flatMap((i) => i.fieldsOfStudy),
+  ])
+).sort();
