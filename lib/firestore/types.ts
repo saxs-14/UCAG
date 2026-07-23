@@ -353,6 +353,11 @@ export interface Source {
   fetchIntervalHours: number;
   /** 0-1, adjusted over time based on corroboration history. */
   reliabilityScore: number;
+  /** Caveats worth a human's attention: robots.txt/TLS couldn't be
+   * independently verified, an ethical judgment call was made (e.g. a
+   * site blocks AI crawlers by name but not this bot specifically), etc.
+   * Not every source needs one -- most don't. */
+  notes?: string;
 }
 
 export interface IngestionRun {
