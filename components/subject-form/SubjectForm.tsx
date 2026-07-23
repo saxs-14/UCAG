@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { SubjectCombobox } from "./SubjectCombobox";
 import { MarkInput } from "./MarkInput";
 import {
@@ -105,9 +105,15 @@ export function SubjectForm({
     electives,
   ]);
 
-  // Fire the callback on every change without requiring the parent to
-  // memoize -- useMemo above already dedupes recomputation.
-  onMarksChange?.(marks);
+  // Notify the parent in an effect, not during render -- calling
+  // onMarksChange directly in the render body updates a different
+  // component (CalculatorPage) while this one is still rendering, which
+  // React rejects (and which, in practice, corrupted keystrokes: typing
+  // "80" was observed landing as "8" because the interrupted render
+  // clobbered the in-progress input state).
+  useEffect(() => {
+    onMarksChange?.(marks);
+  }, [marks, onMarksChange]);
 
   function updateElective(index: number, patch: Partial<ElectiveSlot>) {
     setElectives((prev) => prev.map((e, i) => (i === index ? { ...e, ...patch } : e)));

@@ -43,12 +43,22 @@ function readServerEnv() {
   return parsed.data;
 }
 
-export const serverEnv = readServerEnv();
+let cached: ReturnType<typeof readServerEnv> | undefined;
+
+/** Lazy -- only validates on first call, not at module import time. Every
+ * consumer (lib/firebase/admin.ts, cron routes) calls this instead of
+ * reading a top-level const, so importing this module doesn't force
+ * every server secret to exist just because one route needs one of them. */
+export function getServerEnv() {
+  if (!cached) cached = readServerEnv();
+  return cached;
+}
 
 /** Cron/admin route handlers must call this before doing any work -- see
  * config/ingestion.ts and CLAUDE.md non-negotiable #4. */
 export function assertCronSecret(providedSecret: string | null): void {
-  if (!serverEnv.CRON_SECRET || providedSecret !== serverEnv.CRON_SECRET) {
+  const { CRON_SECRET } = getServerEnv();
+  if (!CRON_SECRET || providedSecret !== CRON_SECRET) {
     throw new Error("Unauthorized: invalid or missing cron secret.");
   }
 }

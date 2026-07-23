@@ -7,7 +7,7 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: Phase 2 (subject taxonomy + APS engine) complete, awaiting checkpoint.**
+**Status: Phase 3 (matching, results, apply path) complete, awaiting checkpoint.**
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
@@ -66,8 +66,32 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
   scheme (`config/subjects.ts`). `components/subject-form/` — the full
   NSC subject-selection form (searchable/grouped elective picker, live
   NSC-level display) — mounted on the homepage as a working demo, not the
-  final landing page. Done, awaiting checkpoint before Phase 3 (matching,
-  results, apply path).
+  final landing page. Done.
+- **Phase 3** — `lib/matching/engine.ts`: pure TypeScript, buckets a
+  learner into qualify/almostQualify/notYet against a programme's APS +
+  subject requirements, itemising every reason (met and unmet), and
+  suggesting a concrete next step when not yet qualifying. Deliberately
+  does **not** gate on NSC pass type (Bachelor's/Diploma/Higher
+  Certificate) despite the brief's example copy implying it should — no
+  verified Umalusi thresholds exist yet, so `passTypeEvaluated: false` on
+  every result makes that omission visible rather than fabricating
+  numbers. `lib/applicationStatus.ts` decides the apply-vs-status-check
+  CTA and is the one place that can never return an apply link for a
+  closed window, even if `applyUrl` is set. The homepage is now the full
+  calculator + live results flow (`components/CalculatorPage.tsx`),
+  matched against explicitly-labelled **sample/fictional** programme data
+  (`config/sampleData.ts`) since no real, verified programme catalogue
+  exists yet (that's Phase 4). Share-by-link (`lib/shareLink.ts`) and
+  PDF export (browser print-to-PDF) included. 65/65 tests passing.
+  **Two real bugs found and fixed while live-testing in a browser** (not
+  just from unit tests): (1) `getBaseUrl()` transitively required every
+  `NEXT_PUBLIC_FIREBASE_*` var to exist just to read a base URL, 500ing
+  the whole results page with no Firebase project connected — fixed by
+  splitting client env validation so Firebase config is only validated
+  lazily, on first actual use; (2) `SubjectForm` called its `onMarksChange`
+  callback directly during render instead of in a `useEffect`, which
+  React rejects and which was corrupting keystrokes in practice (typing
+  "80" landed as "8"). Done.
 - **Not yet connected**: no real Firebase project exists for v2 yet — see
   `.env.example`. The app runs, but nothing that touches Firebase (auth,
   Firestore reads) will work until real credentials are added.
