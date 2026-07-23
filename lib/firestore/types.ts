@@ -216,6 +216,11 @@ export interface ApsRule extends FactProvenance {
   bestNSubjects: number;
   excludedSubjects: string[];
   mathLitPolicy: MathLitPolicy;
+  /** Multiplier applied to a Mathematical Literacy subject's counted value
+   * when mathLitPolicy is "penalised", e.g. 0.5. Defaults to 1 (no-op) when
+   * unset -- unset until a real institution's verified penalty factor is on
+   * record; do not fabricate a number here without a sourceUrl backing it. */
+  mathLitPenaltyFactor?: number;
   nbtPolicy: NbtPolicy;
   bonusRules: ApsBonusRule[];
   /** Maximum attainable score under this formula, e.g. 42 or 600. Undefined if uncapped. */
@@ -269,6 +274,11 @@ export interface Subject {
   languageType: LanguageType;
   verificationStatus: VerificationStatus;
   sourceUrl?: string;
+  /** UI grouping only (e.g. "Commerce", "Sciences") -- not a DBE-official
+   * taxonomy, just an organisational aid for the elective picker. Not
+   * subject to the same verification requirement as the subject's
+   * existence/name/designated-list status. */
+  groupLabel?: string;
 }
 
 // ---------------------------------------------------------------------------
