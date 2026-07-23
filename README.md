@@ -7,7 +7,7 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: Phase 3 (matching, results, apply path) complete, awaiting checkpoint.**
+**Status: Phase 4 (AI ingestion pipeline -- partial) complete, awaiting checkpoint.**
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
@@ -92,6 +92,62 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
   callback directly during render instead of in a `useEffect`, which
   React rejects and which was corrupting keystrokes in practice (typing
   "80" landed as "8"). Done.
+- **Phase 4** — the AI ingestion pipeline, scoped honestly against two
+  hard constraints: no real Firebase project and no LLM API key are
+  configured for v2 yet, so nothing that needs either could be
+  live-tested this phase. What's real:
+  - `config/sources.seed.ts` — 20 sources (DHET, DBE, Umalusi, SAQA,
+    NSFAS, Stats SA, CHE, and all 12 researched institution admissions
+    pages), every URL confirmed live during Phase 0 research, each with
+    `robotsAllowed` and honest `notes` caveats (e.g. UCT's AI-crawler
+    robots.txt block flagged as a judgment call, not silently routed
+    around; CPUT and SAQA flagged as never independently verified).
+  - `lib/ingestion/` pure/testable stages: `robotsCheck` (parses and
+    respects robots.txt), `budget` (token budget + kill switch,
+    enforced, not just configured), `diff`, `route` (auto-publish vs
+    verification-queue decision -- high-risk fields never auto-publish
+    regardless of confidence), `bursarySafety` (the brief's scam
+    auto-reject rules: upfront-payment keywords, no verifiable provider
+    site, social-media-only sourcing).
+  - `lib/ingestion/llm/` -- a provider-agnostic `LlmClient` interface
+    plus a concrete Anthropic Messages API implementation, and
+    `lib/ingestion/extract.ts` (rejects and logs schema-invalid output
+    rather than coercing it). Unit-tested against a fake client -- the
+    real HTTP path to Anthropic has never been called, since no
+    `LLM_API_KEY` exists. One concrete Zod extraction schema
+    (`applicationWindow`) built as the pattern to replicate for the
+    other six ingestion tasks.
+  - **The one thing genuinely run live, end to end, with real data**:
+    `lib/ingestion/linkHealth.ts` + `lib/ingestion/pipeline.ts` +
+    `app/api/cron/link-health/route.ts`, protected by `CRON_SECRET`
+    (checks the real `Authorization: Bearer` header Vercel Cron sends,
+    not a made-up convention). Actually executed against all 24 live
+    Tier 1/2 institution URLs via `curl` against a running dev server --
+    real results, zero Firestore writes (`dryRun: true` is the only
+    implemented mode; `dryRun: false` fails fast with a clear "not
+    implemented, no live Firestore" error rather than silently no-op-ing
+    or crashing confusingly). Two separate live runs found 8-10 dead/
+    blocked links out of 24 (mostly 403s and a few timeouts) --
+    demonstrates the check works, and surfaces that retry/backoff logic
+    (a brief-mandated guardrail) isn't built yet, since transient
+    timeouts currently count as "dead."
+  - `vercel.json` -- one real cron entry (link-health, every 6 hours;
+    confirms the Phase 0 cost estimate's Vercel Pro requirement, since
+    Hobby caps cron at once/day). No entries for the other six
+    `CADENCE_RULES` tasks yet -- their route handlers don't exist.
+  - **Found and fixed the same env-coupling bug pattern again, server-side
+    this time**: `assertCronSecret` would have required real Firebase
+    Admin credentials to exist just to check a cron secret, the same
+    class of bug fixed client-side in Phase 3. Caught before it caused a
+    live failure, not after.
+  - Not built: real Firestore writes (`sources`, `ingestionRuns`,
+    `verificationQueue` collections are typed but never written to),
+    corroboration logic, the admin verification console (Phase 7), and
+    pipelines for the other six cadence tasks (bursaries, internships,
+    programme requirements, faculty/school structure, national
+    statistics). These need a live Firebase project and, for anything
+    beyond link-health, a real LLM key -- both genuine blockers, not
+    scope I chose to skip.
 - **Not yet connected**: no real Firebase project exists for v2 yet — see
   `.env.example`. The app runs, but nothing that touches Firebase (auth,
   Firestore reads) will work until real credentials are added.

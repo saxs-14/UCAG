@@ -15,7 +15,7 @@ import "server-only";
 import { getApps, initializeApp, cert, type App } from "firebase-admin/app";
 import { getAuth, type Auth } from "firebase-admin/auth";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
-import { getServerEnv } from "@/lib/env/server";
+import { getFirebaseAdminEnv } from "@/lib/env/server";
 
 let adminApp: App | undefined;
 
@@ -28,7 +28,7 @@ export function getAdminApp(): App {
     return adminApp;
   }
 
-  const env = getServerEnv();
+  const env = getFirebaseAdminEnv();
   adminApp = initializeApp({
     credential: cert({
       projectId: env.FIREBASE_ADMIN_PROJECT_ID,
