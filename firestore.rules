@@ -1,0 +1,81 @@
+rules_version = '2';
+
+// Phase 1 starter rules -- deny-by-default, public reads for fact-bearing
+// collections, all writes server-only (Admin SDK bypasses these rules
+// entirely, which is exactly how the ingestion pipeline and admin console
+// are supposed to write). Per-user ownership enforcement for userProfiles
+// gets hardened + rule-tested properly in Phase 6 (POPIA) -- this is a
+// safe starting point, not the final version.
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Public fact-bearing catalogue data: readable by anyone (this is a
+    // public information site), never client-writable. All writes happen
+    // server-side via the Admin SDK (ingestion pipeline, admin console).
+    match /institutions/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /faculties/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /schools/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /programmes/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /apsRules/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /applicationWindows/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /subjects/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /bursaries/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /internships/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+    match /statistics/{docId} {
+      allow read: if true;
+      allow write: if false;
+    }
+
+    // Internal to the ingestion pipeline and admin console -- no client
+    // access at all, not even read.
+    match /sources/{docId} {
+      allow read, write: if false;
+    }
+    match /ingestionRuns/{docId} {
+      allow read, write: if false;
+    }
+    match /verificationQueue/{docId} {
+      allow read, write: if false;
+    }
+
+    // A learner's own profile. Basic ownership check for Phase 1 --
+    // Phase 6 adds guardian-consent enforcement, field-level restrictions
+    // (a client must never be able to write role/xp-equivalent fields),
+    // and rule tests.
+    match /userProfiles/{uid} {
+      allow read, write: if request.auth != null && request.auth.uid == uid;
+    }
+
+    // Deny everything else by default.
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
