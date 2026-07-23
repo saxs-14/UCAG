@@ -1,11 +1,10 @@
 rules_version = '2';
 
-// Phase 1 starter rules -- deny-by-default, public reads for fact-bearing
-// collections, all writes server-only (Admin SDK bypasses these rules
-// entirely, which is exactly how the ingestion pipeline and admin console
-// are supposed to write). Per-user ownership enforcement for userProfiles
-// gets hardened + rule-tested properly in Phase 6 (POPIA) -- this is a
-// safe starting point, not the final version.
+// Public fact-bearing catalogue data + userProfiles ownership. The
+// userProfiles rules below are the Phase 6 hardening promised in Phase 1
+// -- see lib/../tests/firestore-rules.test.ts (run against the real
+// Firebase emulator, not mocked) for what these are actually verified to
+// do, not just claimed to do.
 service cloud.firestore {
   match /databases/{database}/documents {
 
@@ -65,12 +64,56 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
-    // A learner's own profile. Basic ownership check for Phase 1 --
-    // Phase 6 adds guardian-consent enforcement, field-level restrictions
-    // (a client must never be able to write role/xp-equivalent fields),
-    // and rule tests.
+    // A learner's own profile. Per-user ownership plus the POPIA-relevant
+    // invariants a client write must satisfy -- these are the actual
+    // enforcement mechanism for "a minor's data requires guardian
+    // consent," not just a UI convention a learner could bypass by
+    // calling the Firestore SDK directly.
     match /userProfiles/{uid} {
-      allow read, write: if request.auth != null && request.auth.uid == uid;
+      allow read: if isOwner(uid);
+      allow create: if isOwner(uid) && isValidProfileWrite(uid, request.resource.data);
+      allow update: if isOwner(uid)
+        && isValidProfileWrite(uid, request.resource.data)
+        && consentRecordNotRemoved()
+        && createdAtUnchanged();
+      // Self-service account deletion (docs/MASTER_PROMPT_v2.md Phase 6:
+      // "a working delete my account flow, not a stub") -- a signed-in
+      // user may delete only their own profile document.
+      allow delete: if isOwner(uid);
+    }
+
+    function isOwner(uid) {
+      return request.auth != null && request.auth.uid == uid;
+    }
+
+    // The document's own `uid` field must match the document ID (defense
+    // in depth against any future code that trusts the field over the
+    // path), and -- the actual POPIA enforcement -- a profile marked as a
+    // minor's must carry a guardian-consent record, not self-consent.
+    // Firestore rules can't verify a learner's real age; what they CAN
+    // enforce is that the isMinor flag and the consent record are never
+    // internally inconsistent.
+    function isValidProfileWrite(uid, data) {
+      return data.uid == uid
+        && (
+          data.isMinor == false
+          || (
+            data.consentRecord != null
+            && data.consentRecord.consentedBy == "guardian"
+            && data.guardianConsentAt != null
+          )
+        );
+    }
+
+    // Once a consent record exists, a client write can replace it (e.g.
+    // re-confirming consent) but can never null it out -- consent is a
+    // record to preserve, not a flag to toggle off from the client.
+    function consentRecordNotRemoved() {
+      return resource.data.consentRecord == null || request.resource.data.consentRecord != null;
+    }
+
+    function createdAtUnchanged() {
+      return request.resource.data.createdAt == resource.data.createdAt;
     }
 
     // Deny everything else by default.

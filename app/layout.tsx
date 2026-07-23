@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { LABELS } from "@/config/labels";
 import { NavBar } from "@/components/NavBar";
+import { AuthProvider } from "@/components/auth/AuthProvider";
 import "./globals.css";
 
 // Placeholder fonts -- Phase 8 (design pass) proposes the real token
@@ -39,8 +40,10 @@ export default function RootLayout({
             requirement (sect. 3). One thin nav row likely doesn't push
             content below the fold on most screens, but this wasn't
             validated against that requirement -- flagged, not resolved. */}
-        <NavBar />
-        {children}
+        <AuthProvider>
+          <NavBar />
+          {children}
+        </AuthProvider>
       </body>
     </html>
   );

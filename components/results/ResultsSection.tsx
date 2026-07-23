@@ -1,10 +1,12 @@
 "use client";
 
-import { useMemo } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { matchProgramme } from "@/lib/matching/engine";
 import { ResultCard } from "./ResultCard";
 import { ShareBar } from "./ShareBar";
 import { LABELS } from "@/config/labels";
+import { useAuth } from "@/components/auth/AuthProvider";
+import { getUserProfile, updateShortlist } from "@/lib/auth/profile";
 import {
   SAMPLE_APPLICATION_WINDOWS,
   SAMPLE_APS_RULE,
@@ -25,8 +27,23 @@ const BUCKET_ORDER: MatchBucket[] = ["qualify", "almostQualify", "notYet"];
  * the matching engine + result cards + apply-path logic end to end
  * without asserting any real institution's real programme requirements,
  * since none are verified yet (that's Phase 4).
+ *
+ * Phase 6 addition: signed-in learners can shortlist a programme --
+ * persisted to their userProfiles document, per-user-owned per
+ * firestore.rules (see tests/firestore-rules.test.ts).
  */
 export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
+  const { user } = useAuth();
+  const [shortlist, setShortlist] = useState<string[]>([]);
+
+  useEffect(() => {
+    if (!user) {
+      setShortlist([]);
+      return;
+    }
+    getUserProfile(user.uid).then((profile) => setShortlist(profile?.shortlist ?? []));
+  }, [user]);
+
   const results = useMemo(() => {
     return SAMPLE_PROGRAMMES.map((programme) => ({
       programme,
@@ -42,6 +59,21 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         Enter at least one subject mark above to see matched programmes.
       </p>
     );
+  }
+
+  async function toggleShortlist(programmeId: string) {
+    if (!user) return;
+    const next = shortlist.includes(programmeId)
+      ? shortlist.filter((id) => id !== programmeId)
+      : [...shortlist, programmeId];
+    setShortlist(next);
+    try {
+      await updateShortlist(user.uid, next);
+    } catch {
+      // Roll back on failure rather than leaving the UI showing a state
+      // that never actually saved.
+      setShortlist(shortlist);
+    }
   }
 
   const byBucket = new Map<MatchBucket, { programme: (typeof results)[number]["programme"]; matchResult: MatchResult }[]>();
@@ -75,6 +107,8 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
                 applicationWindow={SAMPLE_APPLICATION_WINDOWS.find(
                   (w) => w.programmeId === programme.id
                 )}
+                isShortlisted={user ? shortlist.includes(programme.id) : undefined}
+                onToggleShortlist={user ? () => toggleShortlist(programme.id) : undefined}
               />
             ))}
           </div>

@@ -81,14 +81,32 @@ truncated excerpts. If something in the brief is technically infeasible or a
 bad idea, say so at the checkpoint instead of quietly building a worse
 version of it.
 
+## Local development
+
+`firebase emulators:start --only firestore,auth --project demo-ucag` runs
+the full Firestore + Auth backend locally with **zero real Firebase
+credentials** — `demo-*` project IDs are Firebase's own convention for
+emulator-only, no-real-project testing (see `.firebaserc`). Set
+`NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true` in `.env.local` so `next dev`
+connects to it instead of trying (and failing) to reach a real project.
+
+`tests/firestore-rules.test.ts` and `tests/auth-integration.test.ts` need
+the emulators running — without them, `npm test` fails those two files with
+a clear `auth/network-request-failed` / connection error, not a silent
+false-pass, and the rest of the suite still runs and passes independently.
+
 ## Definition of done for any change
 
 1. `npm run typecheck` / `tsc --noEmit` clean.
 2. Relevant Vitest suite green (the APS engine especially — a failing test
-   there is a production incident, not a nit).
+   there is a production incident, not a nit). For anything touching
+   `firestore.rules` or auth, that means green **against the real emulator**
+   (see above), not just typechecking the rules file.
 3. No secret-shaped file (`.env`, service account JSON, private keys) newly
    tracked by git — check `git status` before committing.
 4. Any fact-bearing Firestore write includes `sourceUrl`, `verifiedOn`,
    `academicYear`.
 5. Firestore/Storage security rules changes validated in the emulator before
-   deploy.
+   deploy — not just written and assumed correct. A rules test that can't
+   demonstrably fail (try breaking the rule and confirming the test catches
+   it) isn't verifying anything.

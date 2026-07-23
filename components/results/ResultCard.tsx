@@ -17,6 +17,11 @@ interface ResultCardProps {
   school: School;
   matchResult: MatchResult;
   applicationWindow: ApplicationWindow | undefined;
+  /** Only set when a learner is signed in -- "a shortlist" is a Phase 6
+   * signed-in feature (docs/MASTER_PROMPT_v2.md), not shown at all to an
+   * anonymous visitor rather than shown-but-disabled. */
+  isShortlisted?: boolean;
+  onToggleShortlist?: () => void;
 }
 
 const BUCKET_STYLES: Record<MatchResult["bucket"], string> = {
@@ -39,6 +44,8 @@ export function ResultCard({
   school,
   matchResult,
   applicationWindow,
+  isShortlisted,
+  onToggleShortlist,
 }: ResultCardProps) {
   const status = applicationWindow?.status ?? "unknown";
   const cta = resolveApplicationCta(
@@ -57,7 +64,23 @@ export function ResultCard({
         <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
           {LABELS.resultBuckets[matchResult.bucket]}
         </span>
-        <h3 className="text-lg font-semibold">{programme.name}</h3>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-lg font-semibold">{programme.name}</h3>
+          {onToggleShortlist && (
+            <button
+              type="button"
+              onClick={onToggleShortlist}
+              aria-pressed={isShortlisted}
+              className={`no-print shrink-0 rounded border px-2 py-1 text-xs font-medium ${
+                isShortlisted
+                  ? "border-blue-600 bg-blue-600 text-white"
+                  : "border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+              }`}
+            >
+              {isShortlisted ? "★ Shortlisted" : "☆ Shortlist"}
+            </button>
+          )}
+        </div>
         <p className="text-sm text-gray-600 dark:text-gray-400">
           {programme.qualificationType} · NQF {programme.nqfLevel} · {programme.duration}
         </p>
