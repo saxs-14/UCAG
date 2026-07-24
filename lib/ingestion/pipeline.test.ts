@@ -92,10 +92,39 @@ describe("runLinkHealthCheck", () => {
     expect(summary.deadCount).toBe(1);
   });
 
-  it("refuses to run in non-dry-run mode rather than silently no-op or crash on missing Firebase", async () => {
-    const institutions = [makeInstitution({})];
-    await expect(
-      runLinkHealthCheck(institutions, { dryRun: false, fetchImpl: fakeFetch({}) })
-    ).rejects.toThrow(/not implemented/i);
+  it("non-dry-run persists via the injected writeImpl and reports how many writes happened", async () => {
+    const institutions = [
+      makeInstitution({ id: "a", websiteUrl: "https://alive.example/" }),
+      makeInstitution({ id: "b", websiteUrl: "https://dead.example/" }),
+    ];
+    let receivedCount = -1;
+    const writeImpl = async (results: { url: string }[]) => {
+      receivedCount = results.length;
+      return results.length;
+    };
+
+    const summary = await runLinkHealthCheck(institutions, {
+      dryRun: false,
+      fetchImpl: fakeFetch({ "https://alive.example/": 200, "https://dead.example/": 404 }),
+      writeImpl,
+    });
+
+    expect(summary.dryRun).toBe(false);
+    expect(summary.firestoreWritesPerformed).toBe(2);
+    expect(receivedCount).toBe(2);
+  });
+
+  it("dry run never calls writeImpl", async () => {
+    const institutions = [makeInstitution({ websiteUrl: "https://alive.example/" })];
+    let called = false;
+    await runLinkHealthCheck(institutions, {
+      dryRun: true,
+      fetchImpl: fakeFetch({ "https://alive.example/": 200 }),
+      writeImpl: async (results) => {
+        called = true;
+        return results.length;
+      },
+    });
+    expect(called).toBe(false);
   });
 });

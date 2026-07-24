@@ -18,7 +18,7 @@
 
 import type { Source } from "@/lib/firestore/types";
 
-const NOT_YET_FETCHED = { lastFetchedAt: null, etag: null } as const;
+const NOT_YET_FETCHED = { lastFetchedAt: null, etag: null, enabled: true } as const;
 
 export const GOVERNMENT_SOURCES: Source[] = [
   {

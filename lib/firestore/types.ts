@@ -353,6 +353,11 @@ export interface Source {
   fetchIntervalHours: number;
   /** 0-1, adjusted over time based on corroboration history. */
   reliabilityScore: number;
+  /** Admin console "disable" toggle (Phase 7: "add, disable, set cadence").
+   * A disabled source is skipped by the fetch stage regardless of cadence
+   * -- for a source that's gone stale, gone behind a paywall, or is being
+   * re-verified by hand. */
+  enabled: boolean;
   /** Caveats worth a human's attention: robots.txt/TLS couldn't be
    * independently verified, an ethical judgment call was made (e.g. a
    * site blocks AI crawlers by name but not this bot specifically), etc.
@@ -416,4 +421,21 @@ export interface UserProfile {
   isMinor: boolean;
   guardianConsentAt: string | null;
   createdAt: string;
+}
+
+// ---------------------------------------------------------------------------
+// linkHealthChecks -- Phase 7 admin console "dead link report", written by
+// lib/ingestion/persistLinkHealth.ts. One doc per checked URL, upserted on
+// every run rather than appended, so the report always reflects current
+// status rather than an ever-growing history (docs/MASTER_PROMPT_v2.md
+// Phase 7: "Dead link report -- from the 6-hourly checker").
+// ---------------------------------------------------------------------------
+
+export interface LinkHealthCheckRecord {
+  id: string;
+  url: string;
+  alive: boolean;
+  statusCode: number | null;
+  error: string | null;
+  checkedAt: string;
 }

@@ -23,36 +23,37 @@ export interface LinkHealthRunSummary {
 }
 
 /**
- * The one ingestion task that's actually runnable right now with zero
- * external dependencies (no LLM key, no live Firebase project needed) --
- * see README.md Phase 4 status for why the rest of the pipeline
- * (extract/corroborate/publish against Firestore) is architecture-ready
- * but not live-executable yet.
+ * The one ingestion task that's actually runnable end-to-end with zero
+ * external dependencies (no LLM key needed) -- see README.md Phase 4
+ * status for why the rest of the pipeline (extract/corroborate/publish
+ * against Firestore) is architecture-ready but not live-executable yet.
  *
- * dryRun: true (the only supported mode today) never touches Firestore --
- * it just returns what it found. dryRun: false is deliberately
- * unimplemented rather than silently pretending to write: when a real
- * Firebase project exists, this is where getAdminDb() writes dead-link
- * flags per the linkHealthCheck cadence rule's autoPublish: true (a dead
- * link is safe to flag automatically -- it doesn't assert a new fact, it
- * just marks an existing one unreachable).
+ * dryRun: true never touches Firestore -- it just returns what it found.
+ * dryRun: false persists via `writeImpl` (Phase 7: the admin console's
+ * "Dead link report" needs something to read). `writeImpl` defaults to
+ * the real Firestore-backed lib/ingestion/persistLinkHealth.ts, imported
+ * lazily so a dry-run call -- or a unit test that injects its own
+ * writeImpl -- never pulls in the Firebase Admin SDK at all.
  */
 export async function runLinkHealthCheck(
   institutions: Institution[],
-  options: { dryRun: boolean; fetchImpl?: typeof fetch }
-): Promise<LinkHealthRunSummary> {
-  if (!options.dryRun) {
-    // Fail fast, before spending any time on network requests -- there's
-    // no point checking 24+ URLs just to throw at the end.
-    throw new Error(
-      "Non-dry-run link health writes are not implemented yet -- no live Firestore project is connected for v2. Use dryRun: true."
-    );
+  options: {
+    dryRun: boolean;
+    fetchImpl?: typeof fetch;
+    writeImpl?: (results: LinkHealthResult[]) => Promise<number>;
   }
-
+): Promise<LinkHealthRunSummary> {
   const startedAt = new Date().toISOString();
   const urls = collectInstitutionUrls(institutions);
   const results = await checkLinksHealth(urls, options.fetchImpl);
   const deadCount = results.filter((r) => !r.alive).length;
+
+  let firestoreWritesPerformed = 0;
+  if (!options.dryRun) {
+    const writeImpl =
+      options.writeImpl ?? (await import("./persistLinkHealth")).persistLinkHealthResults;
+    firestoreWritesPerformed = await writeImpl(results);
+  }
 
   return {
     startedAt,
@@ -60,7 +61,7 @@ export async function runLinkHealthCheck(
     checkedCount: results.length,
     deadCount,
     results,
-    dryRun: true,
-    firestoreWritesPerformed: 0,
+    dryRun: options.dryRun,
+    firestoreWritesPerformed,
   };
 }

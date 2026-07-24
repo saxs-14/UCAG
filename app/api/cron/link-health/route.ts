@@ -18,9 +18,14 @@ import { INGESTION_KILL_SWITCH } from "@/config/ingestion";
  * (see the Phase 4 checkpoint's live dry-run, which used it); don't rely
  * on it in production.
  *
- * dryRun defaults to true and is the only mode implemented right now --
- * see lib/ingestion/pipeline.ts for why (no live Firestore project
- * connected for v2 yet).
+ * dryRun defaults to true. vercel.json's actual cron entry is pinned to
+ * `?dryRun=true` deliberately -- non-dry-run writes to `linkHealthChecks`
+ * now work against the local emulator (Phase 7), and against a real
+ * Firestore project once one exists for v2, but flipping the *scheduled*
+ * job to write automatically is a live-deployment decision, not a code
+ * change; see README.md Phase 7 status. The admin console's "Dead link
+ * report" triggers a real (non-dry-run) run on demand instead, via
+ * app/api/admin/link-health/run, independent of this cron schedule.
  */
 export async function GET(request: NextRequest) {
   const bearerSecret = request.headers.get("authorization")?.replace(/^Bearer\s+/i, "") ?? null;

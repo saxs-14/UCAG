@@ -10,7 +10,8 @@
     "typecheck": "tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:e2e": "playwright test"
+    "test:e2e": "playwright test",
+    "admin:grant": "node --env-file=.env.local scripts/set-admin-claim.mjs"
   },
   "dependencies": {
     "firebase": "^12.16.0",
