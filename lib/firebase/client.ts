@@ -3,11 +3,20 @@
  * import lib/env/server or lib/firebase/admin from here or anywhere that
  * reaches the browser.
  *
- * Lazy on purpose: getFirebaseApp()/getFirebaseAuth()/getFirebaseDb() only
- * validate and initialize on first call, not at module import time. That
- * matters because no real Firebase project exists for v2 yet (see
- * README.md status) -- eager initialization would crash every page that
- * merely imports this module, even ones that never touch auth/Firestore.
+ * Auth only, deliberately -- see lib/firebase/firestoreClient.ts for why
+ * Firestore lives in its own module (Phase 8's <200KB calculator-route
+ * budget). AuthProvider (mounted for every route, including "/") imports
+ * this file; if Firestore's SDK -- especially its persistence layer, the
+ * single biggest chunk in a Firebase bundle -- lived in the same module,
+ * every route would pay for it whether or not that route ever touches
+ * Firestore. Splitting this exact way already fixed one bug once before
+ * (lib/env/client.ts, Phase 3) -- same lesson, second application.
+ *
+ * Lazy on purpose: getFirebaseApp()/getFirebaseAuth() only validate and
+ * initialize on first call, not at module import time. That matters
+ * because no real Firebase project exists for v2 yet (see README.md
+ * status) -- eager initialization would crash every page that merely
+ * imports this module, even ones that never touch auth.
  *
  * When NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true (see .env.local), connects
  * to the local Firebase emulator suite instead -- this is how Phase 6's
@@ -18,7 +27,6 @@
 
 import { getApps, initializeApp, type FirebaseApp, type FirebaseOptions } from "firebase/app";
 import { connectAuthEmulator, getAuth, type Auth } from "firebase/auth";
-import { connectFirestoreEmulator, getFirestore, type Firestore } from "firebase/firestore";
 import { getFirebaseClientConfig, isFirebaseEmulatorEnabled } from "@/lib/env/client";
 
 const EMULATOR_PROJECT_CONFIG: FirebaseOptions = {
@@ -74,18 +82,4 @@ export function getFirebaseAuth(): Auth {
     authEmulatorConnected = true;
   }
   return auth;
-}
-
-let db: Firestore | undefined;
-let firestoreEmulatorConnected = false;
-
-export function getFirebaseDb(): Firestore {
-  if (!db) {
-    db = getFirestore(getFirebaseApp());
-    if (isFirebaseEmulatorEnabled() && !firestoreEmulatorConnected) {
-      connectFirestoreEmulator(db, "127.0.0.1", 8080);
-      firestoreEmulatorConnected = true;
-    }
-  }
-  return db;
 }

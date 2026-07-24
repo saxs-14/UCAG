@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import { getFirebaseDb } from "@/lib/firebase/firestoreClient";
 import { adminFetch } from "@/lib/admin/apiClient";
 import type { IngestionRun } from "@/lib/firestore/types";
 
@@ -58,12 +58,12 @@ export default function RunsPage() {
         that IS live-runnable today.
       </p>
       {error && (
-        <p className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+        <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
           {error}
         </p>
       )}
       {message && (
-        <p className="rounded border border-amber-300 bg-amber-50 p-2 text-sm text-amber-800 dark:border-amber-800 dark:bg-amber-950 dark:text-amber-200">
+        <p className="rounded border border-mark-gold bg-mark-gold-soft p-2 text-sm text-mark-gold">
           {message}
         </p>
       )}
@@ -101,7 +101,7 @@ export default function RunsPage() {
                 <td className="py-1.5 pr-3 text-xs">{run.itemsProposed}</td>
                 <td className="py-1.5 pr-3 text-xs">{run.itemsAutoPublished}</td>
                 <td className="py-1.5 pr-3 text-xs">{run.itemsQueued}</td>
-                <td className="py-1.5 pr-3 text-xs text-red-600 dark:text-red-400">
+                <td className="py-1.5 pr-3 text-xs text-mark-red">
                   {run.errors.length > 0 ? run.errors.join("; ") : "-"}
                 </td>
                 <td className="py-1.5 pr-3">

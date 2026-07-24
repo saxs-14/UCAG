@@ -55,7 +55,7 @@ export function BursariesPage() {
 
   return (
     <div className="flex w-full max-w-xl flex-col gap-6">
-      <div className="rounded border border-dashed border-amber-400 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200">
+      <div className="rounded border border-dashed border-mark-gold bg-mark-gold-soft p-3 text-sm text-ink">
         These listings are <strong>sample/fictional data</strong>, not real bursaries or
         internships -- see config/sampleData.ts. Real, verified listings land once Phase 4
         ingestion is connected to a live Firestore project.
@@ -64,10 +64,10 @@ export function BursariesPage() {
       <ScamExplainer />
 
       <div className="flex flex-wrap gap-4">
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex flex-col gap-1 text-sm text-ink-soft">
           {LABELS.bursaries.fieldOfStudyFilterLabel}
           <select
-            className="rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-900"
+            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
             value={fieldOfStudy}
             onChange={(e) => setFieldOfStudy(e.target.value)}
           >
@@ -80,10 +80,10 @@ export function BursariesPage() {
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex flex-col gap-1 text-sm text-ink-soft">
           {LABELS.bursaries.levelFilterLabel}
           <select
-            className="rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-900"
+            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
             value={levelFilter}
             onChange={(e) => setLevelFilter(e.target.value as BursaryLevelRequired | "all")}
           >
@@ -95,10 +95,10 @@ export function BursariesPage() {
           </select>
         </label>
 
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex flex-col gap-1 text-sm text-ink-soft">
           {LABELS.bursaries.matricOnlyFilterLabel}
           <select
-            className="rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-900"
+            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
             value={String(matricOnly)}
             onChange={(e) =>
               setMatricOnly(e.target.value === "all" ? "all" : e.target.value === "true")
@@ -114,9 +114,9 @@ export function BursariesPage() {
       </div>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">{LABELS.bursaries.bursariesHeading}</h2>
+        <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.bursaries.bursariesHeading}</h2>
         {bursaries.length === 0 && (
-          <p className="text-sm text-gray-500">{LABELS.bursaries.noResults}</p>
+          <p className="text-sm text-ink-faint">{LABELS.bursaries.noResults}</p>
         )}
         {bursaries.map((b) => (
           <BursaryCard key={b.id} bursary={b} />
@@ -124,9 +124,9 @@ export function BursariesPage() {
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-xl font-semibold">{LABELS.bursaries.internshipsHeading}</h2>
+        <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.bursaries.internshipsHeading}</h2>
         {internships.length === 0 && (
-          <p className="text-sm text-gray-500">{LABELS.bursaries.noResults}</p>
+          <p className="text-sm text-ink-faint">{LABELS.bursaries.noResults}</p>
         )}
         {internships.map((i) => (
           <InternshipCard key={i.id} internship={i} />

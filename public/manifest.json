@@ -1,0 +1,13 @@
+{
+  "name": "UCAG -- University Course Application Guide",
+  "short_name": "UCAG",
+  "description": "Find out what you qualify for at South African universities -- verified, not guessed.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#f6f7f4",
+  "theme_color": "#1c7a4d",
+  "icons": [
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

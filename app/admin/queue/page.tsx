@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import { getFirebaseDb } from "@/lib/firebase/firestoreClient";
 import { adminFetch } from "@/lib/admin/apiClient";
 import type { VerificationQueueItem } from "@/lib/firestore/types";
 
@@ -78,7 +78,7 @@ export default function QueuePage() {
         below has been auto-published. {items.length} pending.
       </p>
       {error && (
-        <p className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+        <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
           {error}
         </p>
       )}
@@ -111,7 +111,7 @@ export default function QueuePage() {
               </div>
               <div>
                 <div className="text-xs font-medium text-gray-500">Proposed</div>
-                <pre className="overflow-x-auto rounded bg-amber-50 p-2 text-xs dark:bg-amber-950">
+                <pre className="overflow-x-auto rounded bg-mark-gold-soft p-2 text-xs">
                   {formatValue(item.proposedValue)}
                 </pre>
               </div>
@@ -120,7 +120,7 @@ export default function QueuePage() {
               href={item.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-blue-600 hover:underline dark:text-blue-400"
+              className="text-xs text-mark-green hover:underline"
             >
               Source
             </a>
@@ -138,7 +138,7 @@ export default function QueuePage() {
                     type="button"
                     disabled={busyId === item.id}
                     onClick={() => submitEdit(item.id)}
-                    className="rounded bg-blue-600 px-3 py-1 text-xs font-medium text-white disabled:opacity-50"
+                    className="rounded bg-mark-green px-3 py-1 text-xs font-medium text-white disabled:opacity-50"
                   >
                     Save edited value
                   </button>
@@ -157,7 +157,7 @@ export default function QueuePage() {
                   type="button"
                   disabled={busyId === item.id}
                   onClick={() => act(item.id, "approve")}
-                  className="rounded bg-green-600 px-3 py-1 text-xs font-medium text-white disabled:opacity-50"
+                  className="rounded bg-mark-green px-3 py-1 text-xs font-medium text-white disabled:opacity-50"
                 >
                   Approve
                 </button>
@@ -176,7 +176,7 @@ export default function QueuePage() {
                   type="button"
                   disabled={busyId === item.id}
                   onClick={() => act(item.id, "reject")}
-                  className="rounded border border-red-300 px-3 py-1 text-xs text-red-700 disabled:opacity-50 dark:border-red-800 dark:text-red-300"
+                  className="rounded border border-mark-red px-3 py-1 text-xs text-mark-red disabled:opacity-50"
                 >
                   Reject
                 </button>

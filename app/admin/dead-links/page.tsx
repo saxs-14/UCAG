@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import { getFirebaseDb } from "@/lib/firebase/firestoreClient";
 import { adminFetch } from "@/lib/admin/apiClient";
 import type { LinkHealthCheckRecord } from "@/lib/firestore/types";
 
@@ -58,7 +58,7 @@ export default function DeadLinksPage() {
           type="button"
           disabled={running}
           onClick={runNow}
-          className="rounded bg-blue-600 px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
+          className="rounded bg-mark-green px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
         >
           {running ? "Running..." : "Run now"}
         </button>
@@ -69,12 +69,12 @@ export default function DeadLinksPage() {
         app/api/cron/link-health/route.ts). {deadCount} of {checks.length} currently unreachable.
       </p>
       {error && (
-        <p className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+        <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
           {error}
         </p>
       )}
       {runSummary && (
-        <p className="rounded border border-green-300 bg-green-50 p-2 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200">
+        <p className="rounded border border-mark-green bg-mark-green-soft p-2 text-sm text-mark-green">
           {runSummary}
         </p>
       )}
@@ -87,7 +87,7 @@ export default function DeadLinksPage() {
           <li
             key={check.url}
             className={`flex flex-wrap items-center gap-2 rounded border p-2 dark:border-gray-800 ${
-              check.alive ? "" : "border-red-300 bg-red-50 dark:border-red-800 dark:bg-red-950"
+              check.alive ? "" : "border-mark-red bg-mark-red-soft"
             }`}
           >
             <span aria-hidden>{check.alive ? "✓" : "✗"}</span>
@@ -95,7 +95,7 @@ export default function DeadLinksPage() {
               href={check.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-blue-600 hover:underline dark:text-blue-400"
+              className="text-mark-green hover:underline"
             >
               {check.url}
             </a>

@@ -63,18 +63,18 @@ export function AccountPage() {
     }
   }
 
-  if (loading) return <p className="text-sm text-gray-500">Loading...</p>;
+  if (loading) return <p className="text-sm text-ink-faint">Loading...</p>;
 
   if (!user) {
     return (
       <div className="flex w-full max-w-sm flex-col gap-4">
-        <p className="text-sm text-gray-500">{LABELS.account.optionalNote}</p>
+        <p className="text-sm text-ink-faint">{LABELS.account.optionalNote}</p>
         {mode === "signUp" ? (
           <SignUpForm onSwitchToSignIn={() => setMode("signIn")} />
         ) : (
           <SignInForm onSwitchToSignUp={() => setMode("signUp")} />
         )}
-        <Link href="/privacy" className="text-sm text-blue-600 hover:underline dark:text-blue-400">
+        <Link href="/privacy" className="text-sm text-mark-green hover:underline">
           {LABELS.account.privacyNoticeLink}
         </Link>
       </div>
@@ -83,16 +83,16 @@ export function AccountPage() {
 
   return (
     <div className="flex w-full max-w-sm flex-col gap-4">
-      <p className="text-sm">
+      <p className="text-sm text-ink">
         Signed in as <strong>{user.email ?? user.uid}</strong>
       </p>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-mark-red">{error}</p>}
 
       <section className="flex flex-col gap-1">
-        <h2 className="text-sm font-semibold">{LABELS.account.savedMarksHeading}</h2>
+        <h2 className="text-sm font-semibold text-ink">{LABELS.account.savedMarksHeading}</h2>
         {profile && profile.marks.length > 0 ? (
-          <ul className="text-sm text-gray-600 dark:text-gray-400">
+          <ul className="font-mono text-sm tabular-nums text-ink-soft">
             {profile.marks.map((m) => (
               <li key={m.subjectCode}>
                 {resolveSubjectLabel(m.subjectCode)}: {m.percentage}%
@@ -100,28 +100,28 @@ export function AccountPage() {
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-gray-500">{LABELS.account.savedMarksEmpty}</p>
+          <p className="text-sm text-ink-faint">{LABELS.account.savedMarksEmpty}</p>
         )}
       </section>
 
       <section className="flex flex-col gap-1">
-        <h2 className="text-sm font-semibold">{LABELS.account.shortlistHeading}</h2>
+        <h2 className="text-sm font-semibold text-ink">{LABELS.account.shortlistHeading}</h2>
         {profile && profile.shortlist.length > 0 ? (
-          <ul className="text-sm text-gray-600 dark:text-gray-400">
+          <ul className="text-sm text-ink-soft">
             {profile.shortlist.map((id) => (
               <li key={id}>{id}</li>
             ))}
           </ul>
         ) : (
-          <p className="text-sm text-gray-500">{LABELS.account.shortlistEmpty}</p>
+          <p className="text-sm text-ink-faint">{LABELS.account.shortlistEmpty}</p>
         )}
       </section>
 
-      <div className="flex flex-wrap gap-2 border-t pt-3">
+      <div className="flex flex-wrap gap-2 border-t border-line pt-3">
         <button
           type="button"
           onClick={() => signOut(getFirebaseAuth())}
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+          className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
         >
           {LABELS.account.signOutButton}
         </button>
@@ -129,7 +129,7 @@ export function AccountPage() {
           type="button"
           onClick={handleDownloadData}
           disabled={!profile}
-          className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:hover:bg-gray-800"
+          className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft disabled:opacity-50"
         >
           {LABELS.account.downloadDataButton}
         </button>
@@ -137,25 +137,25 @@ export function AccountPage() {
           <button
             type="button"
             onClick={() => setConfirmingDelete(true)}
-            className="rounded border border-red-300 px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:border-red-800 dark:hover:bg-red-950"
+            className="rounded border border-mark-red px-3 py-1.5 text-sm font-medium text-mark-red hover:bg-mark-red-soft"
           >
             {LABELS.account.deleteAccountButton}
           </button>
         ) : (
-          <div className="flex w-full flex-col gap-2 rounded border border-red-300 bg-red-50 p-3 dark:border-red-800 dark:bg-red-950">
-            <p className="text-sm">{LABELS.account.deleteAccountConfirm}</p>
+          <div className="flex w-full flex-col gap-2 rounded border border-mark-red bg-mark-red-soft p-3">
+            <p className="text-sm text-ink">{LABELS.account.deleteAccountConfirm}</p>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={handleDeleteAccount}
-                className="rounded bg-red-600 px-3 py-1.5 text-sm text-white hover:bg-red-700"
+                className="rounded bg-mark-red px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
               >
                 {LABELS.account.deleteAccountConfirmButton}
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmingDelete(false)}
-                className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+                className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
               >
                 {LABELS.account.deleteAccountCancelButton}
               </button>
@@ -164,7 +164,7 @@ export function AccountPage() {
         )}
       </div>
 
-      <Link href="/privacy" className="text-sm text-blue-600 hover:underline dark:text-blue-400">
+      <Link href="/privacy" className="text-sm text-mark-green hover:underline">
         {LABELS.account.privacyNoticeLink}
       </Link>
     </div>

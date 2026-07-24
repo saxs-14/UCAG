@@ -12,31 +12,31 @@ export default function AdminOverviewPage() {
       </p>
       <ul className="flex flex-col gap-2 text-sm">
         <li>
-          <Link href="/admin/queue" className="text-blue-600 hover:underline dark:text-blue-400">
+          <Link href="/admin/queue" className="text-mark-green hover:underline">
             Verification queue
           </Link>{" "}
           -- proposed changes waiting on human approve/edit/reject.
         </li>
         <li>
-          <Link href="/admin/sources" className="text-blue-600 hover:underline dark:text-blue-400">
+          <Link href="/admin/sources" className="text-mark-green hover:underline">
             Source register
           </Link>{" "}
           -- every URL the ingestion pipeline is allowed to read from.
         </li>
         <li>
-          <Link href="/admin/runs" className="text-blue-600 hover:underline dark:text-blue-400">
+          <Link href="/admin/runs" className="text-mark-green hover:underline">
             Ingestion runs
           </Link>{" "}
           -- history, token spend, errors.
         </li>
         <li>
-          <Link href="/admin/editor" className="text-blue-600 hover:underline dark:text-blue-400">
+          <Link href="/admin/editor" className="text-mark-green hover:underline">
             Content editor
           </Link>{" "}
           -- manual override for any fact, source URL required.
         </li>
         <li>
-          <Link href="/admin/dead-links" className="text-blue-600 hover:underline dark:text-blue-400">
+          <Link href="/admin/dead-links" className="text-mark-green hover:underline">
             Dead link report
           </Link>{" "}
           -- which apply/status/website URLs are currently unreachable.

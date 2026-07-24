@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { useAuth } from "./auth/AuthProvider";
-import { updateSavedMarks } from "@/lib/auth/profile";
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
 /**
@@ -24,6 +23,10 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
   async function handleSave() {
     setStatus("saving");
     try {
+      // Dynamic import -- see ResultsSection.tsx for why: keeps Firestore
+      // out of the calculator route's initial bundle for the common case
+      // (an anonymous visitor, for whom this button never even renders).
+      const { updateSavedMarks } = await import("@/lib/auth/profile");
       await updateSavedMarks(user!.uid, marks);
       setStatus("saved");
       window.setTimeout(() => setStatus("idle"), 2000);
@@ -37,7 +40,7 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
       type="button"
       onClick={handleSave}
       disabled={status === "saving"}
-      className="no-print rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 disabled:opacity-50 dark:border-gray-600 dark:hover:bg-gray-800"
+      className="no-print rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft disabled:opacity-50"
     >
       {status === "saved" ? "Saved!" : status === "error" ? "Couldn't save -- try again" : "Save my marks"}
     </button>

@@ -35,14 +35,14 @@ export function ShareBar({ marks }: { marks: SubjectMarkInput[] }) {
       <button
         type="button"
         onClick={handleCopyLink}
-        className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+        className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
       >
         {copied ? "Link copied!" : "Copy shareable link"}
       </button>
       <button
         type="button"
         onClick={() => window.print()}
-        className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+        className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
       >
         Download as PDF
       </button>

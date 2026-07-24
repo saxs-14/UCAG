@@ -38,32 +38,32 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
 
   return (
     <form className="flex flex-col gap-3" onSubmit={handleSignIn}>
-      <h2 className="text-lg font-semibold">{LABELS.account.signInHeading}</h2>
-      <label className="flex flex-col gap-1 text-sm">
+      <h2 className="text-lg font-bold tracking-tight text-ink">{LABELS.account.signInHeading}</h2>
+      <label className="flex flex-col gap-1 text-sm text-ink-soft">
         {LABELS.account.emailLabel}
         <input
           type="email"
           required
-          className="rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-900"
+          className="rounded border border-line bg-paper-raised px-2 py-1 text-ink focus:border-mark-green focus:outline-none"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm text-ink-soft">
         {LABELS.account.passwordLabel}
         <input
           type="password"
           required
-          className="rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-900"
+          className="rounded border border-line bg-paper-raised px-2 py-1 text-ink focus:border-mark-green focus:outline-none"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
       </label>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-mark-red">{error}</p>}
       <button
         type="submit"
         disabled={submitting}
-        className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+        className="rounded bg-mark-green px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
       >
         {LABELS.account.signInButton}
       </button>
@@ -71,11 +71,11 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
         type="button"
         disabled={submitting}
         onClick={handleGoogleSignIn}
-        className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+        className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
       >
         {LABELS.account.googleButton}
       </button>
-      <button type="button" className="text-left text-sm text-blue-600 hover:underline dark:text-blue-400" onClick={onSwitchToSignUp}>
+      <button type="button" className="text-left text-sm font-medium text-mark-green hover:underline" onClick={onSwitchToSignUp}>
         {LABELS.account.switchToSignUp}
       </button>
     </form>

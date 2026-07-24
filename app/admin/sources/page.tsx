@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import { getFirebaseDb } from "@/lib/firebase/firestoreClient";
 import { adminFetch } from "@/lib/admin/apiClient";
 import type { Source, SourceType } from "@/lib/firestore/types";
 
@@ -95,7 +95,7 @@ export default function SourcesPage() {
         fetched regardless of cadence -- for one that&apos;s gone stale or needs re-verifying by hand.
       </p>
       {error && (
-        <p className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+        <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
           {error}
         </p>
       )}
@@ -167,7 +167,7 @@ export default function SourcesPage() {
           type="button"
           disabled={creating || !form.id || !form.url || !form.publisher}
           onClick={submitNewSource}
-          className="mt-3 rounded bg-blue-600 px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
+          className="mt-3 rounded bg-mark-green px-3 py-1.5 text-xs font-medium text-white disabled:opacity-50"
         >
           Add source
         </button>
@@ -191,7 +191,7 @@ export default function SourcesPage() {
             {sources.map((source) => (
               <tr key={source.id} className="border-b last:border-0 dark:border-gray-800">
                 <td className="py-1.5 pr-3">
-                  <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">
+                  <a href={source.url} target="_blank" rel="noopener noreferrer" className="text-mark-green hover:underline">
                     {source.publisher}
                   </a>
                   {source.notes && <div className="text-xs text-gray-500">{source.notes}</div>}
@@ -208,7 +208,7 @@ export default function SourcesPage() {
                     onClick={() => toggleEnabled(source)}
                     className={`rounded px-2 py-0.5 text-xs font-medium disabled:opacity-50 ${
                       source.enabled
-                        ? "bg-green-100 text-green-800 dark:bg-green-950 dark:text-green-300"
+                        ? "bg-mark-green-soft text-mark-green"
                         : "bg-gray-200 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
                     }`}
                   >
