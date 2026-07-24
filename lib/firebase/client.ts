@@ -26,7 +26,13 @@
  */
 
 import { getApps, initializeApp, type FirebaseApp, type FirebaseOptions } from "firebase/app";
-import { connectAuthEmulator, getAuth, type Auth } from "firebase/auth";
+import {
+  browserLocalPersistence,
+  connectAuthEmulator,
+  indexedDBLocalPersistence,
+  initializeAuth,
+  type Auth,
+} from "firebase/auth";
 import { getFirebaseClientConfig, isFirebaseEmulatorEnabled } from "@/lib/env/client";
 
 const EMULATOR_PROJECT_CONFIG: FirebaseOptions = {
@@ -75,8 +81,23 @@ export function getFirebaseApp(): FirebaseApp {
 let auth: Auth | undefined;
 let authEmulatorConnected = false;
 
+/**
+ * `initializeAuth` instead of the more common `getAuth()` -- deliberately.
+ * `getAuth()` auto-attaches `browserPopupRedirectResolver`, which eagerly
+ * injects Google's `apis.google.com/js/api.js` iframe-helper script on
+ * every single page this runs on, whether or not that page ever shows a
+ * sign-in button (a real Lighthouse Best Practices finding on "/" -- the
+ * calculator route, which has no auth UI at all). `initializeAuth`
+ * without a resolver skips that; `signInWithPopup` calls (SignInForm/
+ * SignUpForm) pass `browserPopupRedirectResolver` explicitly instead, so
+ * it's only fetched when a learner actually clicks "Continue with Google."
+ */
 export function getFirebaseAuth(): Auth {
-  if (!auth) auth = getAuth(getFirebaseApp());
+  if (!auth) {
+    auth = initializeAuth(getFirebaseApp(), {
+      persistence: [indexedDBLocalPersistence, browserLocalPersistence],
+    });
+  }
   if (isFirebaseEmulatorEnabled() && !authEmulatorConnected) {
     connectAuthEmulator(auth, "http://127.0.0.1:9099", { disableWarnings: true });
     authEmulatorConnected = true;

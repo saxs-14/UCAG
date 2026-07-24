@@ -7,7 +7,8 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: Phase 8 (design pass) complete, awaiting checkpoint.**
+**Status: Phase 9 (test, harden, deploy) complete, awaiting checkpoint. Live at
+[ucag-nine.vercel.app](https://ucag-nine.vercel.app).**
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
@@ -398,6 +399,100 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     phase), and CI enforcement of the bundle budget (that's Phase 9 --
     "test, harden, deploy" -- territory; this phase measured and reduced
     it by hand instead).
+- **Phase 9** — test, harden, deploy. The site is **live**:
+  [ucag-nine.vercel.app](https://ucag-nine.vercel.app) (Vercel Hobby plan,
+  saxs-14's account). No real Firebase project is connected yet, so
+  sign-in/account features are unavailable there -- deliberately, safely,
+  and gracefully (see below), not broken.
+  - **Vitest coverage gaps closed**: the brief names "APS engine, matching
+    logic, and Zod schemas" explicitly -- the first two were already
+    solid, but `lib/env/client.ts` and half of `lib/env/server.ts` had no
+    tests at all, and `applicationWindowExtractionSchema` (the one
+    concrete Zod schema in the ingestion pipeline) was only tested
+    indirectly. Added 36 new tests across three files closing those gaps.
+  - **Playwright E2E**: `tests/e2e/calculator-to-apply.spec.ts` -- the
+    exact path the brief names ("enter marks -> see results -> reach an
+    apply link"), passing on both desktop Chrome and a Pixel-7-emulated
+    mobile profile, against [Sample] BSc Computer Science.
+  - **Lighthouse on throttled 3G** (chrome-devtools MCP, real network
+    emulation, not just Lighthouse's own simulated default): Accessibility
+    100, SEO 100, Best Practices **77 -> 100** after a real fix (below),
+    Performance measured directly via a trace under Slow 3G + 4x CPU
+    throttle -- LCP 735ms, CLS 0.00, one render-blocking resource (a small
+    cached CSS file, zero estimated savings). No Lighthouse-reported
+    numeric Performance score exists from this tool combination, but the
+    underlying Core Web Vitals are comfortably in the "good" range.
+  - **A real Best Practices bug, found and fixed**: `getAuth()`'s default
+    `browserPopupRedirectResolver` was eagerly injecting Google's
+    `apis.google.com/js/api.js` iframe-helper script on *every* route,
+    including "/" (the calculator), which has no sign-in UI at all --
+    flagged by Lighthouse as third-party cookies + an Issues-panel
+    finding. Fixed by switching to `initializeAuth()` without an
+    auto-attached resolver (`lib/firebase/client.ts`) and passing
+    `browserPopupRedirectResolver` explicitly only at the two call sites
+    that actually show a "Continue with Google" button
+    (SignInForm/SignUpForm). Verified: 100/100/100/100 after the fix, same
+    build otherwise.
+  - **SEO**: `app/programmes/[id]/page.tsx` -- real, server-rendered,
+    statically-generated-at-build-time programme pages (currently backed
+    by the three [Sample] programmes; a data change, not a routing change,
+    once Phase 4 has a real catalogue), each with `EducationalOccupationalProgram`
+    JSON-LD structured data (verified present in the raw server-rendered
+    HTML, not just client-injected). `app/sitemap.ts` / `app/robots.ts`
+    (Next.js's metadata-route convention) generate a real `sitemap.xml`
+    listing every public page plus all three programme pages, and
+    `robots.txt` disallowing `/admin` and `/api/`. Each result card now
+    links to its programme's detail page.
+  - **Error monitoring**, honestly scoped: no paid service (Sentry etc.)
+    exists for v2, and creating one wasn't something to do unprompted.
+    What's real: `app/error.tsx` / `app/global-error.tsx` (Next.js App
+    Router error boundaries -- a learner sees a plain, recoverable message
+    instead of a blank crash), all routed through `lib/errorReporting.ts`,
+    which structured-logs to console -- genuinely captured as searchable
+    runtime logs the moment this runs on Vercel, not a no-op, and the
+    documented, one-line integration point for a real paid service later.
+    Also wired into every `/api/admin/*` route's generic 500 path.
+  - **Uptime check on the cron routes**, also honestly scoped: no paid
+    uptime-monitoring account exists either. `.github/workflows/cron-uptime-check.yml`
+    uses GitHub Actions' own (free, already-available) scheduler to curl
+    `/api/cron/link-health` every 6 hours and fail loudly on a 5xx/timeout/
+    auth mismatch. Needs two repo secrets (`DEPLOYED_BASE_URL`,
+    `CRON_SECRET`) to actually check anything -- documented in the
+    workflow file; skips (doesn't fail) until they're set.
+  - **A real crash bug, found and fixed before it shipped**: `AuthProvider`
+    (mounted on every route via the root layout) called `getFirebaseAuth()`
+    unconditionally on mount. With no real Firebase project's credentials
+    configured -- exactly this deployment's actual state -- that throws,
+    and since AuthProvider wraps the whole app, every single page would
+    have client-side crashed on load. Caught during a **local dress
+    rehearsal** (stripped `.env.local` down to just `CRON_SECRET`, rebuilt,
+    loaded the site, watched it crash) before ever deploying for real.
+    Fixed with a try/catch that sets a new `authUnavailable` context flag
+    instead of throwing; `AccountPage` shows a plain explanation instead of
+    a sign-in form that would fail confusingly on submit. Verified
+    live on the actual deployment, not just locally.
+  - **A real deploy-blocker, found and resolved with your input**: Vercel's
+    free Hobby plan rejected the deploy outright because `vercel.json`'s
+    cron ran every 6 hours (Hobby caps cron at once/day) -- a cost the
+    Phase 0 estimate had already flagged as a future Pro-plan trigger, now
+    confirmed for real. You chose dropping it to once daily for now
+    (`vercel.json`); reverting to 6-hourly is a one-line change if/when the
+    project moves to Pro.
+  - **A real process mistake, disclosed immediately**: the first `vercel`
+    CLI deploy landed on **production**, not a staging/preview build as
+    intended -- a Git-linked project run from its production branch
+    (`master`) without an explicit `--target=preview` flag defaults to
+    production. Caught and disclosed the moment it happened; you chose to
+    keep it (a harmless first deploy of a brand-new project, already
+    verified working, no prior traffic to have disrupted) rather than tear
+    it down. Any further non-production deploys will pass
+    `--target=preview` explicitly.
+  - Not built: a real Firebase project (accounts/saved-results/shortlist
+    are unavailable on the live deployment as a result -- gracefully, see
+    above, not silently), CI enforcement of the <200KB bundle budget
+    (Phase 8 measured and reduced it by hand; wiring an actual CI gate for
+    it is further work), and screen-reader/axe-based accessibility testing
+    beyond Lighthouse's own audit.
 - **Firebase**: no real cloud project exists for v2 yet, but the app **is**
   genuinely tested against a real Firebase backend now -- the local
   emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a

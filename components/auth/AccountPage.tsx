@@ -24,7 +24,7 @@ function downloadJson(filename: string, json: string) {
 }
 
 export function AccountPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, authUnavailable } = useAuth();
   const [mode, setMode] = useState<"signUp" | "signIn">("signUp");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -64,6 +64,20 @@ export function AccountPage() {
   }
 
   if (loading) return <p className="text-sm text-ink-faint">Loading...</p>;
+
+  if (authUnavailable) {
+    return (
+      <div className="flex w-full max-w-sm flex-col gap-2">
+        <p className="text-sm text-ink-soft">
+          Accounts aren&apos;t available on this deployment right now -- the calculator, bursaries,
+          and statistics pages all work fully without one.
+        </p>
+        <Link href="/privacy" className="text-sm text-mark-green hover:underline">
+          {LABELS.account.privacyNoticeLink}
+        </Link>
+      </div>
+    );
+  }
 
   if (!user) {
     return (

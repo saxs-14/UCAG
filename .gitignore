@@ -43,3 +43,6 @@ yarn-error.log*
 .firebase/
 firebase-debug.log
 firestore-debug.log
+
+.vercel
+.env*
