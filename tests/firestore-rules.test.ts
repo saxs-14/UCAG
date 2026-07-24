@@ -217,13 +217,51 @@ describe("public catalogue collections", () => {
 });
 
 describe("internal ingestion collections", () => {
-  it("no client, even authenticated, can read sources", async () => {
+  it("a non-admin, even authenticated, cannot read sources", async () => {
     const alice = testEnv.authenticatedContext("user-a");
     await assertFails(alice.firestore().doc("sources/dhet").get());
   });
 
-  it("no client can read the verification queue", async () => {
+  it("a non-admin cannot read the verification queue", async () => {
     const alice = testEnv.authenticatedContext("user-a");
     await assertFails(alice.firestore().doc("verificationQueue/item-1").get());
+  });
+
+  it("a non-admin cannot read ingestion runs", async () => {
+    const alice = testEnv.authenticatedContext("user-a");
+    await assertFails(alice.firestore().doc("ingestionRuns/run-1").get());
+  });
+
+  it("a non-admin cannot read the dead-link report", async () => {
+    const alice = testEnv.authenticatedContext("user-a");
+    await assertFails(alice.firestore().doc("linkHealthChecks/some-url").get());
+  });
+
+  it("an unauthenticated user cannot read sources even by guessing a role claim doesn't apply", async () => {
+    const unauth = testEnv.unauthenticatedContext();
+    await assertFails(unauth.firestore().doc("sources/dhet").get());
+  });
+
+  it("an admin (role=admin custom claim) CAN read sources, the verification queue, ingestion runs, and the dead-link report", async () => {
+    const admin = testEnv.authenticatedContext("admin-1", { role: "admin" });
+    await assertSucceeds(admin.firestore().doc("sources/dhet").get());
+    await assertSucceeds(admin.firestore().doc("verificationQueue/item-1").get());
+    await assertSucceeds(admin.firestore().doc("ingestionRuns/run-1").get());
+    await assertSucceeds(admin.firestore().doc("linkHealthChecks/some-url").get());
+  });
+
+  it("even an admin cannot write to these collections via the client SDK -- writes are Admin-SDK-only", async () => {
+    const admin = testEnv.authenticatedContext("admin-1", { role: "admin" });
+    await assertFails(admin.firestore().doc("sources/dhet").set({ url: "hacked" }));
+    await assertFails(
+      admin.firestore().doc("verificationQueue/item-1").update({ status: "approved" })
+    );
+    await assertFails(admin.firestore().doc("ingestionRuns/run-1").set({ tokensUsed: 0 }));
+    await assertFails(admin.firestore().doc("linkHealthChecks/some-url").set({ alive: true }));
+  });
+
+  it("an admin cannot write to public catalogue collections via the client SDK either", async () => {
+    const admin = testEnv.authenticatedContext("admin-1", { role: "admin" });
+    await assertFails(admin.firestore().doc("institutions/ump").set({ name: "hacked" }));
   });
 });

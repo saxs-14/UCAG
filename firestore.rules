@@ -52,16 +52,33 @@ service cloud.firestore {
       allow write: if false;
     }
 
-    // Internal to the ingestion pipeline and admin console -- no client
-    // access at all, not even read.
+    // Internal to the ingestion pipeline and admin console. Readable only
+    // by an admin (Phase 7: the verification queue, source register, and
+    // ingestion-run history screens read these directly via the client SDK
+    // for a fast/real-time UI) -- never client-writable by anyone,
+    // including an admin. All writes to these three collections, and to
+    // the public catalogue collections above, happen server-side via the
+    // Admin SDK behind app/api/admin/* routes (lib/admin/auth.ts
+    // requireAdmin), which independently re-verifies the caller's ID
+    // token and role claim rather than trusting these rules alone.
     match /sources/{docId} {
-      allow read, write: if false;
+      allow read: if isAdmin();
+      allow write: if false;
     }
     match /ingestionRuns/{docId} {
-      allow read, write: if false;
+      allow read: if isAdmin();
+      allow write: if false;
     }
     match /verificationQueue/{docId} {
-      allow read, write: if false;
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
+    // Dead-link report (Phase 7), written by lib/ingestion/persistLinkHealth.ts
+    // via the Admin SDK. Same admin-read/no-client-write shape as above.
+    match /linkHealthChecks/{docId} {
+      allow read: if isAdmin();
+      allow write: if false;
     }
 
     // A learner's own profile. Per-user ownership plus the POPIA-relevant
@@ -84,6 +101,12 @@ service cloud.firestore {
 
     function isOwner(uid) {
       return request.auth != null && request.auth.uid == uid;
+    }
+
+    // Role is a custom claim on the ID token (scripts/set-admin-claim.mjs),
+    // never a Firestore field a client could set on themselves.
+    function isAdmin() {
+      return request.auth != null && request.auth.token.role == "admin";
     }
 
     // The document's own `uid` field must match the document ID (defense

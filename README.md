@@ -7,7 +7,7 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: Phase 6 (accounts, saved profiles, POPIA) complete, awaiting checkpoint.**
+**Status: Phase 7 (admin and verification console) complete, awaiting checkpoint.**
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
@@ -252,6 +252,72 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     on, and an HTTP-level check confirmed `/account` and `/privacy` render
     without a server error. The gap: nobody has watched the age-gate →
     guardian-consent → sign-up flow actually click through in a browser.
+- **Phase 7** — the admin and verification console (`/admin`), protected and
+  role-gated per the brief. Role is a Firebase custom claim
+  (`role: "admin"`), never a Firestore field a client could set on itself --
+  granted only via `npm run admin:grant -- <email>` (`scripts/set-admin-claim.mjs`),
+  a trusted-operator script, not a self-service invite flow. Every write is
+  independently re-verified server-side (`lib/admin/auth.ts`'s
+  `requireAdmin`, checking a real Firebase ID token against the Admin SDK) --
+  the client-side layout gate (`app/admin/layout.tsx`) is a UX nicety on top
+  of that, not the enforcement mechanism. Confirmed live: a request with no
+  bearer token or a bogus one gets a real 401 from `/api/admin/content`, not
+  just a hidden UI element.
+  - **Verification queue** (`/admin/queue`) -- reads `verificationQueue`
+    live via the client SDK (fast, real-time, per the brief's "one keystroke
+    each"); approve/edit/reject each go through `POST /api/admin/queue/[id]`,
+    which writes the target document (stamping `sourceUrl`/`verifiedOn`) and
+    marks the queue item reviewed in one batch, atomically. Live-verified
+    end to end: seeded a real pending item into the emulator, clicked
+    Approve in an actual browser, confirmed both the target
+    `institutions/ump` document and the queue item itself updated correctly
+    in Firestore afterward -- not just that the button click didn't error.
+  - **Source register** (`/admin/sources`) -- add/list/disable, live-tested
+    by adding a real source through the form and toggling it disabled, both
+    reflected instantly via `onSnapshot`. Added the `enabled` field to the
+    `Source` type (the brief asks for "disable"; the existing type had
+    nowhere to record it) and seeded it onto all 20 real sources in
+    `config/sources.seed.ts` via one shared spread constant.
+  - **Ingestion runs** (`/admin/runs`) -- history/token-spend/cost/error
+    display, wired and ready, but **honestly empty**: no live extraction
+    pipeline has ever run (still no `LLM_API_KEY`, see Phase 4 status), so
+    there is nothing to show yet. Manual re-run is a real, admin-gated
+    endpoint that returns a clear 501 rather than a fabricated success --
+    it does not pretend to re-run a pipeline that doesn't exist.
+  - **Content editor** (`/admin/editor`) -- generic JSON-patch override
+    across the 10 public fact collections, source URL required by the Zod
+    schema (not just documented), `verifiedOn` always server-stamped to
+    today. One bespoke form per entity type is future work, flagged rather
+    than built this phase -- a deliberate scope call, not an oversight.
+  - **Dead link report** (`/admin/dead-links`) -- this closed a gap Phase 4
+    had explicitly left open: `runLinkHealthCheck`'s `dryRun: false` path
+    used to throw "not implemented"; it now really persists to a new
+    `linkHealthChecks` collection (`lib/ingestion/persistLinkHealth.ts`, one
+    doc per URL, upserted). Live-verified by clicking "Run now" in a real
+    browser: made real HTTP requests against all 24 live Tier 1/2
+    institution URLs, found 8 currently unreachable, and the results showed
+    up in the report via `onSnapshot` after the run finished. Some of those
+    8 are very likely bot-protection 401/403s rather than genuinely dead
+    links (the same caveat Phase 4's live run flagged) -- worth a second
+    look with a browser-based fetch strategy, not a fact to treat as final.
+    The 6-hourly cron (`vercel.json`) deliberately stays `dryRun=true`;
+    flipping the *scheduled* job to write automatically is a live-deployment
+    decision for later, not something this phase changed unasked.
+  - `firestore.rules`: added `isAdmin()` (checks the `role` custom claim) and
+    admin-only **read** access to `sources`/`ingestionRuns`/
+    `verificationQueue`/`linkHealthChecks` -- still `write: if false` for
+    everyone, including admins; all writes go through the Admin SDK behind
+    the API routes above, exactly as the Phase 1 rules comments already
+    committed to before this phase existed. 12 new rules tests (31 total,
+    all passing against the real emulator), including the same
+    "sanity-check the test itself" pattern as Phase 6: tests exist for both
+    the non-admin-blocked and admin-allowed cases side by side, plus a test
+    confirming even an admin cannot write to these collections via the
+    client SDK.
+  - Not built: bespoke per-collection editor forms, a self-service admin
+    invite flow (deliberately not built -- role grants are a trusted-operator
+    script, not a product feature), and anything that depends on a live
+    extraction pipeline actually having run.
 - **Firebase**: no real cloud project exists for v2 yet, but the app **is**
   genuinely tested against a real Firebase backend now -- the local
   emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a

@@ -95,6 +95,11 @@ the emulators running — without them, `npm test` fails those two files with
 a clear `auth/network-request-failed` / connection error, not a silent
 false-pass, and the rest of the suite still runs and passes independently.
 
+`/admin` (Phase 7) is role-gated by a `role: "admin"` Firebase custom claim,
+never a Firestore field. Grant it to a signed-up account (real or emulator)
+with `npm run admin:grant -- <email>` (`scripts/set-admin-claim.mjs`), then
+sign out and back in. There is deliberately no self-service admin invite.
+
 ## Definition of done for any change
 
 1. `npm run typecheck` / `tsc --noEmit` clean.
