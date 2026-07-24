@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { resolveApplicationCta } from "@/lib/applicationStatus";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
@@ -102,7 +103,11 @@ export function ResultCard({
           )}
         </div>
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-lg font-semibold text-ink">{programme.name}</h3>
+          <h3 className="text-lg font-semibold text-ink">
+            <Link href={`/programmes/${programme.id}`} className="hover:underline">
+              {programme.name}
+            </Link>
+          </h3>
           {onToggleShortlist && (
             <button
               type="button"

@@ -1,0 +1,47 @@
+name: Cron uptime check
+
+# Uptime check on the cron routes (docs/MASTER_PROMPT_v2.md Phase 9),
+# honestly scoped: no paid uptime-monitoring account (Better Uptime,
+# UptimeRobot, etc.) exists for v2, and creating one wasn't something to
+# do unprompted. GitHub Actions' own scheduler is free, already available
+# on this repo, and genuinely runs -- not a stub. Needs two repo secrets
+# once a real deployment exists (Settings -> Secrets and variables ->
+# Actions): DEPLOYED_BASE_URL (e.g. https://ucag.vercel.app) and
+# CRON_SECRET (same value as the deployment's CRON_SECRET env var). Until
+# those are set, this exits 0 (skipped, not failed) rather than reporting
+# a false outage for infrastructure that doesn't exist yet.
+
+on:
+  schedule:
+    - cron: "0 */6 * * *" # matches the link-health cron's own cadence
+  workflow_dispatch: {}
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check /api/cron/link-health
+        env:
+          BASE_URL: ${{ secrets.DEPLOYED_BASE_URL }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        run: |
+          if [ -z "$BASE_URL" ]; then
+            echo "DEPLOYED_BASE_URL secret not set yet -- no live deployment to check. Skipping."
+            exit 0
+          fi
+
+          status=$(curl -s -o /dev/null -w "%{http_code}" \
+            -H "Authorization: Bearer $CRON_SECRET" \
+            "$BASE_URL/api/cron/link-health?dryRun=true")
+
+          echo "Cron endpoint responded with HTTP $status"
+
+          if [ "$status" -ge 500 ] || [ "$status" = "000" ]; then
+            echo "::error::Cron endpoint is down or erroring (HTTP $status)"
+            exit 1
+          fi
+
+          if [ "$status" = "401" ]; then
+            echo "::error::Cron endpoint rejected the request -- CRON_SECRET may not match the deployment's."
+            exit 1
+          fi

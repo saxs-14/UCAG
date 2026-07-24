@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   GoogleAuthProvider,
+  browserPopupRedirectResolver,
   createUserWithEmailAndPassword,
   signInWithPopup,
 } from "firebase/auth";
@@ -74,7 +75,12 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
     setError(null);
     setSubmitting(true);
     try {
-      const credential = await signInWithPopup(getFirebaseAuth(), new GoogleAuthProvider());
+      // Resolver passed explicitly -- see lib/firebase/client.ts.
+      const credential = await signInWithPopup(
+        getFirebaseAuth(),
+        new GoogleAuthProvider(),
+        browserPopupRedirectResolver
+      );
       await handleCreateAccount(credential.user.uid);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));

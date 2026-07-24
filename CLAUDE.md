@@ -100,6 +100,23 @@ never a Firestore field. Grant it to a signed-up account (real or emulator)
 with `npm run admin:grant -- <email>` (`scripts/set-admin-claim.mjs`), then
 sign out and back in. There is deliberately no self-service admin invite.
 
+`npx playwright test` (Phase 9) runs `tests/e2e/`, spinning up `npm run dev`
+itself per `playwright.config.ts` — no emulator/manual server needed first.
+
+## Deployment
+
+Live at [ucag-nine.vercel.app](https://ucag-nine.vercel.app), Vercel project
+`saxs-14s-projects/ucag`, Hobby plan. `vercel` (bare, no flags) on a Git-linked
+project checked out on its production branch (`master`) deploys straight to
+**production** — always pass `--target=preview` for anything that isn't
+meant to go live. `vercel.json`'s cron is once-daily (`0 1 * * *`), not the
+brief's target 6-hourly, because Hobby caps cron frequency at once/day;
+revisit if the project moves to Pro. No real Firebase project is connected,
+so `AuthProvider` degrades gracefully (`authUnavailable`) rather than
+crashing — verify that path still works (strip `.env.local` to just
+`CRON_SECRET`, `npm run build && npm run start`, confirm no console error
+crashes the page) before ever changing how Firebase client config is read.
+
 ## Definition of done for any change
 
 1. `npm run typecheck` / `tsc --noEmit` clean.

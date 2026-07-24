@@ -5,8 +5,15 @@ import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
 import { INGESTION_KILL_SWITCH } from "@/config/ingestion";
 
 /**
- * Link health check -- every 6 hours per config/ingestion.ts CADENCE_RULES,
- * wired here and in vercel.json. Protected by CRON_SECRET (CLAUDE.md
+ * Link health check. config/ingestion.ts CADENCE_RULES documents the
+ * target cadence as every 6 hours; vercel.json currently schedules it
+ * once daily instead -- a real, discovered constraint, not a design
+ * change: Vercel's Hobby (free) plan rejects any cron more frequent than
+ * daily, confirmed by an actual failed deploy during Phase 9. Revisit
+ * vercel.json's schedule if/when the project moves to a paid plan. Until
+ * then, the admin console's "Dead link report" (Phase 7) covers the gap
+ * for anyone who wants a fresher check on demand. Protected by CRON_SECRET
+ * (CLAUDE.md
  * non-negotiable #4: a public cron endpoint is a free way to run up the
  * bill -- true even for this task, which costs no LLM tokens, since it
  * still makes outbound HTTP requests on a schedule an attacker could abuse).
