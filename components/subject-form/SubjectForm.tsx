@@ -132,7 +132,7 @@ export function SubjectForm({
   return (
     <form className="flex w-full max-w-xl flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-sm font-semibold uppercase tracking-wide text-gray-500">
+        <legend className="mb-1 text-sm font-semibold uppercase tracking-wide text-ink-faint">
           Compulsory
         </legend>
 
@@ -142,7 +142,7 @@ export function SubjectForm({
           </label>
           <select
             id="home-language"
-            className="rounded border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-900"
+            className="rounded border border-line bg-paper-raised px-3 py-2 text-sm text-ink"
             value={homeLanguage}
             onChange={(e) => {
               const next = e.target.value as LanguageOption | "";
@@ -172,7 +172,7 @@ export function SubjectForm({
           </label>
           <select
             id="fal"
-            className="rounded border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-900"
+            className="rounded border border-line bg-paper-raised px-3 py-2 text-sm text-ink"
             value={firstAdditionalLanguage}
             onChange={(e) => setFirstAdditionalLanguage(e.target.value as LanguageOption | "")}
           >
@@ -198,7 +198,7 @@ export function SubjectForm({
           </label>
           <select
             id="mathematics"
-            className="rounded border border-gray-300 px-3 py-2 text-sm dark:border-gray-600 dark:bg-gray-900"
+            className="rounded border border-line bg-paper-raised px-3 py-2 text-sm text-ink"
             value={mathematics}
             onChange={(e) => setMathematics(e.target.value as MathematicsOption | "")}
           >
@@ -224,7 +224,7 @@ export function SubjectForm({
       </fieldset>
 
       <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-sm font-semibold uppercase tracking-wide text-gray-500">
+        <legend className="mb-1 text-sm font-semibold uppercase tracking-wide text-ink-faint">
           Electives ({electives.length} of {MIN_ELECTIVES}-{MAX_ELECTIVES})
         </legend>
 
@@ -233,7 +233,7 @@ export function SubjectForm({
             (s) => s.code === elective.code || !selectedElectiveCodes.includes(s.code)
           );
           return (
-            <div key={index} className="flex flex-col gap-2 rounded border border-gray-200 p-3 dark:border-gray-700">
+            <div key={index} className="flex flex-col gap-2 rounded border border-line p-3">
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
                   <SubjectCombobox
@@ -246,7 +246,7 @@ export function SubjectForm({
                 {electives.length > MIN_ELECTIVES && (
                   <button
                     type="button"
-                    className="mt-6 text-xs text-red-500 hover:underline"
+                    className="mt-6 text-xs text-mark-red hover:underline"
                     onClick={() => removeElective(index)}
                   >
                     Remove
@@ -267,7 +267,7 @@ export function SubjectForm({
         {electives.length < MAX_ELECTIVES && (
           <button
             type="button"
-            className="self-start text-sm text-blue-600 hover:underline dark:text-blue-400"
+            className="self-start text-sm font-medium text-mark-green hover:underline"
             onClick={addElective}
           >
             + Add a 4th elective

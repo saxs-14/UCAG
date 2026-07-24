@@ -1,6 +1,7 @@
 import { resolveApplicationCta } from "@/lib/applicationStatus";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
+import { CircledMark } from "@/components/CircledMark";
 import type { MatchResult } from "@/lib/matching/types";
 import type {
   ApplicationWindow,
@@ -24,11 +25,27 @@ interface ResultCardProps {
   onToggleShortlist?: () => void;
 }
 
-const BUCKET_STYLES: Record<MatchResult["bucket"], string> = {
-  qualify: "border-green-300 bg-green-50 dark:border-green-800 dark:bg-green-950",
-  almostQualify: "border-amber-300 bg-amber-50 dark:border-amber-800 dark:bg-amber-950",
-  notYet: "border-gray-300 bg-gray-50 dark:border-gray-700 dark:bg-gray-900",
+const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
+  qualify: "border-l-4 border-mark-green",
+  almostQualify: "border-l-4 border-mark-gold",
+  notYet: "border-l-4 border-slate",
 };
+
+const BUCKET_LABEL_COLOR: Record<MatchResult["bucket"], string> = {
+  qualify: "text-mark-green",
+  almostQualify: "text-mark-gold",
+  notYet: "text-slate",
+};
+
+/** The APS gap, only when the aps-total reason is what's actually unmet --
+ * a subject-level/variant mismatch has its own gap, not an APS gap, and
+ * showing an APS number in that case would misrepresent why the card is
+ * "almost." No fabricated number beats a missing one. */
+function findApsGap(matchResult: MatchResult): number | null {
+  const apsReason = matchResult.reasons.find((r) => r.type === "aps");
+  if (apsReason && apsReason.type === "aps" && !apsReason.met) return apsReason.gap;
+  return null;
+}
 
 /**
  * One programme's full result -- every field the brief requires (sect.
@@ -58,14 +75,34 @@ export function ResultCard({
     applicationWindow?.opensOn ?? null
   );
 
+  const apsGap = matchResult.bucket === "almostQualify" ? findApsGap(matchResult) : null;
+
   return (
-    <article className={`flex flex-col gap-3 rounded-lg border p-4 ${BUCKET_STYLES[matchResult.bucket]}`}>
+    <article className={`flex flex-col gap-3 rounded-lg bg-paper-raised p-4 ${BUCKET_SPINE[matchResult.bucket]}`}>
       <header className="flex flex-col gap-1">
-        <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">
-          {LABELS.resultBuckets[matchResult.bucket]}
-        </span>
         <div className="flex items-start justify-between gap-2">
-          <h3 className="text-lg font-semibold">{programme.name}</h3>
+          <span className={`text-xs font-semibold uppercase tracking-wide ${BUCKET_LABEL_COLOR[matchResult.bucket]}`}>
+            {LABELS.resultBuckets[matchResult.bucket]}
+          </span>
+          {matchResult.bucket === "qualify" && (
+            <CircledMark
+              value={matchResult.apsResult.score}
+              variant="qualify"
+              size="sm"
+              label={`Your score for this programme: ${matchResult.apsResult.score}`}
+            />
+          )}
+          {apsGap !== null && (
+            <CircledMark
+              value={`-${apsGap}`}
+              variant="almost"
+              size="sm"
+              label={`${apsGap} points short of this programme's minimum`}
+            />
+          )}
+        </div>
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-lg font-semibold text-ink">{programme.name}</h3>
           {onToggleShortlist && (
             <button
               type="button"
@@ -73,21 +110,21 @@ export function ResultCard({
               aria-pressed={isShortlisted}
               className={`no-print shrink-0 rounded border px-2 py-1 text-xs font-medium ${
                 isShortlisted
-                  ? "border-blue-600 bg-blue-600 text-white"
-                  : "border-gray-300 text-gray-600 hover:bg-gray-50 dark:border-gray-600 dark:text-gray-300 dark:hover:bg-gray-800"
+                  ? "border-mark-green bg-mark-green text-white"
+                  : "border-line text-ink-soft hover:bg-slate-soft"
               }`}
             >
               {isShortlisted ? "★ Shortlisted" : "☆ Shortlist"}
             </button>
           )}
         </div>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-ink-soft">
           {programme.qualificationType} · NQF {programme.nqfLevel} · {programme.duration}
         </p>
-        <p className="text-sm text-gray-600 dark:text-gray-400">
+        <p className="text-sm text-ink-soft">
           {faculty.name} &middot; {school.name}
         </p>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-ink-faint">
           {programme.campuses.join(", ")} · {programme.modeOfDelivery}
         </p>
       </header>
@@ -97,48 +134,48 @@ export function ResultCard({
           const met = "met" in reason ? reason.met : false;
           return (
             <li key={i} className="flex items-start gap-2">
-              <span aria-hidden className={met ? "text-green-600" : "text-amber-600"}>
+              <span aria-hidden className={met ? "text-mark-green" : "text-mark-gold"}>
                 {met ? "✓" : "✗"}
               </span>
-              <span>{reasonText(reason)}</span>
+              <span className="text-ink">{reasonText(reason)}</span>
             </li>
           );
         })}
         {matchResult.reasons.length === 0 && (
-          <li className="text-gray-500">No specific requirements on record for this programme.</li>
+          <li className="text-ink-faint">No specific requirements on record for this programme.</li>
         )}
       </ul>
 
       {matchResult.suggestedNextStep && (
-        <p className="rounded bg-white/60 p-2 text-sm dark:bg-black/20">
+        <p className="rounded bg-mark-gold-soft p-2 text-sm text-ink">
           <strong>Next step: </strong>
           {matchResult.suggestedNextStep}
         </p>
       )}
 
-      <div className="flex flex-wrap items-center gap-3 border-t pt-3 text-sm">
+      <div className="flex flex-wrap items-center gap-3 border-t border-line pt-3 text-sm">
         {cta.kind === "apply" && (
           <a
             href={cta.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded bg-blue-600 px-3 py-1.5 font-medium text-white hover:bg-blue-700"
+            className="rounded bg-mark-green px-3 py-1.5 font-medium text-white hover:opacity-90"
           >
             {cta.label}
           </a>
         )}
         {cta.kind === "openingSoon" && (
-          <span className="rounded bg-blue-100 px-3 py-1.5 font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
+          <span className="rounded bg-mark-green-soft px-3 py-1.5 font-medium text-mark-green">
             {cta.label}
           </span>
         )}
         {cta.kind === "statusCheck" && (
           <>
-            <span className="rounded bg-gray-200 px-3 py-1.5 font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+            <span className="rounded bg-slate-soft px-3 py-1.5 font-medium text-ink-soft">
               {LABELS.applicationStatus.closed}
             </span>
             {cta.url && (
-              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">
+              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-mark-green hover:underline">
                 {cta.label}
               </a>
             )}
@@ -146,11 +183,11 @@ export function ResultCard({
         )}
         {cta.kind === "datesBeingVerified" && (
           <>
-            <span className="rounded bg-gray-200 px-3 py-1.5 font-medium text-gray-700 dark:bg-gray-800 dark:text-gray-300">
+            <span className="rounded bg-slate-soft px-3 py-1.5 font-medium text-ink-soft">
               {cta.label}
             </span>
             {cta.url && (
-              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline dark:text-blue-400">
+              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-mark-green hover:underline">
                 Visit institution site
               </a>
             )}
@@ -158,7 +195,7 @@ export function ResultCard({
         )}
       </div>
 
-      <p className="text-xs text-gray-400">
+      <p className="text-xs font-mono tabular-nums text-ink-faint">
         Verified {programme.verifiedOn} ·{" "}
         <a href={programme.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
           Source

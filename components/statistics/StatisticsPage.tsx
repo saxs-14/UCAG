@@ -44,7 +44,7 @@ const SCHOOLS_CHARTS: ChartSpec[] = [
 export function StatisticsPage() {
   return (
     <div className="flex w-full max-w-2xl flex-col gap-8">
-      <div className="rounded border border-dashed border-amber-400 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200">
+      <div className="rounded border border-dashed border-mark-gold bg-mark-gold-soft p-3 text-sm text-ink">
         Every real dataset below correctly shows &quot;data pending verification&quot; --
         extracting real figures from DHET/DBE&apos;s PDF-only publications
         (see config/sources.seed.ts) is Phase 4 ingestion work that isn&apos;t
@@ -53,14 +53,14 @@ export function StatisticsPage() {
       </div>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold">{LABELS.statistics.higherEducationHeading}</h2>
+        <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.statistics.higherEducationHeading}</h2>
         {HIGHER_EDUCATION_CHARTS.map((spec) => (
           <StatChart key={spec.id} spec={spec} allStatistics={SAMPLE_STATISTICS} />
         ))}
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-semibold">{LABELS.statistics.schoolsHeading}</h2>
+        <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.statistics.schoolsHeading}</h2>
         {SCHOOLS_CHARTS.map((spec) => (
           <StatChart key={spec.id} spec={spec} allStatistics={SAMPLE_STATISTICS} />
         ))}

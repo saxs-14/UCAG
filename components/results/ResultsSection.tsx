@@ -6,7 +6,6 @@ import { ResultCard } from "./ResultCard";
 import { ShareBar } from "./ShareBar";
 import { LABELS } from "@/config/labels";
 import { useAuth } from "@/components/auth/AuthProvider";
-import { getUserProfile, updateShortlist } from "@/lib/auth/profile";
 import {
   SAMPLE_APPLICATION_WINDOWS,
   SAMPLE_APS_RULE,
@@ -41,7 +40,14 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       setShortlist([]);
       return;
     }
-    getUserProfile(user.uid).then((profile) => setShortlist(profile?.shortlist ?? []));
+    // Dynamic import: lib/auth/profile.ts pulls in Firestore (and its
+    // persistence layer), the single heaviest piece of the Firebase SDK.
+    // An anonymous visitor -- the common case on "/" -- never triggers
+    // this branch, so it never pays for that bundle weight (Phase 8's
+    // <200KB calculator-route budget).
+    import("@/lib/auth/profile").then(({ getUserProfile }) =>
+      getUserProfile(user.uid).then((profile) => setShortlist(profile?.shortlist ?? []))
+    );
   }, [user]);
 
   const results = useMemo(() => {
@@ -55,7 +61,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
 
   if (marks.length === 0) {
     return (
-      <p className="text-sm text-gray-400">
+      <p className="text-sm text-ink-faint">
         Enter at least one subject mark above to see matched programmes.
       </p>
     );
@@ -68,6 +74,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       : [...shortlist, programmeId];
     setShortlist(next);
     try {
+      const { updateShortlist } = await import("@/lib/auth/profile");
       await updateShortlist(user.uid, next);
     } catch {
       // Roll back on failure rather than leaving the UI showing a state
@@ -82,7 +89,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
 
   return (
     <section className="flex w-full max-w-xl flex-col gap-6">
-      <div className="rounded border border-dashed border-amber-400 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-700 dark:bg-amber-950 dark:text-amber-200">
+      <div className="rounded border border-dashed border-mark-gold bg-mark-gold-soft p-3 text-sm text-ink">
         These results are matched against <strong>sample/fictional programme data</strong>, not
         a real institution -- see config/sampleData.ts. Real, verified programme catalogues land
         in Phase 4.
@@ -95,7 +102,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         if (entries.length === 0) return null;
         return (
           <div key={bucket} className="flex flex-col gap-3">
-            <h2 className="text-xl font-semibold">{LABELS.resultBuckets[bucket]}</h2>
+            <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.resultBuckets[bucket]}</h2>
             {entries.map(({ programme, matchResult }) => (
               <ResultCard
                 key={programme.id}

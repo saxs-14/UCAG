@@ -8,10 +8,8 @@ export function DeadlineBadge({ closesOn }: { closesOn: string | null }) {
 
   return (
     <span
-      className={`rounded px-2 py-0.5 text-xs font-medium ${
-        urgent
-          ? "bg-amber-100 text-amber-800 dark:bg-amber-900 dark:text-amber-200"
-          : "bg-gray-100 text-gray-600 dark:bg-gray-800 dark:text-gray-400"
+      className={`rounded px-2 py-0.5 font-mono text-xs font-medium tabular-nums ${
+        urgent ? "bg-mark-gold-soft text-mark-gold" : "bg-slate-soft text-ink-faint"
       }`}
     >
       {text}

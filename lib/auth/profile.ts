@@ -1,5 +1,5 @@
 import { deleteDoc, doc, getDoc, setDoc, updateDoc } from "firebase/firestore";
-import { getFirebaseDb } from "@/lib/firebase/client";
+import { getFirebaseDb } from "@/lib/firebase/firestoreClient";
 import type { ConsentRecord, SubjectMark, UserProfile } from "@/lib/firestore/types";
 
 /**

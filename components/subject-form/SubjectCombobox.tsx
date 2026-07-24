@@ -71,7 +71,7 @@ export function SubjectCombobox({
           aria-expanded={isOpen}
           aria-controls={`combobox-listbox-${label}`}
           aria-autocomplete="list"
-          className="w-full rounded border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-gray-600 dark:bg-gray-900"
+          className="w-full rounded border border-line bg-paper-raised px-3 py-2 text-sm text-ink focus:border-mark-green focus:outline-none"
           placeholder={selected ? selected.name : placeholder}
           value={isOpen ? query : selected?.name ?? ""}
           onFocus={() => {
@@ -85,7 +85,7 @@ export function SubjectCombobox({
           <button
             type="button"
             aria-label={`Clear ${label}`}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+            className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink-soft"
             onClick={() => onChange(null)}
           >
             ×
@@ -95,14 +95,14 @@ export function SubjectCombobox({
           <ul
             id={`combobox-listbox-${label}`}
             role="listbox"
-            className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded border border-gray-300 bg-white shadow-lg dark:border-gray-600 dark:bg-gray-900"
+            className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded border border-line bg-paper-raised shadow-lg"
           >
             {grouped.length === 0 && (
-              <li className="px-3 py-2 text-sm text-gray-400">No subjects match.</li>
+              <li className="px-3 py-2 text-sm text-ink-faint">No subjects match.</li>
             )}
             {grouped.map(([groupLabel, subjects]) => (
               <li key={groupLabel}>
-                <div className="bg-gray-50 px-3 py-1 text-xs font-semibold uppercase tracking-wide text-gray-500 dark:bg-gray-800">
+                <div className="bg-slate-soft px-3 py-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
                   {groupLabel}
                 </div>
                 <ul>
@@ -112,12 +112,12 @@ export function SubjectCombobox({
                         type="button"
                         role="option"
                         aria-selected={subject.code === value}
-                        className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-blue-50 dark:hover:bg-blue-950"
+                        className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-mark-green-soft"
                         onClick={() => handleSelect(subject)}
                       >
-                        <span>{subject.name}</span>
+                        <span className="text-ink">{subject.name}</span>
                         {subject.isDesignated && (
-                          <span className="ml-2 rounded bg-blue-100 px-1.5 py-0.5 text-[10px] font-medium text-blue-700 dark:bg-blue-900 dark:text-blue-200">
+                          <span className="ml-2 rounded bg-mark-green-soft px-1.5 py-0.5 text-[10px] font-medium text-mark-green">
                             Designated
                           </span>
                         )}

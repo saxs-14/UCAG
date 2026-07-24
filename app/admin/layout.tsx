@@ -37,7 +37,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
           Sign in with an admin account to continue.
         </p>
-        <Link href="/account" className="mt-4 inline-block text-blue-600 hover:underline dark:text-blue-400">
+        <Link href="/account" className="mt-4 inline-block text-mark-green hover:underline">
           Go to sign in
         </Link>
       </main>
@@ -71,7 +71,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
             href={item.href}
             className={`whitespace-nowrap rounded px-2 py-1.5 ${
               pathname === item.href
-                ? "bg-blue-600 text-white"
+                ? "bg-mark-green text-white"
                 : "text-gray-600 hover:bg-gray-100 dark:text-gray-300 dark:hover:bg-gray-800"
             }`}
           >

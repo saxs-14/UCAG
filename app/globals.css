@@ -1,28 +1,89 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/**
+ * Design tokens -- "The Marked Script" (Phase 8, approved design proposal).
+ * Paper/ink neutrals + a marking-pen semantic palette: green for
+ * qualify/correct, gold for "almost -- here's the gap" (never red --
+ * almost-qualified is feedback, not a rejection), slate for not-yet, red
+ * held in reserve for genuine errors only (dead links, account deletion).
+ *
+ * Single source of truth per token: components reference `text-mark-green`,
+ * `bg-paper-raised`, etc. directly (no `dark:` prefix needed for color) --
+ * the value itself flips under the dark-mode override below, so a token
+ * used once is correct in both themes automatically.
+ *
+ * Type: no imported webfont. `--font-sans` is a system-UI stack (matches
+ * the brief's low-data-mode requirement and the <200KB calculator-route
+ * budget -- this was the type decision, not a fallback). `--font-mono` is
+ * reserved for numbers -- APS scores, percentages, marks, dates -- via the
+ * `font-mono tabular-nums` utility pair at call sites.
+ */
+@theme {
+  --color-paper: #f6f7f4;
+  --color-paper-raised: #ffffff;
+  --color-ink: #14231c;
+  --color-ink-soft: #3f4d46;
+  --color-ink-faint: #5c665f;
+  --color-line: #d8ddd6;
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-mark-green: #1c7a4d;
+  --color-mark-green-soft: #e4f1ea;
+  --color-mark-gold: #8f5c0d;
+  --color-mark-gold-soft: #f7ecd9;
+  --color-mark-red: #a23b2e;
+  --color-mark-red-soft: #f6e6e3;
+  --color-slate: #5b6560;
+  --color-slate-soft: #e9ebe7;
+  --color-focus: #1257c9;
+
+  --font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --color-paper: #0e1512;
+    --color-paper-raised: #16201b;
+    --color-ink: #eaf0ea;
+    --color-ink-soft: #b9c4bd;
+    --color-ink-faint: #8b968f;
+    --color-line: #2a352e;
+
+    --color-mark-green: #4fbf85;
+    --color-mark-green-soft: #142a20;
+    --color-mark-gold: #e0ab53;
+    --color-mark-gold-soft: #2b2214;
+    --color-mark-red: #e08172;
+    --color-mark-red-soft: #2c1a17;
+    --color-slate: #98a29c;
+    --color-slate-soft: #202a24;
   }
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-sans);
+}
+
+h1, h2, h3 {
+  text-wrap: balance;
+}
+
+/* WCAG 2.1 AA: a visible focus ring on every interactive element, not just
+   the browser default (which some UA stylesheets suppress on click). */
+:focus-visible {
+  outline: 3px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
 }
 
 /* "Download as PDF" (ShareBar) uses the browser's native print-to-PDF --

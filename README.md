@@ -7,7 +7,7 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: Phase 7 (admin and verification console) complete, awaiting checkpoint.**
+**Status: Phase 8 (design pass) complete, awaiting checkpoint.**
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
@@ -318,6 +318,86 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     invite flow (deliberately not built -- role grants are a trusted-operator
     script, not a product feature), and anything that depends on a live
     extraction pipeline actually having run.
+- **Phase 8** — the design pass. Direction proposed and approved *before* any
+  CSS was written (an artifact mockup, per the brief's explicit process
+  requirement): "The Marked Script" -- grounded in a marked NSC exam
+  script (a circled total, ticks/crosses in the margin, a next-step note),
+  since that's structurally the same shape as what this product already
+  does. Full writeup and rationale in that approved proposal; what
+  actually shipped:
+  - **Tokens** (`app/globals.css`): paper/ink neutrals, a marking-pen
+    semantic palette (green = qualify, gold = "almost -- here's the gap,"
+    never red; slate = not yet; a dialled-back red held in reserve for
+    genuine errors only). Every token is a single CSS custom property that
+    flips under `@media (prefers-color-scheme: dark)` -- components
+    reference `text-mark-green` once, correct in both themes, no `dark:`
+    duplication needed. Contrast-checked by hand (WCAG relative-luminance
+    formula) for the borderline pairs and nudged two tokens
+    (`--color-ink-faint`, `--color-mark-gold`) that were below 4.5:1 in
+    light mode.
+  - **Type**: the Next.js-scaffolded Geist webfont (dead weight, never
+    actually applied -- `body` already hardcoded `font-family: Arial`)
+    removed entirely. `--font-sans` is a system-UI stack, `--font-mono` is
+    reserved for numbers -- APS scores, percentages, marks, dates, all via
+    `font-mono tabular-nums` -- turning the brief's own low-data-mode and
+    bundle-budget constraints into the actual type decision rather than a
+    workaround.
+  - **Signature element**: `components/CircledMark.tsx` -- a hand-drawn
+    double-ellipse ring around a number, the way a teacher circles a
+    total. Applied to each result card's achieved score (qualify) or
+    point gap (almost-qualify) -- deliberately *not* a single "Your APS"
+    hero on the calculator page, since the product's own architecture
+    means there is no one generic APS (it's per-institution); a
+    front-page hero number would have misrepresented that.
+  - **Low-data mode**: `lib/useSaveData.ts` reads
+    `navigator.connection.saveData`; `/statistics` charts defer Recharts
+    entirely via `next/dynamic` and fall back to a plain data table when
+    save-data is on. No hero imagery exists anywhere in the app (checked).
+  - **WCAG 2.1 AA**: global `:focus-visible` ring, `prefers-reduced-motion`
+    honoured, a "skip to content" link. Not independently audited with a
+    screen reader or an automated tool (e.g. axe) -- that's flagged, not
+    claimed.
+  - **PWA**: `public/manifest.json` + a small hand-rolled
+    `public/sw.js` (no Workbox/next-pwa dependency) cache the app shell at
+    runtime, network-first with cache fallback. **Live-verified**: loaded
+    the production build, confirmed the service worker registered and
+    populated its cache, set the browser to Offline in DevTools, reloaded
+    -- the calculator loaded fully interactive with zero network. "The
+    learner's saved results work offline" is handled separately and
+    correctly: Firestore's own `persistentLocalCache` (IndexedDB-backed),
+    not a service-worker hack, since a generic `fetch` handler has no
+    business proxying Firestore's real-time protocol. Known gap: no
+    dedicated PNG icon set (`apple-touch-icon`, maskable variants) --
+    `public/icon.svg` is a real on-brand icon, but iOS "Add to Home
+    Screen" support specifically wants PNGs, flagged rather than faked.
+  - **Bundle budget -- a real problem, found and mostly fixed, not
+    hidden**: the brief's own explicit target is <200KB First Load JS on
+    the calculator route. First build after the design pass: **406KB**.
+    Root cause: `lib/firebase/client.ts` statically imported Firestore
+    (plus its persistence layer -- the single heaviest piece of the
+    Firebase SDK) in the same module `AuthProvider` imports for
+    `getFirebaseAuth`, and `AuthProvider` mounts on every route via the
+    root layout -- so every page, including ones that never touch
+    Firestore, paid for it. Fixed in two steps: (1) split Firestore into
+    its own module (`lib/firebase/firestoreClient.ts`), the same fix
+    already applied once before to `lib/env/client.ts` in Phase 3; (2)
+    the calculator route's own optional signed-in features (save
+    marks, shortlist) now dynamically `import()` `lib/auth/profile.ts`
+    only when a signed-in user actually triggers that code path, instead
+    of statically at module load. Result: **234KB** -- a ~170KB
+    reduction, but still ~34KB over budget. The residual cost is
+    `firebase/auth` (~103KB), mounted app-wide because sign-in state is
+    genuinely global product UX (the nav, the optional save/shortlist
+    affordances on every screen); cutting further would mean deferring
+    Auth itself, a bigger architectural change not attempted at the tail
+    of an already-large phase. Verified with real `npm run build` output,
+    not estimated.
+  - Not built: bespoke per-page hero/illustration treatments (none were
+    wanted per the brief anyway), a manual light/dark toggle (the app
+    follows OS `prefers-color-scheme` only, consistent with every prior
+    phase), and CI enforcement of the bundle budget (that's Phase 9 --
+    "test, harden, deploy" -- territory; this phase measured and reduced
+    it by hand instead).
 - **Firebase**: no real cloud project exists for v2 yet, but the app **is**
   genuinely tested against a real Firebase backend now -- the local
   emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a

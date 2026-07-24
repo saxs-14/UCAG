@@ -86,13 +86,13 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
   if (step === "ageGate") {
     return (
       <div className="flex flex-col gap-3">
-        <h2 className="text-lg font-semibold">{LABELS.account.signUpHeading}</h2>
-        <p className="text-sm text-gray-500">{LABELS.account.optionalNote}</p>
-        <p className="font-medium">{LABELS.account.ageGateQuestion}</p>
+        <h2 className="text-lg font-bold tracking-tight text-ink">{LABELS.account.signUpHeading}</h2>
+        <p className="text-sm text-ink-faint">{LABELS.account.optionalNote}</p>
+        <p className="font-medium text-ink">{LABELS.account.ageGateQuestion}</p>
         <div className="flex gap-2">
           <button
             type="button"
-            className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700"
+            className="rounded bg-mark-green px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
             onClick={() => {
               setIsMinor(false);
               setStep("credentials");
@@ -102,7 +102,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
           </button>
           <button
             type="button"
-            className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+            className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
             onClick={() => {
               setIsMinor(true);
               setStep("guardianConsent");
@@ -111,7 +111,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
             {LABELS.account.ageGateNo}
           </button>
         </div>
-        <button type="button" className="text-left text-sm text-blue-600 hover:underline dark:text-blue-400" onClick={onSwitchToSignIn}>
+        <button type="button" className="text-left text-sm font-medium text-mark-green hover:underline" onClick={onSwitchToSignIn}>
           {LABELS.account.switchToSignIn}
         </button>
       </div>
@@ -127,29 +127,29 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
           if (guardianConfirmed && guardianName && guardianEmail) setStep("credentials");
         }}
       >
-        <h2 className="text-lg font-semibold">{LABELS.account.guardianConsentHeading}</h2>
-        <p className="text-sm text-gray-600 dark:text-gray-400">{LABELS.account.guardianConsentIntro}</p>
-        <label className="flex flex-col gap-1 text-sm">
+        <h2 className="text-lg font-bold tracking-tight text-ink">{LABELS.account.guardianConsentHeading}</h2>
+        <p className="text-sm text-ink-soft">{LABELS.account.guardianConsentIntro}</p>
+        <label className="flex flex-col gap-1 text-sm text-ink-soft">
           {LABELS.account.guardianNameLabel}
           <input
             type="text"
             required
-            className="rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-900"
+            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink focus:border-mark-green focus:outline-none"
             value={guardianName}
             onChange={(e) => setGuardianName(e.target.value)}
           />
         </label>
-        <label className="flex flex-col gap-1 text-sm">
+        <label className="flex flex-col gap-1 text-sm text-ink-soft">
           {LABELS.account.guardianEmailLabel}
           <input
             type="email"
             required
-            className="rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-900"
+            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink focus:border-mark-green focus:outline-none"
             value={guardianEmail}
             onChange={(e) => setGuardianEmail(e.target.value)}
           />
         </label>
-        <label className="flex items-start gap-2 text-sm">
+        <label className="flex items-start gap-2 text-sm text-ink-soft">
           <input
             type="checkbox"
             required
@@ -161,7 +161,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
         <button
           type="submit"
           disabled={!guardianConfirmed || !guardianName || !guardianEmail}
-          className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+          className="rounded bg-mark-green px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
         >
           {LABELS.account.guardianConsentSubmit}
         </button>
@@ -171,33 +171,33 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
 
   return (
     <form className="flex flex-col gap-3" onSubmit={handleEmailSignUp}>
-      <h2 className="text-lg font-semibold">{LABELS.account.signUpHeading}</h2>
-      <label className="flex flex-col gap-1 text-sm">
+      <h2 className="text-lg font-bold tracking-tight text-ink">{LABELS.account.signUpHeading}</h2>
+      <label className="flex flex-col gap-1 text-sm text-ink-soft">
         {LABELS.account.emailLabel}
         <input
           type="email"
           required
-          className="rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-900"
+          className="rounded border border-line bg-paper-raised px-2 py-1 text-ink focus:border-mark-green focus:outline-none"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
       </label>
-      <label className="flex flex-col gap-1 text-sm">
+      <label className="flex flex-col gap-1 text-sm text-ink-soft">
         {LABELS.account.passwordLabel}
         <input
           type="password"
           required
           minLength={6}
-          className="rounded border border-gray-300 px-2 py-1 dark:border-gray-600 dark:bg-gray-900"
+          className="rounded border border-line bg-paper-raised px-2 py-1 text-ink focus:border-mark-green focus:outline-none"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
       </label>
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      {error && <p className="text-sm text-mark-red">{error}</p>}
       <button
         type="submit"
         disabled={submitting}
-        className="rounded bg-blue-600 px-3 py-1.5 text-sm text-white hover:bg-blue-700 disabled:opacity-50"
+        className="rounded bg-mark-green px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
       >
         {LABELS.account.createAccountButton}
       </button>
@@ -205,11 +205,11 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
         type="button"
         disabled={submitting}
         onClick={handleGoogleSignUp}
-        className="rounded border border-gray-300 px-3 py-1.5 text-sm hover:bg-gray-50 dark:border-gray-600 dark:hover:bg-gray-800"
+        className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
       >
         {LABELS.account.googleButton}
       </button>
-      <button type="button" className="text-left text-sm text-blue-600 hover:underline dark:text-blue-400" onClick={onSwitchToSignIn}>
+      <button type="button" className="text-left text-sm font-medium text-mark-green hover:underline" onClick={onSwitchToSignIn}>
         {LABELS.account.switchToSignIn}
       </button>
     </form>

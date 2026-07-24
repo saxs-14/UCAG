@@ -59,12 +59,12 @@ export default function ContentEditorPage() {
         backdate either.
       </p>
       {error && (
-        <p className="rounded border border-red-300 bg-red-50 p-2 text-sm text-red-800 dark:border-red-800 dark:bg-red-950 dark:text-red-200">
+        <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
           {error}
         </p>
       )}
       {success && (
-        <p className="rounded border border-green-300 bg-green-50 p-2 text-sm text-green-800 dark:border-green-800 dark:bg-green-950 dark:text-green-200">
+        <p className="rounded border border-mark-green bg-mark-green-soft p-2 text-sm text-mark-green">
           {success}
         </p>
       )}
@@ -114,7 +114,7 @@ export default function ContentEditorPage() {
         type="button"
         disabled={submitting}
         onClick={submit}
-        className="self-start rounded bg-blue-600 px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
+        className="self-start rounded bg-mark-green px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
       >
         Save
       </button>
