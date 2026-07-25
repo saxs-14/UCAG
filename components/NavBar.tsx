@@ -2,11 +2,11 @@ import Link from "next/link";
 import { LABELS } from "@/config/labels";
 
 const LINK_CLASS =
-  "text-ink-soft transition-colors hover:text-brand-teal border-b-2 border-transparent hover:border-brand-coral pb-0.5";
+  "flex min-h-11 items-center text-ink-soft transition-colors hover:text-brand-teal border-b-2 border-transparent hover:border-brand-coral";
 
 export function NavBar() {
   return (
-    <nav className="no-print flex gap-5 border-b border-line bg-paper-raised px-4 py-3 text-sm font-medium">
+    <nav className="no-print flex gap-5 border-b border-line bg-paper-raised px-4 text-sm font-medium">
       <Link href="/" className={LINK_CLASS}>
         {LABELS.nav.calculator}
       </Link>

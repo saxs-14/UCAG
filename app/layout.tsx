@@ -1,5 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Fredoka } from "next/font/google";
+import Script from "next/script";
 import { LABELS } from "@/config/labels";
 import { NavBar } from "@/components/NavBar";
 import { AuthProvider } from "@/components/auth/AuthProvider";
@@ -10,16 +10,37 @@ import "./globals.css";
 // --font-sans. The brief's low-data-mode requirement and the <200KB
 // calculator-route budget (Phase 8) are real constraints for SA users on
 // limited data, not abandoned by the "beautiful/colorful/fun" redesign.
-// The one deliberate addition is Fredoka for --font-display (large display
-// moments only -- app name, the circled APS number, result headings) --
-// next/font self-hosts and subsets it at build time (no runtime Google
-// Fonts request), and only 2 weights are pulled in, not the full family.
-const fredoka = Fredoka({
-  subsets: ["latin"],
-  weight: ["500", "700"],
-  variable: "--font-fredoka",
-  display: "swap",
-});
+// Fredoka (large display moments only -- app name, the circled APS
+// number, result headings) is loaded via a plain <link> injected by the
+// script below, NOT next/font, and that's a deliberate correction, not a
+// downgrade:
+//
+// next/font's self-hosting is normally the right call (no third-party
+// request), but it bakes the font's @font-face rule into the single CSS
+// bundle every visitor gets, unconditionally, since server-rendered HTML
+// can never know navigator.connection.saveData's value at generation
+// time. Two rounds of live verification against a real production build
+// (not dev) proved that's fatal for a genuine low-data guarantee: neither
+// an opt-out CSS override NOR an opt-in default (both tried, both
+// confirmed working correctly for computed *style*) stopped the actual
+// network request -- this Chromium build fetches a @font-face resource
+// once its rule is present and its unicode-range matches page content,
+// regardless of whether any element's resolved style actually uses that
+// font-family. The only way to guarantee zero bytes for a saveData
+// visitor is for the font reference to not exist in the DOM/CSSOM at all
+// by default -- hence a dynamically-injected <link>, added only after
+// confirming saveData is off, trading the self-hosting property for a
+// guarantee that actually holds.
+const RICH_FONTS_SCRIPT = `try {
+  var c = navigator.connection || navigator.mozConnection || navigator.webkitConnection;
+  if (!c || !c.saveData) {
+    document.documentElement.setAttribute('data-rich-fonts', 'true');
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.href = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap';
+    document.head.appendChild(link);
+  }
+} catch (e) {}`;
 
 export const metadata: Metadata = {
   title: `${LABELS.app.name} -- ${LABELS.app.fullName}`,
@@ -41,7 +62,17 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={fredoka.variable}>
+    <html lang="en">
+      {/* Phase 8 brief, verbatim: "Ship a low-data mode: no hero imagery,
+          system fonts, deferred charts. Detect navigator.connection.saveData
+          and honour it." Every visitor, saveData or not, sees the system
+          font first; non-data-saver visitors upgrade to Fredoka as soon as
+          this script confirms they're not on a metered connection and
+          injects its stylesheet -- see the comment above RICH_FONTS_SCRIPT
+          for why this is a dynamically-added <link>, not next/font. */}
+      <Script id="rich-fonts-detect" strategy="beforeInteractive">
+        {RICH_FONTS_SCRIPT}
+      </Script>
       <body className="antialiased">
         {/* WCAG 2.1 AA "bypass blocks" -- visible only on keyboard focus,
             skips the nav straight to each page's <main id="main-content">. */}

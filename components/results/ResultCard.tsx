@@ -127,7 +127,7 @@ export function ResultCard({
             </Link>
           </h3>
           <div className="no-print flex shrink-0 items-center gap-2">
-            <label className="flex items-center gap-1 text-xs text-ink-soft">
+            <label className="flex min-h-11 cursor-pointer items-center gap-1.5 px-1 text-xs text-ink-soft">
               <input
                 type="checkbox"
                 id={`compare-${programme.id}`}
@@ -135,6 +135,7 @@ export function ResultCard({
                 checked={isComparing}
                 disabled={!isComparing && compareDisabled}
                 onChange={onToggleCompare}
+                className="h-4 w-4 cursor-pointer"
               />
               Compare
             </label>
@@ -143,7 +144,7 @@ export function ResultCard({
                 type="button"
                 onClick={onToggleShortlist}
                 aria-pressed={isShortlisted}
-                className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium transition-transform active:scale-95 ${
+                className={`min-h-11 cursor-pointer rounded-full border px-3 text-xs font-medium transition-transform active:scale-95 ${
                   isShortlisted
                     ? "border-brand-coral bg-brand-coral text-white"
                     : "border-line text-ink-soft hover:bg-slate-soft"
@@ -195,23 +196,28 @@ export function ResultCard({
             href={cta.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded-full bg-brand-teal px-4 py-1.5 font-medium text-white transition-transform hover:scale-[1.03] active:scale-[0.97]"
+            className="inline-flex min-h-11 items-center rounded-full bg-brand-teal px-4 font-medium text-white transition-transform hover:scale-[1.03] active:scale-[0.97]"
           >
             {cta.label}
           </a>
         )}
         {cta.kind === "openingSoon" && (
-          <span className="rounded-full bg-mark-green-soft px-3 py-1.5 font-medium text-mark-green">
+          <span className="inline-flex min-h-11 items-center rounded-full bg-mark-green-soft px-3 font-medium text-mark-green">
             {cta.label}
           </span>
         )}
         {cta.kind === "statusCheck" && (
           <>
-            <span className="rounded-full bg-slate-soft px-3 py-1.5 font-medium text-ink-soft">
+            <span className="inline-flex min-h-11 items-center rounded-full bg-slate-soft px-3 font-medium text-ink-soft">
               {LABELS.applicationStatus.closed}
             </span>
             {cta.url && (
-              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">
+              <a
+                href={cta.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center px-1 text-brand-teal hover:underline"
+              >
                 {cta.label}
               </a>
             )}
@@ -219,11 +225,16 @@ export function ResultCard({
         )}
         {cta.kind === "datesBeingVerified" && (
           <>
-            <span className="rounded-full bg-slate-soft px-3 py-1.5 font-medium text-ink-soft">
+            <span className="inline-flex min-h-11 items-center rounded-full bg-slate-soft px-3 font-medium text-ink-soft">
               {cta.label}
             </span>
             {cta.url && (
-              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">
+              <a
+                href={cta.url}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex min-h-11 items-center px-1 text-brand-teal hover:underline"
+              >
                 Visit institution site
               </a>
             )}

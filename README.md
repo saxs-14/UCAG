@@ -684,6 +684,49 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     Arts in Media, Communication and Culture -- minAps 32 at 100%
     confidence, live-verified against the actual Firestore data the run
     wrote); the other 4 correctly reject for the reason above.
+- **Post-launch: "First Light" visual redesign (calculator + results),
+  then a real correction against the actual Phase 8 brief.** First pass
+  delivered a warm cream/charcoal palette, a Fredoka display font, and
+  CSS motion. Checked against `docs/MASTER_PROMPT_v2.md`'s actual Phase 8
+  text afterward and found it had walked straight into the one thing the
+  brief explicitly forbids -- *"Do not hand me the default AI look --
+  cream background, big serif, terracotta accent"* -- via the cream
+  paper specifically (avoided the serif/terracotta half, not the cream
+  half). Corrected properly, not patched over:
+  - **Palette**: paper is now true white/near-black, grounded in the
+    project's own signature element (exam-script paper and pen ink) --
+    "colorful/fun" is carried entirely by the brand-teal/coral accents
+    and motion, never by tinting the base surface. Every pairing
+    re-verified against WCAG AA after the correction.
+  - **Low-data mode**: the brief also says, verbatim, *"Ship a low-data
+    mode: no hero imagery, system fonts... Detect
+    navigator.connection.saveData and honour it"* -- unimplemented in
+    the first pass (Fredoka loaded unconditionally for everyone). Fixing
+    this properly took two more rounds of live verification against a
+    real production build, not dev: a CSS-only fallback (`next/font` +
+    an opt-out override) looked correct by every check -- computed style
+    correctly fell back, `data-save-data` correctly stayed unset -- and
+    the font file still downloaded anyway, confirmed via the request's
+    initiator being the stylesheet itself. Root cause: this Chromium
+    build fetches a `@font-face` resource once its rule is merely
+    *present* in a loaded stylesheet with a matching `unicode-range`,
+    regardless of whether any element's resolved style actually uses
+    that font-family -- and since server-rendered HTML can never know
+    `saveData`'s value at generation time, `next/font`'s single shared
+    CSS bundle always contains that rule for every visitor. The fix that
+    actually holds: dropped `next/font` for Fredoka entirely and inject
+    its stylesheet with a plain, dynamically-created `<link>` -- only
+    once a script has confirmed `saveData` is off -- so the font
+    reference doesn't exist in the DOM/CSSOM at all by default. Verified
+    both directions against a real production build: `saveData=true`
+    produces zero font-related network requests of any kind;
+    `saveData` unset genuinely loads and renders Fredoka.
+  - **Tap targets**: the brief also asks for "real tap targets" on a
+    5-inch screen; several redesigned controls (selects, the primary
+    "Apply now" CTA, dropdown options) were under the ~44px convention
+    it evokes. Bumped to real 44px minimum heights across the touched
+    components, including secondary/destructive actions (extended hit
+    area via padding without growing their visual size).
 - **Firebase**: no real cloud project exists for v2 yet, but the app **is**
   genuinely tested against a real Firebase backend now -- the local
   emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a
