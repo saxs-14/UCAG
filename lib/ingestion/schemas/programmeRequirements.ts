@@ -17,12 +17,30 @@ const VALID_SUBJECT_CODES = new Set<string>([
 ]);
 
 const subjectRequirementExtractionSchema = z.object({
-  subjectCode: z.string().refine((code) => VALID_SUBJECT_CODES.has(code), {
-    message: "subjectCode must be one of the canonical NSC codes from config/subjects.ts",
+  subjectCode: z.string().superRefine((code, ctx) => {
+    if (!VALID_SUBJECT_CODES.has(code)) {
+      ctx.addIssue({
+        code: "custom",
+        message: `subjectCode "${code}" is not one of the canonical NSC codes from config/subjects.ts`,
+      });
+    }
   }),
   minLevel: z.number().min(1).max(7).nullable(),
   minPercent: z.number().min(0).max(100).nullable(),
 });
+
+/** Models are inconsistent about wrapping a single free-text requirement
+ * in an array despite instructions -- observed emitting a bare string or
+ * null instead of string[] for additionalRequirements (live-verified
+ * against real UMP pages). This normalizes the SHAPE only (null -> [],
+ * a lone string -> a one-item array) before validation; it never invents
+ * or drops actual content, so it stays inside "reject bad content, don't
+ * coerce bad content" -- only genuinely equivalent shapes are accepted. */
+const stringArrayLenient = z.preprocess((value) => {
+  if (value === null || value === undefined) return [];
+  if (typeof value === "string") return [value];
+  return value;
+}, z.array(z.string()));
 
 /**
  * One extracted programme. Deliberately scoped to the fields that
@@ -58,7 +76,7 @@ const programmeExtractionItemSchema = z.object({
   duration: z.string().nullable(),
   minAps: z.number().nullable(),
   subjectRequirements: z.array(subjectRequirementExtractionSchema),
-  additionalRequirements: z.array(z.string()),
+  additionalRequirements: stringArrayLenient,
   applyUrl: z.string().nullable(),
   /** The model's own confidence in this one programme's extraction, 0-1
    * -- programmeRequirements never auto-publishes regardless (see

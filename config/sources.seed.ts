@@ -139,6 +139,98 @@ export const INSTITUTION_SOURCES: Source[] = [
     ...NOT_YET_FETCHED,
     institutionId: "ump",
   },
+  /**
+   * Programme-requirements proof of concept (2026-07-25): unlike
+   * application dates, UMP's real minAps/subjectRequirements numbers do
+   * NOT live on one aggregate page -- they're published one page per
+   * programme (confirmed: no working aggregate programme-list page
+   * exists, the one search turned up 404s). Each URL below is a real,
+   * individual programme page, live-verified reachable with this
+   * project's bot user-agent and directly confirmed (via curl, not just
+   * a search snippet) to contain real APS text, e.g. this exact string
+   * on the Culinary Arts page: "Minimum APS scores of 26 or more with
+   * Mathematics or APS scores of 27 or more with Mathematical
+   * Literacy." Same robots.txt caveat as ump-admissions above. A small
+   * proof-of-concept batch (5 of UMP's real programmes), not the full
+   * catalogue -- registering an institution's entire programme list this
+   * way is a real, ongoing scope decision (dozens of URLs per
+   * institution), not a quick follow-up.
+   *
+   * Live-run result: 1 of 5 fully succeeded (Media, Communication and
+   * Culture -- real minAps 32 at 100% confidence). The other 4 all
+   * genuinely state a real APS number too, but correctly fail extraction
+   * because their compulsory-language requirement is phrased as plain
+   * "English", which does not map to a canonical NSC code -- the schema
+   * requires the Home Language/First Additional Language slot (ENG-HL
+   * vs ENG-FAL), and lib/aps/engine.ts does exact-string subjectCode
+   * matching with no HL/FAL fallback, so accepting a bare "ENG" would
+   * silently never match any real learner's mark (worse than rejecting
+   * it -- it would misrepresent every learner as not meeting a
+   * requirement they may well meet). This is correct, intentional
+   * rejection, not a bug to patch here -- fixing it for real needs a
+   * genuine SubjectRequirement data-model decision (representing "either
+   * language slot accepted"), out of scope for an extraction schema fix.
+   */
+  {
+    id: "ump-prog-diploma-hospitality-management",
+    url: "https://www.ump.ac.za/Study-with-us/Faculties-and-Schools/Faculty-of-Economics,-Development-and-Business-Sci/School-of-Hospitality-and-Tourism-Management/Diploma-in-Hospitality-Management.aspx",
+    publisher: "University of Mpumalanga",
+    type: "institutionAdmissions",
+    robotsAllowed: true,
+    fetchIntervalHours: 720,
+    reliabilityScore: 0.9,
+    notes: "Real per-programme requirements page, content-verified (see file note above).",
+    ...NOT_YET_FETCHED,
+    institutionId: "ump",
+  },
+  {
+    id: "ump-prog-diploma-culinary-arts",
+    url: "https://www.ump.ac.za/Study-with-us/Faculties-and-Schools/Faculty-of-Economics,-Development-and-Business-Sci/School-of-Hospitality-and-Tourism-Management/Diploma-in-Culinary-Arts.aspx",
+    publisher: "University of Mpumalanga",
+    type: "institutionAdmissions",
+    robotsAllowed: true,
+    fetchIntervalHours: 720,
+    reliabilityScore: 0.9,
+    notes: "Real per-programme requirements page, content-verified: states \"Minimum APS scores of 26 or more with Mathematics or APS scores of 27 or more with Mathematical Literacy\" (confirmed by direct fetch, not just a search snippet).",
+    ...NOT_YET_FETCHED,
+    institutionId: "ump",
+  },
+  {
+    id: "ump-prog-ba-media-communication-culture",
+    url: "https://www.ump.ac.za/Study-with-us/Faculties-and-Schools/Faculty-of-Economics,-Development-and-Business-Sci/School-of-Social-Sciences/Bachelor-of-Arts-in-Media,-Communication-and-Cultu.aspx",
+    publisher: "University of Mpumalanga",
+    type: "institutionAdmissions",
+    robotsAllowed: true,
+    fetchIntervalHours: 720,
+    reliabilityScore: 0.9,
+    notes: "Real per-programme requirements page, content-verified (see file note above).",
+    ...NOT_YET_FETCHED,
+    institutionId: "ump",
+  },
+  {
+    id: "ump-prog-bachelor-of-laws",
+    url: "https://www.ump.ac.za/Study-with-us/Faculties-and-Schools/Faculty-of-Economics,-Development-and-Business-Sci/School-of-Development-Studies/Bachelor-of-Laws.aspx",
+    publisher: "University of Mpumalanga",
+    type: "institutionAdmissions",
+    robotsAllowed: true,
+    fetchIntervalHours: 720,
+    reliabilityScore: 0.9,
+    notes: "Real per-programme requirements page, content-verified (see file note above).",
+    ...NOT_YET_FETCHED,
+    institutionId: "ump",
+  },
+  {
+    id: "ump-prog-bsc-degree",
+    url: "https://www.ump.ac.za/Study-with-us/Faculties-and-Schools/Faculty-of-Agriculture-and-Natural-Sciences/School-of-Biology-and-Environmental-Sciences/Bachelor-of-Science-Degree.aspx",
+    publisher: "University of Mpumalanga",
+    type: "institutionAdmissions",
+    robotsAllowed: true,
+    fetchIntervalHours: 720,
+    reliabilityScore: 0.9,
+    notes: "Real per-programme requirements page, content-verified (see file note above).",
+    ...NOT_YET_FETCHED,
+    institutionId: "ump",
+  },
   {
     id: "up-admissions",
     url: "https://www.up.ac.za/students/programme-calculator",

@@ -34,19 +34,27 @@ const EXTRACTION_INSTRUCTIONS =
   "You are extracting undergraduate programme/qualification requirements from a " +
   "South African university admissions or programme-list web page's text. Find every " +
   "distinct programme/qualification mentioned with enough detail to identify its " +
-  "admission requirements. For each: name (the programme's actual title, not a " +
-  "faculty or category heading), facultyName (the faculty/school it belongs to, or " +
-  "null if not stated), qualificationType (one of higherCertificate/diploma/" +
-  "advancedDiploma/bachelorsDegree/bachelorsDegreeExtended/postgraduateDiploma/" +
-  "honoursDegree -- infer from the title/context, e.g. 'BSc' is bachelorsDegree), " +
-  "nqfLevel (the NQF level number if stated, else null), duration (e.g. '3 years', " +
-  "or null), minAps (the minimum APS/admission score if stated as a single number, " +
-  "else null), subjectRequirements (an array of {subjectCode, minLevel, minPercent} " +
-  "using ONLY canonical NSC subject codes -- MATH, MATHLIT, TECHMATH, LO, or an " +
-  "elective/language code; never invent a code for a subject you can't map to one of " +
-  "these), additionalRequirements (any other stated requirement as short strings, " +
-  "e.g. 'portfolio submission required'), applyUrl (a specific apply link for this " +
-  "programme if one is given, else null). Set confidence (0-1) per programme to how " +
+  "admission requirements. Always respond with a JSON object shaped exactly " +
+  '{"programmes": [...]} -- even if the page describes only one programme, still ' +
+  "wrap it in a programmes array; never return a bare array as the top-level response. " +
+  "For each programme: name (the programme's actual title, not a faculty or category " +
+  "heading), facultyName (the faculty/school it belongs to, or null if not stated), " +
+  "qualificationType (one of higherCertificate/diploma/advancedDiploma/bachelorsDegree/" +
+  "bachelorsDegreeExtended/postgraduateDiploma/honoursDegree -- infer from the " +
+  "title/context, e.g. 'BSc' is bachelorsDegree), nqfLevel (the NQF level number if " +
+  "stated, else null), duration (e.g. '3 years', or null), minAps (the minimum " +
+  "APS/admission score if stated as a single number, else null), subjectRequirements " +
+  "(an array of {subjectCode, minLevel, minPercent} using ONLY canonical NSC subject " +
+  "codes -- MATH, MATHLIT, TECHMATH, LO, or an elective/language code). If a stated " +
+  "requirement does not cleanly map to one of those canonical NSC codes -- e.g. an NCV " +
+  "(National Certificate: Vocational) equivalency, a subject-group choice ('any one " +
+  "of X, Y, Z'), or wording you're not confident about -- do NOT invent or guess a " +
+  "code for it: leave it out of subjectRequirements entirely and instead describe it " +
+  "as a short plain-text string in additionalRequirements (e.g. 'NCV Level 4 in " +
+  "Hospitality accepted as an alternative'). additionalRequirements also covers any " +
+  "other stated requirement, e.g. 'portfolio submission required'. applyUrl is a " +
+  "specific apply link for this programme if one is given, else null. Set confidence " +
+  "(0-1) per programme to how " +
   "certain you are this is a real, current programme with accurately extracted " +
   "requirements, and extractionNotes to a one-sentence note on where you found it. " +
   "If this page is not actually a programme list (e.g. it's a general homepage with " +
