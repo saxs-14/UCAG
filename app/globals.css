@@ -1,30 +1,41 @@
 @import "tailwindcss";
 
 /**
- * Design tokens -- "The Marked Script" (Phase 8, approved design proposal).
- * Paper/ink neutrals + a marking-pen semantic palette: green for
- * qualify/correct, gold for "almost -- here's the gap" (never red --
- * almost-qualified is feedback, not a rejection), slate for not-yet, red
- * held in reserve for genuine errors only (dead links, account deletion).
+ * Design tokens -- "First Light" (post-launch redesign, superseding Phase
+ * 8's "The Marked Script" neutrals while keeping its semantics). The
+ * marking-pen meaning is untouched on purpose: green for qualify/correct,
+ * gold for "almost -- here's the gap" (never red -- almost-qualified is
+ * feedback, not a rejection), slate for not-yet, red held in reserve for
+ * genuine errors only. Redesign brief was "beautiful, colorful, fun,
+ * learner-interactive" -- delivered by warming the neutrals (cream/warm-
+ * charcoal instead of cold paper/near-black) and adding two new brand
+ * accents (teal, coral) for chrome/decoration, deliberately never reused
+ * for qualify/almost/error meaning so the two systems can't be confused.
+ * Every new pairing below was checked against WCAG AA (4.5:1 text, 3:1
+ * large text/UI) before being chosen, not eyeballed.
  *
  * Single source of truth per token: components reference `text-mark-green`,
  * `bg-paper-raised`, etc. directly (no `dark:` prefix needed for color) --
  * the value itself flips under the dark-mode override below, so a token
  * used once is correct in both themes automatically.
  *
- * Type: no imported webfont. `--font-sans` is a system-UI stack (matches
- * the brief's low-data-mode requirement and the <200KB calculator-route
- * budget -- this was the type decision, not a fallback). `--font-mono` is
- * reserved for numbers -- APS scores, percentages, marks, dates -- via the
- * `font-mono tabular-nums` utility pair at call sites.
+ * Type: `--font-sans` stays a system-UI stack for body/UI text -- the
+ * brief's low-data-mode requirement and the <200KB calculator-route
+ * budget (Phase 8) are real constraints for SA users on limited data, not
+ * ones to abandon just because the brief also asked for personality. The
+ * one deliberate addition is `--font-display` (Fredoka, self-hosted via
+ * next/font in app/layout.tsx -- automatic subsetting, 2 weights only),
+ * used ONLY for large display moments (app name, the circled APS number,
+ * result headings) -- never on body copy, labels, or buttons, so the
+ * fast-rendering system font still carries all of the interactive UI.
  */
 @theme {
-  --color-paper: #f6f7f4;
-  --color-paper-raised: #ffffff;
-  --color-ink: #14231c;
-  --color-ink-soft: #3f4d46;
-  --color-ink-faint: #5c665f;
-  --color-line: #d8ddd6;
+  --color-paper: #fbf3e7;
+  --color-paper-raised: #fffdf9;
+  --color-ink: #2b2013;
+  --color-ink-soft: #5a4a32;
+  --color-ink-faint: #7a6b52;
+  --color-line: #d8c6a5;
 
   --color-mark-green: #1c7a4d;
   --color-mark-green-soft: #e4f1ea;
@@ -36,18 +47,26 @@
   --color-slate-soft: #e9ebe7;
   --color-focus: #1257c9;
 
+  /* Brand/decorative only -- chrome, headings, accents. Never used for
+     qualify/almost/error meaning; see file header. */
+  --color-brand-teal: #166b63;
+  --color-brand-teal-soft: #e1f0ee;
+  --color-brand-coral: #c43163;
+  --color-brand-coral-soft: #fbe3ea;
+
   --font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
+  --font-display: var(--font-fredoka), "Segoe UI", sans-serif;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-paper: #0e1512;
-    --color-paper-raised: #16201b;
-    --color-ink: #eaf0ea;
-    --color-ink-soft: #b9c4bd;
-    --color-ink-faint: #8b968f;
-    --color-line: #2a352e;
+    --color-paper: #231a10;
+    --color-paper-raised: #2c2116;
+    --color-ink: #f3ead9;
+    --color-ink-soft: #d2c2a5;
+    --color-ink-faint: #b0a088;
+    --color-line: #4a3b26;
 
     --color-mark-green: #4fbf85;
     --color-mark-green-soft: #142a20;
@@ -57,6 +76,11 @@
     --color-mark-red-soft: #2c1a17;
     --color-slate: #98a29c;
     --color-slate-soft: #202a24;
+
+    --color-brand-teal: #5fc9be;
+    --color-brand-teal-soft: #1b3835;
+    --color-brand-coral: #f286a8;
+    --color-brand-coral-soft: #3a1e29;
   }
 }
 
@@ -69,6 +93,59 @@ body {
 h1, h2, h3 {
   text-wrap: balance;
 }
+
+/* ---------------------------------------------------------------------
+   Motion -- a small, deliberate vocabulary (not a library dependency).
+   Every animation here expresses something (an element arriving, a
+   result being revealed, a score being drawn) rather than decorating for
+   its own sake, per the redesign's "cool but meaningful" brief. All
+   respect prefers-reduced-motion via the global override below.
+------------------------------------------------------------------------ */
+
+@keyframes rise-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pop-in {
+  from { opacity: 0; transform: scale(0.92); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+@keyframes soft-glow {
+  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--glow-color, var(--color-mark-green)) 35%, transparent); }
+  50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--glow-color, var(--color-mark-green)) 0%, transparent); }
+}
+
+@keyframes draw-circle {
+  from { stroke-dashoffset: var(--circle-length, 220); }
+  to { stroke-dashoffset: 0; }
+}
+
+.animate-rise-in {
+  animation: rise-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+.animate-pop-in {
+  animation: pop-in 360ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+.animate-soft-glow {
+  animation: soft-glow 2.2s ease-in-out infinite;
+}
+
+.animate-draw-circle {
+  animation: draw-circle 700ms cubic-bezier(0.65, 0, 0.35, 1) 150ms both;
+}
+
+/* Stagger helpers -- 40ms rhythm per item, capped so a long list doesn't
+   keep arriving forever (matches the skill guidance: 30-50ms per item). */
+.stagger-1 { animation-delay: 40ms; }
+.stagger-2 { animation-delay: 80ms; }
+.stagger-3 { animation-delay: 120ms; }
+.stagger-4 { animation-delay: 160ms; }
+.stagger-5 { animation-delay: 200ms; }
+.stagger-6 { animation-delay: 240ms; }
 
 /* WCAG 2.1 AA: a visible focus ring on every interactive element, not just
    the browser default (which some UA stylesheets suppress on click). */

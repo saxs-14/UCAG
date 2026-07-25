@@ -135,7 +135,9 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         if (entries.length === 0) return null;
         return (
           <div key={bucket} className="flex flex-col gap-3">
-            <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.resultBuckets[bucket]}</h2>
+            <h2 className="animate-rise-in font-display text-xl font-bold tracking-tight text-ink">
+              {LABELS.resultBuckets[bucket]}
+            </h2>
             {entries.map(({ programme, matchResult }) => (
               <ResultCard
                 key={programme.id}

@@ -130,9 +130,13 @@ export function SubjectForm({
   }
 
   return (
-    <form className="flex w-full max-w-xl flex-col gap-6" onSubmit={(e) => e.preventDefault()}>
-      <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-sm font-semibold uppercase tracking-wide text-ink-faint">
+    <form
+      className="animate-rise-in stagger-1 flex w-full max-w-xl flex-col gap-6"
+      onSubmit={(e) => e.preventDefault()}
+    >
+      <fieldset className="flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
+        <legend className="mb-1 flex items-center gap-2 px-1 text-sm font-semibold uppercase tracking-wide text-brand-teal">
+          <span aria-hidden className="h-2 w-2 rounded-full bg-brand-teal" />
           Compulsory
         </legend>
 
@@ -142,7 +146,7 @@ export function SubjectForm({
           </label>
           <select
             id="home-language"
-            className="rounded border border-line bg-paper-raised px-3 py-2 text-sm text-ink"
+            className="cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
             value={homeLanguage}
             onChange={(e) => {
               const next = e.target.value as LanguageOption | "";
@@ -172,7 +176,7 @@ export function SubjectForm({
           </label>
           <select
             id="fal"
-            className="rounded border border-line bg-paper-raised px-3 py-2 text-sm text-ink"
+            className="cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
             value={firstAdditionalLanguage}
             onChange={(e) => setFirstAdditionalLanguage(e.target.value as LanguageOption | "")}
           >
@@ -198,7 +202,7 @@ export function SubjectForm({
           </label>
           <select
             id="mathematics"
-            className="rounded border border-line bg-paper-raised px-3 py-2 text-sm text-ink"
+            className="cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
             value={mathematics}
             onChange={(e) => setMathematics(e.target.value as MathematicsOption | "")}
           >
@@ -223,8 +227,9 @@ export function SubjectForm({
         />
       </fieldset>
 
-      <fieldset className="flex flex-col gap-3">
-        <legend className="mb-1 text-sm font-semibold uppercase tracking-wide text-ink-faint">
+      <fieldset className="flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
+        <legend className="mb-1 flex items-center gap-2 px-1 text-sm font-semibold uppercase tracking-wide text-brand-coral">
+          <span aria-hidden className="h-2 w-2 rounded-full bg-brand-coral" />
           Electives ({electives.length} of {MIN_ELECTIVES}-{MAX_ELECTIVES})
         </legend>
 
@@ -233,7 +238,11 @@ export function SubjectForm({
             (s) => s.code === elective.code || !selectedElectiveCodes.includes(s.code)
           );
           return (
-            <div key={index} className="flex flex-col gap-2 rounded border border-line p-3">
+            <div
+              key={index}
+              className="animate-pop-in flex flex-col gap-2 rounded-xl border border-line bg-paper p-3"
+              style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
+            >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
                   <SubjectCombobox
@@ -246,7 +255,7 @@ export function SubjectForm({
                 {electives.length > MIN_ELECTIVES && (
                   <button
                     type="button"
-                    className="mt-6 text-xs text-mark-red hover:underline"
+                    className="mt-6 cursor-pointer text-xs text-mark-red hover:underline"
                     onClick={() => removeElective(index)}
                   >
                     Remove
@@ -267,7 +276,7 @@ export function SubjectForm({
         {electives.length < MAX_ELECTIVES && (
           <button
             type="button"
-            className="self-start text-sm font-medium text-mark-green hover:underline"
+            className="cursor-pointer self-start rounded-full border border-dashed border-brand-teal px-3 py-1.5 text-sm font-medium text-brand-teal transition-transform hover:scale-[1.03] active:scale-[0.97]"
             onClick={addElective}
           >
             + Add a 4th elective
