@@ -4,8 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { matchProgramme } from "@/lib/matching/engine";
 import { ResultCard } from "./ResultCard";
 import { ShareBar } from "./ShareBar";
+import { ApplicationChecklist } from "./ApplicationChecklist";
+import { ApsImprovementSimulator } from "./ApsImprovementSimulator";
+import { CourseComparisonTable } from "./CourseComparisonTable";
+import { InterestQuiz } from "@/components/interests/InterestQuiz";
 import { LABELS } from "@/config/labels";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { useApplicationChecklist } from "@/lib/useApplicationChecklist";
 import {
   SAMPLE_APPLICATION_WINDOWS,
   SAMPLE_APS_RULE,
@@ -34,6 +39,19 @@ const BUCKET_ORDER: MatchBucket[] = ["qualify", "almostQualify", "notYet"];
 export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   const { user } = useAuth();
   const [shortlist, setShortlist] = useState<string[]>([]);
+  const { checked: checklistChecked, toggle: toggleChecklistItem } = useApplicationChecklist();
+  const [compareIds, setCompareIds] = useState<string[]>([]);
+  const MAX_COMPARE = 3;
+
+  function toggleCompare(programmeId: string) {
+    setCompareIds((prev) =>
+      prev.includes(programmeId)
+        ? prev.filter((id) => id !== programmeId)
+        : prev.length < MAX_COMPARE
+          ? [...prev, programmeId]
+          : prev
+    );
+  }
 
   useEffect(() => {
     if (!user) {
@@ -97,6 +115,21 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
 
       <ShareBar marks={marks} />
 
+      <ApsImprovementSimulator marks={marks} />
+
+      <InterestQuiz entries={results} />
+
+      <ApplicationChecklist checked={checklistChecked} onToggle={toggleChecklistItem} />
+
+      {compareIds.length >= 2 && (
+        <CourseComparisonTable
+          programmes={compareIds
+            .map((id) => results.find((r) => r.programme.id === id)?.programme)
+            .filter((p): p is (typeof results)[number]["programme"] => p !== undefined)}
+          onRemove={(id) => setCompareIds((prev) => prev.filter((x) => x !== id))}
+        />
+      )}
+
       {BUCKET_ORDER.map((bucket) => {
         const entries = byBucket.get(bucket)!;
         if (entries.length === 0) return null;
@@ -116,6 +149,10 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
                 )}
                 isShortlisted={user ? shortlist.includes(programme.id) : undefined}
                 onToggleShortlist={user ? () => toggleShortlist(programme.id) : undefined}
+                checkedChecklistIds={checklistChecked}
+                isComparing={compareIds.includes(programme.id)}
+                onToggleCompare={() => toggleCompare(programme.id)}
+                compareDisabled={compareIds.length >= MAX_COMPARE}
               />
             ))}
           </div>

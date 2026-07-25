@@ -153,6 +153,12 @@ export interface SubjectRequirement {
   minPercent?: number;
 }
 
+/** Broad interest categories for the "which courses suit me?" quiz
+ * (lib/recommendations.ts, config/interestQuiz.ts) -- not a DBE/CHE
+ * taxonomy, just a small organisational aid, same status as a subject's
+ * `groupLabel`. A programme can genuinely span more than one. */
+export type FieldTag = "technology" | "science" | "business" | "people" | "creative" | "practical";
+
 export interface Programme extends FactProvenance {
   id: string;
   institutionId: string;
@@ -170,6 +176,10 @@ export interface Programme extends FactProvenance {
   additionalRequirements: string[];
   careerOutcomes: string[];
   applyUrl: string | null;
+  /** Not itself a verified fact the way requirements/dates are -- an
+   * editorial tag for matching against learner interests, same status as
+   * a subject's `groupLabel`. Doesn't need a sourceUrl of its own. */
+  fieldTags: FieldTag[];
 }
 
 // ---------------------------------------------------------------------------

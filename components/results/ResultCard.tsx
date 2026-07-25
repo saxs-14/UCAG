@@ -1,8 +1,10 @@
 import Link from "next/link";
 import { resolveApplicationCta } from "@/lib/applicationStatus";
+import { calculateReadiness } from "@/lib/readiness";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
 import { CircledMark } from "@/components/CircledMark";
+import { ReadinessBar } from "./ReadinessBar";
 import type { MatchResult } from "@/lib/matching/types";
 import type {
   ApplicationWindow,
@@ -24,6 +26,15 @@ interface ResultCardProps {
    * anonymous visitor rather than shown-but-disabled. */
   isShortlisted?: boolean;
   onToggleShortlist?: () => void;
+  /** The shared "prepare to apply" checklist state -- generic, not
+   * per-programme (see config/applicationDocuments.ts), so every card
+   * reads the same Set. */
+  checkedChecklistIds: ReadonlySet<string>;
+  /** Course comparison (up to 3 at once) -- unlike shortlisting, needs no
+   * account, since it's transient session state, not saved data. */
+  isComparing: boolean;
+  onToggleCompare: () => void;
+  compareDisabled: boolean;
 }
 
 const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
@@ -64,8 +75,13 @@ export function ResultCard({
   applicationWindow,
   isShortlisted,
   onToggleShortlist,
+  checkedChecklistIds,
+  isComparing,
+  onToggleCompare,
+  compareDisabled,
 }: ResultCardProps) {
   const status = applicationWindow?.status ?? "unknown";
+  const readiness = calculateReadiness(matchResult, checkedChecklistIds);
   const cta = resolveApplicationCta(
     status,
     {
@@ -108,20 +124,33 @@ export function ResultCard({
               {programme.name}
             </Link>
           </h3>
-          {onToggleShortlist && (
-            <button
-              type="button"
-              onClick={onToggleShortlist}
-              aria-pressed={isShortlisted}
-              className={`no-print shrink-0 rounded border px-2 py-1 text-xs font-medium ${
-                isShortlisted
-                  ? "border-mark-green bg-mark-green text-white"
-                  : "border-line text-ink-soft hover:bg-slate-soft"
-              }`}
-            >
-              {isShortlisted ? "★ Shortlisted" : "☆ Shortlist"}
-            </button>
-          )}
+          <div className="no-print flex shrink-0 items-center gap-2">
+            <label className="flex items-center gap-1 text-xs text-ink-soft">
+              <input
+                type="checkbox"
+                id={`compare-${programme.id}`}
+                name={`compare-${programme.id}`}
+                checked={isComparing}
+                disabled={!isComparing && compareDisabled}
+                onChange={onToggleCompare}
+              />
+              Compare
+            </label>
+            {onToggleShortlist && (
+              <button
+                type="button"
+                onClick={onToggleShortlist}
+                aria-pressed={isShortlisted}
+                className={`rounded border px-2 py-1 text-xs font-medium ${
+                  isShortlisted
+                    ? "border-mark-green bg-mark-green text-white"
+                    : "border-line text-ink-soft hover:bg-slate-soft"
+                }`}
+              >
+                {isShortlisted ? "★ Shortlisted" : "☆ Shortlist"}
+              </button>
+            )}
+          </div>
         </div>
         <p className="text-sm text-ink-soft">
           {programme.qualificationType} · NQF {programme.nqfLevel} · {programme.duration}
@@ -199,6 +228,8 @@ export function ResultCard({
           </>
         )}
       </div>
+
+      <ReadinessBar readiness={readiness} />
 
       <p className="text-xs font-mono tabular-nums text-ink-faint">
         Verified {programme.verifiedOn} ·{" "}

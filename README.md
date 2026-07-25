@@ -7,8 +7,9 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: Phase 9 (test, harden, deploy) complete, awaiting checkpoint. Live at
-[ucag-nine.vercel.app](https://ucag-nine.vercel.app).**
+**Status: all 10 planned phases (0-9) complete. Live at
+[ucag-nine.vercel.app](https://ucag-nine.vercel.app). Post-launch feature round
+("admissions intelligence") also shipped -- see Status below.**
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
@@ -493,6 +494,45 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     (Phase 8 measured and reduced it by hand; wiring an actual CI gate for
     it is further work), and screen-reader/axe-based accessibility testing
     beyond Lighthouse's own audit.
+- **Post-launch: "admissions intelligence" feature round.** After Phase 9
+  shipped, evaluated a large batch of feature ideas (two different AI
+  consultations' worth) against the live product. Split cleanly into two
+  buckets: a genuinely different app (UMP-specific campus-life features --
+  residence guides, shuttle routes, counselling booking) with zero
+  overlap with UCAG's actual data model, correctly not built; and real
+  extensions of the existing pure `lib/aps/`/`lib/matching/` engines,
+  which were built:
+  - **Admission readiness** (`lib/readiness.ts`) -- combines each
+    programme's real subject/APS requirements with a generic "prepare to
+    apply" checklist (`config/applicationDocuments.ts`, localStorage-only,
+    no account needed) into one readiness percentage per card. The
+    document checklist is deliberately generic, never presented as a
+    specific institution's actual requirements, since none are verified
+    yet.
+  - **APS Improvement Simulator** (`ApsImprovementSimulator.tsx`) -- "what
+    if I improve one subject?", live-recalculated against the existing
+    engines, scoped explicitly to one institution's formula (never framed
+    as a universal APS). **A real bug found and fixed during testing**:
+    the target-mark field could get permanently stuck on a stale
+    intermediate value (e.g. "8" instead of "80") because a lazy
+    `useState` initializer captured whatever the mark happened to be at
+    the exact render the component first mounted -- which can be a
+    mid-keystroke value while the learner is still typing. Fixed by
+    tracking the live entered mark until the learner actually edits the
+    simulator's own field.
+  - **Smart course recommendation** (`lib/recommendations.ts`) -- a
+    3-question interest quiz re-ranks programmes the learner already
+    qualifies or almost-qualifies for; it never surfaces something they
+    don't currently qualify for, no matter how well it matches their
+    interests. Needed a real (small, additive) schema change: `Programme`
+    gained a `fieldTags` field.
+  - **Course comparison** (`CourseComparisonTable.tsx`) -- select up to 3
+    result cards, see a side-by-side table.
+  - Skipped, both flagged to the user rather than silently built or
+    dropped: an "AI Admission Advisor" chatbot (no LLM API key exists --
+    same open gap as Phase 4) and reverting the app's branding to
+    UMP-only (would reverse the Phase 0 decision to rebuild UCAG as
+    national-capable).
 - **Firebase**: no real cloud project exists for v2 yet, but the app **is**
   genuinely tested against a real Firebase backend now -- the local
   emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a

@@ -111,6 +111,7 @@ export const SAMPLE_PROGRAMMES: Programme[] = [
     additionalRequirements: [],
     careerOutcomes: ["Software Developer", "Data Analyst"],
     applyUrl: "https://example.test/apply/bsc-cs",
+    fieldTags: ["technology", "science"],
     sourceUrl: SAMPLE_SOURCE_URL,
     verifiedOn: SAMPLE_VERIFIED_ON,
     academicYear: SAMPLE_ACADEMIC_YEAR,
@@ -135,6 +136,7 @@ export const SAMPLE_PROGRAMMES: Programme[] = [
     additionalRequirements: [],
     careerOutcomes: ["Chartered Accountant", "Financial Analyst"],
     applyUrl: null, // deliberately unset -- exercises the "open but no link on record" CTA path
+    fieldTags: ["business"],
     sourceUrl: SAMPLE_SOURCE_URL,
     verifiedOn: SAMPLE_VERIFIED_ON,
     academicYear: SAMPLE_ACADEMIC_YEAR,
@@ -156,6 +158,7 @@ export const SAMPLE_PROGRAMMES: Programme[] = [
     additionalRequirements: [],
     careerOutcomes: ["IT Support Technician"],
     applyUrl: "https://example.test/apply/higher-cert-it",
+    fieldTags: ["technology", "practical"],
     sourceUrl: SAMPLE_SOURCE_URL,
     verifiedOn: SAMPLE_VERIFIED_ON,
     academicYear: SAMPLE_ACADEMIC_YEAR,
