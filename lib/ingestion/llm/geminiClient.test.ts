@@ -59,6 +59,25 @@ describe("GeminiLlmClient", () => {
     expect(result.tokensUsed).toBe(175);
   });
 
+  it("includes hidden thinking tokens in tokensUsed on reasoning-capable models", async () => {
+    // Live-verified against a real key: gemini-flash-latest (the
+    // reasoning-mandatory alias) spent 81-89 hidden thoughtsTokenCount
+    // tokens replying to a one-word prompt. If this isn't summed in,
+    // checkBudgetLive() silently undercounts real usage.
+    vi.stubEnv("LLM_API_KEY", "fake-gemini-key");
+    vi.stubGlobal(
+      "fetch",
+      fakeFetch({
+        candidates: [{ content: { parts: [{ text: '{"opensOn":"2027-04-01"}' }] } }],
+        usageMetadata: { promptTokenCount: 7, candidatesTokenCount: 1, thoughtsTokenCount: 88 },
+      })
+    );
+
+    const client = new GeminiLlmClient();
+    const result = await client.extract({ sourceText: "x", instructions: "y", schema });
+    expect(result.tokensUsed).toBe(96);
+  });
+
   it("rejects (does not coerce) a response that fails schema validation", async () => {
     vi.stubEnv("LLM_API_KEY", "fake-gemini-key");
     vi.stubGlobal(
