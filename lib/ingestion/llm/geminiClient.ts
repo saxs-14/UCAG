@@ -15,8 +15,22 @@ import type { LlmClient, LlmExtractionRequest, LlmExtractionResponse } from "./c
  * (Flash-only from April, version bumps since). Verify the current
  * free-tier-eligible model name in Google AI Studio when setting
  * LLM_API_KEY, and override via the `model` option or LLM_MODEL env var
- * if "gemini-flash-latest" (a rolling alias, not a fact this codebase can
- * verify on your behalf) isn't current by the time you read this.
+ * if "gemini-flash-lite-latest" (a rolling alias, not a fact this codebase
+ * can verify on your behalf) isn't current by the time you read this.
+ *
+ * Defaults to the *lite* alias, not "gemini-flash-latest", based on a
+ * live-tested comparison against a real key: the full Flash model
+ * (currently resolving to gemini-3.6-flash) is a mandatory-reasoning model
+ * that spent 81-89 hidden "thinking" tokens replying to a one-word prompt
+ * -- thinkingConfig.thinkingBudget:0 was rejected outright as an invalid
+ * argument, so that cost cannot be turned off for that model. The lite
+ * alias (currently gemini-3.5-flash-lite) produced zero thinking tokens by
+ * default on the same prompts, including a realistic date-extraction JSON
+ * task, while remaining free-tier eligible and answering correctly. Two
+ * older non-reasoning models (gemini-2.0-flash, gemini-2.0-flash-lite)
+ * were also tried and are NOT free-tier eligible on a fresh key (quota
+ * limit 0) -- Google appears to have removed them from the free tier
+ * rather than the lite alias being the exception.
  */
 export class GeminiLlmClient implements LlmClient {
   private readonly apiKey: string;
@@ -30,7 +44,7 @@ export class GeminiLlmClient implements LlmClient {
       );
     }
     this.apiKey = env.LLM_API_KEY;
-    this.model = options?.model ?? process.env.LLM_MODEL ?? "gemini-flash-latest";
+    this.model = options?.model ?? process.env.LLM_MODEL ?? "gemini-flash-lite-latest";
   }
 
   async extract<T>(request: LlmExtractionRequest<T>): Promise<LlmExtractionResponse<T>> {
@@ -65,7 +79,17 @@ export class GeminiLlmClient implements LlmClient {
 
     const body = (await response.json()) as {
       candidates?: { content?: { parts?: { text?: string }[] }; finishReason?: string }[];
-      usageMetadata?: { promptTokenCount?: number; candidatesTokenCount?: number };
+      usageMetadata?: {
+        promptTokenCount?: number;
+        candidatesTokenCount?: number;
+        /** Hidden reasoning tokens on thinking-capable models (e.g. the
+         * default gemini-flash-latest alias) -- live-verified to be the
+         * majority of total token cost on a trivial prompt (81-89 of ~90
+         * tokens). Not billed separately from output tokens by Gemini, but
+         * must still count toward this app's own budget tracking or
+         * checkBudgetLive() silently undercounts real usage. */
+        thoughtsTokenCount?: number;
+      };
     };
 
     const text = body.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -86,7 +110,10 @@ export class GeminiLlmClient implements LlmClient {
     const usage = body.usageMetadata;
     return {
       data: validated,
-      tokensUsed: (usage?.promptTokenCount ?? 0) + (usage?.candidatesTokenCount ?? 0),
+      tokensUsed:
+        (usage?.promptTokenCount ?? 0) +
+        (usage?.candidatesTokenCount ?? 0) +
+        (usage?.thoughtsTokenCount ?? 0),
     };
   }
 }

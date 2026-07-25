@@ -575,11 +575,31 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     already hit the Hobby-plan cron-count limit once). Every proposal
     lands in the Verification Queue exactly like everything else in this
     app; nothing from this pipeline is ever auto-published.
-  - **Still needs a real `LLM_API_KEY` from the user before any of this
-    executes against a live endpoint** -- get a free one at
-    https://aistudio.google.com/apikey, set `LLM_PROVIDER=gemini` and
-    `LLM_API_KEY=...` in `.env.local` (see `.env.example`). Without it,
-    the button returns a clear error, not a fabricated success.
+  - **Live-verified against a real Gemini key**, not just unit-tested
+    against a fake HTTP layer: real `x-goog-api-key` auth, the exact
+    request/response shape the code expects, and a realistic date-extraction
+    JSON prompt all round-tripped correctly. That live check caught two
+    real things the fake-client tests couldn't: (1) the default model
+    alias (`gemini-flash-latest`, resolving to `gemini-3.6-flash` at test
+    time) is a mandatory-reasoning model that spent 81-89 hidden
+    "thinking" tokens answering a one-word prompt, and rejected
+    `thinkingConfig.thinkingBudget: 0` as an invalid argument -- that cost
+    can't be turned off for that model. Switched the default to the
+    `gemini-flash-lite-latest` alias instead, which produced zero thinking
+    tokens on the same prompts (including the realistic extraction one)
+    while staying free-tier eligible and answering correctly -- two older
+    non-reasoning models (`gemini-2.0-flash`, `gemini-2.0-flash-lite`) were
+    also tried and turned out to have been removed from the free tier
+    entirely (quota limit 0), so the lite alias isn't a fallback, it's the
+    only free, low-cost, non-reasoning-by-default option currently
+    available. (2) `tokensUsed` was only summing `promptTokenCount +
+    candidatesTokenCount`, silently missing `thoughtsTokenCount` --
+    fixed so budget tracking counts real usage on any model that does
+    reason. Each learner/admin who wants this to keep running needs their
+    own key from https://aistudio.google.com/apikey (`LLM_PROVIDER=gemini`
+    + `LLM_API_KEY=...` in `.env.local`, see `.env.example`); without one
+    configured, the button returns a clear error, not a fabricated
+    success.
 - **Firebase**: no real cloud project exists for v2 yet, but the app **is**
   genuinely tested against a real Firebase backend now -- the local
   emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a
