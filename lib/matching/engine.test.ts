@@ -43,6 +43,7 @@ const baseProgramme: Programme = {
   additionalRequirements: [],
   careerOutcomes: [],
   applyUrl: "https://example.test/apply",
+  fieldTags: ["technology"],
   sourceUrl: "https://example.test/programme",
   verifiedOn: "2026-07-23",
   academicYear: 2027,
