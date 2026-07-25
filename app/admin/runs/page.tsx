@@ -14,6 +14,7 @@ export default function RunsPage() {
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [runningWindows, setRunningWindows] = useState(false);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -31,6 +32,29 @@ export default function RunsPage() {
     );
     return unsubscribe;
   }, []);
+
+  async function runApplicationWindows() {
+    setRunningWindows(true);
+    setMessage(null);
+    setError(null);
+    try {
+      const res = await adminFetch("/api/admin/application-windows/run", { method: "POST" });
+      const body = await res.json().catch(() => ({}));
+      if (res.ok) {
+        setMessage(
+          `Run complete: ${body.itemsQueued} field${body.itemsQueued === 1 ? "" : "s"} queued for review, ` +
+            `${body.totalTokensUsed} tokens used. Check the Verification Queue page to review.`
+        );
+      } else {
+        setMessage(null);
+        setError(body.error ?? `Request failed (${res.status}).`);
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setRunningWindows(false);
+    }
+  }
 
   async function rerun(id: string) {
     setBusyId(id);
@@ -51,12 +75,26 @@ export default function RunsPage() {
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-semibold">Ingestion runs</h1>
       <p className="text-sm text-gray-600 dark:text-gray-400">
-        History of every ingestion pipeline run: token spend, cost, errors. Manual re-run isn&apos;t
-        wired to a live extraction pipeline yet -- no LLM_API_KEY is configured for v2 (see
-        README.md Phase 4 status) -- so re-run honestly returns &quot;not implemented&quot;
-        rather than a fabricated success. The Dead Link Report page has the one ingestion task
-        that IS live-runnable today.
+        History of every ingestion pipeline run: token spend, cost, errors. Application dates are
+        never auto-published -- every proposed change lands in the Verification Queue for a human
+        to approve, no matter how confident the extraction. Re-running a specific historical run
+        by id (the per-row &quot;Re-run&quot; button) isn&apos;t implemented -- use &quot;Run
+        application windows now&quot; below to trigger a fresh run instead.
       </p>
+      <div>
+        <button
+          type="button"
+          disabled={runningWindows}
+          onClick={runApplicationWindows}
+          className="rounded border px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-gray-700"
+        >
+          {runningWindows ? "Running..." : "Run application windows now"}
+        </button>
+        <p className="mt-1 text-xs text-gray-500">
+          Requires LLM_PROVIDER + LLM_API_KEY to be configured (see .env.example) -- returns a
+          clear error instead of a fake success if they aren&apos;t set.
+        </p>
+      </div>
       {error && (
         <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
           {error}

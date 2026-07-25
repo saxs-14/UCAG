@@ -357,6 +357,14 @@ export interface Source {
   url: string;
   publisher: string;
   type: SourceType;
+  /** Which institution this source's extracted facts belong to -- null
+   * for institution-agnostic sources (DHET, DBE, Umalusi, SAQA, NSFAS,
+   * Stats SA, CHE). Required for any orchestrator that needs to know
+   * which institution's Firestore documents to diff/propose changes
+   * against (e.g. applicationWindows extraction) -- added when that
+   * orchestrator was first built, since a source id string alone
+   * ("ump-admissions") is a naming convention, not a real join key. */
+  institutionId: string | null;
   robotsAllowed: boolean;
   lastFetchedAt: string | null;
   etag: string | null;

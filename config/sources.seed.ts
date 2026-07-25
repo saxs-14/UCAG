@@ -18,7 +18,7 @@
 
 import type { Source } from "@/lib/firestore/types";
 
-const NOT_YET_FETCHED = { lastFetchedAt: null, etag: null, enabled: true } as const;
+const NOT_YET_FETCHED = { lastFetchedAt: null, etag: null, enabled: true, institutionId: null } as const;
 
 export const GOVERNMENT_SOURCES: Source[] = [
   {
@@ -137,6 +137,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.85,
     notes: "robots.txt only explicitly names Googlebot with Allow: / -- no explicit rule for other user-agents; treated as permissive but worth a recheck.",
     ...NOT_YET_FETCHED,
+    institutionId: "ump",
   },
   {
     id: "up-admissions",
@@ -148,6 +149,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.7,
     notes: "Direct fetch returned 403 in Phase 0 research (likely bot-protection or JS-rendered content) -- a real ingestion run may need a headless-browser fetch strategy, not a plain HTTP GET.",
     ...NOT_YET_FETCHED,
+    institutionId: "up",
   },
   {
     id: "wits-admissions",
@@ -159,6 +161,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.9,
     notes: "Content-verified live by direct fetch in Phase 0 (confirmed the 8-point-scale/LO-included/English+Maths-bonus methodology).",
     ...NOT_YET_FETCHED,
+    institutionId: "wits",
   },
   {
     id: "stellenbosch-admissions",
@@ -170,6 +173,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.75,
     notes: "The specific admission-requirements sub-page 403'd on direct fetch; this jumping-off page is the documented official entry point instead.",
     ...NOT_YET_FETCHED,
+    institutionId: "stellenbosch",
   },
   {
     id: "uct-admissions",
@@ -181,6 +185,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.9,
     notes: "Content-verified live by direct fetch in Phase 0 (confirmed the percentage/Faculty-Point-Score methodology). IMPORTANT: uct.ac.za's robots.txt explicitly blocks named AI-crawler user agents (GPTBot and similar) while leaving standard search-engine crawling open. This bot's user-agent (see config/ingestion.ts USER_AGENT) is not one of the explicitly-named bots, so it technically falls under the general/permissive rule -- but this is flagged here as a deliberate judgment call, not a silent workaround. Confirm with the project owner before UCT's first live extraction run.",
     ...NOT_YET_FETCHED,
+    institutionId: "uct",
   },
   {
     id: "nmu-admissions",
@@ -192,6 +197,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.9,
     notes: "Content-verified live by direct fetch in Phase 0 (confirmed the Applicant-Score-out-of-600 + quintile 1-3 equity bonus methodology).",
     ...NOT_YET_FETCHED,
+    institutionId: "nmu",
   },
   {
     id: "uj-admissions",
@@ -203,6 +209,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.7,
     notes: "Direct fetch returned 403 in Phase 0 research -- likely needs a headless-browser fetch strategy.",
     ...NOT_YET_FETCHED,
+    institutionId: "uj",
   },
   {
     id: "nwu-admissions",
@@ -214,6 +221,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.8,
     notes: "URL auto-advances by cycle year (redirected from a 2027 URL during Phase 0 research) -- do not hardcode the year in scraping logic, follow redirects.",
     ...NOT_YET_FETCHED,
+    institutionId: "nwu",
   },
   {
     id: "unisa-admissions",
@@ -225,6 +233,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.85,
     notes: "APS/entry requirements live on per-qualification pages, not one central page -- expect to need many source entries (one per programme or programme group) once UNISA's catalogue is actually ingested.",
     ...NOT_YET_FETCHED,
+    institutionId: "unisa",
   },
   {
     id: "cao-ukzn",
@@ -236,6 +245,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.85,
     notes: "UKZN does not run its own first-time-undergrad application portal -- first-year applicants apply through CAO, not a UKZN-specific system. This is the correct source for UKZN application-window/portal data, not a ukzn.ac.za URL.",
     ...NOT_YET_FETCHED,
+    institutionId: "ukzn",
   },
   {
     id: "tut-admissions",
@@ -246,6 +256,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     fetchIntervalHours: 720,
     reliabilityScore: 0.8,
     ...NOT_YET_FETCHED,
+    institutionId: "tut",
   },
   {
     id: "cput-admissions",
@@ -257,6 +268,7 @@ export const INSTITUTION_SOURCES: Source[] = [
     reliabilityScore: 0.5,
     notes: "TLS handshake errors on both HTTP and HTTPS in the Phase 0 research tool -- neither content nor robots.txt were independently confirmed. Recheck with a different fetch method before this source's first live run.",
     ...NOT_YET_FETCHED,
+    institutionId: "cput",
   },
 ];
 
