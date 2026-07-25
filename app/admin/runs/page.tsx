@@ -14,7 +14,7 @@ export default function RunsPage() {
   const [error, setError] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  const [runningWindows, setRunningWindows] = useState(false);
+  const [runningTask, setRunningTask] = useState<string | null>(null);
 
   useEffect(() => {
     const unsubscribe = onSnapshot(
@@ -33,12 +33,12 @@ export default function RunsPage() {
     return unsubscribe;
   }, []);
 
-  async function runApplicationWindows() {
-    setRunningWindows(true);
+  async function runIngestionTask(endpoint: string) {
+    setRunningTask(endpoint);
     setMessage(null);
     setError(null);
     try {
-      const res = await adminFetch("/api/admin/application-windows/run", { method: "POST" });
+      const res = await adminFetch(endpoint, { method: "POST" });
       const body = await res.json().catch(() => ({}));
       if (res.ok) {
         setMessage(
@@ -52,7 +52,7 @@ export default function RunsPage() {
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
-      setRunningWindows(false);
+      setRunningTask(null);
     }
   }
 
@@ -78,23 +78,36 @@ export default function RunsPage() {
         History of every ingestion pipeline run: token spend, cost, errors. Application dates are
         never auto-published -- every proposed change lands in the Verification Queue for a human
         to approve, no matter how confident the extraction. Re-running a specific historical run
-        by id (the per-row &quot;Re-run&quot; button) isn&apos;t implemented -- use &quot;Run
-        application windows now&quot; below to trigger a fresh run instead.
+        by id (the per-row &quot;Re-run&quot; button) isn&apos;t implemented -- use the buttons
+        below to trigger a fresh run instead. Programme requirements feed the APS engine
+        directly, so proposals there matter even more than most -- review carefully.
       </p>
-      <div>
-        <button
-          type="button"
-          disabled={runningWindows}
-          onClick={runApplicationWindows}
-          className="rounded border px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-gray-700"
-        >
-          {runningWindows ? "Running..." : "Run application windows now"}
-        </button>
-        <p className="mt-1 text-xs text-gray-500">
-          Requires LLM_PROVIDER + LLM_API_KEY to be configured (see .env.example) -- returns a
-          clear error instead of a fake success if they aren&apos;t set.
-        </p>
+      <div className="flex flex-wrap gap-4">
+        <div>
+          <button
+            type="button"
+            disabled={runningTask !== null}
+            onClick={() => runIngestionTask("/api/admin/application-windows/run")}
+            className="rounded border px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-gray-700"
+          >
+            {runningTask === "/api/admin/application-windows/run" ? "Running..." : "Run application windows now"}
+          </button>
+        </div>
+        <div>
+          <button
+            type="button"
+            disabled={runningTask !== null}
+            onClick={() => runIngestionTask("/api/admin/programme-requirements/run")}
+            className="rounded border px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-gray-700"
+          >
+            {runningTask === "/api/admin/programme-requirements/run" ? "Running..." : "Run programme requirements now"}
+          </button>
+        </div>
       </div>
+      <p className="-mt-2 text-xs text-gray-500">
+        Both require LLM_PROVIDER + LLM_API_KEY to be configured (see .env.example) -- return a
+        clear error instead of a fake success if they aren&apos;t set.
+      </p>
       {error && (
         <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
           {error}

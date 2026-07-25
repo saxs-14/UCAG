@@ -600,6 +600,55 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     + `LLM_API_KEY=...` in `.env.local`, see `.env.example`); without one
     configured, the button returns a clear error, not a fabricated
     success.
+- **Post-launch: second real ingestion task, `programmeRequirements`.**
+  Same orchestrator shape as `applicationWindows`
+  (`lib/ingestion/programmeRequirementsPipeline.ts`), reusing the shared
+  fetch/extract/diff/route/persist machinery (extracted
+  `lib/ingestion/fetchSourceText.ts` out once a second orchestrator
+  needed the exact same fetch-strip-cap logic). The real difference: one
+  source page can list *many* programmes, so the extraction schema
+  (`lib/ingestion/schemas/programmeRequirements.ts`) returns an array,
+  not one fixed record, and every `subjectRequirements.subjectCode` is
+  validated against the real, closed set of canonical NSC codes from
+  `config/subjects.ts` -- an invented code is rejected, not coerced.
+  Deliberately scoped to the fields that actually drive APS matching
+  (name, qualification type, minAps, subjectRequirements), not
+  everything `Programme` has room for -- lower-value fields
+  (modeOfDelivery, campuses, careerOutcomes) are left for manual entry
+  via the admin content editor once the core fields are approved.
+  `facultyId`/`schoolId` are derived grouping keys from the extracted
+  faculty name, not resolved references to a real Faculty/School
+  document -- no verified Faculty/School structure exists for any real
+  institution yet (that's the separate, not-yet-built
+  `facultySchoolStructure` task); this is disclosed in code comments,
+  not silently pretended to be more resolved than it is.
+  - **A real bug caught by the tests, not just written to pass them**:
+    `Programme.subjectRequirements` uses optional (`minLevel?`/
+    `minPercent?`) fields that a real stored document omits when not
+    applicable, but the extraction schema always emits both as explicit
+    `null` (so a model can't silently skip a field it's unsure about) --
+    without normalizing, an unchanged programme's requirements diffed
+    as "changed" purely because `{minLevel:5}` and
+    `{minLevel:5,minPercent:null}` serialize differently. Fixed by
+    normalizing extracted requirements to the same omit-when-absent
+    shape before diffing.
+  - **Live-verified against real institution pages**: a real run
+    against all 12 real institution sources found 36 real, correctly-
+    named South African qualifications (e.g. "Bachelor of Commerce",
+    "Bachelor of Medicine and Bachelor of Surgery", "Diploma in Culinary
+    Arts") at 90% confidence, each correctly attributed to a real
+    faculty name. **Honest limitation found by that same live run, not
+    hidden**: 0 of the 36 got real `minAps`/`subjectRequirements` data --
+    not a bug (spot-checked one extraction's full field set: the model
+    correctly left those fields null/empty rather than inventing
+    numbers) but a source-targeting gap. The 12 registered URLs were
+    researched and verified for the *dates* task (application
+    open/close pages); actual APS/subject-requirement numbers live on
+    different pages (prospectus/programme-finder pages) that haven't
+    been researched and verified yet for this task specifically -- the
+    same two-phase pattern already used for `applicationWindows`
+    (build and prove the pipeline mechanism first, then research real
+    per-task source URLs institution by institution).
 - **Firebase**: no real cloud project exists for v2 yet, but the app **is**
   genuinely tested against a real Firebase backend now -- the local
   emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a
