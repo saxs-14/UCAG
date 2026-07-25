@@ -129,13 +129,13 @@ export const GOVERNMENT_SOURCES: Source[] = [
 export const INSTITUTION_SOURCES: Source[] = [
   {
     id: "ump-admissions",
-    url: "https://www.ump.ac.za/",
+    url: "https://www.ump.ac.za/Study-with-us/Application-Process/Online-Applications",
     publisher: "University of Mpumalanga",
     type: "institutionAdmissions",
     robotsAllowed: true,
     fetchIntervalHours: 720,
-    reliabilityScore: 0.85,
-    notes: "robots.txt only explicitly names Googlebot with Allow: / -- no explicit rule for other user-agents; treated as permissive but worth a recheck.",
+    reliabilityScore: 0.9,
+    notes: "Content-verified live by direct fetch: this specific page states real 2027-intake dates (opens 01 June 2026; undergrad/advanced-diploma closes 30 November 2026; honours/postgrad-diploma/masters/doctoral closes 30 January 2027), unlike the bare homepage this entry previously pointed at (which has no dates on it -- confirmed by a real ingestion run returning 0%-confidence nulls for every date field). robots.txt only explicitly names Googlebot with Allow: / -- no explicit rule for other user-agents; treated as permissive (same caveat as before), and independently confirmed fetchable with this project's real bot user-agent (200 response).",
     ...NOT_YET_FETCHED,
     institutionId: "ump",
   },
