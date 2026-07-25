@@ -4,14 +4,14 @@ import { adminErrorResponse } from "@/lib/admin/respond";
 import { getAdminDb } from "@/lib/firebase/admin";
 
 /**
- * Ingestion run manual re-run (Phase 7 brief). Honestly scoped: no live
- * extraction pipeline is wired end-to-end yet -- no LLM_API_KEY is
- * configured for v2 (see README.md Phase 4 status), so there is nothing
- * real to re-run for a general ingestion task. This route is real and
- * admin-gated, not a stub returning fake success -- it looks the run up
- * and returns a clear, honest 501 rather than pretending. The one
- * ingestion task that IS live-runnable today is the link health checker;
- * see app/api/admin/link-health/run (Dead Link Report page's "Run now").
+ * Ingestion run manual re-run BY ID (Phase 7 brief) -- re-executing the
+ * exact same historical run, source-for-source. Honestly scoped: that
+ * specific replay isn't implemented. This is a different feature from
+ * "run application-window ingestion fresh right now," which IS live (see
+ * app/api/admin/application-windows/run, and the Dead Link Report page's
+ * "Run now" for link health). This route is real and admin-gated, not a
+ * stub returning fake success -- it looks the run up and returns a clear,
+ * honest 501 rather than pretending.
  */
 export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
   try {
@@ -29,7 +29,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   return NextResponse.json(
     {
       error:
-        "Manual re-run isn't wired to a live extraction pipeline yet -- no LLM_API_KEY is configured for v2 (see README.md Phase 4 status). The link health checker is the one ingestion task that can be re-run live today -- use the Dead Link Report page instead.",
+        "Re-running this exact historical run by id isn't implemented. To run application-window ingestion fresh right now, use the \"Run application windows now\" button above instead; for link health, use the Dead Link Report page's \"Run now\".",
     },
     { status: 501 }
   );

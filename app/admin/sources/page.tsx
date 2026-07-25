@@ -21,6 +21,7 @@ const emptyForm = {
   url: "",
   publisher: "",
   type: "institutionAdmissions" as SourceType,
+  institutionId: "",
   robotsAllowed: true,
   fetchIntervalHours: 720,
   reliabilityScore: 0.8,
@@ -74,7 +75,10 @@ export default function SourcesPage() {
     setCreating(true);
     setError(null);
     try {
-      const res = await adminFetch("/api/admin/sources", { method: "POST", body: JSON.stringify(form) });
+      const res = await adminFetch("/api/admin/sources", {
+        method: "POST",
+        body: JSON.stringify({ ...form, institutionId: form.institutionId.trim() || null }),
+      });
       if (!res.ok) {
         const body = await res.json().catch(() => ({}));
         throw new Error(body.error ?? `Request failed (${res.status}).`);
@@ -132,6 +136,12 @@ export default function SourcesPage() {
               </option>
             ))}
           </select>
+          <input
+            placeholder="institution id (e.g. ump) -- blank if not institution-specific"
+            value={form.institutionId}
+            onChange={(e) => setForm({ ...form, institutionId: e.target.value })}
+            className="rounded border p-2 text-sm dark:border-gray-700 dark:bg-gray-900"
+          />
           <label className="flex items-center gap-2 text-sm">
             <input
               type="checkbox"
@@ -180,6 +190,7 @@ export default function SourcesPage() {
             <tr className="border-b text-xs text-gray-500 dark:border-gray-700">
               <th className="py-1 pr-3">Publisher</th>
               <th className="py-1 pr-3">Type</th>
+              <th className="py-1 pr-3">Institution</th>
               <th className="py-1 pr-3">robots.txt</th>
               <th className="py-1 pr-3">Cadence (h)</th>
               <th className="py-1 pr-3">Reliability</th>
@@ -197,6 +208,7 @@ export default function SourcesPage() {
                   {source.notes && <div className="text-xs text-gray-500">{source.notes}</div>}
                 </td>
                 <td className="py-1.5 pr-3 text-xs">{source.type}</td>
+                <td className="py-1.5 pr-3 font-mono text-xs">{source.institutionId ?? "--"}</td>
                 <td className="py-1.5 pr-3 text-xs">{source.robotsAllowed ? "allowed" : "blocked"}</td>
                 <td className="py-1.5 pr-3 text-xs">{source.fetchIntervalHours}</td>
                 <td className="py-1.5 pr-3 text-xs">{source.reliabilityScore}</td>

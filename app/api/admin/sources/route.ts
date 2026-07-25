@@ -21,6 +21,9 @@ const createSourceSchema = z.object({
   url: z.string().url(),
   publisher: z.string().min(1),
   type: sourceTypeSchema,
+  /** Which institution this source's facts belong to, e.g. "ump" -- null
+   * (the default) for institution-agnostic sources (DHET, DBE, etc). */
+  institutionId: z.string().min(1).nullable().optional(),
   robotsAllowed: z.boolean(),
   fetchIntervalHours: z.number().positive(),
   reliabilityScore: z.number().min(0).max(1),
@@ -49,7 +52,13 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: `A source with id "${parsed.data.id}" already exists.` }, { status: 409 });
   }
 
-  await ref.set({ ...parsed.data, lastFetchedAt: null, etag: null, enabled: true });
+  await ref.set({
+    ...parsed.data,
+    institutionId: parsed.data.institutionId ?? null,
+    lastFetchedAt: null,
+    etag: null,
+    enabled: true,
+  });
 
   return NextResponse.json({ ok: true, id: parsed.data.id }, { status: 201 });
 }

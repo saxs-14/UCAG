@@ -281,11 +281,11 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     nowhere to record it) and seeded it onto all 20 real sources in
     `config/sources.seed.ts` via one shared spread constant.
   - **Ingestion runs** (`/admin/runs`) -- history/token-spend/cost/error
-    display, wired and ready, but **honestly empty**: no live extraction
-    pipeline has ever run (still no `LLM_API_KEY`, see Phase 4 status), so
-    there is nothing to show yet. Manual re-run is a real, admin-gated
-    endpoint that returns a clear 501 rather than a fabricated success --
-    it does not pretend to re-run a pipeline that doesn't exist.
+    display, wired and ready. As of the later AI-automation round below,
+    "Run application windows now" is a real, live-runnable trigger (needs
+    an `LLM_API_KEY` configured -- see that section); re-running a
+    specific historical run by id is a separate, still-unimplemented
+    feature that returns a clear 501 rather than a fabricated success.
   - **Content editor** (`/admin/editor`) -- generic JSON-patch override
     across the 10 public fact collections, source URL required by the Zod
     schema (not just documented), `verifiedOn` always server-stamped to
@@ -533,6 +533,53 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     same open gap as Phase 4) and reverting the app's branding to
     UMP-only (would reverse the Phase 0 decision to rebuild UCAG as
     national-capable).
+- **Post-launch: real AI automation for the ingestion pipeline.** Phase 4
+  built the `applicationWindows` extraction pieces (fetch, extract, diff,
+  route) individually-tested but never wired together against a real
+  provider, since no `LLM_API_KEY` existed. This round closed that gap
+  end to end, choosing Google Gemini specifically: unlike Anthropic (only
+  a one-time trial credit, no ongoing free tier), Gemini's free tier is
+  genuinely free indefinitely (no card, 1,500 requests/day on the Flash
+  models) -- the right default for a solo-developer project with no
+  ingestion budget yet. Provider choice stays a one-line env var
+  (`LLM_PROVIDER=gemini` vs `anthropic`) via the pre-existing
+  provider-agnostic `LlmClient` interface, not a hardcoded dependency.
+  - `lib/ingestion/llm/geminiClient.ts` -- real `GeminiLlmClient`,
+    unit-tested against a fake HTTP layer (still no real key to test
+    against a live endpoint with). `getLlmClient()` is the one place that
+    turns `LLM_PROVIDER` into a concrete client.
+  - `lib/ingestion/applicationWindowPipeline.ts` -- the actual
+    orchestrator: fetch -> strip HTML to plain text
+    (`htmlToPlainText.ts`, a direct token-cost lever, not just cleanup)
+    -> respect `enabled`/`robotsAllowed`/kill-switch -> extract via
+    whichever provider is configured -> diff against what's on record ->
+    always queue for human review, never auto-publish (a wrong date costs
+    a learner a year) -> persist. **A real bug found and fixed by the
+    tests, not just written to pass them**: an unnecessary
+    `?? undefined` after optional chaining was collapsing a legitimate
+    recorded `null` (e.g. "confirmed, no late-closing date") into
+    `undefined` ("nothing recorded"), which made the diff logic report a
+    false change on every already-correct null field, since
+    `JSON.stringify(undefined)` and `JSON.stringify(null)` are never
+    equal. Caught by a test asserting `noChange` when extracted values
+    match what's already on record; fixed by removing the `?? undefined`.
+  - `lib/ingestion/budgetTracker.ts` -- closed a separate real gap:
+    `checkBudget()` existed since Phase 4, fully tested, but was never
+    called from any real code path (confirmed by grepping for callers).
+    Now wired in before every extraction call, and the whole run stops
+    (not just the current source) if the shared month-to-date budget
+    would be exceeded.
+  - `app/api/admin/application-windows/run/route.ts` + a "Run
+    application windows now" button on `/admin/runs` -- admin-gated
+    (`requireAdmin`), deliberately not a new Vercel cron entry (Phase 9
+    already hit the Hobby-plan cron-count limit once). Every proposal
+    lands in the Verification Queue exactly like everything else in this
+    app; nothing from this pipeline is ever auto-published.
+  - **Still needs a real `LLM_API_KEY` from the user before any of this
+    executes against a live endpoint** -- get a free one at
+    https://aistudio.google.com/apikey, set `LLM_PROVIDER=gemini` and
+    `LLM_API_KEY=...` in `.env.local` (see `.env.example`). Without it,
+    the button returns a clear error, not a fabricated success.
 - **Firebase**: no real cloud project exists for v2 yet, but the app **is**
   genuinely tested against a real Firebase backend now -- the local
   emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a
