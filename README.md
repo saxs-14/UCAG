@@ -649,6 +649,41 @@ rationale in `docs/MASTER_PROMPT_v2.md` §3.
     same two-phase pattern already used for `applicationWindows`
     (build and prove the pipeline mechanism first, then research real
     per-task source URLs institution by institution).
+  - **Follow-up: closed that source-targeting gap for UMP, and found
+    two more real bugs live.** Researched: unlike application dates,
+    real APS numbers for UMP live one page per programme, not one
+    aggregate list (confirmed -- the one candidate aggregate URL 404s).
+    Registered and content-verified (via direct fetch, not a search
+    snippet) 5 real UMP programme pages as a proof of concept. Live runs
+    against them surfaced two genuine extraction robustness bugs, fixed
+    in each case rather than prompt-engineered around indefinitely:
+    (1) the model sometimes returned a bare array instead of the
+    required `{programmes: [...]}` shape, and separately emitted
+    `additionalRequirements` as a bare string or `null` instead of an
+    array despite explicit instructions -- fixed with a Zod
+    `z.preprocess` that normalizes the *shape* (null/string/array all
+    become a proper `string[]`) without inventing or dropping content,
+    covered by a new `programmeRequirements.test.ts`; (2) the
+    `subjectCode` rejection message didn't include the actual invalid
+    value, making root-causing painful -- switched to `superRefine` to
+    include it. That diagnostic upgrade found the real cause of the
+    remaining failures on the first try: UMP's English requirement is
+    stated as plain "English", which the model correctly can't map to a
+    canonical code, since the schema requires a Home Language/First
+    Additional Language slot (`ENG-HL`/`ENG-FAL`) that the source text
+    doesn't specify. **Confirmed this rejection is correct, not a bug**:
+    `lib/aps/engine.ts` does exact-string `subjectCode` matching with no
+    HL/FAL fallback, so accepting a bare `"ENG"` would silently never
+    match any real learner's actual mark -- worse than rejecting it, since
+    it would misrepresent every learner as not meeting a requirement they
+    may well meet. Fixing that for real needs a genuine
+    `SubjectRequirement` data-model decision ("either language slot
+    accepted"), not an extraction-schema patch, so left as a documented,
+    correct rejection rather than a hasty workaround. End result: 1 of the
+    5 UMP programme pages now extracts a fully real record (Bachelor of
+    Arts in Media, Communication and Culture -- minAps 32 at 100%
+    confidence, live-verified against the actual Firestore data the run
+    wrote); the other 4 correctly reject for the reason above.
 - **Firebase**: no real cloud project exists for v2 yet, but the app **is**
   genuinely tested against a real Firebase backend now -- the local
   emulator suite (see "Local development" in `CLAUDE.md`). Deploying to a
