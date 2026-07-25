@@ -6,13 +6,19 @@
  * marking-pen meaning is untouched on purpose: green for qualify/correct,
  * gold for "almost -- here's the gap" (never red -- almost-qualified is
  * feedback, not a rejection), slate for not-yet, red held in reserve for
- * genuine errors only. Redesign brief was "beautiful, colorful, fun,
- * learner-interactive" -- delivered by warming the neutrals (cream/warm-
- * charcoal instead of cold paper/near-black) and adding two new brand
- * accents (teal, coral) for chrome/decoration, deliberately never reused
- * for qualify/almost/error meaning so the two systems can't be confused.
- * Every new pairing below was checked against WCAG AA (4.5:1 text, 3:1
- * large text/UI) before being chosen, not eyeballed.
+ * genuine errors only.
+ *
+ * CORRECTED (2026-07-25) against docs/MASTER_PROMPT_v2.md's actual Phase 8
+ * brief, which explicitly says: "Do not hand me the default AI look --
+ * cream background, big serif, terracotta accent." The first pass of this
+ * redesign used a warm cream paper (#fbf3e7) -- exactly that forbidden
+ * pattern, despite avoiding the serif/terracotta half of it. Paper is now
+ * a true white/near-black neutral (grounded in the actual signature
+ * element -- exam-script paper and pen ink, not a coffee-shop palette);
+ * the "colorful/fun" brief is carried entirely by the brand-teal/coral
+ * accents and motion instead of by tinting the base surface. Every
+ * pairing below re-checked against WCAG AA (4.5:1 text, 3:1 large
+ * text/UI) after the correction, not eyeballed.
  *
  * Single source of truth per token: components reference `text-mark-green`,
  * `bg-paper-raised`, etc. directly (no `dark:` prefix needed for color) --
@@ -23,19 +29,37 @@
  * brief's low-data-mode requirement and the <200KB calculator-route
  * budget (Phase 8) are real constraints for SA users on limited data, not
  * ones to abandon just because the brief also asked for personality. The
- * one deliberate addition is `--font-display` (Fredoka, self-hosted via
- * next/font in app/layout.tsx -- automatic subsetting, 2 weights only),
- * used ONLY for large display moments (app name, the circled APS number,
- * result headings) -- never on body copy, labels, or buttons, so the
- * fast-rendering system font still carries all of the interactive UI.
+ * one deliberate addition is `--font-display` (Fredoka), used ONLY for
+ * large display moments (app name, the circled APS number, result
+ * headings) -- never on body copy, labels, or buttons.
+ *
+ * Per the brief's explicit "detect navigator.connection.saveData and
+ * honour it", `--font-display` DEFAULTS to the system stack here --
+ * Fredoka is opt-IN via `[data-rich-fonts="true"]` (app/layout.tsx), not
+ * opt-out, and its stylesheet is a plain <link> injected by that same
+ * script, not next/font. Both of those are the result of two rounds of
+ * live verification against a real production build (not dev) that
+ * simpler approaches don't actually work: navigator.connection is a
+ * browser-only API, so server-rendered HTML can never know saveData's
+ * value up front, and this Chromium build fetches a @font-face resource
+ * once its rule is merely PRESENT in a loaded stylesheet with a matching
+ * unicode-range -- regardless of whether any element's resolved style
+ * actually uses that font-family. That ruled out both an opt-out CSS
+ * override (confirmed correct computed style, still fetched the font)
+ * and even an opt-in CSS default pointed at a next/font-generated
+ * @font-face that's unconditionally present in the shared bundle (same
+ * result). The only thing that actually stops the request is the font
+ * reference not existing in the DOM/CSSOM at all by default -- see
+ * app/layout.tsx's RICH_FONTS_SCRIPT, which injects Fredoka's stylesheet
+ * itself only once it has confirmed saveData is off.
  */
 @theme {
-  --color-paper: #fbf3e7;
-  --color-paper-raised: #fffdf9;
-  --color-ink: #2b2013;
-  --color-ink-soft: #5a4a32;
-  --color-ink-faint: #7a6b52;
-  --color-line: #d8c6a5;
+  --color-paper: #ffffff;
+  --color-paper-raised: #f6f7f5;
+  --color-ink: #181b1d;
+  --color-ink-soft: #4a5054;
+  --color-ink-faint: #6b7176;
+  --color-line: #dee1de;
 
   --color-mark-green: #1c7a4d;
   --color-mark-green-soft: #e4f1ea;
@@ -56,17 +80,17 @@
 
   --font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
-  --font-display: var(--font-fredoka), "Segoe UI", sans-serif;
+  --font-display: var(--font-sans);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-paper: #231a10;
-    --color-paper-raised: #2c2116;
-    --color-ink: #f3ead9;
-    --color-ink-soft: #d2c2a5;
-    --color-ink-faint: #b0a088;
-    --color-line: #4a3b26;
+    --color-paper: #15181a;
+    --color-paper-raised: #1d2124;
+    --color-ink: #f1f3f2;
+    --color-ink-soft: #c4c9ca;
+    --color-ink-faint: #9ba2a4;
+    --color-line: #33393c;
 
     --color-mark-green: #4fbf85;
     --color-mark-green-soft: #142a20;
@@ -82,6 +106,13 @@
     --color-brand-coral: #f286a8;
     --color-brand-coral-soft: #3a1e29;
   }
+}
+
+/* Opt-in only, set by app/layout.tsx's RICH_FONTS_SCRIPT once it has
+ * confirmed navigator.connection.saveData is not on and injected
+ * Fredoka's own <link> stylesheet -- see the file header for why. */
+:root[data-rich-fonts="true"] {
+  --font-display: "Fredoka", "Segoe UI", sans-serif;
 }
 
 body {

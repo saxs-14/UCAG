@@ -146,7 +146,7 @@ export function SubjectForm({
           </label>
           <select
             id="home-language"
-            className="cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
+            className="min-h-11 cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
             value={homeLanguage}
             onChange={(e) => {
               const next = e.target.value as LanguageOption | "";
@@ -176,7 +176,7 @@ export function SubjectForm({
           </label>
           <select
             id="fal"
-            className="cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
+            className="min-h-11 cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
             value={firstAdditionalLanguage}
             onChange={(e) => setFirstAdditionalLanguage(e.target.value as LanguageOption | "")}
           >
@@ -202,7 +202,7 @@ export function SubjectForm({
           </label>
           <select
             id="mathematics"
-            className="cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
+            className="min-h-11 cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
             value={mathematics}
             onChange={(e) => setMathematics(e.target.value as MathematicsOption | "")}
           >
@@ -253,9 +253,13 @@ export function SubjectForm({
                   />
                 </div>
                 {electives.length > MIN_ELECTIVES && (
+                  // -m-2 p-2 widens the actual tap target to 44x44 (WCAG
+                  // 2.5.5) without growing the visible text -- a rarely-used
+                  // destructive action doesn't need visual weight, but still
+                  // needs a real hit area on a 5-inch screen (Phase 8 brief).
                   <button
                     type="button"
-                    className="mt-6 cursor-pointer text-xs text-mark-red hover:underline"
+                    className="-m-2 mt-4 cursor-pointer p-2 text-xs text-mark-red hover:underline"
                     onClick={() => removeElective(index)}
                   >
                     Remove
@@ -276,7 +280,7 @@ export function SubjectForm({
         {electives.length < MAX_ELECTIVES && (
           <button
             type="button"
-            className="cursor-pointer self-start rounded-full border border-dashed border-brand-teal px-3 py-1.5 text-sm font-medium text-brand-teal transition-transform hover:scale-[1.03] active:scale-[0.97]"
+            className="inline-flex min-h-11 cursor-pointer items-center self-start rounded-full border border-dashed border-brand-teal px-4 text-sm font-medium text-brand-teal transition-transform hover:scale-[1.03] active:scale-[0.97]"
             onClick={addElective}
           >
             + Add a 4th elective

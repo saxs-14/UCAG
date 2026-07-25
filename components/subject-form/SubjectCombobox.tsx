@@ -71,7 +71,7 @@ export function SubjectCombobox({
           aria-expanded={isOpen}
           aria-controls={`combobox-listbox-${label}`}
           aria-autocomplete="list"
-          className="w-full cursor-text rounded-xl border border-line bg-paper-raised px-3 py-2 text-sm text-ink transition-colors focus:border-brand-coral focus:outline-none"
+          className="h-11 w-full cursor-text rounded-xl border border-line bg-paper-raised px-3 text-sm text-ink transition-colors focus:border-brand-coral focus:outline-none"
           placeholder={selected ? selected.name : placeholder}
           value={isOpen ? query : selected?.name ?? ""}
           onFocus={() => {
@@ -85,7 +85,7 @@ export function SubjectCombobox({
           <button
             type="button"
             aria-label={`Clear ${label}`}
-            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-lg text-ink-faint transition-transform hover:scale-110 hover:text-brand-coral"
+            className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center text-lg text-ink-faint transition-transform hover:scale-110 hover:text-brand-coral"
             onClick={() => onChange(null)}
           >
             ×
@@ -112,7 +112,7 @@ export function SubjectCombobox({
                         type="button"
                         role="option"
                         aria-selected={subject.code === value}
-                        className="flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-brand-teal-soft"
+                        className="flex min-h-11 w-full cursor-pointer items-center justify-between px-3 text-left text-sm transition-colors hover:bg-brand-teal-soft"
                         onClick={() => handleSelect(subject)}
                       >
                         <span className="text-ink">{subject.name}</span>
