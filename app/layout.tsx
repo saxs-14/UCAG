@@ -1,15 +1,25 @@
 import type { Metadata, Viewport } from "next";
+import { Fredoka } from "next/font/google";
 import { LABELS } from "@/config/labels";
 import { NavBar } from "@/components/NavBar";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import "./globals.css";
 
-// No imported webfont, by design -- see app/globals.css's --font-sans. The
-// brief requires system fonts in low-data mode and a <200KB JS budget on
-// the calculator route; rather than treating that as a constraint to work
-// around, the system-UI stack was the type decision from the start (Phase
-// 8 "The Marked Script" design proposal).
+// Body/UI text stays on the system-UI stack, by design -- see app/globals.css's
+// --font-sans. The brief's low-data-mode requirement and the <200KB
+// calculator-route budget (Phase 8) are real constraints for SA users on
+// limited data, not abandoned by the "beautiful/colorful/fun" redesign.
+// The one deliberate addition is Fredoka for --font-display (large display
+// moments only -- app name, the circled APS number, result headings) --
+// next/font self-hosts and subsets it at build time (no runtime Google
+// Fonts request), and only 2 weights are pulled in, not the full family.
+const fredoka = Fredoka({
+  subsets: ["latin"],
+  weight: ["500", "700"],
+  variable: "--font-fredoka",
+  display: "swap",
+});
 
 export const metadata: Metadata = {
   title: `${LABELS.app.name} -- ${LABELS.app.fullName}`,
@@ -31,7 +41,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
+    <html lang="en" className={fredoka.variable}>
       <body className="antialiased">
         {/* WCAG 2.1 AA "bypass blocks" -- visible only on keyboard focus,
             skips the nav straight to each page's <main id="main-content">. */}

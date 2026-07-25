@@ -71,7 +71,7 @@ export function SubjectCombobox({
           aria-expanded={isOpen}
           aria-controls={`combobox-listbox-${label}`}
           aria-autocomplete="list"
-          className="w-full rounded border border-line bg-paper-raised px-3 py-2 text-sm text-ink focus:border-mark-green focus:outline-none"
+          className="w-full cursor-text rounded-xl border border-line bg-paper-raised px-3 py-2 text-sm text-ink transition-colors focus:border-brand-coral focus:outline-none"
           placeholder={selected ? selected.name : placeholder}
           value={isOpen ? query : selected?.name ?? ""}
           onFocus={() => {
@@ -85,7 +85,7 @@ export function SubjectCombobox({
           <button
             type="button"
             aria-label={`Clear ${label}`}
-            className="absolute right-2 top-1/2 -translate-y-1/2 text-ink-faint hover:text-ink-soft"
+            className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer text-lg text-ink-faint transition-transform hover:scale-110 hover:text-brand-coral"
             onClick={() => onChange(null)}
           >
             ×
@@ -95,7 +95,7 @@ export function SubjectCombobox({
           <ul
             id={`combobox-listbox-${label}`}
             role="listbox"
-            className="absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded border border-line bg-paper-raised shadow-lg"
+            className="animate-pop-in absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-line bg-paper-raised shadow-lg"
           >
             {grouped.length === 0 && (
               <li className="px-3 py-2 text-sm text-ink-faint">No subjects match.</li>
@@ -112,12 +112,12 @@ export function SubjectCombobox({
                         type="button"
                         role="option"
                         aria-selected={subject.code === value}
-                        className="flex w-full items-center justify-between px-3 py-2 text-left text-sm hover:bg-mark-green-soft"
+                        className="flex w-full cursor-pointer items-center justify-between px-3 py-2 text-left text-sm transition-colors hover:bg-brand-teal-soft"
                         onClick={() => handleSelect(subject)}
                       >
                         <span className="text-ink">{subject.name}</span>
                         {subject.isDesignated && (
-                          <span className="ml-2 rounded bg-mark-green-soft px-1.5 py-0.5 text-[10px] font-medium text-mark-green">
+                          <span className="ml-2 rounded-full bg-brand-coral-soft px-2 py-0.5 text-[10px] font-medium text-brand-coral">
                             Designated
                           </span>
                         )}

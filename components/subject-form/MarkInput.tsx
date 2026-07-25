@@ -36,7 +36,7 @@ export function MarkInput({ label, percentage, onChange, disabled }: MarkInputPr
         max={100}
         inputMode="numeric"
         disabled={disabled}
-        className="w-20 rounded border border-line bg-paper-raised px-2 py-1 text-sm font-mono tabular-nums text-ink focus:border-mark-green focus:outline-none disabled:bg-slate-soft"
+        className="w-20 rounded-lg border-2 border-line bg-paper-raised px-2 py-1 text-sm font-mono tabular-nums text-ink transition-colors focus:border-mark-green focus:outline-none disabled:bg-slate-soft"
         value={percentage ?? ""}
         onChange={(e) => {
           const raw = e.target.value;
@@ -53,7 +53,7 @@ export function MarkInput({ label, percentage, onChange, disabled }: MarkInputPr
       <span className="text-sm text-ink-faint">%</span>
       {level !== null && (
         <span
-          className="rounded bg-slate-soft px-2 py-0.5 text-xs font-mono font-medium tabular-nums text-ink-soft"
+          className="rounded-full bg-slate-soft px-2.5 py-0.5 text-xs font-mono font-medium tabular-nums text-ink-soft"
           title="Standard NSC scale, for orientation only -- not necessarily what a given institution uses"
         >
           Level {level}

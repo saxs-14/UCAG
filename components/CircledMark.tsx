@@ -28,10 +28,24 @@ interface CircledMarkProps {
   label?: string;
 }
 
+const VARIANT_GLOW: Record<"qualify" | "almost" | "neutral", string> = {
+  qualify: "var(--color-mark-green)",
+  almost: "var(--color-mark-gold)",
+  neutral: "var(--color-slate)",
+};
+
+/** Both ellipse paths are ~220 SVG units long -- close enough for a
+ * shared draw-on length that a css var can drive without measuring each
+ * path at runtime (getTotalLength() would need a client component). */
+const APPROX_PATH_LENGTH = 220;
+
 export function CircledMark({ value, variant = "qualify", size = "lg", label }: CircledMarkProps) {
   return (
     <span
-      className={`relative inline-flex items-center justify-center px-3 py-1 ${VARIANT_COLOR[variant]}`}
+      className={`relative inline-flex items-center justify-center px-3 py-1 ${VARIANT_COLOR[variant]} ${
+        variant === "qualify" ? "animate-soft-glow rounded-full" : ""
+      }`}
+      style={{ "--glow-color": VARIANT_GLOW[variant] } as React.CSSProperties}
       role={label ? "img" : undefined}
       aria-label={label}
     >
@@ -42,20 +56,26 @@ export function CircledMark({ value, variant = "qualify", size = "lg", label }: 
         className="pointer-events-none absolute inset-0 h-full w-full overflow-visible"
       >
         <path
+          className="animate-draw-circle"
+          style={{ "--circle-length": APPROX_PATH_LENGTH } as React.CSSProperties}
           d="M10,32 C8,14 30,4 52,5 C78,6 94,16 92,32 C90,50 66,57 46,56 C22,55 6,46 10,32 Z"
           fill="none"
           stroke="currentColor"
           strokeWidth="2.5"
+          strokeDasharray={APPROX_PATH_LENGTH}
         />
         <path
+          className="animate-draw-circle"
+          style={{ "--circle-length": APPROX_PATH_LENGTH, animationDelay: "260ms" } as React.CSSProperties}
           d="M12,30 C11,50 34,58 54,57 C76,56 91,46 89,30 C87,15 68,6 48,7 C26,8 9,16 12,30 Z"
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          strokeDasharray={APPROX_PATH_LENGTH}
           opacity="0.6"
         />
       </svg>
-      <span className={`relative font-mono font-bold tabular-nums ${SIZE_TEXT[size]}`}>{value}</span>
+      <span className={`relative font-display font-bold tabular-nums ${SIZE_TEXT[size]}`}>{value}</span>
     </span>
   );
 }

@@ -38,7 +38,7 @@ interface ResultCardProps {
 }
 
 const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
-  qualify: "border-l-4 border-mark-green",
+  qualify: "border-l-4 border-mark-green shadow-[0_1px_16px_-4px_var(--color-mark-green)]",
   almostQualify: "border-l-4 border-mark-gold",
   notYet: "border-l-4 border-slate",
 };
@@ -95,7 +95,9 @@ export function ResultCard({
   const apsGap = matchResult.bucket === "almostQualify" ? findApsGap(matchResult) : null;
 
   return (
-    <article className={`flex flex-col gap-3 rounded-lg bg-paper-raised p-4 ${BUCKET_SPINE[matchResult.bucket]}`}>
+    <article
+      className={`animate-rise-in flex flex-col gap-3 rounded-xl bg-paper-raised p-4 transition-transform hover:-translate-y-0.5 ${BUCKET_SPINE[matchResult.bucket]}`}
+    >
       <header className="flex flex-col gap-1">
         <div className="flex items-start justify-between gap-2">
           <span className={`text-xs font-semibold uppercase tracking-wide ${BUCKET_LABEL_COLOR[matchResult.bucket]}`}>
@@ -141,9 +143,9 @@ export function ResultCard({
                 type="button"
                 onClick={onToggleShortlist}
                 aria-pressed={isShortlisted}
-                className={`rounded border px-2 py-1 text-xs font-medium ${
+                className={`cursor-pointer rounded-full border px-2.5 py-1 text-xs font-medium transition-transform active:scale-95 ${
                   isShortlisted
-                    ? "border-mark-green bg-mark-green text-white"
+                    ? "border-brand-coral bg-brand-coral text-white"
                     : "border-line text-ink-soft hover:bg-slate-soft"
                 }`}
               >
@@ -193,23 +195,23 @@ export function ResultCard({
             href={cta.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="rounded bg-mark-green px-3 py-1.5 font-medium text-white hover:opacity-90"
+            className="rounded-full bg-brand-teal px-4 py-1.5 font-medium text-white transition-transform hover:scale-[1.03] active:scale-[0.97]"
           >
             {cta.label}
           </a>
         )}
         {cta.kind === "openingSoon" && (
-          <span className="rounded bg-mark-green-soft px-3 py-1.5 font-medium text-mark-green">
+          <span className="rounded-full bg-mark-green-soft px-3 py-1.5 font-medium text-mark-green">
             {cta.label}
           </span>
         )}
         {cta.kind === "statusCheck" && (
           <>
-            <span className="rounded bg-slate-soft px-3 py-1.5 font-medium text-ink-soft">
+            <span className="rounded-full bg-slate-soft px-3 py-1.5 font-medium text-ink-soft">
               {LABELS.applicationStatus.closed}
             </span>
             {cta.url && (
-              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-mark-green hover:underline">
+              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">
                 {cta.label}
               </a>
             )}
@@ -217,11 +219,11 @@ export function ResultCard({
         )}
         {cta.kind === "datesBeingVerified" && (
           <>
-            <span className="rounded bg-slate-soft px-3 py-1.5 font-medium text-ink-soft">
+            <span className="rounded-full bg-slate-soft px-3 py-1.5 font-medium text-ink-soft">
               {cta.label}
             </span>
             {cta.url && (
-              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-mark-green hover:underline">
+              <a href={cta.url} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline">
                 Visit institution site
               </a>
             )}
