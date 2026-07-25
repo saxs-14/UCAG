@@ -1,9 +1,9 @@
 import { extractStructuredData } from "./extract";
 import { diffValue } from "./diff";
 import { routeProposal } from "./route";
-import { htmlToPlainText } from "./htmlToPlainText";
+import { fetchSourceText } from "./fetchSourceText";
 import { applicationWindowExtractionSchema } from "./schemas/applicationWindow";
-import { USER_AGENT, INGESTION_KILL_SWITCH } from "@/config/ingestion";
+import { INGESTION_KILL_SWITCH } from "@/config/ingestion";
 import type { LlmClient } from "./llm/client";
 import type { ApplicationWindow, Source, VerificationQueueItem } from "@/lib/firestore/types";
 import type { BudgetCheckResult } from "./types";
@@ -72,13 +72,6 @@ export interface ApplicationWindowIngestionDeps {
   checkBudgetLive: (estimatedTokens: number, tokensUsedThisRun: number) => Promise<BudgetCheckResult>;
 }
 
-async function fetchSourceText(url: string, fetchImpl: typeof fetch): Promise<string> {
-  const res = await fetchImpl(url, { headers: { "User-Agent": USER_AGENT } });
-  if (!res.ok) throw new Error(`HTTP ${res.status}`);
-  const html = await res.text();
-  return htmlToPlainText(html).slice(0, MAX_SOURCE_TEXT_CHARS);
-}
-
 export async function runApplicationWindowIngestion(
   sources: Source[],
   deps: ApplicationWindowIngestionDeps
@@ -110,7 +103,7 @@ export async function runApplicationWindowIngestion(
 
     let sourceText: string;
     try {
-      sourceText = await fetchSourceText(source.url, fetchImpl);
+      sourceText = await fetchSourceText(source.url, fetchImpl, MAX_SOURCE_TEXT_CHARS);
     } catch (err) {
       results.push({
         sourceId: source.id,
