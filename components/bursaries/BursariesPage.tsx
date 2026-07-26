@@ -67,6 +67,8 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
         <label className="flex flex-col gap-1 text-sm text-ink-soft">
           {LABELS.bursaries.fieldOfStudyFilterLabel}
           <select
+            id="bursaries-field-of-study-filter"
+            name="fieldOfStudy"
             className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
             value={fieldOfStudy}
             onChange={(e) => setFieldOfStudy(e.target.value)}
@@ -83,6 +85,8 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
         <label className="flex flex-col gap-1 text-sm text-ink-soft">
           {LABELS.bursaries.levelFilterLabel}
           <select
+            id="bursaries-level-filter"
+            name="levelFilter"
             className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
             value={levelFilter}
             onChange={(e) => setLevelFilter(e.target.value as BursaryLevelRequired | "all")}
@@ -98,6 +102,8 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
         <label className="flex flex-col gap-1 text-sm text-ink-soft">
           {LABELS.bursaries.matricOnlyFilterLabel}
           <select
+            id="bursaries-matric-only-filter"
+            name="matricOnly"
             className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
             value={String(matricOnly)}
             onChange={(e) =>
