@@ -14,9 +14,10 @@
  */
 
 import type { Institution } from "@/lib/firestore/types";
+import { CURRENT_ACADEMIC_YEAR } from "./academicYear";
 
 const VERIFIED_ON = "2026-07-23";
-const ACADEMIC_YEAR = 2027;
+const ACADEMIC_YEAR = CURRENT_ACADEMIC_YEAR;
 
 export const TIER_1_INSTITUTIONS: Institution[] = [
   {

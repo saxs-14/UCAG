@@ -275,6 +275,32 @@ export async function runProgrammeRequirementsIngestion(
         : `${source.institutionId}-fac-unspecified`;
       const existing = await deps.getExistingProgramme(docId);
 
+      // A genuinely new programme also needs institutionId proposed once --
+      // certain (it's the source register's institutionId, not the model's
+      // guess), so confidence 1.0, same reasoning and pattern as
+      // applicationWindowPipeline.ts's structural-identity-fields block.
+      // Without this, an approved programme would have every field a
+      // learner sees except the one that says which institution it
+      // belongs to.
+      if (!existing) {
+        await deps.persistProposal({
+          collection: "programmes",
+          docId,
+          field: "institutionId",
+          currentValue: null,
+          proposedValue: source.institutionId,
+          confidence: 1,
+          sourceUrl: source.url,
+          extractedAt,
+          corroboratingSources: [source.url],
+          status: "pending",
+          reviewedBy: null,
+          reviewedAt: null,
+        });
+        fieldsQueuedThisSource++;
+        itemsQueued++;
+      }
+
       const fieldsToQueue = queueFieldsForProgramme(programme, existing, docId, source.institutionId, facultyId);
       for (const { field, currentValue, proposedValue } of fieldsToQueue) {
         await deps.persistProposal({

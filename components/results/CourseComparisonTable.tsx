@@ -11,9 +11,9 @@ const ROWS: ComparisonRow[] = [
   { label: "Qualification", render: (p) => p.qualificationType },
   { label: "NQF level", numeric: true, render: (p) => p.nqfLevel },
   { label: "Duration", render: (p) => p.duration },
-  { label: "Mode", render: (p) => p.modeOfDelivery },
+  { label: "Mode", render: (p) => p.modeOfDelivery ?? "Not on record" },
   { label: "Minimum APS", numeric: true, render: (p) => p.minAps ?? "Not on record" },
-  { label: "Career outcomes", render: (p) => p.careerOutcomes.join(", ") || "Not on record" },
+  { label: "Career outcomes", render: (p) => p.careerOutcomes?.join(", ") || "Not on record" },
 ];
 
 /** Up to 3 programmes selected via each ResultCard's "Compare" checkbox

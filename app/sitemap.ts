@@ -1,16 +1,16 @@
 import type { MetadataRoute } from "next";
 import { getBaseUrl } from "@/lib/env/client";
-import { SAMPLE_PROGRAMMES } from "@/config/sampleData";
+import { listVerifiedProgrammeIds } from "@/lib/catalog/getRealProgrammeDetail";
 
 /**
  * docs/MASTER_PROMPT_v2.md Phase 9: "sitemap -- learners find this
- * through search." Programme URLs come from SAMPLE_PROGRAMMES for now
- * (see app/programmes/[id]/page.tsx header) -- swapping in a real,
- * verified catalogue later is a data change, not a routing change.
+ * through search." Programme URLs come from the real, verified catalogue
+ * (lib/catalog/getRealProgrammeDetail.ts) -- config/sampleData.ts's
+ * fictional SAMPLE_PROGRAMMES is gone from this file entirely.
  * Deliberately excludes /account (a form, not a landing page worth
  * indexing) and /admin (internal, also blocked in robots.ts).
  */
-export default function sitemap(): MetadataRoute.Sitemap {
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getBaseUrl();
 
   const staticRoutes: MetadataRoute.Sitemap = ["", "/bursaries", "/statistics", "/privacy"].map(
@@ -21,9 +21,10 @@ export default function sitemap(): MetadataRoute.Sitemap {
     })
   );
 
-  const programmeRoutes: MetadataRoute.Sitemap = SAMPLE_PROGRAMMES.map((programme) => ({
-    url: `${base}/programmes/${programme.id}`,
-    lastModified: new Date(programme.verifiedOn),
+  const verifiedProgrammes = await listVerifiedProgrammeIds();
+  const programmeRoutes: MetadataRoute.Sitemap = verifiedProgrammes.map(({ id, verifiedOn }) => ({
+    url: `${base}/programmes/${id}`,
+    lastModified: new Date(verifiedOn),
     changeFrequency: "weekly",
   }));
 

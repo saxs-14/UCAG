@@ -145,6 +145,25 @@ export const LABELS = {
         heading: "Questions or concerns",
         body: "If something about how UCAG handles your information doesn't sit right with you, that's worth raising -- contact details go here once the project has a real support channel set up.",
       },
+      {
+        heading: "The chat assistant",
+        body: "Messages you send to the UCAG Assistant are sent to Google's Gemini API to generate a reply and are not stored by UCAG. Don't share personal details you wouldn't want processed by a third-party AI service. The assistant can help you understand APS and this site -- it never provides institution-specific requirements or dates; those always come from the calculator's verified, sourced results.",
+      },
     ],
+  },
+  chat: {
+    assistantName: "UCAG Assistant",
+    openButtonLabel: "Open chat assistant",
+    closeButtonLabel: "Close chat assistant",
+    aiDisclosureBadge: "AI",
+    disclaimer: "AI-generated answers, for general help only. For verified requirements, always use the calculator.",
+    inputPlaceholder: "Ask about APS, or how this site works...",
+    sendButtonLabel: "Send",
+    thinkingIndicator: "Thinking...",
+    greeting:
+      "Hi! I can help explain how APS works or how to use this site. For a specific programme's requirements, use the calculator above -- I don't have access to verified, up-to-date institution data.",
+    genericError: "Something went wrong -- please try again.",
+    rateLimitedError: "You've sent a lot of messages -- wait a bit before sending another.",
+    notConfiguredError: "The chat assistant isn't available right now.",
   },
 } as const;

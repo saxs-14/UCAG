@@ -1,22 +1,23 @@
 import { StatChart, type ChartSpec } from "./StatChart";
 import { LABELS } from "@/config/labels";
-import { SAMPLE_STATISTICS } from "@/config/sampleData";
+import type { Statistic } from "@/lib/firestore/types";
 
 /**
  * Two sections per docs/MASTER_PROMPT_v2.md Phase 5: higher education and
- * schools. Every chart below except sample-higher-ed-enrolments has zero
- * backing data on purpose -- see config/sampleData.ts SAMPLE_STATISTICS
- * header for why -- so most of this page is a live demonstration of the
- * "data pending verification" rule, not a demo dressed up to look
- * complete. Dataset keys here are what Phase 4 ingestion would need to
- * populate for each chart to go live.
+ * schools. `statistics` is real data (lib/catalog/getRealStatistics.ts,
+ * fetched server-side in app/statistics/page.tsx) -- config/sampleData.ts's
+ * fictional SAMPLE_STATISTICS is gone from this page entirely. As of this
+ * writing only "nsc-results-by-province" has a real, independently
+ * corroborated dataset on record (see scripts/seed-real-bursaries-and-
+ * statistics.mts for sourcing); every other chart below correctly
+ * continues to render "data pending verification"
+ * (lib/statistics/select.ts's getVerifiedStatisticsForDataset is the
+ * enforcement point, not a client-side inference of "should render") --
+ * that's the intended behavior for a dataset nobody has verified yet,
+ * not a placeholder standing in for a demo.
  */
 const HIGHER_EDUCATION_CHARTS: ChartSpec[] = [
-  {
-    id: "enrolments",
-    title: "First-time undergraduate enrolments (sample data -- see note above)",
-    datasetKey: "sample-higher-ed-enrolments",
-  },
+  { id: "enrolments", title: "First-time undergraduate enrolments", datasetKey: "higher-ed-enrolments" },
   { id: "graduations", title: "Graduations by field of study", datasetKey: "higher-ed-graduations" },
   {
     id: "throughput",
@@ -31,7 +32,7 @@ const HIGHER_EDUCATION_CHARTS: ChartSpec[] = [
 ];
 
 const SCHOOLS_CHARTS: ChartSpec[] = [
-  { id: "nsc-by-province", title: "NSC results by province and district", datasetKey: "nsc-results-by-province" },
+  { id: "nsc-by-province", title: "NSC results by province", datasetKey: "nsc-results-by-province" },
   { id: "bachelor-pass", title: "Bachelor's pass rates", datasetKey: "bachelor-pass-rates" },
   {
     id: "subject-performance",
@@ -41,28 +42,20 @@ const SCHOOLS_CHARTS: ChartSpec[] = [
   { id: "school-counts", title: "School counts", datasetKey: "school-counts" },
 ];
 
-export function StatisticsPage() {
+export function StatisticsPage({ statistics }: { statistics: Statistic[] }) {
   return (
     <div className="flex w-full max-w-2xl flex-col gap-8">
-      <div className="rounded border border-dashed border-mark-gold bg-mark-gold-soft p-3 text-sm text-ink">
-        Every real dataset below correctly shows &quot;data pending verification&quot; --
-        extracting real figures from DHET/DBE&apos;s PDF-only publications
-        (see config/sources.seed.ts) is Phase 4 ingestion work that isn&apos;t
-        connected to a live pipeline yet. The one chart with data is explicitly
-        labelled fictional.
-      </div>
-
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.statistics.higherEducationHeading}</h2>
         {HIGHER_EDUCATION_CHARTS.map((spec) => (
-          <StatChart key={spec.id} spec={spec} allStatistics={SAMPLE_STATISTICS} />
+          <StatChart key={spec.id} spec={spec} allStatistics={statistics} />
         ))}
       </section>
 
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.statistics.schoolsHeading}</h2>
         {SCHOOLS_CHARTS.map((spec) => (
-          <StatChart key={spec.id} spec={spec} allStatistics={SAMPLE_STATISTICS} />
+          <StatChart key={spec.id} spec={spec} allStatistics={statistics} />
         ))}
       </section>
     </div>

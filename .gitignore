@@ -43,6 +43,9 @@ yarn-error.log*
 .firebase/
 firebase-debug.log
 firestore-debug.log
+# Local emulator data snapshot (npm run emulators:demo) -- machine-local
+# state, not source; contains an emulator-only test admin auth export.
+/demo-data-export/
 
 .vercel
 .env*

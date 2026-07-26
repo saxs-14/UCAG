@@ -4,6 +4,7 @@ import { requireAdmin } from "@/lib/admin/auth";
 import { adminErrorResponse } from "@/lib/admin/respond";
 import { isEditableFactCollection } from "@/lib/admin/allowlist";
 import { getAdminDb } from "@/lib/firebase/admin";
+import { CURRENT_ACADEMIC_YEAR } from "@/config/academicYear";
 
 /**
  * Verification queue approve/edit/reject (docs/MASTER_PROMPT_v2.md Phase
@@ -74,9 +75,20 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
   if (action !== "reject") {
     const value = action === "edit" ? parsedBody.data.editedValue : item.proposedValue;
     const targetRef = db.collection(item.collection).doc(item.docId);
+    // academicYear isn't itself a per-fact extracted field (VerificationQueueItem
+    // has no academicYear of its own) -- every approved fact belongs to the
+    // one admission cycle this whole app is currently populated for (see
+    // config/academicYear.ts). Without stamping it here, isFactVerified()
+    // (lib/firestore/types.ts) would reject every approved document forever,
+    // since it requires sourceUrl + verifiedOn + academicYear together.
     batch.set(
       targetRef,
-      { [item.field]: value, sourceUrl: item.sourceUrl, verifiedOn: now.slice(0, 10) },
+      {
+        [item.field]: value,
+        sourceUrl: item.sourceUrl,
+        verifiedOn: now.slice(0, 10),
+        academicYear: CURRENT_ACADEMIC_YEAR,
+      },
       { merge: true }
     );
   }

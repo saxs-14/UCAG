@@ -12,7 +12,10 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "admin:grant": "node --env-file=.env.local scripts/set-admin-claim.mjs",
-    "seed:sources": "tsx --env-file=.env.local scripts/seed-sources.mts"
+    "seed:sources": "tsx --env-file=.env.local scripts/seed-sources.mts",
+    "seed:institutions": "tsx --env-file=.env.local scripts/seed-institutions.mts",
+    "seed:bursaries-statistics": "tsx --env-file=.env.local scripts/seed-real-bursaries-and-statistics.mts",
+    "emulators:demo": "firebase emulators:start --only firestore,auth --import=./demo-data-export --export-on-exit"
   },
   "dependencies": {
     "firebase": "^12.16.0",

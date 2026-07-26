@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { resolveApplicationCta } from "@/lib/applicationStatus";
+import { deriveApplicationWindowStatus, resolveApplicationCta } from "@/lib/applicationStatus";
 import { calculateReadiness } from "@/lib/readiness";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
@@ -80,7 +80,22 @@ export function ResultCard({
   onToggleCompare,
   compareDisabled,
 }: ResultCardProps) {
-  const status = applicationWindow?.status ?? "unknown";
+  // The ingestion pipeline (lib/ingestion/applicationWindowPipeline.ts)
+  // only ever proposes opensOn/closesOn/lateClosesOn -- never a status
+  // enum directly, since "open"/"closed"/"openingSoon" is a fact that
+  // changes on its own every day a real date passes, not something worth
+  // re-extracting. `.status` is only ever populated when an admin has
+  // out-of-band knowledge (e.g. an announced early closure) worth
+  // overriding the derived value with; otherwise derive it live from the
+  // real dates, per this function's own doc comment.
+  const status = applicationWindow?.status ?? deriveApplicationWindowStatus(
+    {
+      opensOn: applicationWindow?.opensOn ?? null,
+      closesOn: applicationWindow?.closesOn ?? null,
+      lateClosesOn: applicationWindow?.lateClosesOn ?? null,
+    },
+    new Date()
+  );
   const readiness = calculateReadiness(matchResult, checkedChecklistIds);
   const cta = resolveApplicationCta(
     status,
@@ -161,9 +176,13 @@ export function ResultCard({
         <p className="text-sm text-ink-soft">
           {faculty.name} &middot; {school.name}
         </p>
-        <p className="text-sm text-ink-faint">
-          {programme.campuses.join(", ")} · {programme.modeOfDelivery}
-        </p>
+        {(programme.campuses?.length > 0 || programme.modeOfDelivery) && (
+          <p className="text-sm text-ink-faint">
+            {[programme.campuses?.length > 0 ? programme.campuses.join(", ") : null, programme.modeOfDelivery]
+              .filter(Boolean)
+              .join(" · ")}
+          </p>
+        )}
       </header>
 
       <ul className="flex flex-col gap-1 text-sm">

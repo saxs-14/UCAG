@@ -1,35 +1,21 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { resolveApplicationCta } from "@/lib/applicationStatus";
+import { resolveApplicationCta, deriveApplicationWindowStatus } from "@/lib/applicationStatus";
 import { LABELS } from "@/config/labels";
-import {
-  SAMPLE_APPLICATION_WINDOWS,
-  SAMPLE_FACULTY,
-  SAMPLE_INSTITUTION,
-  SAMPLE_PROGRAMMES,
-  SAMPLE_SCHOOL,
-} from "@/config/sampleData";
-import type { Programme } from "@/lib/firestore/types";
+import { getRealProgrammeDetail } from "@/lib/catalog/getRealProgrammeDetail";
 
 /**
  * Server-rendered programme detail page (docs/MASTER_PROMPT_v2.md Phase
  * 9: "server-rendered programme pages, structured data, sitemap --
- * learners find this through search"). Backed by SAMPLE_PROGRAMMES only
- * -- config/sampleData.ts, explicitly fictional -- since no real,
- * verified programme catalogue exists yet (Phase 4 ingestion isn't
- * connected to a live Firestore project). The page structure (route
- * shape, metadata, JSON-LD) is real and ready for real data; only the
- * data source is a placeholder, flagged on the page itself.
+ * learners find this through search"). Backed by real Firestore data
+ * (lib/catalog/getRealProgrammeDetail.ts) -- config/sampleData.ts's
+ * fictional SAMPLE_PROGRAMMES is gone from this page entirely. Not
+ * statically generated at build time (no generateStaticParams): the
+ * verified catalogue grows independently of deploys, and a hardcoded id
+ * list would 404 every real programme added after the last build.
  */
-
-function findProgramme(id: string): Programme | undefined {
-  return SAMPLE_PROGRAMMES.find((p) => p.id === id);
-}
-
-export function generateStaticParams() {
-  return SAMPLE_PROGRAMMES.map((p) => ({ id: p.id }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -37,28 +23,46 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const programme = findProgramme(id);
-  if (!programme) return { title: `Programme not found -- ${LABELS.app.name}` };
+  const detail = await getRealProgrammeDetail(id);
+  if (!detail) return { title: `Programme not found -- ${LABELS.app.name}` };
 
+  const { programme, institution } = detail;
   return {
-    title: `${programme.name} -- ${SAMPLE_INSTITUTION.name} -- ${LABELS.app.name}`,
-    description: `${programme.qualificationType} at ${SAMPLE_INSTITUTION.name}, NQF ${programme.nqfLevel}, ${programme.duration}. Check your APS against this programme's requirements on ${LABELS.app.name}.`,
+    title: `${programme.name} -- ${institution.name} -- ${LABELS.app.name}`,
+    description: `${programme.qualificationType} at ${institution.name}, ${programme.duration}. Check your APS against this programme's requirements on ${LABELS.app.name}.`,
   };
 }
 
 export default async function ProgrammePage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
-  const programme = findProgramme(id);
-  if (!programme) notFound();
+  const detail = await getRealProgrammeDetail(id);
+  if (!detail) notFound();
 
-  const applicationWindow = SAMPLE_APPLICATION_WINDOWS.find((w) => w.programmeId === programme.id);
-  const status = applicationWindow?.status ?? "unknown";
+  const { programme, institution, faculty, school, applicationWindow } = detail;
+  // lib/ingestion/schemas/programmeRequirements.ts deliberately only
+  // extracts the fields that drive APS matching -- campuses/
+  // modeOfDelivery/careerOutcomes are real Programme fields with no
+  // extraction/queue path to ever populate them, so a real approved
+  // programme document simply won't have them. Guard here rather than
+  // trust the type (which says these are always arrays/strings) --
+  // Programme.campuses.length crashed the page outright on the first
+  // real programme before this fix.
+  const campuses = programme.campuses ?? [];
+  const careerOutcomes = programme.careerOutcomes ?? [];
+  const status = applicationWindow?.status ?? deriveApplicationWindowStatus(
+    {
+      opensOn: applicationWindow?.opensOn ?? null,
+      closesOn: applicationWindow?.closesOn ?? null,
+      lateClosesOn: applicationWindow?.lateClosesOn ?? null,
+    },
+    new Date()
+  );
   const cta = resolveApplicationCta(
     status,
     {
       applyUrl: programme.applyUrl,
-      statusCheckUrl: SAMPLE_INSTITUTION.statusCheckUrl,
-      websiteUrl: SAMPLE_INSTITUTION.websiteUrl,
+      statusCheckUrl: institution.statusCheckUrl,
+      websiteUrl: institution.websiteUrl,
     },
     applicationWindow?.opensOn ?? null
   );
@@ -73,48 +77,47 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
     "@context": "https://schema.org",
     "@type": "EducationalOccupationalProgram",
     name: programme.name,
-    description: programme.careerOutcomes.length
-      ? `Prepares graduates for: ${programme.careerOutcomes.join(", ")}.`
+    description: careerOutcomes.length
+      ? `Prepares graduates for: ${careerOutcomes.join(", ")}.`
       : undefined,
     provider: {
       "@type": "CollegeOrUniversity",
-      name: SAMPLE_INSTITUTION.name,
-      url: SAMPLE_INSTITUTION.websiteUrl,
+      name: institution.name,
+      url: institution.websiteUrl,
     },
-    educationalProgramMode: programme.modeOfDelivery,
+    educationalProgramMode: programme.modeOfDelivery ?? undefined,
     programType: programme.qualificationType,
     timeToComplete: programme.duration,
-    occupationalCategory: programme.careerOutcomes,
+    occupationalCategory: careerOutcomes,
   };
 
   return (
     <main id="main-content" className="flex min-h-screen flex-col items-center gap-6 p-6 sm:p-8">
       <script
         type="application/ld+json"
-        // Static JSON built entirely from our own sample data above, not user input.
+        // Built entirely from our own verified Firestore data above, not user input.
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
       <article className="flex w-full max-w-xl flex-col gap-4">
-        <div className="rounded border border-dashed border-mark-gold bg-mark-gold-soft p-3 text-sm text-ink">
-          This programme is <strong>sample/fictional data</strong>, not a real institution or
-          qualification -- see config/sampleData.ts. Real, verified programme pages land once
-          Phase 4 ingestion is connected to a live Firestore project.
-        </div>
-
         <header className="flex flex-col gap-1">
           <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
             {programme.name}
           </h1>
           <p className="text-sm text-ink-soft">
-            {programme.qualificationType} &middot; NQF {programme.nqfLevel} &middot;{" "}
-            {programme.duration}
+            {programme.qualificationType}
+            {programme.nqfLevel !== null ? ` · NQF ${programme.nqfLevel}` : ""}
+            {programme.duration ? ` · ${programme.duration}` : ""}
           </p>
           <p className="text-sm text-ink-soft">
-            {SAMPLE_FACULTY.name} &middot; {SAMPLE_SCHOOL.name} &middot; {SAMPLE_INSTITUTION.name}
+            {faculty.name} &middot; {school.name} &middot; {institution.name}
           </p>
-          <p className="text-sm text-ink-faint">
-            {programme.campuses.join(", ")} &middot; {programme.modeOfDelivery}
-          </p>
+          {(campuses.length > 0 || programme.modeOfDelivery) && (
+            <p className="text-sm text-ink-faint">
+              {[campuses.length > 0 ? campuses.join(", ") : null, programme.modeOfDelivery]
+                .filter(Boolean)
+                .join(" · ")}
+            </p>
+          )}
         </header>
 
         <section className="flex flex-col gap-2">
@@ -149,11 +152,11 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
           </ul>
         </section>
 
-        {programme.careerOutcomes.length > 0 && (
+        {careerOutcomes.length > 0 && (
           <section className="flex flex-col gap-2">
             <h2 className="text-lg font-bold tracking-tight text-ink">Career outcomes</h2>
             <ul className="list-inside list-disc text-sm text-ink-soft">
-              {programme.careerOutcomes.map((outcome, i) => (
+              {careerOutcomes.map((outcome, i) => (
                 <li key={i}>{outcome}</li>
               ))}
             </ul>
