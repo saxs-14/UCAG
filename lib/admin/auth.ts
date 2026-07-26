@@ -34,7 +34,8 @@ export async function requireAdmin(request: NextRequest): Promise<DecodedIdToken
 
   let decoded: DecodedIdToken;
   try {
-    decoded = await getAdminAuth().verifyIdToken(token);
+    const auth = await getAdminAuth();
+    decoded = await auth.verifyIdToken(token);
   } catch {
     throw new AdminAuthError("Invalid or expired sign-in token.");
   }
