@@ -4,21 +4,69 @@ import { useEffect, useMemo, useState } from "react";
 import { calculateAps } from "@/lib/aps/engine";
 import { matchProgramme } from "@/lib/matching/engine";
 import { resolveSubjectLabel } from "@/config/subjects";
-import { SAMPLE_APS_RULE, SAMPLE_PROGRAMMES } from "@/config/sampleData";
 import { CircledMark } from "@/components/CircledMark";
 import type { SubjectMarkInput } from "@/lib/aps/types";
+import type { ApsRule, Institution, Programme } from "@/lib/firestore/types";
+import type { MatchResult } from "@/lib/matching/types";
+
+interface ApsImprovementSimulatorProps {
+  marks: SubjectMarkInput[];
+  /** Real, already-scored entries (components/results/ResultsSection.tsx)
+   * -- which institution(s) this simulator can even offer is entirely
+   * determined by which institutions have a verified ApsRule on record,
+   * same as the main results. */
+  scored: { programme: Programme; matchResult: MatchResult }[];
+  apsRules: ApsRule[];
+  programmes: Programme[];
+  institutions: Institution[];
+}
 
 /**
  * "What if I improve one subject?" -- a pure what-if recalculation, not a
  * saved/persisted change: reuses lib/aps/engine and lib/matching/engine
  * exactly as ResultsSection does, just against a temporarily-modified
- * copy of the marks array. Scoped to [Sample] Demo University's formula
- * specifically (SAMPLE_APS_RULE) -- APS is per-institution, not one
- * generic number (docs/MASTER_PROMPT_v2.md sect. 2), so this is
- * deliberately labelled as one institution's formula, never as "your
- * APS" in general.
+ * copy of the marks array. config/sampleData.ts's fictional
+ * SAMPLE_APS_RULE/SAMPLE_PROGRAMMES are gone from this component
+ * entirely -- it was the one piece of fake data left wired into the real
+ * results page, invisible only because no institution had a verified
+ * ApsRule yet to make it render at all. It now uses the SAME real,
+ * verified ApsRule and programmes as the scored results above it, and
+ * (since APS is calculated per institution, never as one universal
+ * number -- docs/MASTER_PROMPT_v2.md sect. 2) is explicitly labelled
+ * with that institution's real name, never left generic.
  */
-export function ApsImprovementSimulator({ marks }: { marks: SubjectMarkInput[] }) {
+export function ApsImprovementSimulator({
+  marks,
+  scored,
+  apsRules,
+  programmes,
+  institutions,
+}: ApsImprovementSimulatorProps) {
+  // Every scored entry belongs to an institution with a verified ApsRule
+  // (that's what "scored" means) -- these are the only institutions this
+  // simulator can ever offer a formula for.
+  const scoredInstitutionIds = useMemo(
+    () => Array.from(new Set(scored.map((e) => e.programme.institutionId))),
+    [scored]
+  );
+
+  const [selectedInstitutionId, setSelectedInstitutionId] = useState<string>(
+    scoredInstitutionIds[0] ?? ""
+  );
+
+  useEffect(() => {
+    if (!scoredInstitutionIds.includes(selectedInstitutionId)) {
+      setSelectedInstitutionId(scoredInstitutionIds[0] ?? "");
+    }
+  }, [scoredInstitutionIds, selectedInstitutionId]);
+
+  const apsRule = apsRules.find((r) => r.institutionId === selectedInstitutionId);
+  const institution = institutions.find((i) => i.id === selectedInstitutionId);
+  const institutionProgrammes = useMemo(
+    () => programmes.filter((p) => p.institutionId === selectedInstitutionId),
+    [programmes, selectedInstitutionId]
+  );
+
   const [selectedSubject, setSelectedSubject] = useState<string>(marks[0]?.subjectCode ?? "");
   const [targetMark, setTargetMark] = useState<number>(marks[0]?.percentage ?? 0);
   // Tracks the live entered mark for the selected subject until the
@@ -44,29 +92,34 @@ export function ApsImprovementSimulator({ marks }: { marks: SubjectMarkInput[] }
     }
   }, [marks, selectedSubject, liveMarkForSelected, userEditedTarget]);
 
-  const currentApsResult = useMemo(() => calculateAps(SAMPLE_APS_RULE, marks), [marks]);
-
   const simulatedMarks = useMemo<SubjectMarkInput[]>(() => {
     if (!selectedSubject) return marks;
     return marks.map((m) => (m.subjectCode === selectedSubject ? { ...m, percentage: targetMark } : m));
   }, [marks, selectedSubject, targetMark]);
 
+  const currentApsResult = useMemo(
+    () => (apsRule ? calculateAps(apsRule, marks) : null),
+    [apsRule, marks]
+  );
   const simulatedApsResult = useMemo(
-    () => calculateAps(SAMPLE_APS_RULE, simulatedMarks),
-    [simulatedMarks]
+    () => (apsRule ? calculateAps(apsRule, simulatedMarks) : null),
+    [apsRule, simulatedMarks]
   );
 
   const newlyUnlocked = useMemo(() => {
-    return SAMPLE_PROGRAMMES.filter((programme) => {
-      const before = matchProgramme(programme, SAMPLE_APS_RULE, marks, { catalog: SAMPLE_PROGRAMMES }).bucket;
-      const after = matchProgramme(programme, SAMPLE_APS_RULE, simulatedMarks, {
-        catalog: SAMPLE_PROGRAMMES,
+    if (!apsRule) return [];
+    return institutionProgrammes.filter((programme) => {
+      const before = matchProgramme(programme, apsRule, marks, { catalog: institutionProgrammes }).bucket;
+      const after = matchProgramme(programme, apsRule, simulatedMarks, {
+        catalog: institutionProgrammes,
       }).bucket;
       return before !== "qualify" && after === "qualify";
     });
-  }, [marks, simulatedMarks]);
+  }, [apsRule, institutionProgrammes, marks, simulatedMarks]);
 
-  if (marks.length === 0) return null;
+  if (marks.length === 0 || !apsRule || !institution || !currentApsResult || !simulatedApsResult) {
+    return null;
+  }
 
   const delta = simulatedApsResult.score - currentApsResult.score;
 
@@ -87,9 +140,28 @@ export function ApsImprovementSimulator({ marks }: { marks: SubjectMarkInput[] }
         What if I improve a subject?
       </summary>
       <p className="mt-2 text-xs text-ink-faint">
-        Scoped to [Sample] Demo University&apos;s formula (see config/sampleData.ts) -- APS is
-        calculated per institution, not as one universal number.
+        Scoped to {institution.name}&apos;s formula -- APS is calculated per institution, not as
+        one universal number.
       </p>
+
+      {scoredInstitutionIds.length > 1 && (
+        <label className="mt-2 flex flex-col gap-1 text-sm text-ink-soft">
+          Institution
+          <select
+            id="aps-simulator-institution"
+            name="aps-simulator-institution"
+            value={selectedInstitutionId}
+            onChange={(e) => setSelectedInstitutionId(e.target.value)}
+            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
+          >
+            {scoredInstitutionIds.map((id) => (
+              <option key={id} value={id}>
+                {institutions.find((i) => i.id === id)?.name ?? id}
+              </option>
+            ))}
+          </select>
+        </label>
+      )}
 
       <div className="mt-3 flex flex-wrap items-end gap-3">
         <label className="flex flex-col gap-1 text-sm text-ink-soft">
