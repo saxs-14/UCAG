@@ -1,11 +1,12 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { GeminiChatClient, __resetGeminiChatRateLimiterForTests } from "./geminiChatClient";
-import { CHAT_SYSTEM_PROMPT } from "./systemPrompt";
 
 const OK_BODY = {
   candidates: [{ content: { parts: [{ text: "APS stands for Admission Point Score." }] } }],
   usageMetadata: { promptTokenCount: 50, candidatesTokenCount: 12 },
 };
+
+const TEST_SYSTEM_PROMPT = "You are a test assistant.";
 
 function fakeFetch(body: unknown, ok = true, status = 200): typeof fetch {
   return vi.fn(async () => ({
@@ -28,15 +29,16 @@ describe("GeminiChatClient", () => {
     expect(() => new GeminiChatClient()).toThrow(/LLM_API_KEY is not configured/);
   });
 
-  it("sends the system prompt and full message history, and returns the reply text", async () => {
+  it("sends the given system prompt and full message history, and returns the reply text", async () => {
     vi.stubEnv("LLM_API_KEY", "fake-gemini-key");
     const fetchSpy = fakeFetch(OK_BODY);
     vi.stubGlobal("fetch", fetchSpy);
 
     const client = new GeminiChatClient({ minIntervalMs: 0 });
-    const result = await client.reply([
-      { role: "user", text: "What is APS?" },
-    ]);
+    const result = await client.reply(
+      [{ role: "user", text: "What is APS?" }],
+      TEST_SYSTEM_PROMPT
+    );
 
     expect(result.text).toBe("APS stands for Admission Point Score.");
     expect(result.tokensUsed).toBe(62);
@@ -48,7 +50,7 @@ describe("GeminiChatClient", () => {
       systemInstruction: { parts: { text: string }[] };
       contents: { role: string; parts: { text: string }[] }[];
     };
-    expect(parsedBody.systemInstruction.parts[0]!.text).toBe(CHAT_SYSTEM_PROMPT);
+    expect(parsedBody.systemInstruction.parts[0]!.text).toBe(TEST_SYSTEM_PROMPT);
     expect(parsedBody.contents).toEqual([{ role: "user", parts: [{ text: "What is APS?" }] }]);
   });
 
@@ -58,11 +60,14 @@ describe("GeminiChatClient", () => {
     vi.stubGlobal("fetch", fetchSpy);
 
     const client = new GeminiChatClient({ minIntervalMs: 0 });
-    await client.reply([
-      { role: "user", text: "Hi" },
-      { role: "model", text: "Hello!" },
-      { role: "user", text: "What does 'almost qualify' mean?" },
-    ]);
+    await client.reply(
+      [
+        { role: "user", text: "Hi" },
+        { role: "model", text: "Hello!" },
+        { role: "user", text: "What does 'almost qualify' mean?" },
+      ],
+      TEST_SYSTEM_PROMPT
+    );
 
     const [, init] = (fetchSpy as ReturnType<typeof vi.fn>).mock.calls[0] as [string, RequestInit];
     const parsedBody = JSON.parse(init.body as string) as { contents: { role: string }[] };
@@ -74,9 +79,9 @@ describe("GeminiChatClient", () => {
     vi.stubGlobal("fetch", fakeFetch({ candidates: [] }));
 
     const client = new GeminiChatClient({ minIntervalMs: 0 });
-    await expect(client.reply([{ role: "user", text: "hi" }])).rejects.toThrow(
-      /contained no reply text/
-    );
+    await expect(
+      client.reply([{ role: "user", text: "hi" }], TEST_SYSTEM_PROMPT)
+    ).rejects.toThrow(/contained no reply text/);
   });
 
   it("throws on a non-ok response with no retries when maxRetries is 0", async () => {
@@ -84,9 +89,9 @@ describe("GeminiChatClient", () => {
     vi.stubGlobal("fetch", fakeFetch({ error: "boom" }, false, 500));
 
     const client = new GeminiChatClient({ minIntervalMs: 0, maxRetries: 0 });
-    await expect(client.reply([{ role: "user", text: "hi" }])).rejects.toThrow(
-      /Gemini API error: 500/
-    );
+    await expect(
+      client.reply([{ role: "user", text: "hi" }], TEST_SYSTEM_PROMPT)
+    ).rejects.toThrow(/Gemini API error: 500/);
   });
 
   it("retries a 429 using the server-specified retryDelay, then succeeds", async () => {
@@ -110,7 +115,7 @@ describe("GeminiChatClient", () => {
     });
 
     const client = new GeminiChatClient({ minIntervalMs: 0, sleep });
-    const result = await client.reply([{ role: "user", text: "hi" }]);
+    const result = await client.reply([{ role: "user", text: "hi" }], TEST_SYSTEM_PROMPT);
 
     expect(result.text).toBe("APS stands for Admission Point Score.");
     expect(fetchSpy).toHaveBeenCalledTimes(2);
@@ -126,8 +131,8 @@ describe("GeminiChatClient", () => {
 
     // No minIntervalMs override -- exercises the real production default.
     const client = new GeminiChatClient({ sleep });
-    await client.reply([{ role: "user", text: "hi" }]);
-    await client.reply([{ role: "user", text: "hi again" }]);
+    await client.reply([{ role: "user", text: "hi" }], TEST_SYSTEM_PROMPT);
+    await client.reply([{ role: "user", text: "hi again" }], TEST_SYSTEM_PROMPT);
 
     expect(sleep).toHaveBeenCalledTimes(1);
   });
