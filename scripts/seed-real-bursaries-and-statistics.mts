@@ -17,15 +17,16 @@
  * scope.
  *
  * Internship listings are a harder case than bursary programmes: a
- * bursary is a stable annual programme with a shifting deadline: a
+ * bursary is a stable annual programme with a shifting deadline; a
  * specific internship posting (e.g. Eskom's individual YES vacancies)
  * opens and closes within weeks and goes stale fast. One was confirmed
  * live via eskom.co.za's own recruitment site, then found already
- * expired/redirected by the time this was written. Rather than publish
- * a posting that may already be gone, the one internship entry below is
- * the stable underlying YES *programme* (yes4youth.co.za, a real,
- * ongoing national initiative, not a single vacancy) -- honest about a
- * real, current gap, not a workaround pretending it isn't one.
+ * expired/redirected by the time this was written. Rather than publish a
+ * posting that may already be gone, every internship entry below is a
+ * stable underlying *programme* on the provider's own domain (YES,
+ * Standard Bank's early-careers internships, the National Department of
+ * Health's Internship and Community Service Programme, Transnet's
+ * Engineers in Training), not a single dated vacancy.
  *
  * Both pages are DESIGNED to show "pending verification" / an empty
  * state for anything not on record here -- that's the correct, honest
@@ -164,6 +165,13 @@ const BURSARIES: Omit<Bursary, "id">[] = [
 ];
 
 // --- Internships -------------------------------------------------------
+// Same "stable programme page, not a single dated vacancy" discipline as
+// the file header explains for YES: SABC's own site was checked and
+// skipped (SABC itself has publicly warned about fake internship
+// listings circulating under its name -- https://www.sabc.co.za/sabc/
+// sabc-takes-note-of-a-website-advertising-non-existent-sabc-internships-
+// for-2020-2/ -- and its real internships page has no citable programme
+// content of its own, just a link to a rotating vacancy portal).
 const INTERNSHIPS: Omit<Internship, "id">[] = [
   {
     title: "Youth Employment Service (YES) 12-Month Work Experience Programme",
@@ -175,6 +183,46 @@ const INTERNSHIPS: Omit<Internship, "id">[] = [
     closesOn: null, // an ongoing national programme, not a single dated vacancy -- see file header
     applyUrl: "https://www.yes4youth.co.za/",
     sourceUrl: "https://www.yes4youth.co.za/",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    title: "Standard Bank Internship Programme",
+    provider: "Standard Bank",
+    fieldsOfStudy: ["Commerce", "ICT"],
+    minQualification: "Undergraduate degree/diploma (STEM for the technology tracks, marketing/finance for the business tracks)",
+    matricOnly: false,
+    province: "Gauteng",
+    closesOn: null, // no fixed date on the official page; runs across multiple programme intakes (CIB, Insurance, Salesforce, Mainframe-Cobol)
+    applyUrl: "https://www.standardbank.com/sbg/standard-bank-group/careers/early-careers/internships/opportunities",
+    sourceUrl: "https://www.standardbank.com/sbg/standard-bank-group/careers/early-careers/internships",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    title: "Internship and Community Service Programme (ICSP)",
+    provider: "National Department of Health",
+    fieldsOfStudy: ["Health Sciences"],
+    minQualification:
+      "Completed degree/diploma in Medicine, Nursing, Pharmacy, Physiotherapy, Occupational Therapy, Dietetics, Radiography, Psychology, Dentistry, Audiology, or another allied health profession",
+    matricOnly: false,
+    province: null, // placements nationwide at approved public health facilities
+    closesOn: null, // two allocation cycles annually (Annual and Mid-year); no single fixed date
+    applyUrl: "https://icsp-doh.org.za/",
+    sourceUrl: "https://www.health.gov.za/icsp/",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    title: "Engineers in Training Programme",
+    provider: "Transnet",
+    fieldsOfStudy: ["Engineering"],
+    minQualification: "Completed degree in Engineering",
+    matricOnly: false,
+    province: null, // placements across Transnet's national operations
+    closesOn: null, // no fixed date on the official page; advertised on transnet.net and in newspapers when intakes open
+    applyUrl: "https://www.transnet.net/Careers",
+    sourceUrl: "https://www.transnet.net/RenderPage.aspx?id=7753695",
     verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
   },
