@@ -1,6 +1,5 @@
 import "server-only";
 import { getLlmEnv } from "@/lib/env/server";
-import { CHAT_SYSTEM_PROMPT } from "./systemPrompt";
 import type { ChatMessage } from "./validateChatRequest";
 
 /**
@@ -85,7 +84,11 @@ export class GeminiChatClient {
     if (remaining > 0) await this.sleep(remaining);
   }
 
-  async reply(messages: ChatMessage[]): Promise<ChatReply> {
+  /** systemPrompt is a caller-supplied parameter, not a client-internal
+   * constant -- it's built per-request from live, verified Firestore
+   * data (lib/chat/systemPrompt.ts + lib/catalog/getRealChatContext.ts),
+   * not something this transport-level class should own or cache. */
+  async reply(messages: ChatMessage[], systemPrompt: string): Promise<ChatReply> {
     let attempt = 0;
     for (;;) {
       await this.waitForPacing();
@@ -100,7 +103,7 @@ export class GeminiChatClient {
             "x-goog-api-key": this.apiKey,
           },
           body: JSON.stringify({
-            systemInstruction: { parts: [{ text: CHAT_SYSTEM_PROMPT }] },
+            systemInstruction: { parts: [{ text: systemPrompt }] },
             contents: messages.map((m) => ({
               role: m.role,
               parts: [{ text: m.text }],

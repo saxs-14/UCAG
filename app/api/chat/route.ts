@@ -2,6 +2,8 @@ import { NextResponse, type NextRequest } from "next/server";
 import { GeminiChatClient } from "@/lib/chat/geminiChatClient";
 import { validateChatRequest } from "@/lib/chat/validateChatRequest";
 import { checkChatRateLimit } from "@/lib/chat/rateLimiter";
+import { buildChatSystemPrompt } from "@/lib/chat/systemPrompt";
+import { getRealChatContext } from "@/lib/catalog/getRealChatContext";
 import { reportError } from "@/lib/errorReporting";
 
 /**
@@ -56,7 +58,9 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    const reply = await client.reply(validation.data.messages);
+    const context = await getRealChatContext();
+    const systemPrompt = buildChatSystemPrompt(context);
+    const reply = await client.reply(validation.data.messages, systemPrompt);
     return NextResponse.json({ reply: reply.text });
   } catch (err) {
     reportError(err, { scope: "chat-api" });
