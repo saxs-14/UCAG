@@ -169,6 +169,19 @@ h1, h2, h3 {
   animation: draw-circle 700ms cubic-bezier(0.65, 0, 0.35, 1) 150ms both;
 }
 
+/* A small hover nudge for things the brief wants to feel alive without
+   being distracting -- nav links, badges, card headings. One rotation
+   cycle only (no infinite loop) so it reads as a greeting, not a tic. */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-4deg); }
+  75% { transform: rotate(4deg); }
+}
+
+.hover-wiggle:hover {
+  animation: wiggle 380ms ease-in-out;
+}
+
 /* Stagger helpers -- 40ms rhythm per item, capped so a long list doesn't
    keep arriving forever (matches the skill guidance: 30-50ms per item). */
 .stagger-1 { animation-delay: 40ms; }

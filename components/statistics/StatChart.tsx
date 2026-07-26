@@ -37,13 +37,22 @@ function downloadCsv(filename: string, csv: string) {
  * 5). getVerifiedStatisticsForDataset is the enforcement point; this
  * component never sees an unverified record to accidentally chart.
  */
-export function StatChart({ spec, allStatistics }: { spec: ChartSpec; allStatistics: Statistic[] }) {
+export function StatChart({
+  spec,
+  allStatistics,
+  staggerIndex = 0,
+}: {
+  spec: ChartSpec;
+  allStatistics: Statistic[];
+  staggerIndex?: number;
+}) {
   const saveData = useSaveData();
   const verified = getVerifiedStatisticsForDataset(allStatistics, spec.datasetKey);
+  const stagger = Math.min(staggerIndex + 1, 6);
 
   if (verified.length === 0) {
     return (
-      <div className="rounded border border-dashed border-line p-4">
+      <div className={`stagger-${stagger} animate-rise-in rounded-xl border border-dashed border-line p-4`}>
         <h3 className="font-semibold text-ink">{spec.title}</h3>
         <p className="mt-2 text-sm text-ink-faint">{LABELS.statistics.pendingVerification}</p>
       </div>
@@ -58,7 +67,9 @@ export function StatChart({ spec, allStatistics }: { spec: ChartSpec; allStatist
     .replace("{date}", first.verifiedOn);
 
   return (
-    <div className="rounded border border-line bg-paper-raised p-4">
+    <div
+      className={`stagger-${stagger} animate-rise-in rounded-xl border border-line bg-paper-raised p-4 shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow-md`}
+    >
       <h3 className="font-semibold text-ink">{spec.title}</h3>
       {saveData ? (
         <table className="mt-2 w-full text-left text-sm">
@@ -81,7 +92,7 @@ export function StatChart({ spec, allStatistics }: { spec: ChartSpec; allStatist
         <button
           type="button"
           onClick={() => downloadCsv(`${spec.datasetKey}.csv`, statisticsToCsv(verified))}
-          className="rounded border border-line px-2 py-1 font-sans hover:bg-slate-soft"
+          className="min-h-11 rounded-full border border-line px-3 font-sans transition-transform hover:-translate-y-0.5 hover:bg-slate-soft active:scale-95"
         >
           {LABELS.statistics.downloadCsv}
         </button>

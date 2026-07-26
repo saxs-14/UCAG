@@ -8,11 +8,14 @@ const LEVEL_LABELS: Record<Bursary["levelRequired"], string> = {
   completedQualification: "Completed a qualification",
 };
 
-export function BursaryCard({ bursary }: { bursary: Bursary }) {
+export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; staggerIndex?: number }) {
+  const stagger = Math.min(staggerIndex + 1, 6);
   return (
-    <article className="flex flex-col gap-2 rounded-lg bg-paper-raised border border-line p-4">
+    <article
+      className={`stagger-${stagger} animate-rise-in flex flex-col gap-2 rounded-xl border-l-4 border-brand-teal bg-paper-raised p-4 shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow-md`}
+    >
       <div className="flex items-start justify-between gap-2">
-        <h3 className="text-base font-semibold text-ink">{bursary.name}</h3>
+        <h3 className="hover-wiggle text-base font-semibold text-ink">{bursary.name}</h3>
         <DeadlineBadge closesOn={bursary.closesOn} />
       </div>
       <p className="text-sm text-ink-soft">{bursary.provider}</p>
@@ -35,7 +38,7 @@ export function BursaryCard({ bursary }: { bursary: Bursary }) {
           href={bursary.applyUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="rounded bg-mark-green px-3 py-1.5 font-medium text-white hover:opacity-90"
+          className="min-h-11 rounded-full bg-mark-green px-4 py-1.5 font-medium text-white transition-transform hover:scale-[1.03] active:scale-[0.97]"
         >
           Apply
         </a>

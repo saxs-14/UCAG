@@ -17,8 +17,20 @@ export default function StatChartCanvas({ chartData }: { chartData: { name: stri
           <CartesianGrid strokeDasharray="3 3" stroke="var(--color-line)" />
           <XAxis dataKey="name" stroke="var(--color-ink-faint)" />
           <YAxis stroke="var(--color-ink-faint)" />
-          <Tooltip />
-          <Bar dataKey="value" fill="var(--color-mark-green)" />
+          <Tooltip
+            contentStyle={{
+              background: "var(--color-paper-raised)",
+              border: "1px solid var(--color-line)",
+              borderRadius: 8,
+            }}
+          />
+          <Bar
+            dataKey="value"
+            fill="var(--color-mark-green)"
+            radius={[6, 6, 0, 0]}
+            animationDuration={900}
+            animationEasing="ease-out"
+          />
         </BarChart>
       </ResponsiveContainer>
     </div>

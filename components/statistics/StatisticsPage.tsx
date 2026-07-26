@@ -47,15 +47,15 @@ export function StatisticsPage({ statistics }: { statistics: Statistic[] }) {
     <div className="flex w-full max-w-2xl flex-col gap-8">
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.statistics.higherEducationHeading}</h2>
-        {HIGHER_EDUCATION_CHARTS.map((spec) => (
-          <StatChart key={spec.id} spec={spec} allStatistics={statistics} />
+        {HIGHER_EDUCATION_CHARTS.map((spec, i) => (
+          <StatChart key={spec.id} spec={spec} allStatistics={statistics} staggerIndex={i} />
         ))}
       </section>
 
       <section className="flex flex-col gap-4">
         <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.statistics.schoolsHeading}</h2>
-        {SCHOOLS_CHARTS.map((spec) => (
-          <StatChart key={spec.id} spec={spec} allStatistics={statistics} />
+        {SCHOOLS_CHARTS.map((spec, i) => (
+          <StatChart key={spec.id} spec={spec} allStatistics={statistics} staggerIndex={i} />
         ))}
       </section>
     </div>

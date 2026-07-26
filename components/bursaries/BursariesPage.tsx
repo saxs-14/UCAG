@@ -69,7 +69,7 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
           <select
             id="bursaries-field-of-study-filter"
             name="fieldOfStudy"
-            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
+            className="cursor-pointer rounded-lg border border-line bg-paper-raised px-2 py-1.5 text-ink transition-colors hover:border-brand-teal"
             value={fieldOfStudy}
             onChange={(e) => setFieldOfStudy(e.target.value)}
           >
@@ -87,7 +87,7 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
           <select
             id="bursaries-level-filter"
             name="levelFilter"
-            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
+            className="cursor-pointer rounded-lg border border-line bg-paper-raised px-2 py-1.5 text-ink transition-colors hover:border-brand-teal"
             value={levelFilter}
             onChange={(e) => setLevelFilter(e.target.value as BursaryLevelRequired | "all")}
           >
@@ -104,7 +104,7 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
           <select
             id="bursaries-matric-only-filter"
             name="matricOnly"
-            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
+            className="cursor-pointer rounded-lg border border-line bg-paper-raised px-2 py-1.5 text-ink transition-colors hover:border-brand-teal"
             value={String(matricOnly)}
             onChange={(e) =>
               setMatricOnly(e.target.value === "all" ? "all" : e.target.value === "true")
@@ -120,23 +120,46 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
       </div>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.bursaries.bursariesHeading}</h2>
+        <h2 className="flex items-baseline gap-2 text-xl font-bold tracking-tight text-ink">
+          {LABELS.bursaries.bursariesHeading}
+          <span
+            key={bursaries.length}
+            className="animate-pop-in rounded-full bg-brand-teal-soft px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-brand-teal"
+          >
+            {bursaries.length}
+          </span>
+        </h2>
         {bursaries.length === 0 && (
-          <p className="text-sm text-ink-faint">{LABELS.bursaries.noResults}</p>
+          <p className="animate-rise-in text-sm text-ink-faint">{LABELS.bursaries.noResults}</p>
         )}
-        {bursaries.map((b) => (
-          <BursaryCard key={b.id} bursary={b} />
-        ))}
+        {/* key ties this list to the active filters -- changing a filter
+            remounts it, replaying the rise-in/stagger entrance so the
+            list visibly "refreshes" instead of silently swapping content. */}
+        <div key={`${fieldOfStudy}-${levelFilter}`} className="flex flex-col gap-3">
+          {bursaries.map((b, i) => (
+            <BursaryCard key={b.id} bursary={b} staggerIndex={i} />
+          ))}
+        </div>
       </section>
 
       <section className="flex flex-col gap-3">
-        <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.bursaries.internshipsHeading}</h2>
+        <h2 className="flex items-baseline gap-2 text-xl font-bold tracking-tight text-ink">
+          {LABELS.bursaries.internshipsHeading}
+          <span
+            key={internships.length}
+            className="animate-pop-in rounded-full bg-brand-coral-soft px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-brand-coral"
+          >
+            {internships.length}
+          </span>
+        </h2>
         {internships.length === 0 && (
-          <p className="text-sm text-ink-faint">{LABELS.bursaries.noResults}</p>
+          <p className="animate-rise-in text-sm text-ink-faint">{LABELS.bursaries.noResults}</p>
         )}
-        {internships.map((i) => (
-          <InternshipCard key={i.id} internship={i} />
-        ))}
+        <div key={`${fieldOfStudy}-${matricOnly}`} className="flex flex-col gap-3">
+          {internships.map((i, idx) => (
+            <InternshipCard key={i.id} internship={i} staggerIndex={idx} />
+          ))}
+        </div>
       </section>
     </div>
   );
