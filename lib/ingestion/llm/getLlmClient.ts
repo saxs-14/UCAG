@@ -17,7 +17,10 @@ export function getLlmClient(): LlmClient {
 
   switch (provider) {
     case "gemini":
-      return new GeminiLlmClient();
+      // 4200ms spacing -> ~14.3 requests/minute, under the free tier's
+      // 15/minute cap with a safety margin (see geminiClient.ts's doc
+      // comment for the live batch run that found this the hard way).
+      return new GeminiLlmClient({ minIntervalMs: 4200 });
     case "anthropic":
       return new AnthropicLlmClient();
     default:
