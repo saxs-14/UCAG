@@ -1,4 +1,5 @@
 import { DeadlineBadge } from "./DeadlineBadge";
+import { formatApplicationWindow } from "@/lib/bursaries/deadline";
 import type { Internship } from "@/lib/firestore/types";
 
 export function InternshipCard({ internship }: { internship: Internship }) {
@@ -9,6 +10,9 @@ export function InternshipCard({ internship }: { internship: Internship }) {
         <DeadlineBadge closesOn={internship.closesOn} />
       </div>
       <p className="text-sm text-ink-soft">{internship.provider}</p>
+      <p className="font-mono text-xs tabular-nums text-ink-soft">
+        {formatApplicationWindow(internship.opensOn, internship.closesOn)}
+      </p>
       <p className="text-xs text-ink-faint">
         {internship.matricOnly ? "Matric only" : internship.minQualification} ·{" "}
         {internship.fieldsOfStudy.join(", ")}

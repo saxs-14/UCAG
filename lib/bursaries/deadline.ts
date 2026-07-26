@@ -25,3 +25,24 @@ export function formatDeadlineCountdown(closesOn: string | null, now: Date): str
   if (days === 1) return "Closes tomorrow";
   return `${days} days left`;
 }
+
+const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+
+/** Manual UTC-based formatting, not Intl/toLocaleDateString -- matches
+ * daysUntil's own UTC-day convention above and avoids depending on
+ * whatever ICU data happens to be built into the runtime. */
+function formatDate(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getUTCDate()} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+/** The plain factual "when do applications run" line every bursary/
+ * internship card shows, distinct from formatDeadlineCountdown's urgency
+ * badge -- always the real, exact dates on record, never invented
+ * precision for a date that isn't confirmed. */
+export function formatApplicationWindow(opensOn: string | null, closesOn: string | null): string {
+  if (opensOn && closesOn) return `Applications: ${formatDate(opensOn)} – ${formatDate(closesOn)}`;
+  if (opensOn) return `Applications open ${formatDate(opensOn)}`;
+  if (closesOn) return `Applications close ${formatDate(closesOn)}`;
+  return "Application dates not yet confirmed";
+}

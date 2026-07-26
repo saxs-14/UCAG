@@ -81,7 +81,7 @@ export function formatChatContext(data: RawChatContext): string {
     ? data.bursaries
         .map(
           (b) =>
-            `- ${b.name} (${b.provider}) -- ${b.value} -- ${b.closesOn ? `closes ${b.closesOn}` : "closing date not confirmed"} -- ${b.applyUrl}`
+            `- ${b.name} (${b.provider}) -- ${b.value} -- ${b.opensOn || b.closesOn ? `applications ${b.opensOn ?? "?"} to ${b.closesOn ?? "?"}` : "application dates not confirmed"} -- ${b.applyUrl}`
         )
         .join("\n")
     : "(none on record yet)";
@@ -90,7 +90,7 @@ export function formatChatContext(data: RawChatContext): string {
     ? data.internships
         .map(
           (i) =>
-            `- ${i.title} (${i.provider}) -- ${i.closesOn ? `closes ${i.closesOn}` : "closing date not confirmed"} -- ${i.applyUrl}`
+            `- ${i.title} (${i.provider}) -- ${i.opensOn || i.closesOn ? `applications ${i.opensOn ?? "?"} to ${i.closesOn ?? "?"}` : "application dates not confirmed"} -- ${i.applyUrl}`
         )
         .join("\n")
     : "(none on record yet)";
