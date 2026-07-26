@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { matchProgramme } from "@/lib/matching/engine";
 import { ResultCard } from "./ResultCard";
 import { UnscoredProgrammeCard } from "./UnscoredProgrammeCard";
+import { ConfettiBurst } from "./ConfettiBurst";
 import { ShareBar } from "./ShareBar";
 import { ApplicationChecklist } from "./ApplicationChecklist";
 import { ApsImprovementSimulator } from "./ApsImprovementSimulator";
@@ -149,6 +150,31 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
     return { scored: scoredResults, unscored: unscoredResults };
   }, [catalog, marks]);
 
+  // Fires ConfettiBurst exactly once per genuinely new "you qualify"
+  // moment -- the 0-to-positive transition -- not on every keystroke
+  // that happens to leave the qualify count unchanged (the effect's
+  // dependency is the count itself, not the scored array reference,
+  // which is a new object on every recompute even when its content
+  // hasn't changed) and not again while it merely grows from, say, 2
+  // qualifying programmes to 3.
+  const qualifyCount = useMemo(
+    () => scored.filter((entry) => entry.matchResult.bucket === "qualify").length,
+    [scored]
+  );
+  const hadQualifyRef = useRef(false);
+  const [celebrate, setCelebrate] = useState(false);
+
+  useEffect(() => {
+    const nowQualifies = qualifyCount > 0;
+    if (nowQualifies && !hadQualifyRef.current) {
+      setCelebrate(true);
+      hadQualifyRef.current = true;
+      const timer = setTimeout(() => setCelebrate(false), 3000);
+      return () => clearTimeout(timer);
+    }
+    hadQualifyRef.current = nowQualifies;
+  }, [qualifyCount]);
+
   if (marks.length === 0) {
     return (
       <p className="text-sm text-ink-faint">
@@ -200,6 +226,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
 
   return (
     <section className="flex w-full max-w-xl flex-col gap-6">
+      {celebrate && <ConfettiBurst />}
       <ShareBar marks={marks} />
 
       {scored.length > 0 && (
