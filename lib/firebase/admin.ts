@@ -14,11 +14,20 @@
  * lib/firebase/client.ts) sets FIRESTORE_EMULATOR_HOST/
  * FIREBASE_AUTH_EMULATOR_HOST, which the Admin SDK auto-detects to
  * connect locally with no real service-account credentials at all.
+ *
+ * "firebase-admin/auth" is imported dynamically inside getAdminAuth(),
+ * not statically at the top of this file: it pulls in jwks-rsa -> jose,
+ * whose ESM webapi entry point crashes Vercel's serverless bundle with
+ * ERR_REQUIRE_ESM if it's loaded eagerly -- even on pages (bursaries,
+ * statistics, sitemap.xml) that only ever call getAdminDb() and never
+ * touch auth at all. A static import is hoisted and evaluated on module
+ * load regardless of whether getAdminAuth() is actually called, so it
+ * has to stay dynamic for those pages to load.
  */
 
 import "server-only";
 import { getApps, initializeApp, cert, type App } from "firebase-admin/app";
-import { getAuth, type Auth } from "firebase-admin/auth";
+import type { Auth } from "firebase-admin/auth";
 import { getFirestore, type Firestore } from "firebase-admin/firestore";
 import { getFirebaseAdminEnv } from "@/lib/env/server";
 
@@ -66,8 +75,11 @@ export function getAdminApp(): App {
 }
 
 let adminAuth: Auth | undefined;
-export function getAdminAuth(): Auth {
-  if (!adminAuth) adminAuth = getAuth(getAdminApp());
+export async function getAdminAuth(): Promise<Auth> {
+  if (!adminAuth) {
+    const { getAuth } = await import("firebase-admin/auth");
+    adminAuth = getAuth(getAdminApp());
+  }
   return adminAuth;
 }
 
