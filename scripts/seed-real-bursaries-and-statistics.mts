@@ -63,17 +63,20 @@ const ACADEMIC_YEAR = 2027;
 const VERIFIED_ON = "2026-07-26";
 
 // --- Bursaries -------------------------------------------------------------
-// closesOn: null where the real window couldn't be confirmed from a
-// primary source within reasonable effort. isPastClosingDate() treats
-// null as "not expired" by design (lib/ingestion/bursarySafety.ts), so
-// this shows as a real, open-ended listing rather than a guessed date --
-// never the reverse (a guessed date standing in for "we don't know").
+// opensOn/closesOn: null where the real date couldn't be confirmed to
+// the day from a primary source -- e.g. Old Mutual's own page states
+// only "Applications open from April", never a specific day, so opensOn
+// stays null rather than guessing a day within that month. isPastClosingDate()
+// treats a null closesOn as "not expired" by design
+// (lib/ingestion/bursarySafety.ts), so this shows as a real, open-ended
+// listing rather than a guessed date -- never the reverse.
 const BURSARIES: Omit<Bursary, "id">[] = [
   {
     name: "NSFAS Bursary",
     provider: "National Student Financial Aid Scheme (NSFAS)",
     fieldsOfStudy: ["Engineering", "Science", "Commerce", "Humanities", "Health Sciences", "Law", "Education", "ICT"],
     levelRequired: "matricOnly",
+    opensOn: null,
     closesOn: null,
     value: "Full tuition, accommodation/living allowance, and learning materials (for households earning under R350,000/year, or R600,000/year for students with a disability)",
     criteria: [
@@ -92,6 +95,7 @@ const BURSARIES: Omit<Bursary, "id">[] = [
     provider: "Sasol",
     fieldsOfStudy: ["Engineering", "Science"],
     levelRequired: "matricOnly",
+    opensOn: "2026-04-01",
     closesOn: "2026-05-17",
     value: "Full tuition, living allowance, and psychosocial support",
     criteria: [
@@ -112,7 +116,8 @@ const BURSARIES: Omit<Bursary, "id">[] = [
     provider: "Department of Basic Education (DBE)",
     fieldsOfStudy: ["Education"],
     levelRequired: "matricOnly",
-    closesOn: null, // 2026-cycle dates confirmed (30 Nov / 24 Jan); 2027-cycle dates not yet posted on the official page.
+    opensOn: null, // 2026-cycle dates confirmed (opened 7 Oct 2025); 2027-cycle dates not yet posted on the official page.
+    closesOn: null,
     value: "Full tuition, accommodation or transport, daily meals, learning materials, and a personal care allowance",
     criteria: [
       "South African citizen, passionate about teaching",
@@ -131,6 +136,7 @@ const BURSARIES: Omit<Bursary, "id">[] = [
     provider: "Old Mutual",
     fieldsOfStudy: ["Commerce", "Science"],
     levelRequired: "matricOnly",
+    opensOn: null, // official page states only "opens from April", never a specific day
     closesOn: "2026-06-30",
     value: "Full tuition, study materials, meals, residence accommodation, return flights home, and guaranteed employment on graduation",
     criteria: [
@@ -149,6 +155,7 @@ const BURSARIES: Omit<Bursary, "id">[] = [
     provider: "Legal Practitioners Fidelity Fund (LPFF)",
     fieldsOfStudy: ["Law"],
     levelRequired: "currentlyEnrolled",
+    opensOn: "2026-04-01", // recurring annual date per LPFF's own page ("applications open 1 April annually")
     closesOn: "2026-08-15", // recurring annual date per LPFF's own page ("applications close 15 August annually")
     value: "Tuition fees for LLB, BCom Law, or BA Law at a public South African university",
     criteria: [
@@ -180,7 +187,8 @@ const INTERNSHIPS: Omit<Internship, "id">[] = [
     minQualification: "Grade 12 (matric) or equivalent",
     matricOnly: true,
     province: null, // nationwide; specific placements vary by host employer
-    closesOn: null, // an ongoing national programme, not a single dated vacancy -- see file header
+    opensOn: null, // an ongoing national programme, not a single dated vacancy -- see file header
+    closesOn: null,
     applyUrl: "https://www.yes4youth.co.za/",
     sourceUrl: "https://www.yes4youth.co.za/",
     verifiedOn: VERIFIED_ON,
@@ -193,7 +201,8 @@ const INTERNSHIPS: Omit<Internship, "id">[] = [
     minQualification: "Undergraduate degree/diploma (STEM for the technology tracks, marketing/finance for the business tracks)",
     matricOnly: false,
     province: "Gauteng",
-    closesOn: null, // no fixed date on the official page; runs across multiple programme intakes (CIB, Insurance, Salesforce, Mainframe-Cobol)
+    opensOn: null, // no fixed date on the official page; runs across multiple programme intakes (CIB, Insurance, Salesforce, Mainframe-Cobol)
+    closesOn: null,
     applyUrl: "https://www.standardbank.com/sbg/standard-bank-group/careers/early-careers/internships/opportunities",
     sourceUrl: "https://www.standardbank.com/sbg/standard-bank-group/careers/early-careers/internships",
     verifiedOn: VERIFIED_ON,
@@ -207,7 +216,8 @@ const INTERNSHIPS: Omit<Internship, "id">[] = [
       "Completed degree/diploma in Medicine, Nursing, Pharmacy, Physiotherapy, Occupational Therapy, Dietetics, Radiography, Psychology, Dentistry, Audiology, or another allied health profession",
     matricOnly: false,
     province: null, // placements nationwide at approved public health facilities
-    closesOn: null, // two allocation cycles annually (Annual and Mid-year); no single fixed date
+    opensOn: null, // two allocation cycles annually (Annual and Mid-year); no single fixed date
+    closesOn: null,
     applyUrl: "https://icsp-doh.org.za/",
     sourceUrl: "https://www.health.gov.za/icsp/",
     verifiedOn: VERIFIED_ON,
@@ -220,7 +230,8 @@ const INTERNSHIPS: Omit<Internship, "id">[] = [
     minQualification: "Completed degree in Engineering",
     matricOnly: false,
     province: null, // placements across Transnet's national operations
-    closesOn: null, // no fixed date on the official page; advertised on transnet.net and in newspapers when intakes open
+    opensOn: null, // no fixed date on the official page; advertised on transnet.net and in newspapers when intakes open
+    closesOn: null,
     applyUrl: "https://www.transnet.net/Careers",
     sourceUrl: "https://www.transnet.net/RenderPage.aspx?id=7753695",
     verifiedOn: VERIFIED_ON,

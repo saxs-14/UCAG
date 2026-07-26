@@ -314,6 +314,11 @@ export interface Bursary extends FactProvenance {
   provider: string;
   fieldsOfStudy: string[];
   levelRequired: BursaryLevelRequired;
+  /** Null when the real opening date isn't confirmed from a primary
+   * source -- never a guessed date standing in for "we don't know"
+   * (lib/ingestion/bursarySafety.ts's isPastClosingDate() treats a null
+   * closesOn the same way, for the same reason). */
+  opensOn: string | null;
   closesOn: string | null;
   value: string;
   criteria: string[];
@@ -329,6 +334,7 @@ export interface Internship extends FactProvenance {
   minQualification: string;
   matricOnly: boolean;
   province: string | null;
+  opensOn: string | null;
   closesOn: string | null;
   applyUrl: string;
 }

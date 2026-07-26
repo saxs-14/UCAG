@@ -144,7 +144,7 @@ describe("formatChatContext", () => {
     expect(text).toContain("Orphan Programme -- unknown-institution");
   });
 
-  it("shows a bursary's provider, value, apply link, and an honest closing-date fallback", () => {
+  it("shows a bursary's provider, value, apply link, and an honest application-window fallback", () => {
     const text = formatChatContext({
       institutions: [],
       programmes: [],
@@ -155,6 +155,7 @@ describe("formatChatContext", () => {
           provider: "National Student Financial Aid Scheme (NSFAS)",
           fieldsOfStudy: [],
           levelRequired: "matricOnly",
+          opensOn: null,
           closesOn: null,
           value: "Full tuition and living allowance",
           criteria: [],
@@ -169,7 +170,49 @@ describe("formatChatContext", () => {
 
     expect(text).toContain("NSFAS Bursary (National Student Financial Aid Scheme (NSFAS))");
     expect(text).toContain("Full tuition and living allowance");
-    expect(text).toContain("closing date not confirmed");
+    expect(text).toContain("application dates not confirmed");
     expect(text).toContain("https://www.nsfas.org.za/");
+  });
+
+  it("includes real opening and closing dates for a bursary and an internship", () => {
+    const text = formatChatContext({
+      institutions: [],
+      programmes: [],
+      bursaries: [
+        {
+          id: "sasol",
+          name: "Sasol Bursary Programme",
+          provider: "Sasol",
+          fieldsOfStudy: ["Engineering"],
+          levelRequired: "matricOnly",
+          opensOn: "2026-04-01",
+          closesOn: "2026-08-15",
+          value: "Full tuition, accommodation, and living allowance",
+          criteria: [],
+          applyUrl: "https://www.sasol.com/",
+          riskFlags: [],
+          ...PROVENANCE,
+        },
+      ],
+      internships: [
+        {
+          id: "yes",
+          title: "Youth Employment Service (YES) 12-Month Work Experience Programme",
+          provider: "Youth Employment Service (YES)",
+          fieldsOfStudy: [],
+          minQualification: "Grade 12 (matric) or equivalent",
+          matricOnly: true,
+          province: null,
+          opensOn: null,
+          closesOn: null,
+          applyUrl: "https://www.yes4youth.co.za/",
+          ...PROVENANCE,
+        },
+      ],
+      applicationWindows: [],
+    });
+
+    expect(text).toContain("applications 2026-04-01 to 2026-08-15");
+    expect(text).toContain("application dates not confirmed");
   });
 });

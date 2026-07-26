@@ -1,4 +1,5 @@
 import { DeadlineBadge } from "./DeadlineBadge";
+import { formatApplicationWindow } from "@/lib/bursaries/deadline";
 import type { Bursary } from "@/lib/firestore/types";
 
 const LEVEL_LABELS: Record<Bursary["levelRequired"], string> = {
@@ -16,6 +17,9 @@ export function BursaryCard({ bursary }: { bursary: Bursary }) {
       </div>
       <p className="text-sm text-ink-soft">{bursary.provider}</p>
       <p className="text-sm font-mono tabular-nums text-ink">{bursary.value}</p>
+      <p className="font-mono text-xs tabular-nums text-ink-soft">
+        {formatApplicationWindow(bursary.opensOn, bursary.closesOn)}
+      </p>
       <p className="text-xs text-ink-faint">
         {LEVEL_LABELS[bursary.levelRequired]} · {bursary.fieldsOfStudy.join(", ")}
       </p>
