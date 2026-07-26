@@ -8,9 +8,10 @@ export function DeadlineBadge({ closesOn }: { closesOn: string | null }) {
 
   return (
     <span
-      className={`rounded px-2 py-0.5 font-mono text-xs font-medium tabular-nums ${
-        urgent ? "bg-mark-gold-soft text-mark-gold" : "bg-slate-soft text-ink-faint"
+      className={`rounded-full px-2 py-0.5 font-mono text-xs font-medium tabular-nums ${
+        urgent ? "animate-soft-glow bg-mark-gold-soft text-mark-gold" : "bg-slate-soft text-ink-faint"
       }`}
+      style={urgent ? ({ "--glow-color": "var(--color-mark-gold)" } as React.CSSProperties) : undefined}
     >
       {text}
     </span>
