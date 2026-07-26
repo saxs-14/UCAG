@@ -1,16 +1,35 @@
 #!/usr/bin/env -S npx tsx
 /**
- * Real, individually-verified bursary and statistics data, replacing
- * config/sampleData.ts's fictional SAMPLE_BURSARIES/SAMPLE_INTERNSHIPS/
- * SAMPLE_STATISTICS on the Bursaries and Statistics pages. Every value
- * below was independently fetched from a real page (WebFetch/WebSearch,
- * not memory) before being written here -- see each entry's sourceUrl.
+ * Real, individually-verified bursary, internship, and statistics data,
+ * replacing config/sampleData.ts's fictional SAMPLE_BURSARIES/
+ * SAMPLE_INTERNSHIPS/SAMPLE_STATISTICS on the Bursaries and Statistics
+ * pages. Every value below was independently fetched from a real page
+ * (WebFetch/WebSearch, not memory) before being written here -- see each
+ * entry's sourceUrl.
  *
- * Deliberately conservative, not exhaustive: two bursaries (not a dozen),
- * one fully-corroborated statistics dataset (not all eight charts). Both
- * pages are DESIGNED to show "pending verification" / an empty state for
- * anything not on record here -- that's the correct, honest outcome for
- * everything not covered below, not a bug to paper over before a demo.
+ * fieldsOfStudy is deliberately specific per bursary/internship, not a
+ * generic list -- the whole point of the field-of-study filter
+ * (components/bursaries/BursariesPage.tsx) is to show a learner only
+ * what's actually relevant to the course/career they're asking about,
+ * not everything with the field ignored. NSFAS is the one deliberate
+ * exception: it genuinely funds any recognised qualification, so it's
+ * tagged across every field rather than under-representing its real
+ * scope.
+ *
+ * Internship listings are a harder case than bursary programmes: a
+ * bursary is a stable annual programme with a shifting deadline: a
+ * specific internship posting (e.g. Eskom's individual YES vacancies)
+ * opens and closes within weeks and goes stale fast. One was confirmed
+ * live via eskom.co.za's own recruitment site, then found already
+ * expired/redirected by the time this was written. Rather than publish
+ * a posting that may already be gone, the one internship entry below is
+ * the stable underlying YES *programme* (yes4youth.co.za, a real,
+ * ongoing national initiative, not a single vacancy) -- honest about a
+ * real, current gap, not a workaround pretending it isn't one.
+ *
+ * Both pages are DESIGNED to show "pending verification" / an empty
+ * state for anything not on record here -- that's the correct, honest
+ * outcome for everything not covered below, not a bug to paper over.
  *
  * Usage (against the local emulator):
  *   NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true npx tsx scripts/seed-real-bursaries-and-statistics.mts
@@ -18,7 +37,7 @@
 
 import { getApps, initializeApp, cert } from "firebase-admin/app";
 import { getFirestore } from "firebase-admin/firestore";
-import type { Bursary, Statistic } from "../lib/firestore/types";
+import type { Bursary, Internship, Statistic } from "../lib/firestore/types";
 
 const useEmulator = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === "true";
 
@@ -40,14 +59,14 @@ if (getApps().length === 0) {
 
 const db = getFirestore();
 const ACADEMIC_YEAR = 2027;
+const VERIFIED_ON = "2026-07-26";
 
 // --- Bursaries -------------------------------------------------------------
 // closesOn: null where the real window couldn't be confirmed from a
-// primary source within reasonable effort (NSFAS: only third-party
-// aggregators gave a specific date; the scheme and URL are unambiguously
-// real, the exact date isn't asserted here). isPastClosingDate() treats
+// primary source within reasonable effort. isPastClosingDate() treats
 // null as "not expired" by design (lib/ingestion/bursarySafety.ts), so
-// this shows as a real, open-ended listing rather than a guessed date.
+// this shows as a real, open-ended listing rather than a guessed date --
+// never the reverse (a guessed date standing in for "we don't know").
 const BURSARIES: Omit<Bursary, "id">[] = [
   {
     name: "NSFAS Bursary",
@@ -64,7 +83,7 @@ const BURSARIES: Omit<Bursary, "id">[] = [
     applyUrl: "https://www.nsfas.org.za/",
     riskFlags: [],
     sourceUrl: "https://www.nsfas.org.za/",
-    verifiedOn: "2026-07-26",
+    verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
   },
   {
@@ -84,7 +103,79 @@ const BURSARIES: Omit<Bursary, "id">[] = [
     riskFlags: [],
     sourceUrl:
       "https://www.sasol.com/media-centre/media-releases/sasol-bursaries-now-open-applications-invited-for-2027-engineering-and-science-studies",
-    verifiedOn: "2026-07-26",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    name: "Funza Lushaka Bursary",
+    provider: "Department of Basic Education (DBE)",
+    fieldsOfStudy: ["Education"],
+    levelRequired: "matricOnly",
+    closesOn: null, // 2026-cycle dates confirmed (30 Nov / 24 Jan); 2027-cycle dates not yet posted on the official page.
+    value: "Full tuition, accommodation or transport, daily meals, learning materials, and a personal care allowance",
+    criteria: [
+      "South African citizen, passionate about teaching",
+      "Accepted into (or applying for) a Bachelor of Education (B.Ed) or Postgraduate Certificate in Education at a public university",
+      "Willing to specialise in priority subjects (Maths, Science, Technology, Engineering, South African indigenous languages, and more)",
+      "Recipients commit to teaching in a public school after graduating",
+    ],
+    applyUrl: "https://www.funzalushaka.doe.gov.za/",
+    riskFlags: [],
+    sourceUrl: "https://www.education.gov.za/Programmes/FunzaLushaka.aspx",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    name: "Old Mutual Actuarial Bursary",
+    provider: "Old Mutual",
+    fieldsOfStudy: ["Commerce", "Science"],
+    levelRequired: "matricOnly",
+    closesOn: "2026-06-30",
+    value: "Full tuition, study materials, meals, residence accommodation, return flights home, and guaranteed employment on graduation",
+    criteria: [
+      "South African citizen",
+      "A for Mathematics (not Mathematical Literacy) and Bs for all other matric subjects",
+      "For Actuarial Science at NWU, UCT, Stellenbosch, UP, Wits, UFS, UJ, or UKZN",
+    ],
+    applyUrl: "https://www.oldmutual.co.za/careers/actuarial-bursary/",
+    riskFlags: [],
+    sourceUrl: "https://www.oldmutual.co.za/careers/actuarial-bursary/",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    name: "Legal Practitioners Fidelity Fund Bursary",
+    provider: "Legal Practitioners Fidelity Fund (LPFF)",
+    fieldsOfStudy: ["Law"],
+    levelRequired: "currentlyEnrolled",
+    closesOn: "2026-08-15", // recurring annual date per LPFF's own page ("applications close 15 August annually")
+    value: "Tuition fees for LLB, BCom Law, or BA Law at a public South African university",
+    criteria: [
+      "2nd or 3rd year LLB student (or equivalent) with an academic average above 50%",
+      "Public university students only",
+      "LLM/further legal study applicants must hold a completed LLB and be employed at a legal practising firm",
+    ],
+    applyUrl: "https://www.fidfund.co.za/bursaries/",
+    riskFlags: [],
+    sourceUrl: "https://www.fidfund.co.za/bursaries/",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+];
+
+// --- Internships -------------------------------------------------------
+const INTERNSHIPS: Omit<Internship, "id">[] = [
+  {
+    title: "Youth Employment Service (YES) 12-Month Work Experience Programme",
+    provider: "Youth Employment Service (YES)",
+    fieldsOfStudy: ["Engineering", "Science", "Commerce", "Humanities", "Health Sciences", "Law", "Education", "ICT"],
+    minQualification: "Grade 12 (matric) or equivalent",
+    matricOnly: true,
+    province: null, // nationwide; specific placements vary by host employer
+    closesOn: null, // an ongoing national programme, not a single dated vacancy -- see file header
+    applyUrl: "https://www.yes4youth.co.za/",
+    sourceUrl: "https://www.yes4youth.co.za/",
+    verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
   },
 ];
@@ -121,7 +212,7 @@ const STATISTICS: Omit<Statistic, "id">[] = PROVINCE_PASS_RATES.map(({ province,
   value: passRate,
   unit: "%",
   sourceUrl: STAT_SOURCE_URL,
-  verifiedOn: "2026-07-26",
+  verifiedOn: VERIFIED_ON,
   publisher: STAT_PUBLISHER,
   year: 2025,
 }));
@@ -132,6 +223,13 @@ for (const bursary of BURSARIES) {
   const id = bursary.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-+|-+$)/g, "");
   await db.collection("bursaries").doc(id).set({ id, ...bursary });
   console.log(`  bursary: ${id}`);
+  written++;
+}
+
+for (const internship of INTERNSHIPS) {
+  const id = internship.title.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-+|-+$)/g, "");
+  await db.collection("internships").doc(id).set({ id, ...internship });
+  console.log(`  internship: ${id}`);
   written++;
 }
 
