@@ -202,7 +202,15 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
     <section className="flex w-full max-w-xl flex-col gap-6">
       <ShareBar marks={marks} />
 
-      {scored.length > 0 && <ApsImprovementSimulator marks={marks} />}
+      {scored.length > 0 && (
+        <ApsImprovementSimulator
+          marks={marks}
+          scored={scored}
+          apsRules={catalog.apsRules}
+          programmes={catalog.programmes}
+          institutions={catalog.institutions}
+        />
+      )}
 
       {scored.length > 0 && <InterestQuiz entries={scored} />}
 
