@@ -6,12 +6,7 @@ import { BursaryCard } from "./BursaryCard";
 import { InternshipCard } from "./InternshipCard";
 import { ScamExplainer } from "./ScamExplainer";
 import { LABELS } from "@/config/labels";
-import {
-  SAMPLE_BURSARIES,
-  SAMPLE_FIELDS_OF_STUDY,
-  SAMPLE_INTERNSHIPS,
-} from "@/config/sampleData";
-import type { BursaryLevelRequired } from "@/lib/firestore/types";
+import type { Bursary, BursaryLevelRequired, Internship } from "@/lib/firestore/types";
 
 const LEVEL_OPTIONS: { value: BursaryLevelRequired | "all"; label: string }[] = [
   { value: "all", label: LABELS.bursaries.allLevels },
@@ -26,41 +21,46 @@ const MATRIC_ONLY_OPTIONS: { value: boolean | "all"; label: string }[] = [
   { value: false, label: LABELS.bursaries.matricOnlyFalse },
 ];
 
+interface BursariesPageProps {
+  bursaries: Bursary[];
+  internships: Internship[];
+}
+
 /**
- * Bursaries/internships list backed by SAMPLE_BURSARIES/SAMPLE_INTERNSHIPS
- * (config/sampleData.ts -- explicitly fictional; real listings need Phase
- * 4 ingestion to actually populate the `bursaries`/`internships`
- * collections, which isn't live yet). Field-of-study filtering is
- * self-service here rather than auto-derived from the calculator's
- * qualify-bucket results -- that integration needs Phase 6's saved-
- * profile/shortlist persistence to carry state across routes; until
- * then, this page stands alone.
+ * Real bursaries/internships, fetched server-side (app/bursaries/page.tsx,
+ * lib/catalog/getRealBursariesAndInternships.ts) and passed in as props --
+ * config/sampleData.ts's fictional SAMPLE_BURSARIES/SAMPLE_INTERNSHIPS are
+ * gone from this component entirely. The field-of-study filter's options
+ * are derived from what's actually present in the real data (below)
+ * rather than a separate static list, so the dropdown can never offer a
+ * category nothing on the page actually has.
  */
-export function BursariesPage() {
+export function BursariesPage({ bursaries: allBursaries, internships: allInternships }: BursariesPageProps) {
   const [fieldOfStudy, setFieldOfStudy] = useState<string>("");
   const [levelFilter, setLevelFilter] = useState<BursaryLevelRequired | "all">("all");
   const [matricOnly, setMatricOnly] = useState<boolean | "all">("all");
+
+  const fieldOptions = useMemo(() => {
+    const fields = new Set<string>();
+    for (const b of allBursaries) for (const f of b.fieldsOfStudy) fields.add(f);
+    for (const i of allInternships) for (const f of i.fieldsOfStudy) fields.add(f);
+    return Array.from(fields).sort();
+  }, [allBursaries, allInternships]);
 
   const fieldsOfStudy = useMemo(() => (fieldOfStudy ? [fieldOfStudy] : []), [fieldOfStudy]);
   const now = useMemo(() => new Date(), []);
 
   const bursaries = useMemo(
-    () => filterBursaries(SAMPLE_BURSARIES, { fieldsOfStudy, levelFilter, now }),
-    [fieldsOfStudy, levelFilter, now]
+    () => filterBursaries(allBursaries, { fieldsOfStudy, levelFilter, now }),
+    [allBursaries, fieldsOfStudy, levelFilter, now]
   );
   const internships = useMemo(
-    () => filterInternships(SAMPLE_INTERNSHIPS, { fieldsOfStudy, matricOnly, now }),
-    [fieldsOfStudy, matricOnly, now]
+    () => filterInternships(allInternships, { fieldsOfStudy, matricOnly, now }),
+    [allInternships, fieldsOfStudy, matricOnly, now]
   );
 
   return (
     <div className="flex w-full max-w-xl flex-col gap-6">
-      <div className="rounded border border-dashed border-mark-gold bg-mark-gold-soft p-3 text-sm text-ink">
-        These listings are <strong>sample/fictional data</strong>, not real bursaries or
-        internships -- see config/sampleData.ts. Real, verified listings land once Phase 4
-        ingestion is connected to a live Firestore project.
-      </div>
-
       <ScamExplainer />
 
       <div className="flex flex-wrap gap-4">
@@ -72,7 +72,7 @@ export function BursariesPage() {
             onChange={(e) => setFieldOfStudy(e.target.value)}
           >
             <option value="">{LABELS.bursaries.allFields}</option>
-            {SAMPLE_FIELDS_OF_STUDY.map((field) => (
+            {fieldOptions.map((field) => (
               <option key={field} value={field}>
                 {field}
               </option>

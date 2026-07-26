@@ -191,15 +191,19 @@ describe("runProgrammeRequirementsIngestion", () => {
 
     expect(summary.results[0]!.outcome).toBe("queued");
     expect(summary.results[0]!.programmesFound).toBe(1);
-    // name, facultyId, schoolId, qualificationType, nqfLevel, duration, minAps,
-    // subjectRequirements, additionalRequirements, applyUrl = 10 core fields
-    expect(summary.itemsQueued).toBe(10);
+    // institutionId (certain, structural-identity field) + name, facultyId,
+    // schoolId, qualificationType, nqfLevel, duration, minAps,
+    // subjectRequirements, additionalRequirements, applyUrl = 11 fields
+    expect(summary.itemsQueued).toBe(11);
     expect(persisted.every((p) => p.status === "pending")).toBe(true);
     expect(persisted.every((p) => p.collection === "programmes")).toBe(true);
     expect(persisted.every((p) => p.docId === "test-uni-bsc-computer-science")).toBe(true);
     const minApsProposal = persisted.find((p) => p.field === "minAps");
     expect(minApsProposal?.proposedValue).toBe(32);
     expect(minApsProposal?.currentValue).toBeNull();
+    const institutionIdProposal = persisted.find((p) => p.field === "institutionId");
+    expect(institutionIdProposal?.proposedValue).toBe("test-uni");
+    expect(institutionIdProposal?.confidence).toBe(1);
   });
 
   it("reports noChange and writes nothing when the extracted programme matches what's already on record", async () => {

@@ -4,6 +4,7 @@ import { LABELS } from "@/config/labels";
 import { NavBar } from "@/components/NavBar";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
+import { ChatWidgetLoader } from "@/components/chat/ChatWidgetLoader";
 import "./globals.css";
 
 // Body/UI text stays on the system-UI stack, by design -- see app/globals.css's
@@ -62,18 +63,29 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      {/* Phase 8 brief, verbatim: "Ship a low-data mode: no hero imagery,
-          system fonts, deferred charts. Detect navigator.connection.saveData
-          and honour it." Every visitor, saveData or not, sees the system
-          font first; non-data-saver visitors upgrade to Fredoka as soon as
-          this script confirms they're not on a metered connection and
-          injects its stylesheet -- see the comment above RICH_FONTS_SCRIPT
-          for why this is a dynamically-added <link>, not next/font. */}
-      <Script id="rich-fonts-detect" strategy="beforeInteractive">
-        {RICH_FONTS_SCRIPT}
-      </Script>
+    // suppressHydrationWarning: the RICH_FONTS_SCRIPT below sets
+    // data-rich-fonts on this element based on navigator.connection, a
+    // client-only signal the server genuinely cannot know at render
+    // time -- the resulting mismatch on first hydration is expected and
+    // intentional (same reasoning next-themes and other client-signal
+    // detection scripts rely on), not something to silently patch away.
+    <html lang="en" suppressHydrationWarning>
       <body className="antialiased">
+        {/* Phase 8 brief, verbatim: "Ship a low-data mode: no hero imagery,
+            system fonts, deferred charts. Detect navigator.connection.saveData
+            and honour it." Every visitor, saveData or not, sees the system
+            font first; non-data-saver visitors upgrade to Fredoka as soon as
+            this script confirms they're not on a metered connection and
+            injects its stylesheet -- see the comment above RICH_FONTS_SCRIPT
+            for why this is a dynamically-added <link>, not next/font.
+            beforeInteractive scripts run before hydration regardless of
+            where they sit in the tree (Next.js hoists them into <head>
+            itself) -- they must still be placed inside <body> in JSX, not
+            as a direct child of <html>, which is invalid HTML and was
+            producing a real hydration error on every page. */}
+        <Script id="rich-fonts-detect" strategy="beforeInteractive">
+          {RICH_FONTS_SCRIPT}
+        </Script>
         {/* WCAG 2.1 AA "bypass blocks" -- visible only on keyboard focus,
             skips the nav straight to each page's <main id="main-content">. */}
         <a
@@ -94,6 +106,7 @@ export default function RootLayout({
           {children}
         </AuthProvider>
         <ServiceWorkerRegistration />
+        <ChatWidgetLoader />
       </body>
     </html>
   );

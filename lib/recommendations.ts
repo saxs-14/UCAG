@@ -32,7 +32,7 @@ export function recommendProgrammes(
     )
     .map((e) => ({
       ...e,
-      overlapScore: e.programme.fieldTags.filter((t) => tagSet.has(t)).length,
+      overlapScore: (e.programme.fieldTags ?? []).filter((t) => tagSet.has(t)).length,
     }))
     .sort((a, b) => {
       if (b.overlapScore !== a.overlapScore) return b.overlapScore - a.overlapScore;
