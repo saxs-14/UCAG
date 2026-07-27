@@ -27,6 +27,20 @@
  * the site previously just stopped after content with nothing below
  * it.
  *
+ * FOURTH PASS: the navy-header + solid-checkmark-badge + narrow teal/
+ * coral palette that pass three landed on reads as a generic B2B/
+ * enterprise-security vendor template once it's actually live -- not
+ * this app specifically. Fix is a real logomark (components/Logo.tsx,
+ * an arc gauge sweeping through the FULL semantic palette -- ties
+ * directly to "APS is a score," not a generic shield/checkmark), two
+ * new decorative accents below (violet, amber) so field-of-study tags
+ * (components/FieldTag.tsx) can actually differentiate by color instead
+ * of repeating the same two brand colors on every card, a real
+ * elevation/shadow system for cards, and a mouse-tracked 3D tilt
+ * (components/TiltCard.tsx) on interactive cards. Institutional
+ * structure from pass three is kept -- this pass adds color and depth
+ * back into it, it doesn't undo it.
+ *
  * CORRECTED (2026-07-25) against docs/MASTER_PROMPT_v2.md's actual Phase 8
  * brief, which explicitly says: "Do not hand me the default AI look --
  * cream background, big serif, terracotta accent." Paper stays a true
@@ -96,6 +110,10 @@
   --color-brand-teal-soft: #e1f0ee;
   --color-brand-coral: #c43163;
   --color-brand-coral-soft: #fbe3ea;
+  --color-brand-violet: #5b3b9e;
+  --color-brand-violet-soft: #ece5f7;
+  --color-brand-amber: #a15a00;
+  --color-brand-amber-soft: #f9e8d2;
 
   --font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
@@ -126,6 +144,10 @@
     --color-brand-teal-soft: #1b3835;
     --color-brand-coral: #f286a8;
     --color-brand-coral-soft: #3a1e29;
+    --color-brand-violet: #ac8fe0;
+    --color-brand-violet-soft: #2a2140;
+    --color-brand-amber: #e0a54f;
+    --color-brand-amber-soft: #332413;
   }
 }
 
@@ -154,6 +176,63 @@ h1, h2, h3 {
 .brand-band {
   background: var(--color-brand-navy);
   color: white;
+}
+
+/* A real two-layer elevation system -- a soft, wide ambient shadow plus
+   a tighter contact shadow close to the surface -- instead of the
+   single flat drop-shadow every card previously shared, which is a big
+   part of why the site read as flat/generic. Grows further on hover
+   for actual depth feedback, not just a lift. Paired with
+   components/TiltCard.tsx's perspective transform. */
+.elevate {
+  box-shadow:
+    0 1px 2px color-mix(in srgb, var(--color-ink) 6%, transparent),
+    0 8px 24px -8px color-mix(in srgb, var(--color-ink) 18%, transparent);
+  transition: box-shadow 200ms ease-out;
+}
+.elevate:hover {
+  box-shadow:
+    0 2px 4px color-mix(in srgb, var(--color-ink) 8%, transparent),
+    0 16px 40px -12px color-mix(in srgb, var(--color-ink) 26%, transparent);
+}
+
+/* Soft, slowly-drifting color blobs behind a PageHero band -- pure CSS
+   radial-gradients on pseudo-elements, no image request, respects
+   reduced-motion via the global override below. Purely atmospheric:
+   aria-hidden, never carries content. */
+@keyframes drift {
+  0%, 100% { transform: translate(0, 0) scale(1); }
+  50% { transform: translate(3%, -4%) scale(1.08); }
+}
+
+.hero-atmosphere {
+  position: relative;
+  overflow: hidden;
+}
+.hero-atmosphere::before,
+.hero-atmosphere::after {
+  content: "";
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(48px);
+  opacity: 0.35;
+  pointer-events: none;
+  animation: drift 14s ease-in-out infinite both;
+}
+.hero-atmosphere::before {
+  top: -20%;
+  left: -6%;
+  width: 22rem;
+  height: 22rem;
+  background: var(--color-brand-teal);
+}
+.hero-atmosphere::after {
+  bottom: -30%;
+  right: -8%;
+  width: 26rem;
+  height: 26rem;
+  background: var(--color-brand-coral);
+  animation-delay: -7s;
 }
 
 /* ---------------------------------------------------------------------

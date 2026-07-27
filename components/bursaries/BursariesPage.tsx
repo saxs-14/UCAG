@@ -5,6 +5,7 @@ import { filterBursaries, filterInternships } from "@/lib/bursaries/filter";
 import { BursaryCard } from "./BursaryCard";
 import { InternshipCard } from "./InternshipCard";
 import { ScamExplainer } from "./ScamExplainer";
+import { CountUp } from "@/components/CountUp";
 import { LABELS } from "@/config/labels";
 import type { Bursary, BursaryLevelRequired, Internship } from "@/lib/firestore/types";
 
@@ -122,11 +123,8 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
       <section className="flex flex-col gap-3">
         <h2 className="flex items-baseline gap-2 text-xl font-bold tracking-tight text-ink">
           {LABELS.bursaries.bursariesHeading}
-          <span
-            key={bursaries.length}
-            className="animate-pop-in rounded-full bg-brand-teal-soft px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-brand-teal"
-          >
-            {bursaries.length}
+          <span className="rounded-full bg-brand-teal-soft px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-brand-teal">
+            <CountUp value={bursaries.length} />
           </span>
         </h2>
         {bursaries.length === 0 && (
@@ -145,11 +143,8 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
       <section className="flex flex-col gap-3">
         <h2 className="flex items-baseline gap-2 text-xl font-bold tracking-tight text-ink">
           {LABELS.bursaries.internshipsHeading}
-          <span
-            key={internships.length}
-            className="animate-pop-in rounded-full bg-brand-coral-soft px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-brand-coral"
-          >
-            {internships.length}
+          <span className="rounded-full bg-brand-coral-soft px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-brand-coral">
+            <CountUp value={internships.length} />
           </span>
         </h2>
         {internships.length === 0 && (
