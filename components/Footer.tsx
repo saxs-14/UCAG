@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Logo } from "@/components/Logo";
 import { LABELS } from "@/config/labels";
 
 const YEAR = new Date().getFullYear();
@@ -18,7 +19,7 @@ export function Footer() {
     <footer className="no-print brand-band mt-auto">
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 px-6 py-10 sm:flex-row sm:justify-between sm:px-8">
         <div className="flex max-w-sm flex-col gap-2">
-          <p className="text-lg font-bold tracking-tight">{LABELS.app.name}</p>
+          <Logo size={26} wordmarkClassName="text-lg text-white" />
           <p className="text-sm text-white/70">{LABELS.footer.about}</p>
         </div>
 

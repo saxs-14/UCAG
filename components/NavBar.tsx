@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { Logo } from "@/components/Logo";
 import { LABELS } from "@/config/labels";
 
 const NAV_ITEMS = [
@@ -26,8 +27,8 @@ export function NavBar() {
   return (
     <header className="no-print brand-band">
       <nav className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-1 px-4 py-2 sm:px-8">
-        <Link href="/" className="flex min-h-11 items-center text-lg font-bold tracking-tight text-white">
-          {LABELS.app.name}
+        <Link href="/" className="flex min-h-11 items-center text-white">
+          <Logo size={28} wordmarkClassName="text-lg text-white" />
         </Link>
         <div className="flex flex-wrap gap-1 text-sm font-medium">
           {NAV_ITEMS.map(({ href, label }) => {

@@ -5,6 +5,7 @@ import { getVerifiedStatisticsForDataset } from "@/lib/statistics/select";
 import { statisticsToCsv } from "@/lib/statistics/csv";
 import { useSaveData } from "@/lib/useSaveData";
 import { StampBadge } from "@/components/StampBadge";
+import { TiltCard } from "@/components/TiltCard";
 import { LABELS } from "@/config/labels";
 import type { Statistic } from "@/lib/firestore/types";
 
@@ -68,41 +69,43 @@ export function StatChart({
     .replace("{date}", first.verifiedOn);
 
   return (
-    // See ResultCard for why entrance animation and hover-lift can't
-    // share one element's `transform` property.
+    // See ResultCard for why entrance animation and the 3D tilt/hover-
+    // lift can't share one element's `transform` property.
     <div className={`stagger-${stagger} animate-rise-in`}>
-      <div className="rounded-xl border border-line bg-paper-raised p-4 shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow-md">
-      <div className="mb-2 flex items-center gap-2">
-        <StampBadge variant="green" label="Verified statistic" />
-        <h3 className="font-semibold text-ink">{spec.title}</h3>
-      </div>
-      {saveData ? (
-        <table className="mt-2 w-full text-left text-sm">
-          <tbody>
-            {chartData.map((row) => (
-              <tr key={row.name} className="border-b border-line last:border-0">
-                <td className="py-1 pr-3 text-ink-soft">{row.name}</td>
-                <td className="py-1 font-mono tabular-nums text-ink">{row.value}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      ) : (
-        <StatChartCanvas chartData={chartData} />
-      )}
-      <div className="mt-2 flex items-center justify-between font-mono text-xs tabular-nums text-ink-faint">
-        <a href={first.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
-          {sourceLine}
-        </a>
-        <button
-          type="button"
-          onClick={() => downloadCsv(`${spec.datasetKey}.csv`, statisticsToCsv(verified))}
-          className="min-h-11 rounded-full border border-line px-3 font-sans transition-transform hover:-translate-y-0.5 hover:bg-slate-soft active:scale-95"
-        >
-          {LABELS.statistics.downloadCsv}
-        </button>
-      </div>
-      </div>
+      <TiltCard>
+        <div className="elevate rounded-xl border border-line bg-paper-raised p-4">
+          <div className="mb-2 flex items-center gap-2">
+            <StampBadge variant="green" label="Verified statistic" />
+            <h3 className="font-semibold text-ink">{spec.title}</h3>
+          </div>
+          {saveData ? (
+            <table className="mt-2 w-full text-left text-sm">
+              <tbody>
+                {chartData.map((row) => (
+                  <tr key={row.name} className="border-b border-line last:border-0">
+                    <td className="py-1 pr-3 text-ink-soft">{row.name}</td>
+                    <td className="py-1 font-mono tabular-nums text-ink">{row.value}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          ) : (
+            <StatChartCanvas chartData={chartData} />
+          )}
+          <div className="mt-2 flex items-center justify-between font-mono text-xs tabular-nums text-ink-faint">
+            <a href={first.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
+              {sourceLine}
+            </a>
+            <button
+              type="button"
+              onClick={() => downloadCsv(`${spec.datasetKey}.csv`, statisticsToCsv(verified))}
+              className="min-h-11 rounded-full border border-line px-3 font-sans transition-transform hover:-translate-y-0.5 hover:bg-slate-soft active:scale-95"
+            >
+              {LABELS.statistics.downloadCsv}
+            </button>
+          </div>
+        </div>
+      </TiltCard>
     </div>
   );
 }
