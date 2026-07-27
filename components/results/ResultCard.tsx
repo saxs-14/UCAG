@@ -110,9 +110,13 @@ export function ResultCard({
   const apsGap = matchResult.bucket === "almostQualify" ? findApsGap(matchResult) : null;
 
   return (
-    <article
-      className={`animate-rise-in flex flex-col gap-3 rounded-xl bg-paper-raised p-4 transition-transform hover:-translate-y-0.5 ${BUCKET_SPINE[matchResult.bucket]}`}
-    >
+    // Entrance animation and the hover lift both animate `transform`,
+    // so they're split across two elements: an animation's held
+    // end-state (fill-mode both) outranks a plain :hover rule on the
+    // same property in the cascade, which silently no-ops the hover
+    // effect if both live on one node.
+    <div className="animate-rise-in">
+      <article className={`flex flex-col gap-3 rounded-xl bg-paper-raised p-4 transition-transform hover:-translate-y-0.5 ${BUCKET_SPINE[matchResult.bucket]}`}>
       <header className="flex flex-col gap-1">
         <div className="flex items-start justify-between gap-2">
           <span className={`text-xs font-semibold uppercase tracking-wide ${BUCKET_LABEL_COLOR[matchResult.bucket]}`}>
@@ -269,6 +273,7 @@ export function ResultCard({
           Source
         </a>
       </p>
-    </article>
+      </article>
+    </div>
   );
 }
