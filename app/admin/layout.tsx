@@ -63,7 +63,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col md:flex-row">
+    <div className="flex flex-1 flex-col md:flex-row">
       <nav className="flex shrink-0 flex-row gap-1 overflow-x-auto border-b p-3 text-sm dark:border-gray-800 md:w-56 md:flex-col md:border-b-0 md:border-r">
         {NAV.map((item) => (
           <Link

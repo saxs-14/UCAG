@@ -1,6 +1,6 @@
 import { BursariesPage } from "@/components/bursaries/BursariesPage";
 import { LABELS } from "@/config/labels";
-import { MarkedHeading } from "@/components/MarkedHeading";
+import { PageHero } from "@/components/PageHero";
 import { fetchRealBursariesAndInternships } from "@/lib/catalog/getRealBursariesAndInternships";
 
 export const metadata = {
@@ -17,13 +17,11 @@ export const dynamic = "force-dynamic";
 export default async function Bursaries() {
   const { bursaries, internships } = await fetchRealBursariesAndInternships();
   return (
-    <main id="main-content" className="ruled-paper flex min-h-screen flex-col items-center gap-6 p-6 sm:p-8">
-      <div className="animate-rise-in">
-        <MarkedHeading as="h1" color="coral" className="text-2xl sm:text-3xl">
-          {LABELS.bursaries.pageTitle}
-        </MarkedHeading>
+    <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
+      <PageHero title={LABELS.bursaries.pageTitle} subtitle={LABELS.bursaries.pageSubtitle} />
+      <div className="flex w-full flex-col items-center gap-6 p-6 sm:p-8">
+        <BursariesPage bursaries={bursaries} internships={internships} />
       </div>
-      <BursariesPage bursaries={bursaries} internships={internships} />
     </main>
   );
 }

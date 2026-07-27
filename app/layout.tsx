@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { LABELS } from "@/config/labels";
 import { NavBar } from "@/components/NavBar";
+import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { ChatWidgetLoader } from "@/components/chat/ChatWidgetLoader";
@@ -10,12 +11,10 @@ import "./globals.css";
 // Body/UI text stays on the system-UI stack, by design -- see app/globals.css's
 // --font-sans. The brief's low-data-mode requirement and the <200KB
 // calculator-route budget (Phase 8) are real constraints for SA users on
-// limited data, not abandoned by the "beautiful/colorful/fun" redesign.
-// Fredoka (large display moments -- app name, the circled APS number,
-// result headings) and Caveat (the "marked in pen" accent -- eyebrow
-// labels, hand-drawn annotations, never body copy) are loaded via a
-// plain <link> injected by the script below, NOT next/font, and that's
-// a deliberate correction, not a downgrade:
+// limited data. Fredoka (the circled APS number specifically, not page
+// headings generally -- see globals.css) is loaded via a plain <link>
+// injected by the script below, NOT next/font, and that's a deliberate
+// correction, not a downgrade:
 //
 // next/font's self-hosting is normally the right call (no third-party
 // request), but it bakes the font's @font-face rule into the single CSS
@@ -39,7 +38,7 @@ const RICH_FONTS_SCRIPT = `try {
     document.documentElement.setAttribute('data-rich-fonts', 'true');
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&family=Caveat:wght@600;700&display=swap';
+    link.href = 'https://fonts.googleapis.com/css2?family=Fredoka:wght@500;700&display=swap';
     document.head.appendChild(link);
   }
 } catch (e) {}`;
@@ -71,18 +70,7 @@ export default function RootLayout({
     // intentional (same reasoning next-themes and other client-signal
     // detection scripts rely on), not something to silently patch away.
     <html lang="en" suppressHydrationWarning>
-      <body className="antialiased">
-        {/* Shared SVG filter defs, zero-sized and never rendered directly --
-            referenced via CSS `filter: url(#...)` wherever a "drawn by
-            hand, not a vector tool" wobble is wanted (headings' underline
-            strokes, card outlines). One definition here instead of
-            duplicating the filter markup in every component that uses it. */}
-        <svg width="0" height="0" aria-hidden="true" className="pointer-events-none absolute">
-          <filter id="hand-wobble">
-            <feTurbulence type="fractalNoise" baseFrequency="0.012 0.04" numOctaves="2" seed="7" result="noise" />
-            <feDisplacementMap in="SourceGraphic" in2="noise" scale="3" />
-          </filter>
-        </svg>
+      <body className="flex min-h-screen flex-col antialiased">
         {/* Phase 8 brief, verbatim: "Ship a low-data mode: no hero imagery,
             system fonts, deferred charts. Detect navigator.connection.saveData
             and honour it." Every visitor, saveData or not, sees the system
@@ -117,6 +105,7 @@ export default function RootLayout({
           <NavBar />
           {children}
         </AuthProvider>
+        <Footer />
         <ServiceWorkerRegistration />
         <ChatWidgetLoader />
       </body>

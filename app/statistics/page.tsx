@@ -1,6 +1,6 @@
 import { StatisticsPage } from "@/components/statistics/StatisticsPage";
 import { LABELS } from "@/config/labels";
-import { MarkedHeading } from "@/components/MarkedHeading";
+import { PageHero } from "@/components/PageHero";
 import { fetchRealStatistics } from "@/lib/catalog/getRealStatistics";
 
 export const metadata = {
@@ -16,13 +16,11 @@ export const dynamic = "force-dynamic";
 export default async function Statistics() {
   const statistics = await fetchRealStatistics();
   return (
-    <main id="main-content" className="ruled-paper flex min-h-screen flex-col items-center gap-6 p-6 sm:p-8">
-      <div className="animate-rise-in">
-        <MarkedHeading as="h1" color="green" className="text-2xl sm:text-3xl">
-          {LABELS.statistics.pageTitle}
-        </MarkedHeading>
+    <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
+      <PageHero title={LABELS.statistics.pageTitle} subtitle={LABELS.statistics.pageSubtitle} />
+      <div className="flex w-full flex-col items-center gap-6 p-6 sm:p-8">
+        <StatisticsPage statistics={statistics} />
       </div>
-      <StatisticsPage statistics={statistics} />
     </main>
   );
 }

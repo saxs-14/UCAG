@@ -21,7 +21,7 @@ export default function Error({
   }, [error]);
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
+    <main className="flex flex-1 flex-col items-center justify-center gap-4 p-8 text-center">
       <h1 className="text-2xl font-extrabold tracking-tight text-ink">Something went wrong</h1>
       <p className="max-w-md text-sm text-ink-soft">
         That&apos;s on us, not you -- the page hit an error it couldn&apos;t recover from on its
