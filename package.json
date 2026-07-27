@@ -15,6 +15,7 @@
     "seed:sources": "tsx --env-file=.env.local scripts/seed-sources.mts",
     "seed:institutions": "tsx --env-file=.env.local scripts/seed-institutions.mts",
     "seed:bursaries-statistics": "tsx --env-file=.env.local scripts/seed-real-bursaries-and-statistics.mts",
+    "seed:aps-rules": "tsx --env-file=.env.local scripts/seed-real-aps-rules.mts",
     "emulators:demo": "firebase emulators:start --only firestore,auth --import=./demo-data-export --export-on-exit"
   },
   "dependencies": {
