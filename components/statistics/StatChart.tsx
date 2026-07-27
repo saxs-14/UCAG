@@ -73,7 +73,7 @@ export function StatChart({
     <div className={`stagger-${stagger} animate-rise-in`}>
       <div className="rounded-xl border border-line bg-paper-raised p-4 shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow-md">
       <div className="mb-2 flex items-center gap-2">
-        <StampBadge variant="green" rotate={-5} label="Verified statistic" />
+        <StampBadge variant="green" label="Verified statistic" />
         <h3 className="font-semibold text-ink">{spec.title}</h3>
       </div>
       {saveData ? (

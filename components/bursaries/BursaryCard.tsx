@@ -11,37 +11,36 @@ const LEVEL_LABELS: Record<Bursary["levelRequired"], string> = {
 
 export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; staggerIndex?: number }) {
   const stagger = Math.min(staggerIndex + 1, 6);
-  const scatter = staggerIndex % 2 === 0 ? "scatter-a" : "scatter-b";
   return (
-    // Entrance animation and the scattered-paper rotation both animate
-    // `transform`, so they're split across two elements -- combining
-    // them on one node means the animation's held end-state (fill-mode
-    // both/forwards) wins the cascade and silently erases the rotation.
+    // Entrance animation and hover-lift both animate `transform`, so
+    // they're split across two elements: an animation's held end-state
+    // (fill-mode both) outranks a plain :hover rule on the same
+    // property in the cascade, silently no-opping the hover otherwise.
     <div className={`stagger-${stagger} animate-rise-in`}>
-      <article className={`${scatter} flex flex-col gap-2 rounded-xl bg-paper-raised p-4 shadow-sm hover:shadow-md`}>
+      <article className="rounded-xl border border-line bg-paper-raised p-4 shadow-sm transition-transform hover:-translate-y-0.5 hover:shadow-md">
         <div className="flex items-start justify-between gap-2">
           <div className="flex items-start gap-2">
-            <StampBadge variant="teal" rotate={-7} />
-            <h3 className="hover-wiggle pt-1 text-base font-semibold text-ink">{bursary.name}</h3>
+            <StampBadge variant="teal" />
+            <h3 className="text-base font-semibold text-ink">{bursary.name}</h3>
           </div>
           <DeadlineBadge closesOn={bursary.closesOn} />
         </div>
-        <p className="text-sm text-ink-soft">{bursary.provider}</p>
-        <p className="text-sm font-mono tabular-nums text-ink">{bursary.value}</p>
-        <p className="font-mono text-xs tabular-nums text-ink-soft">
+        <p className="mt-2 text-sm text-ink-soft">{bursary.provider}</p>
+        <p className="mt-1 text-sm font-mono tabular-nums text-ink">{bursary.value}</p>
+        <p className="mt-1 font-mono text-xs tabular-nums text-ink-soft">
           {formatApplicationWindow(bursary.opensOn, bursary.closesOn)}
         </p>
-        <p className="text-xs text-ink-faint">
+        <p className="mt-1 text-xs text-ink-faint">
           {LEVEL_LABELS[bursary.levelRequired]} · {bursary.fieldsOfStudy.join(", ")}
         </p>
         {bursary.criteria.length > 0 && (
-          <ul className="list-inside list-disc text-xs text-ink-soft">
+          <ul className="mt-2 list-inside list-disc text-xs text-ink-soft">
             {bursary.criteria.map((c, i) => (
               <li key={i}>{c}</li>
             ))}
           </ul>
         )}
-        <div className="flex items-center justify-between border-t border-line pt-2 text-xs">
+        <div className="mt-3 flex items-center justify-between border-t border-line pt-2 text-xs">
           <a
             href={bursary.applyUrl}
             target="_blank"

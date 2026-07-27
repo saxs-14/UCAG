@@ -1,39 +1,39 @@
 @import "tailwindcss";
 
 /**
- * Design tokens -- "Marked Script, redrawn" (second redesign pass,
- * replacing "First Light"'s flat gradient-hero/left-border-spine card
- * language -- direct user feedback: "boring, doesn't say anything,
- * calls AI, I want creativity" -- with the SAME semantic colors below,
- * expressed as pen-on-paper marks instead of flat SaaS chrome). The
- * marking-pen meaning is untouched on purpose: green for qualify/correct,
- * gold for "almost -- here's the gap" (never red -- almost-qualified is
- * feedback, not a rejection), slate for not-yet, red held in reserve for
- * genuine errors only.
+ * Design tokens -- third pass. Direct user feedback on the second pass
+ * ("Marked Script"): "you didn't redesign, you just added a few things
+ * ... I want it to look like a website ... I want it to look like a
+ * CSIR website." Fetched csir.co.za directly rather than guess: full-
+ * width solid-color banner sections, a restrained navy/dark palette
+ * with one or two accent colors reserved for calls-to-action, sans-
+ * serif type throughout, clean card grids, a real header identity on
+ * every page and a real footer -- not hand-drawn doodles, ruled-paper
+ * texture, or a cursive accent font, all of which read as a school
+ * notebook, not an institution. That entire vocabulary (.ruled-paper,
+ * .sketchy, .scatter-a/b, .hover-wiggle, --font-hand/Caveat) is removed
+ * in this pass, not layered under. What's kept: the semantic marking-
+ * pen colors below (green=qualify, gold=almost, red=error -- this is
+ * meaning, not decoration, and nobody asked to change it), and
+ * CircledMark specifically (the app's one real signature element,
+ * scoped to the actual APS number -- not generalised into a site-wide
+ * "hand-drawn" theme, which was this pass's actual mistake).
  *
- * The concrete things that changed and why: gradient-text page headers
- * and flat colored card borders are both named anti-patterns for reading
- * as generic/AI-generated (accent-bar cards, gradient hero text) -- gone,
- * replaced with a literal exercise-book paper texture (ruled lines + a
- * red margin line, .ruled-paper below) as the page background, headings
- * underlined by an animated hand-drawn stroke instead of colored text
- * (MarkedHeading component), and cards marked with a small hand-drawn
- * StampBadge circle/tick instead of a colored spine -- every one of
- * these is a direct escalation of the CircledMark element that was
- * already this app's actual signature (a teacher circling a mark on a
- * script), not a new, disconnected decoration.
+ * Structure is now carried by full-width `.brand-band` sections (a
+ * solid-color banner, like CSIR's mandate/hero bands) instead of a
+ * page background texture -- see components/PageHero.tsx and
+ * components/Footer.tsx, both new this pass. A real footer is the
+ * single biggest "this doesn't look like a finished website" fix:
+ * the site previously just stopped after content with nothing below
+ * it.
  *
  * CORRECTED (2026-07-25) against docs/MASTER_PROMPT_v2.md's actual Phase 8
  * brief, which explicitly says: "Do not hand me the default AI look --
- * cream background, big serif, terracotta accent." The first pass of this
- * redesign used a warm cream paper (#fbf3e7) -- exactly that forbidden
- * pattern, despite avoiding the serif/terracotta half of it. Paper is now
- * a true white/near-black neutral (grounded in the actual signature
- * element -- exam-script paper and pen ink, not a coffee-shop palette);
- * the "colorful/fun" brief is carried entirely by the brand-teal/coral
- * accents and motion instead of by tinting the base surface. Every
- * pairing below re-checked against WCAG AA (4.5:1 text, 3:1 large
- * text/UI) after the correction, not eyeballed.
+ * cream background, big serif, terracotta accent." Paper stays a true
+ * white/near-black neutral for the same reason as before; identity now
+ * comes from the brand-band sections and restrained accent color, not
+ * from tinting the base surface. Every pairing below re-checked against
+ * WCAG AA (4.5:1 text, 3:1 large text/UI).
  *
  * Single source of truth per token: components reference `text-mark-green`,
  * `bg-paper-raised`, etc. directly (no `dark:` prefix needed for color) --
@@ -42,11 +42,13 @@
  *
  * Type: `--font-sans` stays a system-UI stack for body/UI text -- the
  * brief's low-data-mode requirement and the <200KB calculator-route
- * budget (Phase 8) are real constraints for SA users on limited data, not
- * ones to abandon just because the brief also asked for personality. The
- * one deliberate addition is `--font-display` (Fredoka), used ONLY for
- * large display moments (app name, the circled APS number, result
- * headings) -- never on body copy, labels, or buttons.
+ * budget (Phase 8) are real constraints for SA users on limited data.
+ * `--font-display` (Fredoka) is scoped ONLY to the CircledMark number
+ * itself now, not page headings generally -- CSIR's own reference
+ * screenshot confirms sans-serif dominant, one serif heading used
+ * sparingly "for historical gravitas," which is the same restraint
+ * principle: a distinct display face earns its place on the ONE
+ * element it's actually about, not painted across every H1/H2.
  *
  * Per the brief's explicit "detect navigator.connection.saveData and
  * honour it", `--font-display` DEFAULTS to the system stack here --
@@ -59,14 +61,11 @@
  * value up front, and this Chromium build fetches a @font-face resource
  * once its rule is merely PRESENT in a loaded stylesheet with a matching
  * unicode-range -- regardless of whether any element's resolved style
- * actually uses that font-family. That ruled out both an opt-out CSS
- * override (confirmed correct computed style, still fetched the font)
- * and even an opt-in CSS default pointed at a next/font-generated
- * @font-face that's unconditionally present in the shared bundle (same
- * result). The only thing that actually stops the request is the font
- * reference not existing in the DOM/CSSOM at all by default -- see
- * app/layout.tsx's RICH_FONTS_SCRIPT, which injects Fredoka's stylesheet
- * itself only once it has confirmed saveData is off.
+ * actually uses that font-family. The only thing that actually stops
+ * the request is the font reference not existing in the DOM/CSSOM at
+ * all by default -- see app/layout.tsx's RICH_FONTS_SCRIPT, which
+ * injects Fredoka's stylesheet itself only once it has confirmed
+ * saveData is off.
  */
 @theme {
   --color-paper: #ffffff;
@@ -87,7 +86,12 @@
   --color-focus: #1257c9;
 
   /* Brand/decorative only -- chrome, headings, accents. Never used for
-     qualify/almost/error meaning; see file header. */
+     qualify/almost/error meaning; see file header. --color-brand-navy
+     is the institutional identity color (header, footer, hero bands --
+     CSIR's own "primary navy/dark tones"); teal/coral stay as the
+     smaller CTA/accent palette CSIR reserves for buttons and links. */
+  --color-brand-navy: #0f2438;
+  --color-brand-navy-soft: #e6ebef;
   --color-brand-teal: #166b63;
   --color-brand-teal-soft: #e1f0ee;
   --color-brand-coral: #c43163;
@@ -96,10 +100,6 @@
   --font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
   --font-display: var(--font-sans);
-  /* The "marked in pen" accent -- eyebrow labels, hand-drawn annotations,
-     the nav wordmark. Same opt-in-only rule as --font-display below:
-     never body copy, never a learner's actual data. */
-  --font-hand: var(--font-sans);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -120,6 +120,8 @@
     --color-slate: #98a29c;
     --color-slate-soft: #202a24;
 
+    --color-brand-navy: #0a1622;
+    --color-brand-navy-soft: #1a2733;
     --color-brand-teal: #5fc9be;
     --color-brand-teal-soft: #1b3835;
     --color-brand-coral: #f286a8;
@@ -132,7 +134,6 @@
  * Fredoka's own <link> stylesheet -- see the file header for why. */
 :root[data-rich-fonts="true"] {
   --font-display: "Fredoka", "Segoe UI", sans-serif;
-  --font-hand: "Caveat", "Segoe UI", sans-serif;
 }
 
 body {
@@ -145,48 +146,22 @@ h1, h2, h3 {
   text-wrap: balance;
 }
 
-/* The page background -- an actual exercise-book page, not a flat
-   gradient wash: faint ruled lines every 28px plus a red margin rule
-   offset from the left edge, exactly like the paper a matric exam is
-   written on. Pure gradients, zero image weight -- doesn't touch the
-   low-data-mode budget at all. Line spacing/color deliberately subtle
-   (barely-there against --color-line) so it reads as texture, not as
-   competing content. */
-.ruled-paper {
-  background-image:
-    linear-gradient(
-      to right,
-      transparent,
-      transparent 34px,
-      color-mix(in srgb, var(--color-brand-coral) 35%, transparent) 34px,
-      color-mix(in srgb, var(--color-brand-coral) 35%, transparent) 35px,
-      transparent 35px
-    ),
-    repeating-linear-gradient(
-      to bottom,
-      transparent,
-      transparent 27px,
-      var(--color-line) 27px,
-      var(--color-line) 28px
-    );
-}
-
-/* A hand-drawn wobble on an otherwise-crisp vector shape -- see
-   app/layout.tsx's shared <filter id="hand-wobble">. Reserved for a
-   handful of large, static-ish elements (heading underlines, the odd
-   card outline); never applied to more than a few elements on screen
-   at once, since feTurbulence/feDisplacementMap is real per-element
-   render cost. */
-.sketchy {
-  filter: url(#hand-wobble);
+/* A full-width solid-color section, edge to edge regardless of the
+   page's own max-width container -- CSIR's own hero/mandate banners
+   are exactly this: a solid navy band with white text, not a gradient
+   wash confined to the content column. Used for the site header, page
+   intro bands, and the footer. */
+.brand-band {
+  background: var(--color-brand-navy);
+  color: white;
 }
 
 /* ---------------------------------------------------------------------
    Motion -- a small, deliberate vocabulary (not a library dependency).
    Every animation here expresses something (an element arriving, a
-   result being revealed, a score being drawn) rather than decorating for
-   its own sake, per the redesign's "cool but meaningful" brief. All
-   respect prefers-reduced-motion via the global override below.
+   result being revealed, a score being drawn) rather than decorating
+   for its own sake. All respect prefers-reduced-motion via the global
+   override below.
 ------------------------------------------------------------------------ */
 
 @keyframes rise-in {
@@ -209,16 +184,6 @@ h1, h2, h3 {
   to { stroke-dashoffset: 0; }
 }
 
-/* A rubber stamp hitting paper -- StampBadge's entrance (card corner
-   marks, the qualify tick). Overshoots past its resting rotation/scale
-   before settling, unlike pop-in's simple ease-out grow, because a real
-   stamp thumps down slightly askew, not smoothly. */
-@keyframes stamp-in {
-  0% { opacity: 0; transform: scale(1.8) rotate(var(--stamp-rotate, -8deg)); }
-  60% { opacity: 1; transform: scale(0.92) rotate(var(--stamp-rotate, -8deg)); }
-  100% { opacity: 1; transform: scale(1) rotate(var(--stamp-rotate, -8deg)); }
-}
-
 .animate-rise-in {
   animation: rise-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
 }
@@ -233,41 +198,6 @@ h1, h2, h3 {
 
 .animate-draw-circle {
   animation: draw-circle 700ms cubic-bezier(0.65, 0, 0.35, 1) 150ms both;
-}
-
-.animate-stamp-in {
-  animation: stamp-in 420ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-/* Cards scattered slightly off-square, like real paper on a desk, not
-   snapped to a grid -- alternate left/right so a list doesn't read as
-   crooked in one direction, and straighten + lift on hover in one
-   combined transform (deliberately not split across a Tailwind hover
-   utility + this base class, since both would target `transform` and
-   the later one in source order would simply replace the other rather
-   than compose with it). */
-.scatter-a,
-.scatter-b {
-  transition: transform 200ms ease-out;
-}
-.scatter-a { transform: rotate(-0.6deg); }
-.scatter-b { transform: rotate(0.5deg); }
-.scatter-a:hover,
-.scatter-b:hover {
-  transform: translateY(-4px) rotate(0deg);
-}
-
-/* A small hover nudge for things the brief wants to feel alive without
-   being distracting -- nav links, badges, card headings. One rotation
-   cycle only (no infinite loop) so it reads as a greeting, not a tic. */
-@keyframes wiggle {
-  0%, 100% { transform: rotate(0deg); }
-  25% { transform: rotate(-4deg); }
-  75% { transform: rotate(4deg); }
-}
-
-.hover-wiggle:hover {
-  animation: wiggle 380ms ease-in-out;
 }
 
 /* The one big celebration moment in the app -- components/results/

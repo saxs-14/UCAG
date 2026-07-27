@@ -18,6 +18,14 @@ export const LABELS = {
     statistics: "Statistics",
     profile: "My Profile",
   },
+  footer: {
+    about:
+      "UCAG helps South African learners work out their real APS and find university programmes, bursaries, and internships they genuinely qualify for -- everything on this site is either independently verified against a primary source, or clearly labelled as not yet confirmed.",
+    linksHeading: "Site",
+    aboutHeading: "About this site",
+    verificationNote: "Every fact on this site links to the primary source it was verified against.",
+    copyright: "University Course Application Guide (UCAG). Not affiliated with any university, government department, or the Department of Basic Education.",
+  },
   verification: {
     verifiedOn: "Verified {date} · Source: {source}",
     datesBeingVerified: "Dates being verified",
@@ -38,6 +46,7 @@ export const LABELS = {
   },
   bursaries: {
     pageTitle: "Bursaries & Internships",
+    pageSubtitle: "Real, independently verified funding and work opportunities for South African learners -- filter by field of study to find what applies to you.",
     bursariesHeading: "Bursaries",
     internshipsHeading: "Internships",
     fieldOfStudyFilterLabel: "Field of study",
@@ -66,6 +75,7 @@ export const LABELS = {
   },
   statistics: {
     pageTitle: "Statistics",
+    pageSubtitle: "Independently verified national education data -- every chart cites its own source, and shows an honest \"pending verification\" state until one exists.",
     higherEducationHeading: "Higher Education",
     schoolsHeading: "Schools",
     pendingVerification: "Data pending verification",
