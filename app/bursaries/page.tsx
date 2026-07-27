@@ -1,5 +1,6 @@
 import { BursariesPage } from "@/components/bursaries/BursariesPage";
 import { LABELS } from "@/config/labels";
+import { MarkedHeading } from "@/components/MarkedHeading";
 import { fetchRealBursariesAndInternships } from "@/lib/catalog/getRealBursariesAndInternships";
 
 export const metadata = {
@@ -16,13 +17,12 @@ export const dynamic = "force-dynamic";
 export default async function Bursaries() {
   const { bursaries, internships } = await fetchRealBursariesAndInternships();
   return (
-    <main
-      id="main-content"
-      className="flex min-h-screen flex-col items-center gap-6 overflow-x-hidden bg-[radial-gradient(circle_at_50%_-10%,var(--color-brand-coral-soft),transparent_55%)] p-6 sm:p-8"
-    >
-      <h1 className="animate-rise-in bg-gradient-to-r from-brand-coral via-mark-gold to-brand-teal bg-clip-text font-display text-2xl font-bold tracking-tight text-transparent sm:text-3xl">
-        {LABELS.bursaries.pageTitle}
-      </h1>
+    <main id="main-content" className="ruled-paper flex min-h-screen flex-col items-center gap-6 p-6 sm:p-8">
+      <div className="animate-rise-in">
+        <MarkedHeading as="h1" color="coral" className="text-2xl sm:text-3xl">
+          {LABELS.bursaries.pageTitle}
+        </MarkedHeading>
+      </div>
       <BursariesPage bursaries={bursaries} internships={internships} />
     </main>
   );
