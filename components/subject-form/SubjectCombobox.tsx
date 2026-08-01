@@ -1,14 +1,16 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { Subject } from "@/lib/firestore/types";
 
 /**
- * A minimal searchable, grouped combobox. Functional baseline only --
- * Phase 8 is the dedicated design/accessibility pass (WCAG 2.1 AA,
- * visible focus states, full keyboard support); this satisfies Phase
- * 2.1's functional requirement (searchable, grouped by category,
- * designated-list subjects visually marked) without pre-empting that.
+ * A searchable, grouped combobox with full keyboard support (ArrowUp/
+ * ArrowDown to move the highlight, Enter to select it, Escape to close)
+ * per the WAI-ARIA combobox pattern -- satisfies Phase 2.1's functional
+ * requirement (searchable, grouped by category, designated-list subjects
+ * visually marked) plus Phase 8's promised keyboard/accessibility pass,
+ * which this component hadn't actually received despite the comment that
+ * used to sit here.
  */
 
 interface SubjectComboboxProps {
@@ -17,6 +19,10 @@ interface SubjectComboboxProps {
   value: string | null;
   onChange: (code: string | null) => void;
   placeholder?: string;
+}
+
+function optionDomId(label: string, code: string) {
+  return `combobox-option-${label}-${code}`;
 }
 
 export function SubjectCombobox({
@@ -28,6 +34,7 @@ export function SubjectCombobox({
 }: SubjectComboboxProps) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [highlightedCode, setHighlightedCode] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
   const selected = options.find((o) => o.code === value) ?? null;
@@ -46,6 +53,66 @@ export function SubjectCombobox({
     }
     return Array.from(groups.entries());
   }, [options, query]);
+
+  // Flattened, group-order-preserving list -- what ArrowUp/ArrowDown
+  // actually step through, independent of the group headers.
+  const flatOptions = useMemo(() => grouped.flatMap(([, subjects]) => subjects), [grouped]);
+
+  // Re-anchor the highlight whenever the visible option list changes
+  // (query edited, or freshly opened) so it's never stuck pointing at a
+  // now-filtered-out subject.
+  useEffect(() => {
+    if (!isOpen) return;
+    setHighlightedCode((prev) =>
+      prev && flatOptions.some((o) => o.code === prev) ? prev : (flatOptions[0]?.code ?? null)
+    );
+  }, [isOpen, flatOptions]);
+
+  function moveHighlight(delta: 1 | -1) {
+    if (flatOptions.length === 0) return;
+    const currentIndex = flatOptions.findIndex((o) => o.code === highlightedCode);
+    const nextIndex =
+      currentIndex === -1
+        ? 0
+        : (currentIndex + delta + flatOptions.length) % flatOptions.length;
+    const next = flatOptions[nextIndex]!;
+    setHighlightedCode(next.code);
+    containerRef.current
+      ?.querySelector(`#${CSS.escape(optionDomId(label, next.code))}`)
+      ?.scrollIntoView({ block: "nearest" });
+  }
+
+  function handleKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+    if (!isOpen) {
+      if (e.key === "ArrowDown" || e.key === "ArrowUp" || e.key === "Enter") {
+        setIsOpen(true);
+        e.preventDefault();
+      }
+      return;
+    }
+    switch (e.key) {
+      case "ArrowDown":
+        e.preventDefault();
+        moveHighlight(1);
+        break;
+      case "ArrowUp":
+        e.preventDefault();
+        moveHighlight(-1);
+        break;
+      case "Enter": {
+        e.preventDefault();
+        const highlighted = flatOptions.find((o) => o.code === highlightedCode);
+        if (highlighted) handleSelect(highlighted);
+        break;
+      }
+      case "Escape":
+        e.preventDefault();
+        setIsOpen(false);
+        break;
+      default:
+        break;
+    }
+  }
 
   function handleSelect(subject: Subject) {
     onChange(subject.code);
@@ -71,6 +138,9 @@ export function SubjectCombobox({
           aria-expanded={isOpen}
           aria-controls={`combobox-listbox-${label}`}
           aria-autocomplete="list"
+          aria-activedescendant={
+            isOpen && highlightedCode ? optionDomId(label, highlightedCode) : undefined
+          }
           className="h-11 w-full cursor-text rounded-xl border border-line bg-paper-raised px-3 text-sm text-ink transition-colors focus:border-brand-coral focus:outline-none"
           placeholder={selected ? selected.name : placeholder}
           value={isOpen ? query : selected?.name ?? ""}
@@ -80,6 +150,7 @@ export function SubjectCombobox({
           }}
           onBlur={handleBlur}
           onChange={(e) => setQuery(e.target.value)}
+          onKeyDown={handleKeyDown}
         />
         {selected && !isOpen && (
           <button
@@ -109,11 +180,15 @@ export function SubjectCombobox({
                   {subjects.map((subject) => (
                     <li key={subject.code}>
                       <button
+                        id={optionDomId(label, subject.code)}
                         type="button"
                         role="option"
                         aria-selected={subject.code === value}
-                        className="flex min-h-11 w-full cursor-pointer items-center justify-between px-3 text-left text-sm transition-colors hover:bg-brand-teal-soft"
+                        className={`flex min-h-11 w-full cursor-pointer items-center justify-between px-3 text-left text-sm transition-colors hover:bg-brand-teal-soft ${
+                          subject.code === highlightedCode ? "bg-brand-teal-soft" : ""
+                        }`}
                         onClick={() => handleSelect(subject)}
+                        onMouseEnter={() => setHighlightedCode(subject.code)}
                       >
                         <span className="text-ink">{subject.name}</span>
                         {subject.isDesignated && (

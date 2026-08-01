@@ -84,6 +84,7 @@ export const LABELS = {
   },
   account: {
     pageTitle: "My Profile",
+    pageSubtitle: "Your saved marks and shortlist, kept private to your account -- signing in is optional, the calculator works fully without one.",
     optionalNote: "An account is optional -- the calculator works fully without one.",
     signUpHeading: "Create an account",
     signInHeading: "Sign in",
