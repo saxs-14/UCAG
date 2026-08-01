@@ -54,9 +54,36 @@ export function StatChart({
 
   if (verified.length === 0) {
     return (
-      <div className={`stagger-${stagger} animate-rise-in rounded-xl border border-dashed border-line p-4`}>
-        <h3 className="font-semibold text-ink">{spec.title}</h3>
-        <p className="mt-2 text-sm text-ink-faint">{LABELS.statistics.pendingVerification}</p>
+      // Gold, not neutral-grey/dashed: this is this app's own established
+      // "not there yet, actively being worked on" meaning (same token as
+      // an "almost qualify" result), not an error or a placeholder that
+      // was forgotten -- an honest state deserves to look intentional,
+      // not broken. The icon is deliberately a clock, never a checkmark,
+      // so it can never be mistaken for StampBadge's verified mark.
+      <div
+        className={`stagger-${stagger} animate-rise-in rounded-xl border border-mark-gold/30 bg-mark-gold-soft p-4`}
+      >
+        <div className="mb-2 flex items-center gap-2">
+          <span
+            className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-mark-gold text-white"
+            role="img"
+            aria-label="Verification pending"
+          >
+            <svg aria-hidden="true" viewBox="0 0 24 24" className="h-3.5 w-3.5">
+              <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" strokeWidth="2" />
+              <path
+                d="M12 7v5l3.5 2"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </span>
+          <h3 className="font-semibold text-ink">{spec.title}</h3>
+        </div>
+        <p className="text-sm text-ink-soft">{LABELS.statistics.pendingVerification}</p>
       </div>
     );
   }

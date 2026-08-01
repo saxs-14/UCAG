@@ -263,12 +263,23 @@ h1, h2, h3 {
   to { stroke-dashoffset: 0; }
 }
 
+/* `backwards`, not `both`: applies the entry keyframe before the
+   animation starts (no flash-of-unanimated-content), but does NOT pin
+   the "to" keyframe's `transform` in place once the animation ends. A
+   lingering non-`none` transform (even a visually-identical scale(1)/
+   translateY(0)) creates a new CSS stacking context, which silently
+   traps any absolutely-positioned overlay inside an earlier element
+   (e.g. SubjectCombobox's dropdown) behind a later sibling that also
+   carries one of these classes -- found via a real garbled-dropdown
+   render, not a hypothetical. Once the animation completes, the element
+   reverts to its un-animated stylesheet state, which is already
+   opacity:1/transform:none -- visually identical, stacking-context-safe. */
 .animate-rise-in {
-  animation: rise-in 420ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  animation: rise-in 420ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
 }
 
 .animate-pop-in {
-  animation: pop-in 360ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  animation: pop-in 360ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
 }
 
 .animate-soft-glow {

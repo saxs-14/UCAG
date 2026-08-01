@@ -96,20 +96,27 @@ export function AccountPage() {
   }
 
   return (
-    <div className="flex w-full max-w-sm flex-col gap-4">
-      <p className="text-sm text-ink">
+    <div className="flex w-full max-w-xl flex-col gap-6">
+      <p className="animate-rise-in text-sm text-ink">
         Signed in as <strong>{user.email ?? user.uid}</strong>
       </p>
 
-      {error && <p className="text-sm text-mark-red">{error}</p>}
+      {error && (
+        <p role="alert" className="rounded-lg bg-mark-red-soft p-3 text-sm text-mark-red">
+          {error}
+        </p>
+      )}
 
-      <section className="flex flex-col gap-1">
-        <h2 className="text-sm font-semibold text-ink">{LABELS.account.savedMarksHeading}</h2>
+      <section className="animate-rise-in flex flex-col gap-2 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-teal">
+          {LABELS.account.savedMarksHeading}
+        </h2>
         {profile && profile.marks.length > 0 ? (
-          <ul className="font-mono text-sm tabular-nums text-ink-soft">
+          <ul className="flex flex-col gap-1 font-mono text-sm tabular-nums text-ink-soft">
             {profile.marks.map((m) => (
-              <li key={m.subjectCode}>
-                {resolveSubjectLabel(m.subjectCode)}: {m.percentage}%
+              <li key={m.subjectCode} className="flex justify-between border-b border-line/60 py-1 last:border-0">
+                <span>{resolveSubjectLabel(m.subjectCode)}</span>
+                <span className="font-semibold text-ink">{m.percentage}%</span>
               </li>
             ))}
           </ul>
@@ -118,12 +125,16 @@ export function AccountPage() {
         )}
       </section>
 
-      <section className="flex flex-col gap-1">
-        <h2 className="text-sm font-semibold text-ink">{LABELS.account.shortlistHeading}</h2>
+      <section className="animate-rise-in flex flex-col gap-2 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-coral">
+          {LABELS.account.shortlistHeading}
+        </h2>
         {profile && profile.shortlist.length > 0 ? (
-          <ul className="text-sm text-ink-soft">
+          <ul className="flex flex-col gap-1 text-sm text-ink-soft">
             {profile.shortlist.map((id) => (
-              <li key={id}>{id}</li>
+              <li key={id} className="border-b border-line/60 py-1 last:border-0">
+                {id}
+              </li>
             ))}
           </ul>
         ) : (
@@ -131,11 +142,11 @@ export function AccountPage() {
         )}
       </section>
 
-      <div className="flex flex-wrap gap-2 border-t border-line pt-3">
+      <div className="flex flex-wrap gap-2 border-t border-line pt-4">
         <button
           type="button"
           onClick={() => signOut(getFirebaseAuth())}
-          className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
+          className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-colors hover:bg-slate-soft"
         >
           {LABELS.account.signOutButton}
         </button>
@@ -143,7 +154,7 @@ export function AccountPage() {
           type="button"
           onClick={handleDownloadData}
           disabled={!profile}
-          className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft disabled:opacity-50"
+          className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-colors hover:bg-slate-soft disabled:cursor-not-allowed disabled:opacity-50"
         >
           {LABELS.account.downloadDataButton}
         </button>
@@ -151,25 +162,25 @@ export function AccountPage() {
           <button
             type="button"
             onClick={() => setConfirmingDelete(true)}
-            className="rounded border border-mark-red px-3 py-1.5 text-sm font-medium text-mark-red hover:bg-mark-red-soft"
+            className="min-h-11 cursor-pointer rounded-xl border border-mark-red px-3 text-sm font-medium text-mark-red transition-colors hover:bg-mark-red-soft"
           >
             {LABELS.account.deleteAccountButton}
           </button>
         ) : (
-          <div className="flex w-full flex-col gap-2 rounded border border-mark-red bg-mark-red-soft p-3">
+          <div className="flex w-full flex-col gap-2 rounded-xl border border-mark-red bg-mark-red-soft p-3">
             <p className="text-sm text-ink">{LABELS.account.deleteAccountConfirm}</p>
             <div className="flex gap-2">
               <button
                 type="button"
                 onClick={handleDeleteAccount}
-                className="rounded bg-mark-red px-3 py-1.5 text-sm font-medium text-white hover:opacity-90"
+                className="min-h-11 cursor-pointer rounded-xl bg-mark-red px-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
               >
                 {LABELS.account.deleteAccountConfirmButton}
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmingDelete(false)}
-                className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
+                className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-colors hover:bg-slate-soft"
               >
                 {LABELS.account.deleteAccountCancelButton}
               </button>
