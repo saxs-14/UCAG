@@ -5,6 +5,7 @@ import { APPLICATION_CHECKLIST_ITEMS } from "@/config/applicationDocuments";
 interface ApplicationChecklistProps {
   checked: ReadonlySet<string>;
   onToggle: (id: string) => void;
+  signedIn: boolean;
 }
 
 /**
@@ -15,7 +16,7 @@ interface ApplicationChecklistProps {
  * so this is presented as personal guidance a learner can tick off, not
  * as a fact about any particular programme.
  */
-export function ApplicationChecklist({ checked, onToggle }: ApplicationChecklistProps) {
+export function ApplicationChecklist({ checked, onToggle, signedIn }: ApplicationChecklistProps) {
   const documents = APPLICATION_CHECKLIST_ITEMS.filter((item) => item.category === "documents");
   const timeline = APPLICATION_CHECKLIST_ITEMS.filter((item) => item.category === "timeline");
   const checkedCount = APPLICATION_CHECKLIST_ITEMS.filter((item) => checked.has(item.id)).length;
@@ -27,8 +28,10 @@ export function ApplicationChecklist({ checked, onToggle }: ApplicationChecklist
       </summary>
       <p className="mt-2 text-xs text-ink-faint">
         General guidance, not a substitute for any institution&apos;s own checklist -- always
-        confirm exact requirements on the institution&apos;s website. Saved on this device only,
-        no account needed.
+        confirm exact requirements on the institution&apos;s website.{" "}
+        {signedIn
+          ? "Saved to your account, so it follows you across devices."
+          : "Saved on this device only, no account needed."}
       </p>
 
       <div className="mt-3 flex flex-col gap-3 sm:flex-row sm:gap-6">

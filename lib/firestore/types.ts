@@ -441,6 +441,11 @@ export interface UserProfile {
   uid: string;
   marks: SubjectMark[];
   shortlist: string[];
+  /** IDs of config/applicationDocuments.ts's APPLICATION_CHECKLIST_ITEMS this
+   * learner has checked off, mirrored to their account (see
+   * lib/useApplicationChecklist.ts) so it follows them across devices --
+   * optional since profiles created before this field existed won't have it. */
+  checklistProgress?: string[];
   consentRecord: ConsentRecord | null;
   isMinor: boolean;
   guardianConsentAt: string | null;

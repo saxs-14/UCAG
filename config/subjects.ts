@@ -14,6 +14,7 @@
  */
 
 import type { Subject } from "@/lib/firestore/types";
+import type { SubjectMarkInput } from "@/lib/aps/types";
 
 export const HOME_LANGUAGE_OPTIONS = [
   "Afrikaans",
@@ -72,6 +73,10 @@ export const MATHEMATICS_CODES: Record<MathematicsOption, string> = {
   "Mathematical Literacy": "MATHLIT",
   "Technical Mathematics": "TECHMATH",
 };
+
+const REVERSE_MATHEMATICS_CODES: Record<string, MathematicsOption> = Object.fromEntries(
+  Object.entries(MATHEMATICS_CODES).map(([option, code]) => [code, option as MathematicsOption])
+);
 
 export const MATHEMATICS_SUBJECTS: Subject[] = [
   {
@@ -222,4 +227,76 @@ export function resolveSubjectLabel(code: string): string {
   }
 
   return code;
+}
+
+/** Initial UI state for SubjectForm's granular per-field selects, as opposed
+ * to the flat SubjectMarkInput[] the rest of the app deals in. */
+export interface SubjectFormInitialState {
+  homeLanguage: LanguageOption | "";
+  homeLanguageMark: number | null;
+  firstAdditionalLanguage: LanguageOption | "";
+  firstAdditionalLanguageMark: number | null;
+  mathematics: MathematicsOption | "";
+  mathematicsMark: number | null;
+  lifeOrientationMark: number | null;
+  electives: { code: string; percentage: number }[];
+}
+
+/**
+ * Reverses SubjectForm's own subject-code derivation (see its `marks`
+ * useMemo) back into granular form state, so a signed-in learner's saved
+ * marks can repopulate the calculator instead of starting blank. Uses the
+ * same code-parsing rules as resolveSubjectLabel above -- language codes are
+ * "<LANG3>-HL"/"<LANG3>-FAL", Mathematics variants are MATHEMATICS_CODES'
+ * values, "LO" is Life Orientation, anything else is checked against
+ * ELECTIVE_SUBJECTS. An unrecognised code is silently dropped rather than
+ * thrown -- a stale/unknown code shouldn't break the whole restore.
+ */
+export function subjectMarksToFormState(marks: SubjectMarkInput[]): SubjectFormInitialState {
+  const state: SubjectFormInitialState = {
+    homeLanguage: "",
+    homeLanguageMark: null,
+    firstAdditionalLanguage: "",
+    firstAdditionalLanguageMark: null,
+    mathematics: "",
+    mathematicsMark: null,
+    lifeOrientationMark: null,
+    electives: [],
+  };
+
+  for (const { subjectCode, percentage } of marks) {
+    if (subjectCode === COMPULSORY_LIFE_ORIENTATION.code) {
+      state.lifeOrientationMark = percentage;
+      continue;
+    }
+
+    const languageMatch = /^([A-Z]+)-(HL|FAL)$/.exec(subjectCode);
+    if (languageMatch) {
+      const [, langCode, slot] = languageMatch;
+      const language = REVERSE_LANGUAGE_CODES[langCode!];
+      if (language) {
+        if (slot === "HL") {
+          state.homeLanguage = language;
+          state.homeLanguageMark = percentage;
+        } else {
+          state.firstAdditionalLanguage = language;
+          state.firstAdditionalLanguageMark = percentage;
+        }
+      }
+      continue;
+    }
+
+    const mathOption = REVERSE_MATHEMATICS_CODES[subjectCode];
+    if (mathOption) {
+      state.mathematics = mathOption;
+      state.mathematicsMark = percentage;
+      continue;
+    }
+
+    if (ELECTIVE_SUBJECTS.some((s) => s.code === subjectCode)) {
+      state.electives.push({ code: subjectCode, percentage });
+    }
+  }
+
+  return state;
 }

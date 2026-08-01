@@ -47,6 +47,10 @@ export async function updateShortlist(uid: string, shortlist: string[]): Promise
   await updateDoc(profileRef(uid), { shortlist });
 }
 
+export async function updateChecklistProgress(uid: string, checklistProgress: string[]): Promise<void> {
+  await updateDoc(profileRef(uid), { checklistProgress });
+}
+
 /** POPIA "delete my account" -- removes the Firestore profile. Deleting
  * the Firebase Auth account itself happens separately (see
  * components/auth/AccountPage.tsx), since that's a client SDK call on
