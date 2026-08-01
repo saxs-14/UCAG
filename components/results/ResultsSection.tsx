@@ -59,7 +59,9 @@ interface UnscoredEntry {
 export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   const { user } = useAuth();
   const [shortlist, setShortlist] = useState<string[]>([]);
-  const { checked: checklistChecked, toggle: toggleChecklistItem } = useApplicationChecklist();
+  const { checked: checklistChecked, toggle: toggleChecklistItem } = useApplicationChecklist(
+    user?.uid
+  );
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [catalog, setCatalog] = useState<RealCatalog | null>(null);
   const [catalogError, setCatalogError] = useState<string | null>(null);
@@ -241,7 +243,11 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
 
       {scored.length > 0 && <InterestQuiz entries={scored} />}
 
-      <ApplicationChecklist checked={checklistChecked} onToggle={toggleChecklistItem} />
+      <ApplicationChecklist
+        checked={checklistChecked}
+        onToggle={toggleChecklistItem}
+        signedIn={!!user}
+      />
 
       {compareIds.length >= 2 && (
         <CourseComparisonTable

@@ -155,6 +155,17 @@ describe("userProfiles security rules", () => {
     );
   });
 
+  it("a user can update just their checklistProgress via a partial updateDoc (application-checklist toggle's real write pattern)", async () => {
+    await testEnv.withSecurityRulesDisabled(async (adminCtx) => {
+      await adminCtx.firestore().doc("userProfiles/user-a").set(validMajorProfile("user-a"));
+    });
+
+    const alice = testEnv.authenticatedContext("user-a");
+    await assertSucceeds(
+      alice.firestore().doc("userProfiles/user-a").update({ checklistProgress: ["nsc-certificate"] })
+    );
+  });
+
   it("a user cannot update another user's shortlist via partial updateDoc", async () => {
     await testEnv.withSecurityRulesDisabled(async (adminCtx) => {
       await adminCtx.firestore().doc("userProfiles/user-a").set(validMajorProfile("user-a"));

@@ -12,6 +12,7 @@ import {
   getLanguageSubjectCode,
   type LanguageOption,
   type MathematicsOption,
+  type SubjectFormInitialState,
 } from "@/config/subjects";
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
@@ -35,29 +36,47 @@ interface ElectiveSlot {
  */
 export function SubjectForm({
   onMarksChange,
+  initialState,
 }: {
   onMarksChange?: (marks: SubjectMarkInput[]) => void;
+  /** Seeds the form from a signed-in learner's previously saved marks
+   * (see config/subjects.ts's subjectMarksToFormState). Only read on first
+   * render -- this form owns its state after that, same as any other
+   * uncontrolled-with-defaults form. */
+  initialState?: SubjectFormInitialState;
 }) {
-  const [homeLanguage, setHomeLanguage] = useState<LanguageOption | "">("");
-  const [homeLanguageMark, setHomeLanguageMark] = useState<number | null>(null);
+  const [homeLanguage, setHomeLanguage] = useState<LanguageOption | "">(
+    initialState?.homeLanguage ?? ""
+  );
+  const [homeLanguageMark, setHomeLanguageMark] = useState<number | null>(
+    initialState?.homeLanguageMark ?? null
+  );
 
   const [firstAdditionalLanguage, setFirstAdditionalLanguage] = useState<LanguageOption | "">(
-    ""
+    initialState?.firstAdditionalLanguage ?? ""
   );
   const [firstAdditionalLanguageMark, setFirstAdditionalLanguageMark] = useState<number | null>(
-    null
+    initialState?.firstAdditionalLanguageMark ?? null
   );
 
-  const [mathematics, setMathematics] = useState<MathematicsOption | "">("");
-  const [mathematicsMark, setMathematicsMark] = useState<number | null>(null);
+  const [mathematics, setMathematics] = useState<MathematicsOption | "">(
+    initialState?.mathematics ?? ""
+  );
+  const [mathematicsMark, setMathematicsMark] = useState<number | null>(
+    initialState?.mathematicsMark ?? null
+  );
 
-  const [lifeOrientationMark, setLifeOrientationMark] = useState<number | null>(null);
+  const [lifeOrientationMark, setLifeOrientationMark] = useState<number | null>(
+    initialState?.lifeOrientationMark ?? null
+  );
 
-  const [electives, setElectives] = useState<ElectiveSlot[]>([
-    { code: null, percentage: null },
-    { code: null, percentage: null },
-    { code: null, percentage: null },
-  ]);
+  const [electives, setElectives] = useState<ElectiveSlot[]>(() => {
+    const seeded: ElectiveSlot[] = initialState?.electives.map((e) => ({ ...e })) ?? [];
+    while (seeded.length < MIN_ELECTIVES) {
+      seeded.push({ code: null, percentage: null });
+    }
+    return seeded;
+  });
 
   const firstAdditionalLanguageOptions = FIRST_ADDITIONAL_LANGUAGE_OPTIONS.filter(
     (lang) => lang !== homeLanguage
