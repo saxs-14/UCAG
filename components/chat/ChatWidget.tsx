@@ -177,7 +177,7 @@ export function ChatWidget() {
         aria-label={isOpen ? LABELS.chat.closeButtonLabel : LABELS.chat.openButtonLabel}
         aria-expanded={isOpen}
         onClick={() => setIsOpen((v) => !v)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-teal text-white shadow-lg transition-transform hover-fine:scale-105 active:scale-95"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-teal text-white shadow-lg transition-transform hover-fine:scale-105 active:scale-[0.97]"
       >
         {isOpen ? (
           <span aria-hidden className="text-2xl leading-none">
