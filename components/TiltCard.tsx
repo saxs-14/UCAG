@@ -17,6 +17,8 @@ const MAX_TILT_DEG = 6;
 export function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotionRef = useRef(false);
+  const rafRef = useRef<number | null>(null);
+  const pendingRef = useRef<{ px: number; py: number } | null>(null);
 
   function handlePointerMove(e: React.PointerEvent<HTMLDivElement>) {
     if (reduceMotionRef.current || e.pointerType !== "mouse") return;
@@ -25,10 +27,22 @@ export function TiltCard({ children, className = "" }: { children: React.ReactNo
     const rect = el.getBoundingClientRect();
     const px = (e.clientX - rect.left) / rect.width - 0.5;
     const py = (e.clientY - rect.top) / rect.height - 0.5;
-    el.style.transform = `perspective(800px) rotateX(${(-py * MAX_TILT_DEG).toFixed(2)}deg) rotateY(${(px * MAX_TILT_DEG).toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
+    pendingRef.current = { px, py };
+    if (rafRef.current !== null) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const pending = pendingRef.current;
+      if (!pending || !el) return;
+      el.style.transform = `perspective(800px) rotateX(${(-pending.py * MAX_TILT_DEG).toFixed(2)}deg) rotateY(${(pending.px * MAX_TILT_DEG).toFixed(2)}deg) scale3d(1.015, 1.015, 1.015)`;
+    });
   }
 
   function handlePointerLeave() {
+    if (rafRef.current !== null) {
+      cancelAnimationFrame(rafRef.current);
+      rafRef.current = null;
+    }
+    pendingRef.current = null;
     const el = ref.current;
     if (el) el.style.transform = "";
   }
