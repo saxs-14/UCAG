@@ -299,7 +299,7 @@ export function SubjectForm({
         {electives.length < MAX_ELECTIVES && (
           <button
             type="button"
-            className="inline-flex min-h-11 cursor-pointer items-center self-start rounded-full border border-dashed border-brand-teal px-4 text-sm font-medium text-brand-teal transition-transform hover:scale-[1.03] active:scale-[0.97]"
+            className="inline-flex min-h-11 cursor-pointer items-center self-start rounded-full border border-dashed border-brand-teal px-4 text-sm font-medium text-brand-teal transition-transform hover-fine:scale-[1.03] active:scale-[0.97]"
             onClick={addElective}
           >
             + Add a 4th elective

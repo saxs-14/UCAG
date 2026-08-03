@@ -122,6 +122,14 @@
   --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
 }
 
+@custom-variant hover-fine {
+  @media (hover: hover) and (pointer: fine) {
+    &:hover {
+      @slot;
+    }
+  }
+}
+
 @media (prefers-color-scheme: dark) {
   :root {
     --color-paper: #15181a;
