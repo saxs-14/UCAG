@@ -266,13 +266,14 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
             <h2 className="animate-rise-in font-display text-xl font-bold tracking-tight text-ink">
               {LABELS.resultBuckets[bucket]}
             </h2>
-            {entries.map(({ programme, matchResult }) => {
+            {entries.map(({ programme, matchResult }, i) => {
               const institution = catalog.institutions.find((i) => i.id === programme.institutionId)!;
               const faculty = catalog.faculties.find((f) => f.id === programme.facultyId)!;
               const school = catalog.schools.find((s) => s.id === programme.schoolId)!;
               return (
                 <ResultCard
                   key={programme.id}
+                  staggerIndex={i}
                   programme={programme}
                   institution={institution}
                   faculty={faculty}
@@ -301,9 +302,10 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
           <h2 className="animate-rise-in font-display text-xl font-bold tracking-tight text-ink">
             Real programmes, score not yet available
           </h2>
-          {unscored.map(({ programme, institution, faculty, school }) => (
+          {unscored.map(({ programme, institution, faculty, school }, i) => (
             <UnscoredProgrammeCard
               key={programme.id}
+              staggerIndex={i}
               programme={programme}
               institution={institution}
               faculty={faculty}

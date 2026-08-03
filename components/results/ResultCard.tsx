@@ -35,6 +35,7 @@ interface ResultCardProps {
   isComparing: boolean;
   onToggleCompare: () => void;
   compareDisabled: boolean;
+  staggerIndex?: number;
 }
 
 const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
@@ -79,6 +80,7 @@ export function ResultCard({
   isComparing,
   onToggleCompare,
   compareDisabled,
+  staggerIndex = 0,
 }: ResultCardProps) {
   // The ingestion pipeline (lib/ingestion/applicationWindowPipeline.ts)
   // only ever proposes opensOn/closesOn/lateClosesOn -- never a status
@@ -108,6 +110,7 @@ export function ResultCard({
   );
 
   const apsGap = matchResult.bucket === "almostQualify" ? findApsGap(matchResult) : null;
+  const stagger = Math.min(staggerIndex + 1, 6);
 
   return (
     // Entrance animation and the hover lift both animate `transform`,
@@ -115,7 +118,7 @@ export function ResultCard({
     // end-state (fill-mode both) outranks a plain :hover rule on the
     // same property in the cascade, which silently no-ops the hover
     // effect if both live on one node.
-    <div className="animate-rise-in">
+    <div className={`stagger-${stagger} animate-rise-in`}>
       <article className={`flex flex-col gap-3 rounded-xl bg-paper-raised p-4 transition-transform hover:-translate-y-0.5 ${BUCKET_SPINE[matchResult.bucket]}`}>
       <header className="flex flex-col gap-1">
         <div className="flex items-start justify-between gap-2">
