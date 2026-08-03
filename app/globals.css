@@ -313,7 +313,8 @@ h1, h2, h3 {
 }
 
 .animate-soft-glow {
-  animation: soft-glow 2.2s ease-in-out infinite;
+  animation: soft-glow 2.2s ease-in-out 3;
+  animation-fill-mode: forwards;
 }
 
 .animate-draw-circle {
