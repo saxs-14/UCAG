@@ -197,7 +197,7 @@ export function ResultCard({
           const met = "met" in reason ? reason.met : false;
           return (
             <li key={i} className="flex items-start gap-2">
-              <span aria-hidden className={met ? "text-mark-green" : "text-mark-gold"}>
+              <span aria-hidden className={`transition-colors duration-150 ${met ? "text-mark-green" : "text-mark-gold"}`}>
                 {met ? "✓" : "✗"}
               </span>
               <span className="text-ink">{reasonText(reason)}</span>
