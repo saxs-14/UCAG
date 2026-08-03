@@ -22,7 +22,7 @@ interface StampBadgeProps {
 export function StampBadge({ variant = "teal", label = "Verified" }: StampBadgeProps) {
   return (
     <span
-      className={`animate-pop-in inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-white ${VARIANT_BG[variant]}`}
+      className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-white ${VARIANT_BG[variant]}`}
       role="img"
       aria-label={label}
     >
