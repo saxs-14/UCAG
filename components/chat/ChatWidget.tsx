@@ -134,7 +134,10 @@ export function ChatWidget() {
               </div>
             )}
             {error && (
-              <div role="alert" className="self-start rounded-2xl bg-mark-red-soft px-3 py-2 text-sm text-mark-red">
+              <div
+                role="alert"
+                className="animate-pop-in self-start rounded-2xl rounded-bl-sm bg-mark-red-soft px-3 py-2 text-sm text-mark-red"
+              >
                 {error}
               </div>
             )}
