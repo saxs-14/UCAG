@@ -37,7 +37,11 @@ export function ChatWidget() {
   }, [isOpen]);
 
   useEffect(() => {
-    scrollRef.current?.scrollTo({ top: scrollRef.current.scrollHeight, behavior: "smooth" });
+    const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: prefersReducedMotion ? "auto" : "smooth",
+    });
   }, [messages, isLoading]);
 
   async function handleSend() {
