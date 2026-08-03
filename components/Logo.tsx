@@ -42,7 +42,7 @@ export function Logo({ size = 32, showWordmark = true, wordmarkClassName = "", c
           </linearGradient>
         </defs>
         <path
-          className="animate-draw-circle"
+          className="animate-draw-circle-fast"
           style={{ "--circle-length": 70 } as React.CSSProperties}
           d="M 10.1,29.9 A 14,14 0 1 1 29.9,29.9"
           fill="none"
