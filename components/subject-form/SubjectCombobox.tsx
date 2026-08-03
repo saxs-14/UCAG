@@ -25,6 +25,8 @@ function optionDomId(label: string, code: string) {
   return `combobox-option-${label}-${code}`;
 }
 
+const DROPDOWN_EXIT_MS = 150;
+
 export function SubjectCombobox({
   label,
   options,
@@ -34,6 +36,7 @@ export function SubjectCombobox({
 }: SubjectComboboxProps) {
   const [query, setQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
   const [highlightedCode, setHighlightedCode] = useState<string | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
 
@@ -107,7 +110,7 @@ export function SubjectCombobox({
       }
       case "Escape":
         e.preventDefault();
-        setIsOpen(false);
+        closeList();
         break;
       default:
         break;
@@ -117,12 +120,20 @@ export function SubjectCombobox({
   function handleSelect(subject: Subject) {
     onChange(subject.code);
     setQuery("");
-    setIsOpen(false);
+    closeList();
+  }
+
+  function closeList() {
+    setIsClosing(true);
+    window.setTimeout(() => {
+      setIsOpen(false);
+      setIsClosing(false);
+    }, DROPDOWN_EXIT_MS);
   }
 
   function handleBlur() {
     // Defer so a click on an option registers before the list closes.
-    window.setTimeout(() => setIsOpen(false), 150);
+    window.setTimeout(closeList, 150);
   }
 
   return (
@@ -162,11 +173,13 @@ export function SubjectCombobox({
             ×
           </button>
         )}
-        {isOpen && (
+        {(isOpen || isClosing) && (
           <ul
             id={`combobox-listbox-${label}`}
             role="listbox"
-            className="animate-pop-in absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-line bg-paper-raised shadow-lg"
+            className={`absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-line bg-paper-raised shadow-lg ${
+              isClosing ? "animate-dropdown-out" : "animate-dropdown"
+            }`}
           >
             {grouped.length === 0 && (
               <li className="px-3 py-2 text-sm text-ink-faint">No subjects match.</li>
