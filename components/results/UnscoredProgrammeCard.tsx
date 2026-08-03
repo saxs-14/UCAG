@@ -7,6 +7,7 @@ interface UnscoredProgrammeCardProps {
   institution: Institution;
   faculty: Faculty;
   school: School;
+  staggerIndex?: number;
 }
 
 /**
@@ -22,9 +23,16 @@ interface UnscoredProgrammeCardProps {
  * same UI as a fact. This card is the deliberate alternative to that
  * guess: show everything that IS verified, say plainly what isn't yet.
  */
-export function UnscoredProgrammeCard({ programme, institution, faculty, school }: UnscoredProgrammeCardProps) {
+export function UnscoredProgrammeCard({
+  programme,
+  institution,
+  faculty,
+  school,
+  staggerIndex = 0,
+}: UnscoredProgrammeCardProps) {
+  const stagger = Math.min(staggerIndex + 1, 6);
   return (
-    <article className="animate-rise-in flex flex-col gap-3 rounded-xl border-l-4 border-slate bg-paper-raised p-4">
+    <article className={`stagger-${stagger} animate-rise-in flex flex-col gap-3 rounded-xl border-l-4 border-slate bg-paper-raised p-4`}>
       <header className="flex flex-col gap-1">
         <span className="text-xs font-semibold uppercase tracking-wide text-slate">
           {LABELS.verification.apsRulesBeingVerified}
