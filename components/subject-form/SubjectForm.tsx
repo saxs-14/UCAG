@@ -278,7 +278,7 @@ export function SubjectForm({
                   // needs a real hit area on a 5-inch screen (Phase 8 brief).
                   <button
                     type="button"
-                    className="-m-2 mt-4 cursor-pointer p-2 text-xs text-mark-red hover:underline"
+                    className="-m-2 mt-4 cursor-pointer p-2 text-xs text-mark-red transition-transform duration-150 ease-out hover:underline active:scale-[0.97]"
                     onClick={() => removeElective(index)}
                   >
                     Remove

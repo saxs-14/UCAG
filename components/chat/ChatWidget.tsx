@@ -102,7 +102,7 @@ export function ChatWidget() {
               type="button"
               aria-label={LABELS.chat.closeButtonLabel}
               onClick={() => setIsOpen(false)}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition-colors hover:bg-slate-soft hover:text-ink"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition-[background-color,color,transform] duration-150 ease-out hover:bg-slate-soft hover:text-ink active:scale-[0.97]"
             >
               ×
             </button>

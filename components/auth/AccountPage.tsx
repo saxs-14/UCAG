@@ -146,7 +146,7 @@ export function AccountPage() {
         <button
           type="button"
           onClick={() => signOut(getFirebaseAuth())}
-          className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-colors hover:bg-slate-soft"
+          className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-[background-color,transform] duration-150 ease-out hover:bg-slate-soft active:scale-[0.97]"
         >
           {LABELS.account.signOutButton}
         </button>
@@ -154,7 +154,7 @@ export function AccountPage() {
           type="button"
           onClick={handleDownloadData}
           disabled={!profile}
-          className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-colors hover:bg-slate-soft disabled:cursor-not-allowed disabled:opacity-50"
+          className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-[background-color,transform] duration-150 ease-out hover:bg-slate-soft active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
         >
           {LABELS.account.downloadDataButton}
         </button>
@@ -162,7 +162,7 @@ export function AccountPage() {
           <button
             type="button"
             onClick={() => setConfirmingDelete(true)}
-            className="min-h-11 cursor-pointer rounded-xl border border-mark-red px-3 text-sm font-medium text-mark-red transition-colors hover:bg-mark-red-soft"
+            className="min-h-11 cursor-pointer rounded-xl border border-mark-red px-3 text-sm font-medium text-mark-red transition-[background-color,transform] duration-150 ease-out hover:bg-mark-red-soft active:scale-[0.97]"
           >
             {LABELS.account.deleteAccountButton}
           </button>
@@ -173,14 +173,14 @@ export function AccountPage() {
               <button
                 type="button"
                 onClick={handleDeleteAccount}
-                className="min-h-11 cursor-pointer rounded-xl bg-mark-red px-3 text-sm font-medium text-white transition-opacity hover:opacity-90"
+                className="min-h-11 cursor-pointer rounded-xl bg-mark-red px-3 text-sm font-medium text-white transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97]"
               >
                 {LABELS.account.deleteAccountConfirmButton}
               </button>
               <button
                 type="button"
                 onClick={() => setConfirmingDelete(false)}
-                className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-colors hover:bg-slate-soft"
+                className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-[background-color,transform] duration-150 ease-out hover:bg-slate-soft active:scale-[0.97]"
               >
                 {LABELS.account.deleteAccountCancelButton}
               </button>
