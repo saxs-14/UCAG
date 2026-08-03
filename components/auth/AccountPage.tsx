@@ -167,7 +167,7 @@ export function AccountPage() {
             {LABELS.account.deleteAccountButton}
           </button>
         ) : (
-          <div className="flex w-full flex-col gap-2 rounded-xl border border-mark-red bg-mark-red-soft p-3">
+          <div className="animate-pop-in flex w-full flex-col gap-2 rounded-xl border border-mark-red bg-mark-red-soft p-3">
             <p className="text-sm text-ink">{LABELS.account.deleteAccountConfirm}</p>
             <div className="flex gap-2">
               <button
