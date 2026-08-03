@@ -8,22 +8,22 @@ Each plan is fully self-contained (exact file paths, current code, target code, 
 
 | # | Title | Severity | Category | Status |
 |---|---|---|---|---|
-| [001](001-subject-combobox-dropdown-motion.md) | Fix SubjectCombobox dropdown's duration, origin, and missing exit | HIGH | Easing/Origin/Cohesion | TODO |
-| [002](002-results-list-stagger.md) | Add the missing stagger to the results list | MEDIUM-HIGH | Cohesion | TODO |
-| [003](003-tiltcard-raf-throttle.md) | Throttle TiltCard's pointermove with requestAnimationFrame | MEDIUM-HIGH | Performance | TODO |
-| [004](004-gate-hover-transforms-touch.md) | Gate hover-triggered transforms so touch can't false-trigger them | MEDIUM-HIGH | Accessibility | TODO |
-| [005](005-debounce-aps-simulator-circledmark.md) | Stop the simulator's CircledMark from thrashing on every keystroke | MEDIUM | Interruptibility | TODO |
-| [006](006-chatwidget-reduced-motion-scroll.md) | Respect prefers-reduced-motion for ChatWidget's auto-scroll | MEDIUM | Accessibility | TODO |
-| [007](007-cap-soft-glow-iterations.md) | Cap the infinite soft-glow pulse instead of letting it run forever | MEDIUM | Purpose/frequency | TODO |
-| [008](008-add-press-feedback-buttons.md) | Add press feedback to buttons that have none | LOW-MEDIUM | Physicality | TODO |
-| [009](009-shorten-logo-draw-circle.md) | Shorten the logomark's stroke-draw on every page load | LOW-MEDIUM | Duration | TODO |
-| [010](010-consolidate-press-scale-magnitudes.md) | Consolidate the three competing press-scale magnitudes | LOW | Cohesion | TODO |
-| [011](011-subjectform-stagger-token-reuse.md) | Reuse .stagger-N tokens instead of reimplementing them inline | LOW | Cohesion | TODO |
-| [012](012-stampbadge-remove-duplicate-entrance.md) | Stop StampBadge doubling motion inside an already-animating card | LOW | Purpose/frequency | TODO |
-| [013](013-resultcard-requirement-transition.md) | Animate the requirement checkmark/cross color change | — (missed opp.) | Missed opportunities | TODO |
-| [014](014-subjectform-elective-remove-exit.md) | Give elective removal an exit to match its entrance | — (missed opp.) | Missed opportunities | TODO |
-| [015](015-chatwidget-error-bubble-entrance.md) | Give the chat error bubble the same entrance every other bubble has | — (missed opp.) | Missed opportunities | TODO |
-| [016](016-accountpage-delete-confirm-transition.md) | Animate the destructive delete-account confirmation panel | — (missed opp.) | Missed opportunities | TODO |
+| [001](001-subject-combobox-dropdown-motion.md) | Fix SubjectCombobox dropdown's duration, origin, and missing exit | HIGH | Easing/Origin/Cohesion | DONE |
+| [002](002-results-list-stagger.md) | Add the missing stagger to the results list | MEDIUM-HIGH | Cohesion | DONE |
+| [003](003-tiltcard-raf-throttle.md) | Throttle TiltCard's pointermove with requestAnimationFrame | MEDIUM-HIGH | Performance | DONE |
+| [004](004-gate-hover-transforms-touch.md) | Gate hover-triggered transforms so touch can't false-trigger them | MEDIUM-HIGH | Accessibility | DONE |
+| [005](005-debounce-aps-simulator-circledmark.md) | Stop the simulator's CircledMark from thrashing on every keystroke | MEDIUM | Interruptibility | DONE (hook placement corrected -- see commit) |
+| [006](006-chatwidget-reduced-motion-scroll.md) | Respect prefers-reduced-motion for ChatWidget's auto-scroll | MEDIUM | Accessibility | DONE |
+| [007](007-cap-soft-glow-iterations.md) | Cap the infinite soft-glow pulse instead of letting it run forever | MEDIUM | Purpose/frequency | DONE |
+| [008](008-add-press-feedback-buttons.md) | Add press feedback to buttons that have none | LOW-MEDIUM | Physicality | DONE |
+| [009](009-shorten-logo-draw-circle.md) | Shorten the logomark's stroke-draw on every page load | LOW-MEDIUM | Duration | DONE |
+| [010](010-consolidate-press-scale-magnitudes.md) | Consolidate the three competing press-scale magnitudes | LOW | Cohesion | DONE |
+| [011](011-subjectform-stagger-token-reuse.md) | Reuse .stagger-N tokens instead of reimplementing them inline | LOW | Cohesion | DONE |
+| [012](012-stampbadge-remove-duplicate-entrance.md) | Stop StampBadge doubling motion inside an already-animating card | LOW | Purpose/frequency | DONE |
+| [013](013-resultcard-requirement-transition.md) | Animate the requirement checkmark/cross color change | — (missed opp.) | Missed opportunities | DONE |
+| [014](014-subjectform-elective-remove-exit.md) | Give elective removal an exit to match its entrance | — (missed opp.) | Missed opportunities | DONE |
+| [015](015-chatwidget-error-bubble-entrance.md) | Give the chat error bubble the same entrance every other bubble has | — (missed opp.) | Missed opportunities | DONE |
+| [016](016-accountpage-delete-confirm-transition.md) | Animate the destructive delete-account confirmation panel | — (missed opp.) | Missed opportunities | DONE |
 
 ## Rejected (checked, not implemented)
 
