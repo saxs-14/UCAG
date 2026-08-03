@@ -52,7 +52,7 @@ export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; s
               href={bursary.applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-11 rounded-full bg-mark-green px-4 py-1.5 font-medium text-white transition-transform hover:scale-[1.03] active:scale-[0.97]"
+              className="min-h-11 rounded-full bg-mark-green px-4 py-1.5 font-medium text-white transition-transform hover-fine:scale-[1.03] active:scale-[0.97]"
             >
               Apply
             </a>

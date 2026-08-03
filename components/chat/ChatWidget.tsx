@@ -160,7 +160,7 @@ export function ChatWidget() {
             <button
               type="submit"
               disabled={isLoading || !draft.trim()}
-              className="flex h-11 min-w-11 items-center justify-center rounded-full bg-brand-teal px-4 text-sm font-medium text-white transition-transform hover:scale-[1.03] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-11 min-w-11 items-center justify-center rounded-full bg-brand-teal px-4 text-sm font-medium text-white transition-transform hover-fine:scale-[1.03] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
             >
               {LABELS.chat.sendButtonLabel}
             </button>
@@ -173,7 +173,7 @@ export function ChatWidget() {
         aria-label={isOpen ? LABELS.chat.closeButtonLabel : LABELS.chat.openButtonLabel}
         aria-expanded={isOpen}
         onClick={() => setIsOpen((v) => !v)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-teal text-white shadow-lg transition-transform hover:scale-105 active:scale-95"
+        className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-teal text-white shadow-lg transition-transform hover-fine:scale-105 active:scale-95"
       >
         {isOpen ? (
           <span aria-hidden className="text-2xl leading-none">

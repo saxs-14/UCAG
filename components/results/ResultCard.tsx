@@ -119,7 +119,7 @@ export function ResultCard({
     // same property in the cascade, which silently no-ops the hover
     // effect if both live on one node.
     <div className={`stagger-${stagger} animate-rise-in`}>
-      <article className={`flex flex-col gap-3 rounded-xl bg-paper-raised p-4 transition-transform hover:-translate-y-0.5 ${BUCKET_SPINE[matchResult.bucket]}`}>
+      <article className={`flex flex-col gap-3 rounded-xl bg-paper-raised p-4 transition-transform hover-fine:-translate-y-0.5 ${BUCKET_SPINE[matchResult.bucket]}`}>
       <header className="flex flex-col gap-1">
         <div className="flex items-start justify-between gap-2">
           <span className={`text-xs font-semibold uppercase tracking-wide ${BUCKET_LABEL_COLOR[matchResult.bucket]}`}>
@@ -222,7 +222,7 @@ export function ResultCard({
             href={cta.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex min-h-11 items-center rounded-full bg-brand-teal px-4 font-medium text-white transition-transform hover:scale-[1.03] active:scale-[0.97]"
+            className="inline-flex min-h-11 items-center rounded-full bg-brand-teal px-4 font-medium text-white transition-transform hover-fine:scale-[1.03] active:scale-[0.97]"
           >
             {cta.label}
           </a>

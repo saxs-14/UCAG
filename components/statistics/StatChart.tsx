@@ -126,7 +126,7 @@ export function StatChart({
             <button
               type="button"
               onClick={() => downloadCsv(`${spec.datasetKey}.csv`, statisticsToCsv(verified))}
-              className="min-h-11 rounded-full border border-line px-3 font-sans transition-transform hover:-translate-y-0.5 hover:bg-slate-soft active:scale-95"
+              className="min-h-11 rounded-full border border-line px-3 font-sans transition-transform hover-fine:-translate-y-0.5 hover:bg-slate-soft active:scale-95"
             >
               {LABELS.statistics.downloadCsv}
             </button>

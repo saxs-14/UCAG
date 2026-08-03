@@ -167,7 +167,7 @@ export function SubjectCombobox({
           <button
             type="button"
             aria-label={`Clear ${label}`}
-            className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center text-lg text-ink-faint transition-transform hover:scale-110 hover:text-brand-coral"
+            className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center text-lg text-ink-faint transition-transform hover-fine:scale-110 hover:text-brand-coral"
             onClick={() => onChange(null)}
           >
             ×
