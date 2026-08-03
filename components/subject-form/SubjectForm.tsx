@@ -256,11 +256,11 @@ export function SubjectForm({
           const availableOptions = ELECTIVE_SUBJECTS.filter(
             (s) => s.code === elective.code || !selectedElectiveCodes.includes(s.code)
           );
+          const stagger = Math.min(index + 1, 6);
           return (
             <div
               key={index}
-              className="animate-pop-in flex flex-col gap-2 rounded-xl border border-line bg-paper p-3"
-              style={{ animationDelay: `${Math.min(index, 5) * 40}ms` }}
+              className={`stagger-${stagger} animate-pop-in flex flex-col gap-2 rounded-xl border border-line bg-paper p-3`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
