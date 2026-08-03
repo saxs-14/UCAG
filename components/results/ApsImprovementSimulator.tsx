@@ -117,11 +117,25 @@ export function ApsImprovementSimulator({
     });
   }, [apsRule, institutionProgrammes, marks, simulatedMarks]);
 
+  // Computed ahead of the early-return guard below so the showDeltaMark
+  // state/effect (hooks) stay unconditional -- Rules of Hooks forbids
+  // calling them after a conditional `return null`.
+  const delta =
+    currentApsResult && simulatedApsResult ? simulatedApsResult.score - currentApsResult.score : 0;
+  const [showDeltaMark, setShowDeltaMark] = useState(delta !== 0);
+
+  useEffect(() => {
+    if (delta !== 0) {
+      setShowDeltaMark(true);
+      return;
+    }
+    const timeout = window.setTimeout(() => setShowDeltaMark(false), 250);
+    return () => window.clearTimeout(timeout);
+  }, [delta]);
+
   if (marks.length === 0 || !apsRule || !institution || !currentApsResult || !simulatedApsResult) {
     return null;
   }
-
-  const delta = simulatedApsResult.score - currentApsResult.score;
 
   function handleSubjectChange(code: string) {
     setSelectedSubject(code);
@@ -210,7 +224,7 @@ export function ApsImprovementSimulator({
             {simulatedApsResult.score}
           </span>
         </div>
-        {delta !== 0 && (
+        {showDeltaMark && delta !== 0 && (
           <CircledMark
             value={`${delta > 0 ? "+" : ""}${delta}`}
             variant={delta > 0 ? "qualify" : "almost"}
