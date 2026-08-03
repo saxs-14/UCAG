@@ -77,6 +77,7 @@ export function SubjectForm({
     }
     return seeded;
   });
+  const [removingIndex, setRemovingIndex] = useState<number | null>(null);
 
   const firstAdditionalLanguageOptions = FIRST_ADDITIONAL_LANGUAGE_OPTIONS.filter(
     (lang) => lang !== homeLanguage
@@ -145,7 +146,11 @@ export function SubjectForm({
 
   function removeElective(index: number) {
     if (electives.length <= MIN_ELECTIVES) return;
-    setElectives((prev) => prev.filter((_, i) => i !== index));
+    setRemovingIndex(index);
+    window.setTimeout(() => {
+      setElectives((prev) => prev.filter((_, i) => i !== index));
+      setRemovingIndex(null);
+    }, 200);
   }
 
   return (
@@ -260,7 +265,7 @@ export function SubjectForm({
           return (
             <div
               key={index}
-              className={`stagger-${stagger} animate-pop-in flex flex-col gap-2 rounded-xl border border-line bg-paper p-3`}
+              className={`${removingIndex === index ? "animate-pop-out" : `stagger-${stagger} animate-pop-in`} flex flex-col gap-2 rounded-xl border border-line bg-paper p-3`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
@@ -280,6 +285,7 @@ export function SubjectForm({
                     type="button"
                     className="-m-2 mt-4 cursor-pointer p-2 text-xs text-mark-red transition-transform duration-150 ease-out hover:underline active:scale-[0.97]"
                     onClick={() => removeElective(index)}
+                    disabled={removingIndex === index}
                   >
                     Remove
                   </button>
