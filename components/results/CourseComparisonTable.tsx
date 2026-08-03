@@ -39,7 +39,7 @@ export function CourseComparisonTable({
                     type="button"
                     onClick={() => onRemove(p.id)}
                     aria-label={`Remove ${p.name} from comparison`}
-                    className="text-xs text-ink-faint hover:text-mark-red"
+                    className="text-xs text-ink-faint transition-transform duration-150 ease-out hover:text-mark-red active:scale-[0.97]"
                   >
                     &times;
                   </button>
