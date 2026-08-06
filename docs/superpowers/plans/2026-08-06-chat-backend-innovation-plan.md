@@ -30,7 +30,12 @@ headers are additive `next.config.ts` config, unrelated to the above.
   the new tool and the new stats aggregation both filter through it, same as every
   existing catalog read.
 - No new institutions/programmes/facts are added or fabricated by this plan.
-- `npm run typecheck` must stay clean after every task.
+- `npm run typecheck` must stay clean after every task, with one explicit exception:
+  Tasks 2 and 3 are an intentionally incremental sequence that only reaches a clean
+  typecheck at Task 4 (Task 2 removes `GeminiChatClient.reply()`, whose only caller,
+  `app/api/chat/route.ts`, isn't rewired to `streamReply()` until Task 4). Task 2's and
+  Task 3's own steps say so explicitly — a task reviewer should not flag that as a
+  defect; typecheck must still be clean by the end of Task 4 and every task after it.
 - Relevant Vitest suites must stay green after every task — run the full suite
   (`npm test`) at least once per task, not just the new file's tests.
 - No secret-shaped file may be newly tracked by git — check `git status` before each
