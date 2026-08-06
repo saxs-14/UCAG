@@ -4,6 +4,8 @@ import { validateChatRequest } from "@/lib/chat/validateChatRequest";
 import { checkChatRateLimit } from "@/lib/chat/rateLimiter";
 import { buildChatSystemPrompt } from "@/lib/chat/systemPrompt";
 import { getRealChatContext } from "@/lib/catalog/getRealChatContext";
+import { LOOKUP_VERIFIED_FACT_CHAT_TOOL } from "@/lib/chat/tools/lookupVerifiedFact";
+import { formatSseEvent } from "@/lib/chat/sse";
 import { reportError } from "@/lib/errorReporting";
 
 /**
@@ -20,6 +22,13 @@ import { reportError } from "@/lib/errorReporting";
  * without it, a single visitor could burn through the entire shared
  * Gemini free-tier quota (lib/ingestion/llm/geminiClient.ts) that admin
  * ingestion runs also depend on.
+ *
+ * Streams the reply as it's generated (text/event-stream) rather than
+ * one JSON body -- see docs/superpowers/specs/2026-08-06-chat-backend-innovation-design.md.
+ * The first chunk is awaited before any SSE headers are sent, so a
+ * total failure (bad API key, network error) still returns today's
+ * plain JSON 502 -- only a failure *after* streaming has started falls
+ * back to an `event: error` frame instead.
  */
 export async function POST(request: NextRequest) {
   const clientId =
@@ -57,11 +66,13 @@ export async function POST(request: NextRequest) {
     );
   }
 
+  let iterator: AsyncGenerator<string>;
+  let firstChunk: IteratorResult<string>;
   try {
     const context = await getRealChatContext();
     const systemPrompt = buildChatSystemPrompt(context);
-    const reply = await client.reply(validation.data.messages, systemPrompt);
-    return NextResponse.json({ reply: reply.text });
+    iterator = client.streamReply(validation.data.messages, systemPrompt, LOOKUP_VERIFIED_FACT_CHAT_TOOL);
+    firstChunk = await iterator.next();
   } catch (err) {
     reportError(err, { scope: "chat-api" });
     return NextResponse.json(
@@ -69,4 +80,36 @@ export async function POST(request: NextRequest) {
       { status: 502 }
     );
   }
+
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream<Uint8Array>({
+    async start(controller) {
+      try {
+        if (!firstChunk.done) {
+          controller.enqueue(encoder.encode(formatSseEvent({ text: firstChunk.value })));
+        }
+        for await (const chunk of iterator) {
+          controller.enqueue(encoder.encode(formatSseEvent({ text: chunk })));
+        }
+        controller.enqueue(encoder.encode(formatSseEvent({}, "done")));
+      } catch (err) {
+        reportError(err, { scope: "chat-api-stream" });
+        controller.enqueue(
+          encoder.encode(
+            formatSseEvent({ error: "The assistant couldn't finish responding -- try again in a moment." }, "error")
+          )
+        );
+      } finally {
+        controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      "content-type": "text/event-stream",
+      "cache-control": "no-cache, no-transform",
+      connection: "keep-alive",
+    },
+  });
 }
