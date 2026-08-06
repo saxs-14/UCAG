@@ -20,7 +20,7 @@ export interface ChartSpec {
 // the Phase 8 brief's "deferred charts" requirement for low-data mode.
 const StatChartCanvas = dynamic(() => import("./StatChartCanvas"), {
   ssr: false,
-  loading: () => <div style={{ width: "100%", height: 240 }} />,
+  loading: () => <div className="chart-loading-shell" />,
 });
 
 function downloadCsv(filename: string, csv: string) {
@@ -54,18 +54,12 @@ export function StatChart({
 
   if (verified.length === 0) {
     return (
-      // Gold, not neutral-grey/dashed: this is this app's own established
-      // "not there yet, actively being worked on" meaning (same token as
-      // an "almost qualify" result), not an error or a placeholder that
-      // was forgotten -- an honest state deserves to look intentional,
-      // not broken. The icon is deliberately a clock, never a checkmark,
-      // so it can never be mistaken for StampBadge's verified mark.
       <div
-        className={`stagger-${stagger} animate-rise-in rounded-xl border border-mark-gold/30 bg-mark-gold-soft p-4`}
+        className={`stagger-${stagger} animate-pop-in rounded-[28px] border border-brand-amber/20 bg-brand-amber-soft p-4 shadow-sm`}
       >
         <div className="mb-2 flex items-center gap-2">
           <span
-            className="inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-mark-gold text-white"
+            className="inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-amber text-white"
             role="img"
             aria-label="Verification pending"
           >
@@ -96,12 +90,10 @@ export function StatChart({
     .replace("{date}", first.verifiedOn);
 
   return (
-    // See ResultCard for why entrance animation and the 3D tilt/hover-
-    // lift can't share one element's `transform` property.
-    <div className={`stagger-${stagger} animate-rise-in`}>
+    <div className={`stagger-${stagger} animate-pop-in`}>
       <TiltCard>
-        <div className="elevate rounded-xl border border-line bg-paper-raised p-4">
-          <div className="mb-2 flex items-center gap-2">
+        <div className="elevate rounded-[28px] border border-line bg-paper-raised p-4 shadow-sm">
+          <div className="mb-3 flex flex-wrap items-center gap-2">
             <StampBadge variant="green" label="Verified statistic" />
             <h3 className="font-semibold text-ink">{spec.title}</h3>
           </div>

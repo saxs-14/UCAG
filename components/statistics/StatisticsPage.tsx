@@ -45,15 +45,21 @@ const SCHOOLS_CHARTS: ChartSpec[] = [
 export function StatisticsPage({ statistics }: { statistics: Statistic[] }) {
   return (
     <div className="flex w-full max-w-2xl flex-col gap-8">
+      <div className="rounded-[32px] border border-brand-violet-soft/60 bg-brand-violet-soft/10 p-5 shadow-[0_18px_50px_-30px_rgba(27,18,69,0.35)]">
+        <p className="text-sm leading-6 text-ink-soft">
+          These charts show only fully verified statistics. If a dataset is still awaiting verification, you’ll see a clear “data pending verification” card instead of a misleading chart.
+        </p>
+      </div>
+
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.statistics.higherEducationHeading}</h2>
+        <h2 className="stats-heading text-xl font-bold tracking-tight text-ink">{LABELS.statistics.higherEducationHeading}</h2>
         {HIGHER_EDUCATION_CHARTS.map((spec, i) => (
           <StatChart key={spec.id} spec={spec} allStatistics={statistics} staggerIndex={i} />
         ))}
       </section>
 
       <section className="flex flex-col gap-4">
-        <h2 className="text-xl font-bold tracking-tight text-ink">{LABELS.statistics.schoolsHeading}</h2>
+        <h2 className="stats-heading text-xl font-bold tracking-tight text-ink">{LABELS.statistics.schoolsHeading}</h2>
         {SCHOOLS_CHARTS.map((spec, i) => (
           <StatChart key={spec.id} spec={spec} allStatistics={statistics} staggerIndex={i} />
         ))}
