@@ -175,7 +175,7 @@ body {
 }
 
 h1, h2, h3 {
-  text-wrap: balance;
+  overflow-wrap: break-word;
 }
 
 /* A full-width solid-color section, edge to edge regardless of the
@@ -243,6 +243,69 @@ h1, h2, h3 {
   height: 26rem;
   background: var(--color-brand-coral);
   animation-delay: -7s;
+}
+
+@keyframes float {
+  0%, 100% {
+    transform: translate3d(0, 0, 0);
+  }
+  50% {
+    transform: translate3d(4px, -10px, 0);
+  }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite both;
+}
+
+.float-delay-0 {
+  animation-delay: 0ms;
+}
+
+.float-delay-260 {
+  animation-delay: 260ms;
+}
+
+.float-delay-320 {
+  animation-delay: 320ms;
+}
+
+.float-delay-520 {
+  animation-delay: 520ms;
+}
+
+.chart-loading-shell {
+  width: 100%;
+  height: 240px;
+}
+
+.readiness-progress-green {
+  accent-color: var(--color-mark-green);
+}
+
+.readiness-progress-gold {
+  accent-color: var(--color-mark-gold);
+}
+
+.readiness-progress-slate {
+  accent-color: var(--color-slate);
+}
+
+.stats-heading {
+  position: relative;
+  padding-left: 1.4rem;
+}
+
+.stats-heading::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 0.75rem;
+  height: 0.75rem;
+  border-radius: 9999px;
+  background: var(--color-brand-violet);
 }
 
 /* ---------------------------------------------------------------------

@@ -39,9 +39,9 @@ interface ResultCardProps {
 }
 
 const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
-  qualify: "border-l-4 border-mark-green shadow-[0_1px_16px_-4px_var(--color-mark-green)]",
-  almostQualify: "border-l-4 border-mark-gold",
-  notYet: "border-l-4 border-slate",
+  qualify: "border-l-8 border-mark-green/80 shadow-[0_22px_60px_-36px_rgba(28,122,77,0.35)]",
+  almostQualify: "border-l-8 border-mark-gold/80 shadow-[0_22px_60px_-36px_rgba(143,92,13,0.28)]",
+  notYet: "border-l-8 border-slate/50 shadow-[0_22px_60px_-36px_rgba(91,101,96,0.22)]",
 };
 
 const BUCKET_LABEL_COLOR: Record<MatchResult["bucket"], string> = {
@@ -119,37 +119,47 @@ export function ResultCard({
     // same property in the cascade, which silently no-ops the hover
     // effect if both live on one node.
     <div className={`stagger-${stagger} animate-rise-in`}>
-      <article className={`flex flex-col gap-3 rounded-xl bg-paper-raised p-4 transition-transform hover-fine:-translate-y-0.5 ${BUCKET_SPINE[matchResult.bucket]}`}>
-      <header className="flex flex-col gap-1">
-        <div className="flex items-start justify-between gap-2">
-          <span className={`text-xs font-semibold uppercase tracking-wide ${BUCKET_LABEL_COLOR[matchResult.bucket]}`}>
-            {LABELS.resultBuckets[matchResult.bucket]}
-          </span>
-          {matchResult.bucket === "qualify" && (
-            <CircledMark
-              value={matchResult.apsResult.score}
-              variant="qualify"
-              size="sm"
-              label={`Your score for this programme: ${matchResult.apsResult.score}`}
-            />
-          )}
-          {apsGap !== null && (
-            <CircledMark
-              value={`-${apsGap}`}
-              variant="almost"
-              size="sm"
-              label={`${apsGap} points short of this programme's minimum`}
-            />
-          )}
-        </div>
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="text-lg font-semibold text-ink">
-            <Link href={`/programmes/${programme.id}`} className="hover:underline">
-              {programme.name}
-            </Link>
-          </h3>
-          <div className="no-print flex shrink-0 items-center gap-2">
-            <label className="flex min-h-11 cursor-pointer items-center gap-1.5 px-1 text-xs text-ink-soft">
+      <article className={`flex flex-col gap-4 rounded-4xl border border-line bg-paper-raised p-5 transition-transform duration-200 hover-fine:-translate-y-1 hover-fine:shadow-[0_26px_72px_-40px_rgba(17,72,88,0.35)] ${BUCKET_SPINE[matchResult.bucket]}`}>
+        <header className="flex flex-col gap-3">
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <span className={`rounded-full bg-slate-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.24em] ${BUCKET_LABEL_COLOR[matchResult.bucket]}`}>
+              {LABELS.resultBuckets[matchResult.bucket]}
+            </span>
+            <div className="flex items-center gap-2">
+              {matchResult.bucket === "qualify" && (
+                <CircledMark
+                  value={matchResult.apsResult.score}
+                  variant="qualify"
+                  size="sm"
+                  label={`Your score for this programme: ${matchResult.apsResult.score}`}
+                />
+              )}
+              {apsGap !== null && (
+                <CircledMark
+                  value={`-${apsGap}`}
+                  variant="almost"
+                  size="sm"
+                  label={`${apsGap} points short of this programme's minimum`}
+                />
+              )}
+            </div>
+          </div>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 className="text-lg font-semibold text-ink">
+              <Link href={`/programmes/${programme.id}`} className="hover:underline">
+                {programme.name}
+              </Link>
+            </h3>
+            <p className="text-sm text-ink-soft">
+              {programme.qualificationType} · NQF {programme.nqfLevel} · {programme.duration}
+            </p>
+            <p className="text-sm text-ink-faint">
+              {faculty.name} · {school.name}
+            </p>
+          </div>
+          <div className="no-print flex flex-wrap items-center gap-2">
+            <label className="flex items-center gap-2 rounded-full border border-line bg-white/70 px-3 py-2 text-xs font-semibold text-ink-soft shadow-sm">
               <input
                 type="checkbox"
                 id={`compare-${programme.id}`}
@@ -165,11 +175,10 @@ export function ResultCard({
               <button
                 type="button"
                 onClick={onToggleShortlist}
-                aria-pressed={isShortlisted}
-                className={`min-h-11 cursor-pointer rounded-full border px-3 text-xs font-medium transition-transform active:scale-95 ${
+                className={`min-h-11 rounded-full border px-3 py-2 text-xs font-semibold transition-transform duration-150 active:scale-95 ${
                   isShortlisted
                     ? "border-brand-coral bg-brand-coral text-white"
-                    : "border-line text-ink-soft hover:bg-slate-soft"
+                    : "border-line bg-paper text-ink-soft hover:border-brand-teal hover:text-brand-teal"
                 }`}
               >
                 {isShortlisted ? "★ Shortlisted" : "☆ Shortlist"}
@@ -177,12 +186,6 @@ export function ResultCard({
             )}
           </div>
         </div>
-        <p className="text-sm text-ink-soft">
-          {programme.qualificationType} · NQF {programme.nqfLevel} · {programme.duration}
-        </p>
-        <p className="text-sm text-ink-soft">
-          {faculty.name} &middot; {school.name}
-        </p>
         {(programme.campuses?.length > 0 || programme.modeOfDelivery) && (
           <p className="text-sm text-ink-faint">
             {[programme.campuses?.length > 0 ? programme.campuses.join(", ") : null, programme.modeOfDelivery]
@@ -192,12 +195,12 @@ export function ResultCard({
         )}
       </header>
 
-      <ul className="flex flex-col gap-1 text-sm">
+      <ul className="flex flex-col gap-2 rounded-[22px] border border-slate-soft bg-slate-soft/60 p-3 text-sm">
         {matchResult.reasons.map((reason, i) => {
           const met = "met" in reason ? reason.met : false;
           return (
-            <li key={i} className="flex items-start gap-2">
-              <span aria-hidden className={`transition-colors duration-150 ${met ? "text-mark-green" : "text-mark-gold"}`}>
+            <li key={i} className="flex items-start gap-3">
+              <span aria-hidden className={`mt-1 inline-flex h-5 w-5 items-center justify-center rounded-full ${met ? "bg-mark-green text-white" : "bg-mark-gold text-white"}`}>
                 {met ? "✓" : "✗"}
               </span>
               <span className="text-ink">{reasonText(reason)}</span>

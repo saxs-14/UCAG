@@ -12,7 +12,9 @@
 export function PageHero({ title, subtitle }: { title: React.ReactNode; subtitle?: React.ReactNode }) {
   return (
     <div className="hero-atmosphere w-full bg-brand-navy-soft">
-      <div className="relative mx-auto flex w-full max-w-5xl flex-col gap-1 px-6 py-8 sm:px-8 sm:py-10">
+      <div className="relative mx-auto overflow-hidden rounded-[32px] border border-white/10 bg-brand-navy-soft/90 px-6 py-8 sm:px-8 sm:py-10">
+        <div className="pointer-events-none absolute -left-10 top-6 h-24 w-24 rounded-full bg-brand-amber/20 blur-3xl animate-float float-delay-0" />
+        <div className="pointer-events-none absolute right-6 bottom-10 h-28 w-28 rounded-full bg-brand-violet/20 blur-3xl animate-float float-delay-320" />
         <h1 className="animate-rise-in text-2xl font-bold tracking-tight text-ink sm:text-3xl">{title}</h1>
         {subtitle && <p className="animate-rise-in max-w-2xl text-ink-soft">{subtitle}</p>}
       </div>

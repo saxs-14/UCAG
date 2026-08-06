@@ -7,16 +7,18 @@ export function ReadinessBar({ readiness }: { readiness: ReadinessResult }) {
   const color =
     readiness.percent >= 80 ? "bg-mark-green" : readiness.percent >= 50 ? "bg-mark-gold" : "bg-slate";
 
+  const progressClass =
+    readiness.percent >= 80 ? "readiness-progress-green" : readiness.percent >= 50 ? "readiness-progress-gold" : "readiness-progress-slate";
+
   return (
     <div className="flex items-center gap-2 text-xs text-ink-soft">
       <span className="whitespace-nowrap">Application readiness</span>
-      <div className="h-1.5 flex-1 overflow-hidden rounded-full bg-slate-soft">
-        <div
-          className={`h-full rounded-full ${color}`}
-          style={{ width: `${readiness.percent}%` }}
-        />
-      </div>
-      <span className="font-mono tabular-nums text-ink">{readiness.percent}%</span>
+      <progress
+        value={readiness.percent}
+        max={100}
+        className={`h-1.5 w-full rounded-full bg-slate-soft ${progressClass}`}
+      />
+      <span className={`font-mono tabular-nums ${color}`}>{readiness.percent}%</span>
     </div>
   );
 }

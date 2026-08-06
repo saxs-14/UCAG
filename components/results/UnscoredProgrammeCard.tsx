@@ -32,18 +32,23 @@ export function UnscoredProgrammeCard({
 }: UnscoredProgrammeCardProps) {
   const stagger = Math.min(staggerIndex + 1, 6);
   return (
-    <article className={`stagger-${stagger} animate-rise-in flex flex-col gap-3 rounded-xl border-l-4 border-slate bg-paper-raised p-4`}>
-      <header className="flex flex-col gap-1">
-        <span className="text-xs font-semibold uppercase tracking-wide text-slate">
-          {LABELS.verification.apsRulesBeingVerified}
-        </span>
+    <article className={`stagger-${stagger} animate-pop-in flex flex-col gap-4 rounded-[32px] border border-line bg-paper-raised p-5 shadow-sm transition-transform duration-200 hover-fine:-translate-y-1 hover-fine:shadow-[0_26px_72px_-40px_rgba(17,72,88,0.18)]`}>
+      <header className="flex flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-2">
+          <span className="rounded-full bg-brand-coral-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-coral">
+            {LABELS.verification.apsRulesBeingVerified}
+          </span>
+          <span className="rounded-full bg-slate-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate">
+            Verified programme
+          </span>
+        </div>
         <h3 className="text-lg font-semibold text-ink">
           <Link href={`/programmes/${programme.id}`} className="hover:underline">
             {programme.name}
           </Link>
         </h3>
         <p className="text-sm text-ink-soft">
-          {institution.name} &middot; {faculty.name} &middot; {school.name}
+          {institution.name} · {faculty.name} · {school.name}
         </p>
       </header>
 
