@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { LABELS } from "@/config/labels";
+import type { CatalogStats } from "@/lib/catalog/getCatalogStats";
 
 const NAV_ITEMS = [
   { href: "/", label: LABELS.nav.calculator },
@@ -11,6 +12,17 @@ const NAV_ITEMS = [
   { href: "/statistics", label: LABELS.nav.statistics },
   { href: "/account", label: LABELS.nav.profile },
 ];
+
+interface NavBarProps {
+  /** Real, currently-verified record counts (lib/catalog/getCatalogStats.ts),
+   * or null when the stats couldn't be fetched -- rendering nothing in
+   * that case rather than a stale/fake number. Hidden below the `md`
+   * breakpoint: app/layout.tsx already flags that a mobile visitor
+   * arriving from a WhatsApp link should see the calculator with no
+   * scrolling, so this desktop-only trust signal doesn't add height to
+   * that path. */
+  stats: CatalogStats | null;
+}
 
 /**
  * A real site header: solid institutional band, wordmark on the left,
@@ -21,7 +33,7 @@ const NAV_ITEMS = [
  * part of why the site didn't read as "a website" (a CSIR page always
  * shows its header/logo, no matter which section you're on).
  */
-export function NavBar() {
+export function NavBar({ stats }: NavBarProps) {
   const pathname = usePathname();
 
   return (
@@ -30,6 +42,12 @@ export function NavBar() {
         <Link href="/" className="flex min-h-11 items-center text-white">
           <Logo size={28} wordmarkClassName="text-lg text-white" />
         </Link>
+        {stats && (
+          <span className="hidden text-xs text-white/70 md:inline">
+            {stats.institutionCount} institutions · {stats.programmeCount} verified programmes
+            {stats.lastVerifiedOn ? ` · updated ${stats.lastVerifiedOn}` : ""}
+          </span>
+        )}
         <div className="flex flex-wrap gap-1 text-sm font-medium">
           {NAV_ITEMS.map(({ href, label }) => {
             const active = pathname === href;

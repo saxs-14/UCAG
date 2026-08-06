@@ -6,6 +6,7 @@ import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { ChatWidgetLoader } from "@/components/chat/ChatWidgetLoader";
+import { getCatalogStats } from "@/lib/catalog/getCatalogStats";
 import "./globals.css";
 
 // Body/UI text stays on the system-UI stack, by design -- see app/globals.css's
@@ -57,11 +58,16 @@ export const viewport: Viewport = {
   themeColor: "#1c7a4d",
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  // Never blocks/breaks the page on a Firestore hiccup -- the banner is
+  // a non-critical enhancement, same "degrade gracefully" precedent as
+  // AuthProvider (see this file's Deployment notes in CLAUDE.md).
+  const stats = await getCatalogStats().catch(() => null);
+
   return (
     // suppressHydrationWarning: the RICH_FONTS_SCRIPT below sets
     // data-rich-fonts on this element based on navigator.connection, a
@@ -102,7 +108,7 @@ export default function RootLayout({
             content below the fold on most screens, but this wasn't
             validated against that requirement -- flagged, not resolved. */}
         <AuthProvider>
-          <NavBar />
+          <NavBar stats={stats} />
           {children}
         </AuthProvider>
         <Footer />
