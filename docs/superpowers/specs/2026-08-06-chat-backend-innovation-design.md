@@ -40,8 +40,12 @@ still leaves something to show.
 
 - Adding new institutions, programmes, or any new fact-bearing data.
 - Rebuilding the APS engine, admin dashboard, or ingestion pipeline.
-- A general performance audit of the whole app — scope is the chat path plus one
-  banner.
+- A general performance audit of the whole app — scope is the chat path, one banner,
+  and security headers.
+- ISR/caching on catalog data-fetch paths, and real error-monitoring/APM integration —
+  both real gaps (see Follow-ups), deliberately deferred past tomorrow's demo because
+  they touch data-fetch correctness or require new third-party infrastructure, neither
+  of which should be rushed under deadline pressure.
 - New Playwright e2e coverage (explicitly logged as a gap, not silently skipped — see
   Testing).
 
@@ -90,7 +94,20 @@ still leaves something to show.
   reasonable default for everything the tool doesn't need to handle — this is additive,
   not a replacement of `getRealChatContext`.
 
-### 3. Live trust banner
+### 3. Security headers
+
+- `next.config.ts` currently sets no headers at all. Add a `headers()` entry applying
+  to all routes: `Content-Security-Policy` (scoped to the origins this app actually
+  calls — self, Firebase, Google's generative-language API), `X-Frame-Options: DENY`,
+  `Referrer-Policy: strict-origin-when-cross-origin`, `Permissions-Policy` disabling
+  unused browser features (camera, microphone, geolocation).
+- Purely additive config — no application code changes, no data-fetch paths touched.
+  Verified by loading the app and confirming no console CSP violations and no broken
+  functionality (chat, auth, Firestore reads all still work).
+- Low effort, zero correctness risk, and a visible "industry standard" signal to
+  anyone who opens dev tools during the demo.
+
+### 4. Live trust banner
 
 - New `lib/catalog/getCatalogStats.ts`: counts of verified institutions, programmes,
   and bursaries, plus the most recent `verifiedOn` date across them — pure aggregation
@@ -128,6 +145,22 @@ still leaves something to show.
   behavior given the timeline. `tests/e2e/` keeps covering whatever it already covers
   for chat; streaming/tool-call correctness rests on the Vitest suite plus the manual
   pass above.
+- Manual check for security headers: load the app, confirm no CSP violations in the
+  console, and re-run the chat/auth/Firestore flows above to confirm nothing the CSP
+  restricts (Google's generative-language API, Firebase) got accidentally blocked.
+
+## Follow-ups (explicitly out of scope for tomorrow)
+
+- **ISR/caching on catalog pages.** Catalog data is fetched fresh via the client SDK
+  (`getDocs`) on every page load, with no `revalidate` anywhere in `app/`. Real
+  performance win, but the pages involved enforce strict "never render an unverified
+  fact" rules — this needs its own change and its own testing pass, not a rush job the
+  night before a demo.
+- **Real error monitoring/APM.** `lib/errorReporting.ts` is honestly-scoped structured
+  console logging today (already documented in-file as intentional — no Sentry-or-
+  equivalent account exists yet). Vercel captures those logs today; wiring in a real
+  service is a deliberate, separate decision involving new third-party infrastructure,
+  not something to stand up under deadline pressure.
 
 ## Definition of done
 
