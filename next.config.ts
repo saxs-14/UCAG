@@ -31,14 +31,33 @@ import type { NextConfig } from "next";
  * with a headless Chromium instance and watching the console. Email/
  * password sign-in (signInWithEmailAndPassword) needs neither -- it's a
  * plain fetch already covered by connect-src's *.googleapis.com wildcard.
+ *
+ * connect-src also conditionally admits the local Firebase emulator
+ * origins when NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true. This is a
+ * build-time env check -- it's evaluated once when next.config.ts loads,
+ * not per-request, so it never reaches a real production build (which
+ * never sets that flag). Without it, lib/firebase/client.ts's
+ * connectAuthEmulator("http://127.0.0.1:9099") and
+ * lib/firebase/firestoreClient.ts's connectFirestoreEmulator("127.0.0.1",
+ * 8080) calls would have every sign-in and Firestore read blocked by
+ * this same CSP during local dev (headers() applies under `next dev`
+ * too), against this project's documented normal local-dev workflow of
+ * running against the emulator suite.
  */
+const isFirebaseEmulatorMode = process.env.NEXT_PUBLIC_USE_FIREBASE_EMULATOR === "true";
+
 const CONTENT_SECURITY_POLICY = [
   "default-src 'self'",
   "script-src 'self' 'unsafe-inline' https://apis.google.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
   "img-src 'self' data:",
-  "connect-src 'self' https://*.googleapis.com",
+  [
+    "connect-src 'self' https://*.googleapis.com",
+    isFirebaseEmulatorMode ? "http://127.0.0.1:9099 http://127.0.0.1:8080" : "",
+  ]
+    .filter(Boolean)
+    .join(" "),
   "frame-src https://*.firebaseapp.com",
   "frame-ancestors 'none'",
   "base-uri 'self'",

@@ -15,6 +15,14 @@ function functionCallChunk(name: string, args: Record<string, unknown>) {
   return { candidates: [{ content: { parts: [{ functionCall: { name, args } }] } }] };
 }
 
+/** A multi-part chunk with the functionCall NOT at index 0 -- Gemini can
+ * pack leading text and a trailing functionCall into the same chunk. */
+function multiPartFunctionCallChunk(leadingText: string, name: string, args: Record<string, unknown>) {
+  return {
+    candidates: [{ content: { parts: [{ text: leadingText }, { functionCall: { name, args } }] } }],
+  };
+}
+
 /** One fake streaming HTTP response per call -- chained with
  * mockResolvedValueOnce the same way the old reply() tests chained
  * plain JSON responses, just with an SSE body delivered in one read(). */
@@ -179,6 +187,33 @@ describe("GeminiChatClient", () => {
       role: "user",
       parts: [{ functionResponse: { name: "lookupVerifiedFact", response: { result: "UMP programme: minimum APS 32." } } }],
     });
+  });
+
+  it("detects a function call even when it isn't the first part in the chunk", async () => {
+    vi.stubEnv("LLM_API_KEY", "fake-gemini-key");
+    const fetchSpy = vi
+      .fn()
+      .mockResolvedValueOnce(
+        streamResponse([multiPartFunctionCallChunk("Let me check that... ", "lookupVerifiedFact", { institutionName: "UMP" })])
+      )
+      .mockResolvedValueOnce(streamResponse([textChunk("UMP's programme requires APS 32.")]));
+    vi.stubGlobal("fetch", fetchSpy);
+
+    const execute = vi.fn(async () => "UMP programme: minimum APS 32.");
+    const tool: ChatTool = {
+      declaration: {
+        name: "lookupVerifiedFact",
+        description: "test tool",
+        parameters: { type: "object", properties: {}, required: [] },
+      },
+      execute,
+    };
+
+    const client = new GeminiChatClient({ minIntervalMs: 0 });
+    const text = await collect(client.streamReply([{ role: "user", text: "hi" }], TEST_SYSTEM_PROMPT, tool));
+
+    expect(text).toBe("UMP's programme requires APS 32.");
+    expect(execute).toHaveBeenCalledWith({ name: "lookupVerifiedFact", args: { institutionName: "UMP" } });
   });
 
   it("falls back to a tool-less reply when the tool executor throws", async () => {
