@@ -44,7 +44,11 @@ export function NavBar({ stats }: NavBarProps) {
         </Link>
         {stats && (
           <span className="hidden text-xs text-white/70 md:inline">
-            {stats.institutionCount} institutions · {stats.programmeCount} verified programmes
+            {stats.institutionCount} institutions
+            {/* Omit the programmes clause entirely at 0 rather than
+                advertise "0 verified programmes" -- a worse trust signal
+                than not mentioning programmes at all. */}
+            {stats.programmeCount > 0 ? ` · ${stats.programmeCount} verified programmes` : ""}
             {stats.lastVerifiedOn ? ` · updated ${stats.lastVerifiedOn}` : ""}
           </span>
         )}

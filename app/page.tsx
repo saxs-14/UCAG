@@ -1,6 +1,16 @@
 import { LABELS } from "@/config/labels";
 import { CalculatorPage } from "@/components/CalculatorPage";
 
+// app/layout.tsx's RootLayout awaits getCatalogStats() to feed NavBar's
+// live trust banner ("N institutions -- N verified programmes -- updated
+// <date>") on every route, "/" included. Without this, Next.js would
+// prerender "/" once at build time and freeze those counts into the
+// static HTML -- the opposite of the banner's whole point, which is
+// honest, live proof of the catalogue's current data quality, not a
+// build-time snapshot. Same convention as app/bursaries/page.tsx,
+// app/statistics/page.tsx, and app/programmes/[id]/page.tsx.
+export const dynamic = "force-dynamic";
+
 // The landing page IS the calculator -- no marketing hero above it
 // (docs/MASTER_PROMPT_v2.md sect. 3: "a learner arriving from a
 // WhatsApp link should see subject dropdowns without scrolling"). That

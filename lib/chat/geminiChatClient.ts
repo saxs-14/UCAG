@@ -96,14 +96,26 @@ interface GeminiStreamChunk {
   candidates?: { content?: { parts?: GeminiPart[] }; finishReason?: string }[];
 }
 
+/** Gemini can pack multiple parts into one chunk (e.g. leading text plus
+ * a trailing functionCall), so both extractors below scan every part
+ * rather than assuming parts[0] is the only one that matters -- reading
+ * only index 0 previously meant a functionCall sitting behind a text
+ * part in the same chunk was silently missed, with no error and no log
+ * line, just a context-only answer. */
 function extractText(chunk: GeminiStreamChunk): string | null {
-  const part = chunk.candidates?.[0]?.content?.parts?.[0];
-  return part && "text" in part && part.text ? part.text : null;
+  const parts = chunk.candidates?.[0]?.content?.parts;
+  if (!parts) return null;
+  const text = parts
+    .filter((part): part is { text: string } => "text" in part && !!part.text)
+    .map((part) => part.text)
+    .join("");
+  return text || null;
 }
 
 function extractFunctionCall(chunk: GeminiStreamChunk): { name: string; args: Record<string, unknown> } | null {
-  const part = chunk.candidates?.[0]?.content?.parts?.[0];
-  return part && "functionCall" in part ? part.functionCall : null;
+  const parts = chunk.candidates?.[0]?.content?.parts;
+  const part = parts?.find((p): p is Extract<GeminiPart, { functionCall: unknown }> => "functionCall" in p);
+  return part ? part.functionCall : null;
 }
 
 export class GeminiChatClient {
