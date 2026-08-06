@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { LABELS } from "@/config/labels";
+import { splitSseFrames } from "@/lib/chat/sse";
 
 /**
  * A floating help assistant, mounted once in app/layout.tsx via a
@@ -16,6 +17,12 @@ import { LABELS } from "@/config/labels";
  * for why: consistent with the calculator's own "nothing you type is
  * saved unless you create an account" promise, and this feature has no
  * account-linked storage story of its own to opt into.
+ *
+ * Replies stream in over SSE (app/api/chat/route.ts) rather than
+ * arriving as one JSON blob -- streamingReply holds the in-progress
+ * reply text (empty string while waiting for the first chunk, so the
+ * thinking indicator still shows), and gets folded into `messages` once
+ * the stream ends, errors, or the connection drops.
  */
 
 interface DisplayMessage {
@@ -28,6 +35,7 @@ export function ChatWidget() {
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [draft, setDraft] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [streamingReply, setStreamingReply] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -42,7 +50,7 @@ export function ChatWidget() {
       top: scrollRef.current.scrollHeight,
       behavior: prefersReducedMotion ? "auto" : "smooth",
     });
-  }, [messages, isLoading]);
+  }, [messages, isLoading, streamingReply]);
 
   async function handleSend() {
     const text = draft.trim();
@@ -53,6 +61,15 @@ export function ChatWidget() {
     setDraft("");
     setError(null);
     setIsLoading(true);
+    setStreamingReply("");
+
+    let accumulated = "";
+    const commitStreamedReply = () => {
+      if (accumulated) {
+        setMessages((prev) => [...prev, { role: "model", text: accumulated }]);
+      }
+      setStreamingReply(null);
+    };
 
     try {
       const res = await fetch("/api/chat", {
@@ -60,17 +77,45 @@ export function ChatWidget() {
         headers: { "content-type": "application/json" },
         body: JSON.stringify({ messages: nextMessages }),
       });
-      const body = (await res.json()) as { reply?: string; error?: string };
 
-      if (!res.ok || !body.reply) {
+      if (!res.ok || !res.body) {
+        const errBody = (await res.json().catch(() => ({}))) as { error?: string };
+        setStreamingReply(null);
         if (res.status === 429) setError(LABELS.chat.rateLimitedError);
         else if (res.status === 501) setError(LABELS.chat.notConfiguredError);
-        else setError(body.error ?? LABELS.chat.genericError);
+        else setError(errBody.error ?? LABELS.chat.genericError);
         return;
       }
 
-      setMessages((prev) => [...prev, { role: "model", text: body.reply! }]);
+      const reader = res.body.getReader();
+      const decoder = new TextDecoder();
+      let buffer = "";
+
+      for (;;) {
+        const { done, value } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+
+        const { frames, rest } = splitSseFrames(buffer);
+        buffer = rest;
+
+        for (const frame of frames) {
+          const data = JSON.parse(frame.data) as { text?: string; error?: string };
+          if (frame.event === "error") {
+            commitStreamedReply();
+            setError(data.error ?? LABELS.chat.genericError);
+            return;
+          }
+          if (typeof data.text === "string") {
+            accumulated += data.text;
+            setStreamingReply(accumulated);
+          }
+        }
+      }
+
+      commitStreamedReply();
     } catch {
+      commitStreamedReply();
       setError(LABELS.chat.genericError);
     } finally {
       setIsLoading(false);
@@ -128,9 +173,9 @@ export function ChatWidget() {
                 {message.text}
               </div>
             ))}
-            {isLoading && (
-              <div className="animate-pop-in self-start rounded-2xl rounded-bl-sm bg-slate-soft px-3 py-2 text-sm text-ink-faint">
-                {LABELS.chat.thinkingIndicator}
+            {streamingReply !== null && (
+              <div className="animate-pop-in self-start max-w-[85%] rounded-2xl rounded-bl-sm bg-slate-soft px-3 py-2 text-sm text-ink">
+                {streamingReply || LABELS.chat.thinkingIndicator}
               </div>
             )}
             {error && (
