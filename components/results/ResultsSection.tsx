@@ -9,6 +9,9 @@ import { ShareBar } from "./ShareBar";
 import { ApplicationChecklist } from "./ApplicationChecklist";
 import { ApsImprovementSimulator } from "./ApsImprovementSimulator";
 import { CourseComparisonTable } from "./CourseComparisonTable";
+import { ApplicationMission } from "@/components/mission/ApplicationMission";
+import { AdmissionPathwayGraph } from "@/components/pathway/AdmissionPathwayGraph";
+import { ApsFormulaBanner } from "@/components/aps/ApsFormulaBanner";
 import { InterestQuiz } from "@/components/interests/InterestQuiz";
 import { LABELS } from "@/config/labels";
 import { useAuth } from "@/components/auth/AuthProvider";
@@ -227,9 +230,26 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   }
 
   return (
-    <section className="flex w-full max-w-xl flex-col gap-6">
+    <section className="flex w-full max-w-2xl flex-col gap-6">
       {celebrate && <ConfettiBurst />}
       <ShareBar marks={marks} />
+
+      <ApplicationMission
+        marks={marks}
+        shortlistCount={shortlist.length}
+        checkedChecklistCount={checklistChecked.size}
+        signedIn={!!user}
+      />
+
+      {scored.length > 0 && <ApsFormulaBanner />}
+
+      {scored.length > 0 && (
+        <AdmissionPathwayGraph
+          marks={marks}
+          scored={scored}
+          institutions={catalog.institutions}
+        />
+      )}
 
       {scored.length > 0 && (
         <ApsImprovementSimulator
@@ -290,6 +310,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
                   isComparing={compareIds.includes(programme.id)}
                   onToggleCompare={() => toggleCompare(programme.id)}
                   compareDisabled={compareIds.length >= MAX_COMPARE}
+                  allProgrammes={catalog.programmes}
                 />
               );
             })}

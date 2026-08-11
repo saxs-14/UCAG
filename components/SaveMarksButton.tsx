@@ -4,16 +4,6 @@ import { useState } from "react";
 import { useAuth } from "./auth/AuthProvider";
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
-/**
- * "Signed-in learners get: saved marks" (docs/MASTER_PROMPT_v2.md Phase
- * 6). Only renders for a signed-in user -- the calculator itself works
- * fully without an account either way. Does NOT reload saved marks back
- * into the subject-selection form on a later visit -- that needs
- * reconstructing the form's granular UI state (which language/Math
- * option/electives were picked) from raw subject codes, which is a
- * separate, real feature this phase didn't build. Saved marks ARE
- * visible on /account (see AccountPage.tsx).
- */
 export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
   const { user } = useAuth();
   const [status, setStatus] = useState<"idle" | "saving" | "saved" | "error">("idle");
@@ -23,9 +13,6 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
   async function handleSave() {
     setStatus("saving");
     try {
-      // Dynamic import -- see ResultsSection.tsx for why: keeps Firestore
-      // out of the calculator route's initial bundle for the common case
-      // (an anonymous visitor, for whom this button never even renders).
       const { updateSavedMarks } = await import("@/lib/auth/profile");
       await updateSavedMarks(user!.uid, marks);
       setStatus("saved");
@@ -40,9 +27,18 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
       type="button"
       onClick={handleSave}
       disabled={status === "saving"}
-      className="no-print rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft disabled:opacity-50"
+      className="no-print inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-teal-600/30 bg-teal-50 px-5 text-xs font-bold text-teal-800 shadow-2xs transition-all hover:bg-teal-600 hover:text-white active:scale-95 disabled:opacity-50"
     >
-      {status === "saved" ? "Saved!" : status === "error" ? "Couldn't save -- try again" : "Save my marks"}
+      <span>💾</span>
+      <span>
+        {status === "saving"
+          ? "Saving marks..."
+          : status === "saved"
+            ? "Saved to Your Profile!"
+            : status === "error"
+              ? "Couldn't save -- try again"
+              : "Save Marks to My Profile"}
+      </span>
     </button>
   );
 }
