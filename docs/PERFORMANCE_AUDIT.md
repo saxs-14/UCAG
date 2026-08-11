@@ -1,3 +1,4 @@
+<!-- cSpell:words UCAG Turbopack prerender -->
 # Performance Audit & Optimization Report
 
 UCAG is optimized for high-speed performance across desktop and mobile devices, especially for South African learners on mobile networks.

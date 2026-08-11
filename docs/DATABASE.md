@@ -1,3 +1,4 @@
+<!-- cSpell:words UCAG Firestore Mpumalanga bict edbs firestore -->
 # Database & Data Model Architecture
 
 UCAG utilizes a dual data model:

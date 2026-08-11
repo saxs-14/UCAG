@@ -1,3 +1,4 @@
+// cSpell:words studymate
 import type { SmartStudyPlan } from "@/lib/studymate/types";
 
 /**

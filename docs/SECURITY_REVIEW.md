@@ -1,3 +1,4 @@
+<!-- cSpell:words UCAG POPIA matric studymate Firestore -->
 # Security Review & Privacy Compliance
 
 Security and learner privacy are core engineering imperatives of the UCAG platform.

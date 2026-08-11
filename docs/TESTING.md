@@ -1,3 +1,4 @@
+<!-- cSpell:words UCAG Turbopack itemised studymate -->
 # Quality Assurance & Testing Suite
 
 UCAG enforces automated testing across unit, integration, validation, and end-to-end suites.
