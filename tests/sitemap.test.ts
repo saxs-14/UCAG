@@ -8,7 +8,29 @@ vi.mock("@/lib/catalog/getRealProgrammeDetail", () => ({
   listVerifiedProgrammeIds,
 }));
 
-const STATIC_PATHS = ["", "/bursaries", "/statistics", "/privacy"];
+const STATIC_PATHS = [
+  "",
+  "/bursaries",
+  "/statistics",
+  "/privacy",
+  "/ump",
+  "/ump/programmes",
+  "/ump/funding",
+  "/ump/careers",
+  "/ump/campus",
+  "/ump/mentors",
+  "/application/documents",
+  "/studymate",
+  "/studymate/profile",
+  "/studymate/timetable",
+  "/studymate/plan",
+  "/studymate/materials",
+  "/studymate/tutor",
+  "/studymate/quiz",
+  "/studymate/mock-exam",
+  "/studymate/progress",
+  "/studymate/past-papers",
+];
 
 describe("app/sitemap.ts", () => {
   it("still returns the static routes when Firebase Admin is unavailable (build must not crash)", async () => {

@@ -41,4 +41,31 @@ test.describe("UMP AI Education Platform E2E", () => {
     await schoolStep.click();
     await expect(page.getByText("Achieve at least level 4 (50%) in Mathematics")).toBeVisible();
   });
+
+  test("navigates StudyMate Dashboard and interacts with AI tools", async ({ page }) => {
+    await page.goto("/studymate");
+    await expect(page.getByRole("heading", { name: "Welcome back 👋" })).toBeVisible();
+    await expect(page.getByText("AI Academic Diagnosis")).toBeVisible();
+
+    // Click Quiz Generator tool
+    await page.getByRole("link", { name: "Quiz Generator Test your knowledge fast." }).click();
+    await expect(page).toHaveURL(/\/studymate\/quiz/);
+    await expect(page.getByRole("heading", { name: "AI Quiz Generator" })).toBeVisible();
+  });
+
+  test("visits UMP Campus Guide and Peer Mentors", async ({ page }) => {
+    await page.goto("/ump/campus");
+    await expect(page.getByRole("heading", { name: "UMP Campus Guide" })).toBeVisible();
+    await expect(page.getByText("Mbombela Campus (Main Campus)")).toBeVisible();
+
+    await page.goto("/ump/mentors");
+    await expect(page.getByRole("heading", { name: "UMP Student Peer Mentors" })).toBeVisible();
+    await expect(page.getByText("Sibusiso Nkosi")).toBeVisible();
+  });
+
+  test("verifies Application Document Assistant POPIA privacy shield", async ({ page }) => {
+    await page.goto("/application/documents");
+    await expect(page.getByRole("heading", { name: "Application Document Assistant" })).toBeVisible();
+    await expect(page.getByText("POPIA Compliant Privacy Guarantee")).toBeVisible();
+  });
 });
