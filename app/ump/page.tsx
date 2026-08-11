@@ -3,6 +3,7 @@ import Link from "next/link";
 import { LABELS } from "@/config/labels";
 import { fetchUmpData } from "@/lib/catalog/getUmpData";
 import { deriveApplicationWindowStatus } from "@/lib/applicationStatus";
+import { UmpSmartAdmissionHero } from "@/components/UmpSmartAdmissionHero";
 
 export const metadata: Metadata = {
   title: `${LABELS.ump.hubPageTitle} -- ${LABELS.app.name}`,
@@ -51,48 +52,8 @@ export default async function UmpHubPage() {
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
-      {/* ── Hero band ── */}
-      <div className="hero-atmosphere w-full border-b border-white/10 py-12 shadow-md">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 sm:px-8">
-          <div className="inline-flex items-center gap-2 rounded-full bg-teal-500/20 px-3.5 py-1 text-xs font-semibold text-teal-200 border border-teal-400/30 w-fit">
-            <span>🏛️ Mpumalanga Province · Established 2014</span>
-          </div>
-          <h1 className="animate-rise-in text-3xl font-extrabold tracking-tight text-white sm:text-4xl leading-tight">
-            {LABELS.ump.hubPageTitle}
-          </h1>
-          <p className="animate-rise-in stagger-1 max-w-2xl text-sm sm:text-base text-teal-100/90 leading-relaxed">
-            {LABELS.ump.hubPageSubtitle}
-          </p>
-
-          {/* CTA row */}
-          <div className="flex flex-wrap items-center gap-3 pt-2">
-            <Link
-              href="/ump/programmes"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-brand-teal px-4 py-2 text-sm font-semibold text-white shadow transition hover:opacity-90 focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
-            >
-              Browse {programmes.length} Programmes →
-            </Link>
-            <Link
-              href="/ump/funding"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
-            >
-              💰 Funding
-            </Link>
-            <Link
-              href="/ump/careers"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
-            >
-              🗺️ Career Paths
-            </Link>
-            <Link
-              href="/"
-              className="inline-flex items-center gap-1.5 rounded-lg bg-white/10 border border-white/20 px-4 py-2 text-sm font-semibold text-white transition hover:bg-white/20"
-            >
-              Check My APS
-            </Link>
-          </div>
-        </div>
-      </div>
+      {/* ── UMP Smart Admission 3D Hero ── */}
+      <UmpSmartAdmissionHero />
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-8 p-6 sm:p-8">
 
