@@ -1,121 +1,35 @@
 @import "tailwindcss";
 
-/**
- * Design tokens -- third pass. Direct user feedback on the second pass
- * ("Marked Script"): "you didn't redesign, you just added a few things
- * ... I want it to look like a website ... I want it to look like a
- * CSIR website." Fetched csir.co.za directly rather than guess: full-
- * width solid-color banner sections, a restrained navy/dark palette
- * with one or two accent colors reserved for calls-to-action, sans-
- * serif type throughout, clean card grids, a real header identity on
- * every page and a real footer -- not hand-drawn doodles, ruled-paper
- * texture, or a cursive accent font, all of which read as a school
- * notebook, not an institution. That entire vocabulary (.ruled-paper,
- * .sketchy, .scatter-a/b, .hover-wiggle, --font-hand/Caveat) is removed
- * in this pass, not layered under. What's kept: the semantic marking-
- * pen colors below (green=qualify, gold=almost, red=error -- this is
- * meaning, not decoration, and nobody asked to change it), and
- * CircledMark specifically (the app's one real signature element,
- * scoped to the actual APS number -- not generalised into a site-wide
- * "hand-drawn" theme, which was this pass's actual mistake).
- *
- * Structure is now carried by full-width `.brand-band` sections (a
- * solid-color banner, like CSIR's mandate/hero bands) instead of a
- * page background texture -- see components/PageHero.tsx and
- * components/Footer.tsx, both new this pass. A real footer is the
- * single biggest "this doesn't look like a finished website" fix:
- * the site previously just stopped after content with nothing below
- * it.
- *
- * FOURTH PASS: the navy-header + solid-checkmark-badge + narrow teal/
- * coral palette that pass three landed on reads as a generic B2B/
- * enterprise-security vendor template once it's actually live -- not
- * this app specifically. Fix is a real logomark (components/Logo.tsx,
- * an arc gauge sweeping through the FULL semantic palette -- ties
- * directly to "APS is a score," not a generic shield/checkmark), two
- * new decorative accents below (violet, amber) so field-of-study tags
- * (components/FieldTag.tsx) can actually differentiate by color instead
- * of repeating the same two brand colors on every card, a real
- * elevation/shadow system for cards, and a mouse-tracked 3D tilt
- * (components/TiltCard.tsx) on interactive cards. Institutional
- * structure from pass three is kept -- this pass adds color and depth
- * back into it, it doesn't undo it.
- *
- * CORRECTED (2026-07-25) against docs/MASTER_PROMPT_v2.md's actual Phase 8
- * brief, which explicitly says: "Do not hand me the default AI look --
- * cream background, big serif, terracotta accent." Paper stays a true
- * white/near-black neutral for the same reason as before; identity now
- * comes from the brand-band sections and restrained accent color, not
- * from tinting the base surface. Every pairing below re-checked against
- * WCAG AA (4.5:1 text, 3:1 large text/UI).
- *
- * Single source of truth per token: components reference `text-mark-green`,
- * `bg-paper-raised`, etc. directly (no `dark:` prefix needed for color) --
- * the value itself flips under the dark-mode override below, so a token
- * used once is correct in both themes automatically.
- *
- * Type: `--font-sans` stays a system-UI stack for body/UI text -- the
- * brief's low-data-mode requirement and the <200KB calculator-route
- * budget (Phase 8) are real constraints for SA users on limited data.
- * `--font-display` (Fredoka) is scoped ONLY to the CircledMark number
- * itself now, not page headings generally -- CSIR's own reference
- * screenshot confirms sans-serif dominant, one serif heading used
- * sparingly "for historical gravitas," which is the same restraint
- * principle: a distinct display face earns its place on the ONE
- * element it's actually about, not painted across every H1/H2.
- *
- * Per the brief's explicit "detect navigator.connection.saveData and
- * honour it", `--font-display` DEFAULTS to the system stack here --
- * Fredoka is opt-IN via `[data-rich-fonts="true"]` (app/layout.tsx), not
- * opt-out, and its stylesheet is a plain <link> injected by that same
- * script, not next/font. Both of those are the result of two rounds of
- * live verification against a real production build (not dev) that
- * simpler approaches don't actually work: navigator.connection is a
- * browser-only API, so server-rendered HTML can never know saveData's
- * value up front, and this Chromium build fetches a @font-face resource
- * once its rule is merely PRESENT in a loaded stylesheet with a matching
- * unicode-range -- regardless of whether any element's resolved style
- * actually uses that font-family. The only thing that actually stops
- * the request is the font reference not existing in the DOM/CSSOM at
- * all by default -- see app/layout.tsx's RICH_FONTS_SCRIPT, which
- * injects Fredoka's stylesheet itself only once it has confirmed
- * saveData is off.
- */
 @theme {
-  --color-paper: #ffffff;
-  --color-paper-raised: #f6f7f5;
-  --color-ink: #181b1d;
-  --color-ink-soft: #4a5054;
-  --color-ink-faint: #6b7176;
-  --color-line: #dee1de;
+  --color-paper: #f8fafc;
+  --color-paper-raised: #ffffff;
+  --color-ink: #0f172a;
+  --color-ink-soft: #334155;
+  --color-ink-faint: #64748b;
+  --color-line: #e2e8f0;
 
-  --color-mark-green: #1c7a4d;
-  --color-mark-green-soft: #e4f1ea;
-  --color-mark-gold: #8f5c0d;
-  --color-mark-gold-soft: #f7ecd9;
-  --color-mark-red: #a23b2e;
-  --color-mark-red-soft: #f6e6e3;
-  --color-slate: #5b6560;
-  --color-slate-soft: #e9ebe7;
-  --color-focus: #1257c9;
+  --color-mark-green: #059669;
+  --color-mark-green-soft: #ecfdf5;
+  --color-mark-gold: #d97706;
+  --color-mark-gold-soft: #fffbeb;
+  --color-mark-red: #dc2626;
+  --color-mark-red-soft: #fef2f2;
+  --color-slate: #475569;
+  --color-slate-soft: #f1f5f9;
+  --color-focus: #2563eb;
 
-  /* Brand/decorative only -- chrome, headings, accents. Never used for
-     qualify/almost/error meaning; see file header. --color-brand-navy
-     is the institutional identity color (header, footer, hero bands --
-     CSIR's own "primary navy/dark tones"); teal/coral stay as the
-     smaller CTA/accent palette CSIR reserves for buttons and links. */
-  --color-brand-navy: #0f2438;
-  --color-brand-navy-soft: #e6ebef;
-  --color-brand-teal: #166b63;
-  --color-brand-teal-soft: #e1f0ee;
-  --color-brand-coral: #c43163;
-  --color-brand-coral-soft: #fbe3ea;
-  --color-brand-violet: #5b3b9e;
-  --color-brand-violet-soft: #ece5f7;
-  --color-brand-amber: #a15a00;
-  --color-brand-amber-soft: #f9e8d2;
+  --color-brand-navy: #0b192c;
+  --color-brand-navy-soft: #1e293b;
+  --color-brand-teal: #0d9488;
+  --color-brand-teal-soft: #ccfbf1;
+  --color-brand-coral: #e11d48;
+  --color-brand-coral-soft: #ffe4e6;
+  --color-brand-violet: #7c3aed;
+  --color-brand-violet-soft: #f5f3ff;
+  --color-brand-amber: #d97706;
+  --color-brand-amber-soft: #fffbeb;
 
-  --font-sans: -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
   --font-display: var(--font-sans);
   --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
@@ -132,40 +46,37 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-paper: #15181a;
-    --color-paper-raised: #1d2124;
-    --color-ink: #f1f3f2;
-    --color-ink-soft: #c4c9ca;
-    --color-ink-faint: #9ba2a4;
-    --color-line: #33393c;
+    --color-paper: #090d16;
+    --color-paper-raised: #111827;
+    --color-ink: #f9fafb;
+    --color-ink-soft: #d1d5db;
+    --color-ink-faint: #9ca3af;
+    --color-line: #1f2937;
 
-    --color-mark-green: #4fbf85;
-    --color-mark-green-soft: #142a20;
-    --color-mark-gold: #e0ab53;
-    --color-mark-gold-soft: #2b2214;
-    --color-mark-red: #e08172;
-    --color-mark-red-soft: #2c1a17;
-    --color-slate: #98a29c;
-    --color-slate-soft: #202a24;
+    --color-mark-green: #10b981;
+    --color-mark-green-soft: #064e3b;
+    --color-mark-gold: #f59e0b;
+    --color-mark-gold-soft: #78350f;
+    --color-mark-red: #ef4444;
+    --color-mark-red-soft: #7f1d1d;
+    --color-slate: #9ca3af;
+    --color-slate-soft: #1f2937;
 
-    --color-brand-navy: #0a1622;
-    --color-brand-navy-soft: #1a2733;
-    --color-brand-teal: #5fc9be;
-    --color-brand-teal-soft: #1b3835;
-    --color-brand-coral: #f286a8;
-    --color-brand-coral-soft: #3a1e29;
-    --color-brand-violet: #ac8fe0;
-    --color-brand-violet-soft: #2a2140;
-    --color-brand-amber: #e0a54f;
-    --color-brand-amber-soft: #332413;
+    --color-brand-navy: #030712;
+    --color-brand-navy-soft: #111827;
+    --color-brand-teal: #14b8a6;
+    --color-brand-teal-soft: #134e4a;
+    --color-brand-coral: #fb7185;
+    --color-brand-coral-soft: #881337;
+    --color-brand-violet: #a78bfa;
+    --color-brand-violet-soft: #4c1d95;
+    --color-brand-amber: #fbbf24;
+    --color-brand-amber-soft: #78350f;
   }
 }
 
-/* Opt-in only, set by app/layout.tsx's RICH_FONTS_SCRIPT once it has
- * confirmed navigator.connection.saveData is not on and injected
- * Fredoka's own <link> stylesheet -- see the file header for why. */
 :root[data-rich-fonts="true"] {
-  --font-display: "Fredoka", "Segoe UI", sans-serif;
+  --font-display: "Fredoka", "Inter", sans-serif;
 }
 
 body {
@@ -178,252 +89,64 @@ h1, h2, h3 {
   overflow-wrap: break-word;
 }
 
-/* A full-width solid-color section, edge to edge regardless of the
-   page's own max-width container -- CSIR's own hero/mandate banners
-   are exactly this: a solid navy band with white text, not a gradient
-   wash confined to the content column. Used for the site header, page
-   intro bands, and the footer. */
 .brand-band {
-  background: var(--color-brand-navy);
+  background: linear-gradient(135deg, #0b192c 0%, #1e293b 100%);
   color: white;
 }
 
-/* A real two-layer elevation system -- a soft, wide ambient shadow plus
-   a tighter contact shadow close to the surface -- instead of the
-   single flat drop-shadow every card previously shared, which is a big
-   part of why the site read as flat/generic. Grows further on hover
-   for actual depth feedback, not just a lift. Paired with
-   components/TiltCard.tsx's perspective transform. */
-.elevate {
-  box-shadow:
-    0 1px 2px color-mix(in srgb, var(--color-ink) 6%, transparent),
-    0 8px 24px -8px color-mix(in srgb, var(--color-ink) 18%, transparent);
-  transition: box-shadow 200ms ease-out;
-}
-.elevate:hover {
-  box-shadow:
-    0 2px 4px color-mix(in srgb, var(--color-ink) 8%, transparent),
-    0 16px 40px -12px color-mix(in srgb, var(--color-ink) 26%, transparent);
+.card-learner {
+  background: var(--color-paper-raised);
+  border: 1px solid var(--color-line);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
-/* Soft, slowly-drifting color blobs behind a PageHero band -- pure CSS
-   radial-gradients on pseudo-elements, no image request, respects
-   reduced-motion via the global override below. Purely atmospheric:
-   aria-hidden, never carries content. */
-@keyframes drift {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  50% { transform: translate(3%, -4%) scale(1.08); }
+.card-learner:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
 }
 
 .hero-atmosphere {
   position: relative;
-  overflow: hidden;
+  background: linear-gradient(135deg, #0b192c 0%, #0f2d4a 50%, #0d9488 100%);
+  color: #ffffff;
 }
-.hero-atmosphere::before,
-.hero-atmosphere::after {
-  content: "";
-  position: absolute;
-  border-radius: 9999px;
-  filter: blur(48px);
-  opacity: 0.35;
-  pointer-events: none;
-  animation: drift 14s ease-in-out infinite both;
-}
-.hero-atmosphere::before {
-  top: -20%;
-  left: -6%;
-  width: 22rem;
-  height: 22rem;
-  background: var(--color-brand-teal);
-}
-.hero-atmosphere::after {
-  bottom: -30%;
-  right: -8%;
-  width: 26rem;
-  height: 26rem;
-  background: var(--color-brand-coral);
-  animation-delay: -7s;
-}
-
-@keyframes float {
-  0%, 100% {
-    transform: translate3d(0, 0, 0);
-  }
-  50% {
-    transform: translate3d(4px, -10px, 0);
-  }
-}
-
-.animate-float {
-  animation: float 6s ease-in-out infinite both;
-}
-
-.float-delay-0 {
-  animation-delay: 0ms;
-}
-
-.float-delay-260 {
-  animation-delay: 260ms;
-}
-
-.float-delay-320 {
-  animation-delay: 320ms;
-}
-
-.float-delay-520 {
-  animation-delay: 520ms;
-}
-
-.chart-loading-shell {
-  width: 100%;
-  height: 240px;
-}
-
-.readiness-progress-green {
-  accent-color: var(--color-mark-green);
-}
-
-.readiness-progress-gold {
-  accent-color: var(--color-mark-gold);
-}
-
-.readiness-progress-slate {
-  accent-color: var(--color-slate);
-}
-
-.stats-heading {
-  position: relative;
-  padding-left: 1.4rem;
-}
-
-.stats-heading::before {
-  content: "";
-  position: absolute;
-  left: 0;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 0.75rem;
-  height: 0.75rem;
-  border-radius: 9999px;
-  background: var(--color-brand-violet);
-}
-
-/* ---------------------------------------------------------------------
-   Motion -- a small, deliberate vocabulary (not a library dependency).
-   Every animation here expresses something (an element arriving, a
-   result being revealed, a score being drawn) rather than decorating
-   for its own sake. All respect prefers-reduced-motion via the global
-   override below.
------------------------------------------------------------------------- */
 
 @keyframes rise-in {
-  from { opacity: 0; transform: translateY(10px); }
+  from { opacity: 0; transform: translateY(8px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes pop-in {
-  from { opacity: 0; transform: scale(0.92); }
-  to { opacity: 1; transform: scale(1); }
-}
-
-@keyframes soft-glow {
-  0%, 100% { box-shadow: 0 0 0 0 color-mix(in srgb, var(--glow-color, var(--color-mark-green)) 35%, transparent); }
-  50% { box-shadow: 0 0 0 8px color-mix(in srgb, var(--glow-color, var(--color-mark-green)) 0%, transparent); }
-}
-
-@keyframes draw-circle {
-  from { stroke-dashoffset: var(--circle-length, 220); }
-  to { stroke-dashoffset: 0; }
-}
-
-/* `backwards`, not `both`: applies the entry keyframe before the
-   animation starts (no flash-of-unanimated-content), but does NOT pin
-   the "to" keyframe's `transform` in place once the animation ends. A
-   lingering non-`none` transform (even a visually-identical scale(1)/
-   translateY(0)) creates a new CSS stacking context, which silently
-   traps any absolutely-positioned overlay inside an earlier element
-   (e.g. SubjectCombobox's dropdown) behind a later sibling that also
-   carries one of these classes -- found via a real garbled-dropdown
-   render, not a hypothetical. Once the animation completes, the element
-   reverts to its un-animated stylesheet state, which is already
-   opacity:1/transform:none -- visually identical, stacking-context-safe. */
-.animate-rise-in {
-  animation: rise-in 420ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
-}
-
-.animate-pop-in {
-  animation: pop-in 360ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
-}
-
-@keyframes pop-out {
-  from { opacity: 1; transform: scale(1); }
-  to { opacity: 0; transform: scale(0.92); }
-}
-
-.animate-pop-out {
-  animation: pop-out 200ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
-}
-
-@keyframes dropdown-in {
   from { opacity: 0; transform: scale(0.96); }
   to { opacity: 1; transform: scale(1); }
 }
 
-@keyframes dropdown-out {
+.animate-rise-in {
+  animation: rise-in 300ms cubic-bezier(0.16, 1, 0.3, 1) backwards;
+}
+
+.animate-pop-in {
+  animation: pop-in 250ms cubic-bezier(0.34, 1.56, 0.64, 1) backwards;
+}
+
+@keyframes pop-out {
   from { opacity: 1; transform: scale(1); }
   to { opacity: 0; transform: scale(0.96); }
 }
 
-.animate-dropdown {
-  transform-origin: top;
-  animation: dropdown-in 200ms var(--ease-out) both;
+.animate-pop-out {
+  animation: pop-out 150ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 }
 
-.animate-dropdown-out {
-  transform-origin: top;
-  animation: dropdown-out 150ms var(--ease-out) both;
-}
+.stagger-1 { animation-delay: 30ms; }
+.stagger-2 { animation-delay: 60ms; }
+.stagger-3 { animation-delay: 90ms; }
+.stagger-4 { animation-delay: 120ms; }
+.stagger-5 { animation-delay: 150ms; }
+.stagger-6 { animation-delay: 180ms; }
 
-.animate-soft-glow {
-  animation: soft-glow 2.2s ease-in-out 3;
-  animation-fill-mode: forwards;
-}
-
-.animate-draw-circle {
-  animation: draw-circle 700ms cubic-bezier(0.65, 0, 0.35, 1) 150ms both;
-}
-
-.animate-draw-circle-fast {
-  animation: draw-circle 350ms cubic-bezier(0.65, 0, 0.35, 1) both;
-}
-
-/* The one big celebration moment in the app -- components/results/
-   ConfettiBurst.tsx, fired once when a learner's results first include
-   a real "You qualify" match. Falls back to an instant snap under
-   prefers-reduced-motion via the global override below, same as every
-   other animation on this page -- no separate JS gate needed. */
-@keyframes confetti-fall {
-  from { transform: translate3d(0, -10px, 0) rotate(0deg); opacity: 1; }
-  to { transform: translate3d(var(--drift, 0px), 100vh, 0) rotate(var(--spin, 360deg)); opacity: 0; }
-}
-
-.animate-confetti {
-  animation: confetti-fall var(--fall-duration, 2200ms) cubic-bezier(0.36, 0, 0.66, 0.99) both;
-}
-
-/* Stagger helpers -- 40ms rhythm per item, capped so a long list doesn't
-   keep arriving forever (matches the skill guidance: 30-50ms per item). */
-.stagger-1 { animation-delay: 40ms; }
-.stagger-2 { animation-delay: 80ms; }
-.stagger-3 { animation-delay: 120ms; }
-.stagger-4 { animation-delay: 160ms; }
-.stagger-5 { animation-delay: 200ms; }
-.stagger-6 { animation-delay: 240ms; }
-
-/* WCAG 2.1 AA: a visible focus ring on every interactive element, not just
-   the browser default (which some UA stylesheets suppress on click). */
 :focus-visible {
-  outline: 3px solid var(--color-focus);
+  outline: 2px solid var(--color-focus);
   outline-offset: 2px;
 }
 
@@ -436,16 +159,7 @@ h1, h2, h3 {
   }
 }
 
-/* "Download as PDF" (ShareBar) uses the browser's native print-to-PDF --
-   see components/results/ShareBar.tsx for why. Elements marked
-   .no-print (nav chrome, buttons) are hidden so the printed/saved PDF is
-   the clean one-pager the brief asks for, not a screenshot of the app. */
 @media print {
-  .no-print {
-    display: none !important;
-  }
-  body {
-    background: #ffffff;
-    color: #000000;
-  }
+  .no-print { display: none !important; }
+  body { background: #ffffff; color: #000000; }
 }

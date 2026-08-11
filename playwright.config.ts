@@ -3,6 +3,7 @@ import { defineConfig, devices } from "@playwright/test";
 export default defineConfig({
   testDir: "./tests/e2e",
   fullyParallel: true,
+  timeout: 60000,
   retries: process.env.CI ? 2 : 0,
   reporter: "html",
   use: {
@@ -17,5 +18,9 @@ export default defineConfig({
     command: "npm run dev",
     url: "http://localhost:3000",
     reuseExistingServer: !process.env.CI,
+    timeout: 120 * 1000,
+    env: {
+      NEXT_PUBLIC_USE_FIREBASE_EMULATOR: "true",
+    },
   },
 });

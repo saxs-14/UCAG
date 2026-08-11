@@ -10,14 +10,16 @@ interface MarkInputProps {
   disabled?: boolean;
 }
 
-/**
- * Percentage is always the source of truth (some institutions calculate
- * on raw percentages, not point bands -- docs/MASTER_PROMPT_v2.md sect.
- * 2.1). The level shown here is the STANDARD scale for orientation only;
- * it is NOT necessarily what any given institution will use -- that's
- * decided per-institution by lib/aps/engine.ts once a real, verified
- * apsRules record exists (Phase 4).
- */
+const LEVEL_STYLE: Record<number, string> = {
+  7: "bg-emerald-100 text-emerald-800 border-emerald-300 font-bold",
+  6: "bg-teal-100 text-teal-800 border-teal-300 font-bold",
+  5: "bg-purple-100 text-purple-800 border-purple-300 font-semibold",
+  4: "bg-amber-100 text-amber-800 border-amber-300 font-semibold",
+  3: "bg-slate-100 text-slate-700 border-slate-300 font-medium",
+  2: "bg-rose-100 text-rose-800 border-rose-300 font-medium",
+  1: "bg-rose-100 text-rose-800 border-rose-300 font-medium",
+};
+
 export function MarkInput({ label, percentage, onChange, disabled }: MarkInputProps) {
   let level: number | null = null;
   if (percentage !== null && percentage >= 0 && percentage <= 100) {
@@ -26,37 +28,42 @@ export function MarkInput({ label, percentage, onChange, disabled }: MarkInputPr
 
   return (
     <div className="flex items-center gap-3">
-      <label className="w-40 shrink-0 text-sm font-medium" htmlFor={`mark-${label}`}>
+      <label className="w-44 shrink-0 text-sm font-semibold text-ink" htmlFor={`mark-${label}`}>
         {label}
       </label>
-      <input
-        id={`mark-${label}`}
-        type="number"
-        min={0}
-        max={100}
-        inputMode="numeric"
-        disabled={disabled}
-        className="h-11 w-20 rounded-lg border-2 border-line bg-paper-raised px-2 text-sm font-mono tabular-nums text-ink transition-colors focus:border-mark-green focus:outline-none disabled:bg-slate-soft"
-        value={percentage ?? ""}
-        onChange={(e) => {
-          const raw = e.target.value;
-          if (raw === "") {
-            onChange(null);
-            return;
-          }
-          const parsed = Number(raw);
-          if (Number.isFinite(parsed)) {
-            onChange(Math.max(0, Math.min(100, parsed)));
-          }
-        }}
-      />
-      <span className="text-sm text-ink-faint">%</span>
+      <div className="relative flex items-center">
+        <input
+          id={`mark-${label}`}
+          type="number"
+          min={0}
+          max={100}
+          inputMode="numeric"
+          disabled={disabled}
+          placeholder="%"
+          className="h-11 w-22 rounded-xl border-2 border-line bg-paper-raised px-3 text-sm font-mono font-bold tabular-nums text-ink transition-all focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/20 focus:outline-none disabled:bg-slate-soft"
+          value={percentage ?? ""}
+          onChange={(e) => {
+            const raw = e.target.value;
+            if (raw === "") {
+              onChange(null);
+              return;
+            }
+            const parsed = Number(raw);
+            if (Number.isFinite(parsed)) {
+              onChange(Math.max(0, Math.min(100, parsed)));
+            }
+          }}
+        />
+      </div>
+      <span className="text-xs font-bold text-ink-faint">%</span>
       {level !== null && (
         <span
-          className="rounded-full bg-slate-soft px-2.5 py-0.5 text-xs font-mono font-medium tabular-nums text-ink-soft"
-          title="Standard NSC scale, for orientation only -- not necessarily what a given institution uses"
+          className={`rounded-full border px-3 py-1 text-xs font-mono font-bold shadow-2xs transition-all animate-pop-in ${
+            LEVEL_STYLE[level] ?? "bg-slate-100 text-slate-700"
+          }`}
+          title="Standard NSC Matric Level (1-7). Note: Each university converts percentages to points using its own verified formula."
         >
-          Level {level}
+          NSC Level {level}
         </span>
       )}
     </div>

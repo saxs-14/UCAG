@@ -22,13 +22,20 @@ import { listVerifiedProgrammeIds } from "@/lib/catalog/getRealProgrammeDetail";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base = getBaseUrl();
 
-  const staticRoutes: MetadataRoute.Sitemap = ["", "/bursaries", "/statistics", "/privacy"].map(
-    (path) => ({
-      url: `${base}${path}`,
-      lastModified: new Date(),
-      changeFrequency: "weekly",
-    })
-  );
+  const staticRoutes: MetadataRoute.Sitemap = [
+    "",
+    "/bursaries",
+    "/statistics",
+    "/privacy",
+    "/ump",
+    "/ump/programmes",
+    "/ump/funding",
+    "/ump/careers",
+  ].map((path) => ({
+    url: `${base}${path}`,
+    lastModified: new Date(),
+    changeFrequency: "weekly",
+  }));
 
   const verifiedProgrammes = await listVerifiedProgrammeIds().catch((error: unknown) => {
     console.warn("sitemap: skipping programme URLs, Firebase Admin unavailable:", error);

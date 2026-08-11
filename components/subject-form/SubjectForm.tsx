@@ -25,24 +25,11 @@ interface ElectiveSlot {
   percentage: number | null;
 }
 
-/**
- * The full NSC subject-selection form (docs/MASTER_PROMPT_v2.md sect.
- * 2.1): Home Language, First Additional Language, Mathematics, Life
- * Orientation (locked, always present), then 3-4 electives from a
- * searchable, grouped dropdown. Emits the current SubjectMarkInput[] via
- * onMarksChange so a parent (Phase 3's results page) can feed it to
- * lib/aps/engine -- this component itself does no APS calculation and
- * does not assume any specific institution's formula.
- */
 export function SubjectForm({
   onMarksChange,
   initialState,
 }: {
   onMarksChange?: (marks: SubjectMarkInput[]) => void;
-  /** Seeds the form from a signed-in learner's previously saved marks
-   * (see config/subjects.ts's subjectMarksToFormState). Only read on first
-   * render -- this form owns its state after that, same as any other
-   * uncontrolled-with-defaults form. */
   initialState?: SubjectFormInitialState;
 }) {
   const [homeLanguage, setHomeLanguage] = useState<LanguageOption | "">(
@@ -125,12 +112,6 @@ export function SubjectForm({
     electives,
   ]);
 
-  // Notify the parent in an effect, not during render -- calling
-  // onMarksChange directly in the render body updates a different
-  // component (CalculatorPage) while this one is still rendering, which
-  // React rejects (and which, in practice, corrupted keystrokes: typing
-  // "80" was observed landing as "8" because the interrupted render
-  // clobbered the in-progress input state).
   useEffect(() => {
     onMarksChange?.(marks);
   }, [marks, onMarksChange]);
@@ -155,22 +136,34 @@ export function SubjectForm({
 
   return (
     <form
-      className="animate-rise-in stagger-1 flex w-full max-w-xl flex-col gap-6"
+      className="animate-rise-in stagger-1 flex w-full max-w-2xl flex-col gap-6"
       onSubmit={(e) => e.preventDefault()}
     >
-      <fieldset className="flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
-        <legend className="mb-1 flex items-center gap-2 px-1 text-sm font-semibold uppercase tracking-wide text-brand-teal">
-          <span aria-hidden className="h-2 w-2 rounded-full bg-brand-teal" />
-          Compulsory
+      {/* Introduction Card */}
+      <div className="flex flex-col gap-1.5 rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+        <h2 className="font-bold text-lg text-ink flex items-center gap-2">
+          <span>📚 Enter Your Matric Subjects & Percentages</span>
+        </h2>
+        <p className="text-xs text-ink-soft leading-relaxed">
+          Enter your percentage marks for your 4 compulsory subjects and 3 to 4 electives below. Your APS points will automatically update for every university in South Africa.
+        </p>
+      </div>
+
+      {/* Compulsory Subjects Fieldset */}
+      <fieldset className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+        <legend className="mb-1 flex items-center gap-2 rounded-full bg-brand-teal-soft px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-teal border border-brand-teal/20">
+          <span aria-hidden className="h-2 w-2 rounded-full bg-brand-teal animate-pulse" />
+          Compulsory NSC Subjects (4)
         </legend>
 
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium" htmlFor="home-language">
+        {/* Home Language */}
+        <div className="flex flex-col gap-2 rounded-xl bg-paper p-3.5 border border-line/60">
+          <label className="text-sm font-semibold text-ink" htmlFor="home-language">
             Home Language
           </label>
           <select
             id="home-language"
-            className="min-h-11 cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
+            className="min-h-11 cursor-pointer rounded-xl border border-line bg-paper-raised px-3.5 py-2 text-sm text-ink font-medium transition-colors focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/20 focus:outline-none"
             value={homeLanguage}
             onChange={(e) => {
               const next = e.target.value as LanguageOption | "";
@@ -178,83 +171,93 @@ export function SubjectForm({
               if (next === firstAdditionalLanguage) setFirstAdditionalLanguage("");
             }}
           >
-            <option value="">Select...</option>
+            <option value="">Select Home Language...</option>
             {HOME_LANGUAGE_OPTIONS.map((lang) => (
               <option key={lang} value={lang}>
                 {lang}
               </option>
             ))}
           </select>
+          {homeLanguage && (
+            <div className="mt-1 border-t border-line/40 pt-2">
+              <MarkInput
+                label={`${homeLanguage} (HL)`}
+                percentage={homeLanguageMark}
+                onChange={setHomeLanguageMark}
+              />
+            </div>
+          )}
         </div>
-        {homeLanguage && (
-          <MarkInput
-            label={`${homeLanguage} (Home Language)`}
-            percentage={homeLanguageMark}
-            onChange={setHomeLanguageMark}
-          />
-        )}
 
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium" htmlFor="fal">
-            First Additional Language
+        {/* First Additional Language */}
+        <div className="flex flex-col gap-2 rounded-xl bg-paper p-3.5 border border-line/60">
+          <label className="text-sm font-semibold text-ink" htmlFor="fal">
+            First Additional Language (FAL)
           </label>
           <select
             id="fal"
-            className="min-h-11 cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
+            className="min-h-11 cursor-pointer rounded-xl border border-line bg-paper-raised px-3.5 py-2 text-sm text-ink font-medium transition-colors focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/20 focus:outline-none"
             value={firstAdditionalLanguage}
             onChange={(e) => setFirstAdditionalLanguage(e.target.value as LanguageOption | "")}
           >
-            <option value="">Select...</option>
+            <option value="">Select First Additional Language...</option>
             {firstAdditionalLanguageOptions.map((lang) => (
               <option key={lang} value={lang}>
                 {lang}
               </option>
             ))}
           </select>
+          {firstAdditionalLanguage && (
+            <div className="mt-1 border-t border-line/40 pt-2">
+              <MarkInput
+                label={`${firstAdditionalLanguage} (FAL)`}
+                percentage={firstAdditionalLanguageMark}
+                onChange={setFirstAdditionalLanguageMark}
+              />
+            </div>
+          )}
         </div>
-        {firstAdditionalLanguage && (
-          <MarkInput
-            label={`${firstAdditionalLanguage} (First Additional)`}
-            percentage={firstAdditionalLanguageMark}
-            onChange={setFirstAdditionalLanguageMark}
-          />
-        )}
 
-        <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium" htmlFor="mathematics">
-            Mathematics
+        {/* Mathematics */}
+        <div className="flex flex-col gap-2 rounded-xl bg-paper p-3.5 border border-line/60">
+          <label className="text-sm font-semibold text-ink" htmlFor="mathematics">
+            Mathematics Option
           </label>
           <select
             id="mathematics"
-            className="min-h-11 cursor-pointer rounded-xl border border-line bg-paper px-3 py-2 text-sm text-ink transition-colors focus:border-brand-teal focus:outline-none"
+            className="min-h-11 cursor-pointer rounded-xl border border-line bg-paper-raised px-3.5 py-2 text-sm text-ink font-medium transition-colors focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/20 focus:outline-none"
             value={mathematics}
             onChange={(e) => setMathematics(e.target.value as MathematicsOption | "")}
           >
-            <option value="">Select...</option>
+            <option value="">Select Mathematics Type...</option>
             {MATHEMATICS_OPTIONS.map((opt) => (
               <option key={opt} value={opt}>
                 {opt}
               </option>
             ))}
           </select>
+          {mathematics && (
+            <div className="mt-1 border-t border-line/40 pt-2">
+              <MarkInput label={mathematics} percentage={mathematicsMark} onChange={setMathematicsMark} />
+            </div>
+          )}
         </div>
-        {mathematics && (
-          <MarkInput label={mathematics} percentage={mathematicsMark} onChange={setMathematicsMark} />
-        )}
 
-        {/* Life Orientation: always present, locked, cannot be removed --
-            every NSC learner takes it, per docs/MASTER_PROMPT_v2.md 2.1. */}
-        <MarkInput
-          label="Life Orientation (compulsory)"
-          percentage={lifeOrientationMark}
-          onChange={setLifeOrientationMark}
-        />
+        {/* Life Orientation */}
+        <div className="rounded-xl bg-paper p-3.5 border border-line/60">
+          <MarkInput
+            label="Life Orientation"
+            percentage={lifeOrientationMark}
+            onChange={setLifeOrientationMark}
+          />
+        </div>
       </fieldset>
 
-      <fieldset className="flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
-        <legend className="mb-1 flex items-center gap-2 px-1 text-sm font-semibold uppercase tracking-wide text-brand-coral">
-          <span aria-hidden className="h-2 w-2 rounded-full bg-brand-coral" />
-          Electives ({electives.length} of {MIN_ELECTIVES}-{MAX_ELECTIVES})
+      {/* Elective Subjects Fieldset */}
+      <fieldset className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+        <legend className="mb-1 flex items-center gap-2 rounded-full bg-brand-coral-soft px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-coral border border-brand-coral/20">
+          <span aria-hidden className="h-2 w-2 rounded-full bg-brand-coral animate-pulse" />
+          Elective Subjects ({electives.length} of {MIN_ELECTIVES}-{MAX_ELECTIVES})
         </legend>
 
         {electives.map((elective, index) => {
@@ -265,25 +268,21 @@ export function SubjectForm({
           return (
             <div
               key={index}
-              className={`${removingIndex === index ? "animate-pop-out" : `stagger-${stagger} animate-pop-in`} flex flex-col gap-2 rounded-xl border border-line bg-paper p-3`}
+              className={`${removingIndex === index ? "animate-pop-out" : `stagger-${stagger} animate-pop-in`} flex flex-col gap-3 rounded-xl border border-line bg-paper p-3.5 shadow-2xs`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
                   <SubjectCombobox
-                    label={`Elective ${index + 1}`}
+                    label={`Elective Subject ${index + 1}`}
                     options={availableOptions}
                     value={elective.code}
                     onChange={(code) => updateElective(index, { code, percentage: null })}
                   />
                 </div>
                 {electives.length > MIN_ELECTIVES && (
-                  // -m-2 p-2 widens the actual tap target to 44x44 (WCAG
-                  // 2.5.5) without growing the visible text -- a rarely-used
-                  // destructive action doesn't need visual weight, but still
-                  // needs a real hit area on a 5-inch screen (Phase 8 brief).
                   <button
                     type="button"
-                    className="-m-2 mt-4 cursor-pointer p-2 text-xs text-mark-red transition-transform duration-150 ease-out hover:underline active:scale-[0.97]"
+                    className="-m-2 mt-4 cursor-pointer p-2 text-xs font-semibold text-mark-red hover:underline active:scale-95"
                     onClick={() => removeElective(index)}
                     disabled={removingIndex === index}
                   >
@@ -292,11 +291,13 @@ export function SubjectForm({
                 )}
               </div>
               {elective.code && (
-                <MarkInput
-                  label={ELECTIVE_SUBJECTS.find((s) => s.code === elective.code)?.name ?? ""}
-                  percentage={elective.percentage}
-                  onChange={(percentage) => updateElective(index, { percentage })}
-                />
+                <div className="border-t border-line/40 pt-2">
+                  <MarkInput
+                    label={ELECTIVE_SUBJECTS.find((s) => s.code === elective.code)?.name ?? ""}
+                    percentage={elective.percentage}
+                    onChange={(percentage) => updateElective(index, { percentage })}
+                  />
+                </div>
               )}
             </div>
           );
@@ -305,10 +306,10 @@ export function SubjectForm({
         {electives.length < MAX_ELECTIVES && (
           <button
             type="button"
-            className="inline-flex min-h-11 cursor-pointer items-center self-start rounded-full border border-dashed border-brand-teal px-4 text-sm font-medium text-brand-teal transition-transform hover-fine:scale-[1.03] active:scale-[0.97]"
+            className="inline-flex min-h-11 cursor-pointer items-center justify-center self-start rounded-xl border-2 border-dashed border-brand-teal/60 bg-brand-teal-soft/40 px-5 text-sm font-semibold text-brand-teal transition-all hover:bg-brand-teal-soft active:scale-95 shadow-2xs"
             onClick={addElective}
           >
-            + Add a 4th elective
+            + Add 4th Elective Subject
           </button>
         )}
       </fieldset>

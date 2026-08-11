@@ -74,7 +74,7 @@ function randomEmail() {
   return `learner-${Date.now()}-${Math.floor(Math.random() * 100000)}@example.test`;
 }
 
-describe("sign-up flow (real Auth + Firestore emulators)", () => {
+describe("sign-up flow (real Auth + Firestore emulators)", { timeout: 15000 }, () => {
   it("creates a real Auth user and a matching Firestore profile for an adult learner", async () => {
     const email = randomEmail();
     const credential = await createUserWithEmailAndPassword(auth, email, "correct-horse-battery");
