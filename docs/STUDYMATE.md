@@ -1,3 +1,4 @@
+<!-- cSpell:words Uniwersiteit UCAG Personalised Organiser Categorises matric POPIA -->
 # StudyMate -- AI Academic Support & Study System
 
 StudyMate is an educational productivity system integrated into the **Uniwersiteit Companion / South African University Application Guidance (UCAG)** platform.

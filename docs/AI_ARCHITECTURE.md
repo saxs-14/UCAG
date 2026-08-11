@@ -1,3 +1,4 @@
+<!-- cSpell:words UCAG Firestore studymate -->
 # AI System Architecture & Grounding
 
 UCAG and StudyMate leverage Gemini 3.6 Flash for intelligent user assistance while maintaining absolute factual grounding and privacy safety.

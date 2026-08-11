@@ -1,3 +1,4 @@
+// cSpell:words studymate
 import { describe, expect, it, vi } from "vitest";
 
 const { listVerifiedProgrammeIds } = vi.hoisted(() => ({

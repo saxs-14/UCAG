@@ -1,3 +1,4 @@
+<!-- cSpell:words UCAG Turbopack studymate Firestore Itemises -->
 # UCAG Architecture Documentation
 
 UCAG (University Companion & Application Guidance) is built on Next.js 15 App Router with Turbopack, TailwindCSS, Firebase Admin SDK, and Gemini 3.6 Flash.
