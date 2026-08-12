@@ -1,3 +1,4 @@
+// cSpell:words firestore dhet POPIA ucag
 /**
  * Runs against the real Firebase Firestore emulator (firebase
  * emulators:start --only firestore,auth --project demo-ucag must be

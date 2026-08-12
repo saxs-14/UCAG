@@ -1,3 +1,4 @@
+// cSpell:words firestore firebaseapp ucag
 /**
  * Integration test against the real Firebase Auth + Firestore emulators
  * (same prerequisite as tests/firestore-rules.test.ts -- emulators must

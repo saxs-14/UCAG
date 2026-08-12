@@ -1,3 +1,4 @@
+// cSpell:words Sipho Nomvula Mpumalanga Mbombela
 "use client";
 
 import { useState } from "react";
