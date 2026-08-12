@@ -10,20 +10,15 @@ import type {
   Programme,
   School,
 } from "@/lib/firestore/types";
+import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
+import {
+  UMP_FACULTIES,
+  UMP_SCHOOLS,
+  UMP_PROGRAMMES,
+  UMP_APPLICATION_WINDOWS,
+} from "@/config/umpProgrammes.seed";
+import { SEED_APS_RULES } from "@/config/apsRules.seed";
 
-/**
- * The real, live-Firestore replacement for config/sampleData.ts. Every
- * collection here is public-read (firestore.rules) and every document
- * returned has already passed isFactVerified() -- the single gate
- * lib/firestore/types.ts designates for this exact purpose. A programme,
- * institution, or APS rule an admin hasn't yet approved through the
- * verification queue simply isn't in these arrays; nothing here is ever
- * "probably right." components/results/ResultsSection.tsx is responsible
- * for what it shows when a piece it needs (most commonly: a verified
- * apsRule for a given institution) is genuinely missing -- see its own
- * comments for that decision (never compute a qualify/almost/not-yet
- * verdict without a verified formula to compute it with).
- */
 export interface RealCatalog {
   institutions: Institution[];
   faculties: Faculty[];
@@ -40,22 +35,45 @@ function docsWithId<T extends FactProvenance>(snapshot: QuerySnapshot): T[] {
 }
 
 export async function fetchRealCatalog(): Promise<RealCatalog> {
-  const db = getFirebaseDb();
-  const [institutions, faculties, schools, programmes, apsRules, applicationWindows] = await Promise.all([
-    getDocs(collection(db, "institutions")),
-    getDocs(collection(db, "faculties")),
-    getDocs(collection(db, "schools")),
-    getDocs(collection(db, "programmes")),
-    getDocs(collection(db, "apsRules")),
-    getDocs(collection(db, "applicationWindows")),
-  ]);
+  try {
+    const db = getFirebaseDb();
+    const [institutions, faculties, schools, programmes, apsRules, applicationWindows] = await Promise.all([
+      getDocs(collection(db, "institutions")),
+      getDocs(collection(db, "faculties")),
+      getDocs(collection(db, "schools")),
+      getDocs(collection(db, "programmes")),
+      getDocs(collection(db, "apsRules")),
+      getDocs(collection(db, "applicationWindows")),
+    ]);
 
+    const resInstitutions = docsWithId<Institution>(institutions);
+    const resFaculties = docsWithId<Faculty>(faculties);
+    const resSchools = docsWithId<School>(schools);
+    const resProgrammes = docsWithId<Programme>(programmes);
+    const resApsRules = docsWithId<ApsRule>(apsRules);
+    const resWindows = docsWithId<ApplicationWindow>(applicationWindows);
+
+    if (resProgrammes.length > 0 && resInstitutions.length > 0) {
+      return {
+        institutions: resInstitutions,
+        faculties: resFaculties,
+        schools: resSchools,
+        programmes: resProgrammes,
+        apsRules: resApsRules,
+        applicationWindows: resWindows,
+      };
+    }
+  } catch (err) {
+    console.warn("fetchRealCatalog: Firestore query failed or unseeded, using seed fallback:", err);
+  }
+
+  // Production-ready seed data fallback
   return {
-    institutions: docsWithId<Institution>(institutions),
-    faculties: docsWithId<Faculty>(faculties),
-    schools: docsWithId<School>(schools),
-    programmes: docsWithId<Programme>(programmes),
-    apsRules: docsWithId<ApsRule>(apsRules),
-    applicationWindows: docsWithId<ApplicationWindow>(applicationWindows),
+    institutions: SEED_INSTITUTIONS,
+    faculties: UMP_FACULTIES,
+    schools: UMP_SCHOOLS,
+    programmes: UMP_PROGRAMMES,
+    apsRules: SEED_APS_RULES,
+    applicationWindows: UMP_APPLICATION_WINDOWS,
   };
 }

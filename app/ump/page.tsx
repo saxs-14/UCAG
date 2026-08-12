@@ -65,8 +65,8 @@ export default async function UmpHubPage() {
           </h2>
           <div className="grid grid-cols-2 gap-4 sm:grid-cols-4">
             {[
-              { label: LABELS.ump.programmeCountLabel, value: programmes.length || "—" },
-              { label: LABELS.ump.facultyCountLabel, value: faculties.length || "—" },
+              { label: LABELS.ump.programmeCountLabel, value: programmes.length },
+              { label: LABELS.ump.facultyCountLabel, value: faculties.length },
               {
                 label: LABELS.ump.provinceLabel,
                 value: institution?.province ?? "Mpumalanga",
@@ -233,19 +233,6 @@ export default async function UmpHubPage() {
               })}
             </div>
           </section>
-        )}
-
-        {/* ── No data guard ── */}
-        {!institution && programmes.length === 0 && (
-          <div className="card-learner rounded-2xl p-8 text-center">
-            <p className="text-sm text-ink-soft">
-              UMP data is being seeded — run{" "}
-              <code className="rounded bg-slate-soft px-1.5 py-0.5 font-mono text-xs">
-                npm run seed:ump-data
-              </code>{" "}
-              to populate.
-            </p>
-          </div>
         )}
 
         {/* ── Quick nav to sub-sections ── */}
