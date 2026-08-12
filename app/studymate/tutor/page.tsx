@@ -10,7 +10,7 @@ export default function StudyMateTutorPage() {
     {
       id: "t-init",
       sender: "tutor",
-      text: "Hello! 👋 I am your StudyMate AI Tutor. What subject or concept are you working on today? (e.g. 'I don't understand quadratic equations' or 'Explain Pythagoras').",
+      text: "Hello! 👋 I am your VarsityPath AI Tutor, here to guide you to university entrance success. What subject or concept are you working on today? (e.g. 'I don't understand quadratic equations' or 'Explain Pythagoras').",
       timestamp: new Date().toISOString(),
     },
   ]);

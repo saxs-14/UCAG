@@ -48,13 +48,13 @@ export default function StudyMateDashboardPage() {
           <div className="flex flex-wrap items-center justify-between gap-4">
             <div>
               <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-teal-100">
-                StudyMate AI Companion
+                🎓 VarsityPath AI Companion
               </span>
               <h1 className="mt-2 text-2xl font-extrabold sm:text-3xl tracking-tight">
                 Welcome back 👋
               </h1>
               <p className="mt-1 text-sm text-teal-100/90">
-                {profile.grade} Student Progress & Study Overview
+                {profile.grade} Varsity Goal Progress & Study Overview
               </p>
             </div>
             <Link
@@ -199,7 +199,7 @@ export default function StudyMateDashboardPage() {
         {/* Quick Launch Tools */}
         <section aria-labelledby="tools-heading">
           <h2 id="tools-heading" className="text-base font-bold text-ink mb-3">
-            ⚡ StudyMate AI Tools
+            ⚡ VarsityPath AI Tools
           </h2>
           <div className="grid gap-3 sm:grid-cols-4 text-xs">
             <Link href="/studymate/tutor" className="card-learner rounded-xl p-4 flex flex-col gap-1 hover:-translate-y-0.5 transition">

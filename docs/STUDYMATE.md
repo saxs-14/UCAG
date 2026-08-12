@@ -1,9 +1,9 @@
-<!-- cSpell:words Uniwersiteit UCAG Personalised Organiser Categorises matric POPIA -->
-# StudyMate -- AI Academic Support & Study System
+<!-- cSpell:words Uniwersiteit UCAG Personalised Organiser Categorises matric POPIA VarsityPath -->
+# VarsityPath AI -- Varsity Goal Academic Support System
 
-StudyMate is an educational productivity system integrated into the **Uniwersiteit Companion / South African University Application Guidance (UCAG)** platform.
+VarsityPath AI is an educational productivity system integrated into the **Uniwersiteit Companion / South African University Application Guidance (UCAG)** platform.
 
-It empowers Grade 10-12 learners and university students to transition from high school to higher education by combining AI study planning, diagnostic mark evaluation, structured practice, full mock exam simulation, and Socratic tutoring.
+It empowers Grade 10-12 learners and university students to transition from high school to higher education by combining AI study planning, diagnostic mark evaluation, structured practice, full mock exam simulation, and Socratic tutoring aimed at reaching university admission goals.
 
 ---
 

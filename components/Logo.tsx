@@ -14,8 +14,6 @@
  * type (never a separate logotype font to keep loading).
  */
 
-const GRADIENT_ID = "ucag-logo-gradient";
-
 interface LogoProps {
   size?: number;
   showWordmark?: boolean;
@@ -29,29 +27,37 @@ export function Logo({ size = 32, showWordmark = true, wordmarkClassName = "", c
       <svg
         width={size}
         height={size}
-        viewBox="0 0 40 40"
+        viewBox="0 0 64 64"
+        fill="none"
         aria-hidden="true"
         className="shrink-0 overflow-visible"
       >
-        <defs>
-          <linearGradient id={GRADIENT_ID} x1="0%" y1="100%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="var(--color-brand-teal)" />
-            <stop offset="45%" stopColor="var(--color-mark-green)" />
-            <stop offset="75%" stopColor="var(--color-mark-gold)" />
-            <stop offset="100%" stopColor="var(--color-brand-coral)" />
-          </linearGradient>
-        </defs>
+        <rect width="64" height="64" rx="16" fill="#003b5c" />
+        {/* University Pillars */}
         <path
-          className="animate-draw-circle-fast"
-          style={{ "--circle-length": 70 } as React.CSSProperties}
-          d="M 10.1,29.9 A 14,14 0 1 1 29.9,29.9"
-          fill="none"
-          stroke={`url(#${GRADIENT_ID})`}
-          strokeWidth="4.5"
+          d="M16 50 H48 M20 50 V38 M28 50 V38 M36 50 V38 M44 50 V38 M18 38 H46"
+          stroke="#d4af37"
+          strokeWidth="2.5"
           strokeLinecap="round"
-          strokeDasharray={70}
         />
-        <circle cx="32.9" cy="14.6" r="3" fill="var(--color-brand-coral)" />
+        {/* Varsity Graduation Cap / Mortarboard */}
+        <path
+          d="M32 14 L52 23 L32 32 L12 23 Z"
+          fill="#00a896"
+          stroke="#ffffff"
+          strokeWidth="2.5"
+          strokeLinejoin="round"
+        />
+        <path
+          d="M20 27.5 V35 C20 39 44 39 44 35 V27.5"
+          fill="none"
+          stroke="#ffffff"
+          strokeWidth="2"
+          strokeLinecap="round"
+        />
+        {/* Gold Tassel */}
+        <path d="M50 24 V34" stroke="#d4af37" strokeWidth="2" strokeLinecap="round" />
+        <circle cx="50" cy="35.5" r="2" fill="#d4af37" />
       </svg>
       {showWordmark && (
         <span className={`font-bold tracking-tight ${wordmarkClassName}`}>UCAG</span>

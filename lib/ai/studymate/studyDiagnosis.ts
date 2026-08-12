@@ -32,7 +32,7 @@ export function generateLocalDiagnosis(profile: StudentStudyProfile): StudyDiagn
     ],
     weeklyHoursRecommended: Math.max(profile.availableHoursPerWeek, 8),
     studyHabitAdvice: "Break study sessions into 45-minute blocks with 10-minute breaks. Prioritise active recall over passive reading.",
-    disclaimer: "StudyMate is an educational support tool. It does not diagnose learning disabilities, medical conditions, or cognitive impairments.",
+    disclaimer: "VarsityPath AI is an educational support tool to help learners reach their university admission goals. It does not diagnose learning disabilities, medical conditions, or cognitive impairments.",
   };
 }
 
@@ -45,7 +45,7 @@ export function buildStudyDiagnosisPrompt(profile: StudentStudyProfile): string 
     .map((a) => `- ${a.title} (${a.subjectCode}) on ${a.date}: Topics ${a.topics.join(", ")}`)
     .join("\n") || "None specified";
 
-  return `You are StudyMate AI -- an encouraging South African educational diagnostic assistant.
+  return `You are VarsityPath AI -- an encouraging South African educational diagnostic assistant helping high school learners achieve university admission requirements.
 Analyze this student's profile and return a structured diagnostic response:
 
 Grade: ${profile.grade}

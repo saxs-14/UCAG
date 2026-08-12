@@ -8,7 +8,7 @@ import type { CatalogStats } from "@/lib/catalog/getCatalogStats";
 
 const NAV_ITEMS = [
   { href: "/", label: `🎓 ${LABELS.nav.calculator}` },
-  { href: "/studymate", label: "📖 StudyMate" },
+  { href: "/studymate", label: "🚀 VarsityPath AI" },
   { href: "/bursaries", label: `💰 ${LABELS.nav.bursaries}` },
   { href: "/ump", label: `🏛️ ${LABELS.nav.ump}` },
   { href: "/statistics", label: `📊 ${LABELS.nav.statistics}` },
