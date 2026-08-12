@@ -1,3 +1,4 @@
+// cSpell:words Firestore tvet TVET keyfacts Mpumalanga nums appwindow NSFAS Agri MICT
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LABELS } from "@/config/labels";
