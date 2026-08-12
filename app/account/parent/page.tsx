@@ -1,3 +1,4 @@
+// cSpell:words POPIA NSFAS Mpumalanga
 "use client";
 
 import { useState } from "react";

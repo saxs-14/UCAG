@@ -1,3 +1,4 @@
+// cSpell:words Matric Mpumalanga Tshwane
 "use client";
 
 import { useMemo, useState } from "react";

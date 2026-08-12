@@ -1,3 +1,4 @@
+// cSpell:words prerendered studymate
 import type { MetadataRoute } from "next";
 import { getBaseUrl } from "@/lib/env/client";
 import { listVerifiedProgrammeIds } from "@/lib/catalog/getRealProgrammeDetail";
