@@ -107,6 +107,26 @@ export function AccountPage() {
         </p>
       )}
 
+      <section className="animate-rise-in flex flex-col gap-2.5 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
+        <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-navy">
+          📌 Role Dashboards & Portals
+        </h2>
+        <div className="grid gap-2 sm:grid-cols-2 text-xs font-semibold">
+          <Link href="/studymate" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
+            <span>🚀 Learner / Student Portal</span>
+          </Link>
+          <Link href="/account/parent" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
+            <span>👨‍👩‍👧 Parent & Guardian Portal</span>
+          </Link>
+          <Link href="/account/mentor" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
+            <span>🤝 Peer Mentor Portal</span>
+          </Link>
+          <Link href="/admin" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
+            <span>🏛️ University Admin Portal</span>
+          </Link>
+        </div>
+      </section>
+
       <section className="animate-rise-in flex flex-col gap-2 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
         <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-teal">
           {LABELS.account.savedMarksHeading}
