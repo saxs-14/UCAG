@@ -28,12 +28,12 @@ export function formatWhatsAppRecommendationsMessage(
 export function formatWhatsAppTimetableReminder(timetable: WeeklyStudyTimetable, day: string): string {
   const daySlots = timetable.slots.filter((s) => s.day === day && s.activityType !== "break");
   if (daySlots.length === 0) {
-    return `📅 *StudyMate Daily Reminder* 📅\n\nNo scheduled study sessions for ${day}. Enjoy your rest day! 🌟`;
+    return `📅 *VarsityPath AI Daily Reminder* 📅\n\nNo scheduled study sessions for ${day}. Enjoy your rest day! 🌟`;
   }
 
   const scheduleText = daySlots.map((s) => `• *${s.startTime}-${s.endTime}*: ${s.subjectCode} (${s.topic})`).join("\n");
 
-  return `📅 *StudyMate Schedule for ${day}* 📅\n\n${scheduleText}\n\nGood luck with your revision today! 🚀`;
+  return `📅 *VarsityPath AI Schedule for ${day}* 📅\n\n${scheduleText}\n\nGood luck with your revision today! 🚀`;
 }
 
 export function formatWhatsAppApplicationAlert(window: ApplicationWindow): string {

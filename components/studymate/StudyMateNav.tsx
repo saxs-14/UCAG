@@ -20,7 +20,7 @@ export function StudyMateNav() {
 
   return (
     <nav
-      aria-label="StudyMate Navigation"
+      aria-label="VarsityPath AI Navigation"
       className="w-full overflow-x-auto border-b border-line bg-paper-raised"
     >
       <div className="mx-auto flex max-w-5xl items-center gap-1 px-4 py-2 text-xs font-semibold scrollbar-none">
