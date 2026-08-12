@@ -70,7 +70,7 @@ export const UMP_FACULTIES: Faculty[] = [
 export const UMP_SCHOOLS: School[] = [
   {
     id: "ump-school-computing",
-    facultyId: "ump-faculty-edbs",
+    facultyId: "ump-faculty-fans",
     name: "School of Computing and Mathematical Sciences",
     code: "SCMS",
     sourceUrl: UMP_SOURCE_URL,
@@ -142,7 +142,7 @@ export const UMP_PROGRAMMES: Programme[] = [
   {
     id: "ump-bict",
     institutionId: "ump",
-    facultyId: "ump-faculty-edbs",
+    facultyId: "ump-faculty-fans",
     schoolId: "ump-school-computing",
     name: "Bachelor of Information and Communication Technology",
     qualificationType: "bachelorsDegree",
@@ -175,7 +175,7 @@ export const UMP_PROGRAMMES: Programme[] = [
   {
     id: "ump-dip-ict-appdev",
     institutionId: "ump",
-    facultyId: "ump-faculty-edbs",
+    facultyId: "ump-faculty-fans",
     schoolId: "ump-school-computing",
     name: "Diploma in Information and Communication Technology in Applications Development",
     qualificationType: "diploma",
