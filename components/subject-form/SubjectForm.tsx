@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { SubjectCombobox } from "./SubjectCombobox";
 import { MarkInput } from "./MarkInput";
 import {
@@ -66,6 +66,9 @@ export function SubjectForm({
   });
   const [removingIndex, setRemovingIndex] = useState<number | null>(null);
 
+  const [targetInstitution, setTargetInstitution] = useState<string>("ump");
+  const [validationError, setValidationError] = useState<string | null>(null);
+
   const firstAdditionalLanguageOptions = FIRST_ADDITIONAL_LANGUAGE_OPTIONS.filter(
     (lang) => lang !== homeLanguage
   );
@@ -112,9 +115,32 @@ export function SubjectForm({
     electives,
   ]);
 
-  useEffect(() => {
+  function handleCalculate() {
+    if (!homeLanguage || homeLanguageMark === null) {
+      setValidationError("Please select your Home Language and enter a percentage mark.");
+      return;
+    }
+    if (!firstAdditionalLanguage || firstAdditionalLanguageMark === null) {
+      setValidationError("Please select your First Additional Language and enter a percentage mark.");
+      return;
+    }
+    if (!mathematics || mathematicsMark === null) {
+      setValidationError("Please select your Mathematics option and enter a percentage mark.");
+      return;
+    }
+    if (lifeOrientationMark === null) {
+      setValidationError("Please enter your Life Orientation percentage mark.");
+      return;
+    }
+    const filledElectives = electives.filter((e) => e.code && e.percentage !== null);
+    if (filledElectives.length < MIN_ELECTIVES) {
+      setValidationError(`Please select and enter marks for at least ${MIN_ELECTIVES} elective subjects.`);
+      return;
+    }
+
+    setValidationError(null);
     onMarksChange?.(marks);
-  }, [marks, onMarksChange]);
+  }
 
   function updateElective(index: number, patch: Partial<ElectiveSlot>) {
     setElectives((prev) => prev.map((e, i) => (i === index ? { ...e, ...patch } : e)));
@@ -313,6 +339,42 @@ export function SubjectForm({
           </button>
         )}
       </fieldset>
+
+      {/* Calculate APS Action Button */}
+      <div className="flex flex-col gap-3 rounded-2xl border border-brand-teal/40 bg-brand-teal/5 p-5 shadow-sm">
+        <div className="flex flex-col gap-1">
+          <label htmlFor="target-institution" className="text-xs font-bold text-ink uppercase tracking-wider">
+            Target Institution Rule
+          </label>
+          <select
+            id="target-institution"
+            className="min-h-11 rounded-xl border border-line bg-paper-raised px-3.5 py-2 text-sm font-semibold text-ink focus:border-brand-teal focus:outline-none"
+            value={targetInstitution}
+            onChange={(e) => setTargetInstitution(e.target.value)}
+          >
+            <option value="ump">University of Mpumalanga (UMP) -- LO ÷ 2 Rule</option>
+            <option value="up">University of Pretoria (UP) -- LO Excluded Rule</option>
+            <option value="wits">University of the Witwatersrand (Wits) -- LO Included + Bonus Rule</option>
+            <option value="uj">University of Johannesburg (UJ) -- LO Excluded Rule</option>
+            <option value="tut">Tshwane University of Technology (TUT) -- LO Excluded Rule</option>
+            <option value="all">All South African Universities</option>
+          </select>
+        </div>
+
+        {validationError && (
+          <p role="alert" className="text-xs font-bold text-mark-red bg-mark-red-soft p-2.5 rounded-lg border border-mark-red/30">
+            ⚠️ {validationError}
+          </p>
+        )}
+
+        <button
+          type="button"
+          onClick={handleCalculate}
+          className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-brand-teal px-6 py-3 text-base font-extrabold text-white shadow-md transition-all hover:bg-teal-700 active:scale-[0.98]"
+        >
+          <span>🎯 CALCULATE APS & MATCH PROGRAMMES</span>
+        </button>
+      </div>
     </form>
   );
 }

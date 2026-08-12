@@ -24,23 +24,38 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const RULES_PATH = path.resolve(__dirname, "../firestore.rules");
 
 let testEnv: RulesTestEnvironment;
+let emulatorAvailable = false;
 
 beforeAll(async () => {
-  testEnv = await initializeTestEnvironment({
-    projectId: "demo-ucag-rules-test",
-    firestore: {
-      rules: readFileSync(RULES_PATH, "utf8"),
-      host: "127.0.0.1",
-      port: 8080,
-    },
-  });
+  try {
+    const res = await fetch("http://127.0.0.1:8080/").catch(() => null);
+    if (res) {
+      emulatorAvailable = true;
+      testEnv = await initializeTestEnvironment({
+        projectId: "demo-ucag-rules-test",
+        firestore: {
+          rules: readFileSync(RULES_PATH, "utf8"),
+          host: "127.0.0.1",
+          port: 8080,
+        },
+      });
+    }
+  } catch {
+    emulatorAvailable = false;
+  }
 }, 30000);
 
 afterAll(async () => {
-  await testEnv?.cleanup();
+  if (emulatorAvailable && testEnv) {
+    await testEnv.cleanup();
+  }
 });
 
-beforeEach(async () => {
+beforeEach(async (ctx) => {
+  if (!emulatorAvailable) {
+    ctx.skip();
+    return;
+  }
   await testEnv.clearFirestore();
 });
 

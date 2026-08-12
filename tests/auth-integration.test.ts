@@ -34,7 +34,7 @@ import {
   terminate,
   type Firestore,
 } from "firebase/firestore";
-import { afterAll, beforeEach, describe, expect, it } from "vitest";
+import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
 
 let app: FirebaseApp;
 let auth: Auth;
@@ -58,7 +58,22 @@ function freshApp() {
   return { instance, instanceAuth, instanceDb };
 }
 
-beforeEach(() => {
+let emulatorAvailable = false;
+
+beforeAll(async () => {
+  try {
+    const res = await fetch("http://127.0.0.1:9099/").catch(() => null);
+    if (res) emulatorAvailable = true;
+  } catch {
+    emulatorAvailable = false;
+  }
+});
+
+beforeEach((ctx) => {
+  if (!emulatorAvailable) {
+    ctx.skip();
+    return;
+  }
   const fresh = freshApp();
   app = fresh.instance;
   auth = fresh.instanceAuth;
