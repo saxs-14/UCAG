@@ -1,7 +1,12 @@
+// cSpell:words NSFAS learnerships Mpumalanga AgriSETA MICT Siyabuswa
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LABELS } from "@/config/labels";
-import { PageHero } from "@/components/PageHero";
+import { UmpHeader } from "@/components/ump/UmpHeader";
+
+const UMP_NAVY = "#003b5c";
+const UMP_GOLD = "#d4af37";
+const UMP_TEAL = "#00a896";
 
 export const metadata: Metadata = {
   title: `UMP Funding & Bursaries -- ${LABELS.app.name}`,
@@ -144,18 +149,28 @@ const TYPE_STYLES: Record<FundingItem["type"], { label: string; className: strin
 export default function UmpFundingPage() {
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
-      <PageHero
-        title="UMP Funding & Bursaries"
-        subtitle="Funding options available to University of Mpumalanga students — from government schemes like NSFAS to sector-specific bursaries for agriculture, ICT, and education."
-      />
+      <UmpHeader />
+
+      {/* Hero */}
+      <div
+        className="w-full py-10 px-6 sm:px-10 text-white"
+        style={{ background: `linear-gradient(135deg, ${UMP_NAVY} 0%, #004f7c 60%, #003348 100%)` }}
+      >
+        <div className="mx-auto max-w-5xl flex flex-col gap-3">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs opacity-70">
+            <Link href="/ump" className="hover:opacity-100 hover:underline">UMP Hub</Link>
+            <span>›</span>
+            <span>Funding</span>
+          </nav>
+          <h1 className="text-3xl font-extrabold tracking-tight">💰 Funding & Bursaries</h1>
+          <p className="text-slate-300 text-sm max-w-2xl">
+            Funding options available to University of Mpumalanga students — from government schemes
+            like NSFAS to sector-specific bursaries for agriculture, ICT, and education.
+          </p>
+        </div>
+      </div>
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-6 sm:p-8">
-        {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-ink-faint">
-          <Link href="/ump" className="hover:text-brand-teal hover:underline">UMP Hub</Link>
-          <span>›</span>
-          <span className="text-ink-soft font-medium">Funding</span>
-        </nav>
 
         {/* NSFAS priority callout */}
         <div className="rounded-2xl border border-mark-green/30 bg-mark-green-soft p-5">
@@ -254,11 +269,47 @@ export default function UmpFundingPage() {
           </p>
           <Link
             href="/bursaries"
-            className="text-sm font-bold text-brand-teal hover:underline"
+            className="text-sm font-bold hover:underline"
+            style={{ color: UMP_TEAL }}
           >
             Browse all bursaries & internships →
           </Link>
         </div>
+
+        {/* ── Learnerships callout ── */}
+        <section
+          aria-labelledby="learnerships-callout-heading"
+          className="rounded-2xl overflow-hidden border"
+          style={{ borderColor: `${UMP_TEAL}30` }}
+        >
+          <div
+            className="px-6 py-4"
+            style={{ background: `linear-gradient(90deg, ${UMP_TEAL} 0%, #009688 100%)` }}
+          >
+            <h2
+              id="learnerships-callout-heading"
+              className="text-sm font-bold text-white"
+            >
+              🎯 Looking for Learnerships?
+            </h2>
+          </div>
+          <div className="p-6 bg-white dark:bg-paper-raised flex flex-col gap-3 text-sm text-ink-soft">
+            <p className="leading-relaxed">
+              <strong className="text-ink">Learnerships</strong> are a funded alternative to traditional degrees —
+              ideal for Grade 11/12 learners and school leavers who want to earn a stipend while training
+              in a real workplace. SETA learnerships in agriculture, ICT, engineering, and healthcare are
+              available in Mpumalanga.
+            </p>
+            <Link
+              href="/ump/learnerships"
+              className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-extrabold text-white shadow-md transition hover:opacity-90 w-fit"
+              style={{ background: UMP_TEAL }}
+            >
+              Explore Learnerships →
+            </Link>
+          </div>
+        </section>
+
       </div>
     </main>
   );

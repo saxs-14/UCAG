@@ -14,12 +14,22 @@ const STYLES: { value: StudyStyle; label: string }[] = [
   { value: "group", label: "Group Study" },
 ];
 
+const BLANK_PROFILE: StudentStudyProfile = {
+  grade: "Grade 12",
+  subjects: [],
+  availableHoursPerWeek: 10,
+  preferredStyle: "practice",
+  upcomingAssessments: [],
+  updatedAt: new Date().toISOString(),
+};
+
 export default function StudyMateProfilePage() {
   const [profile, setProfile] = useState<StudentStudyProfile | null>(null);
   const [savedMessage, setSavedMessage] = useState(false);
 
   useEffect(() => {
-    setProfile(loadStudyProfile());
+    const loaded = loadStudyProfile();
+    setProfile(loaded ?? { ...BLANK_PROFILE, updatedAt: new Date().toISOString() });
   }, []);
 
   if (!profile) return null;

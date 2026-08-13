@@ -3,11 +3,9 @@ import { loadStudyProfile, saveStudyProfile } from "./storage";
 import type { StudentStudyProfile } from "./types";
 
 describe("StudyMate storage.ts", () => {
-  it("returns default profile when localStorage is empty", () => {
+  it("returns null when localStorage is empty", () => {
     const profile = loadStudyProfile();
-    expect(profile).toBeDefined();
-    expect(profile.grade).toBe("Grade 12");
-    expect(profile.subjects.length).toBeGreaterThan(0);
+    expect(profile).toBeNull();
   });
 
   it("saves and loads updated profile", () => {
@@ -22,7 +20,8 @@ describe("StudyMate storage.ts", () => {
 
     saveStudyProfile(customProfile);
     const reloaded = loadStudyProfile();
-    expect(reloaded.grade).toBe("Grade 11");
-    expect(reloaded.availableHoursPerWeek).toBe(15);
+    expect(reloaded).not.toBeNull();
+    expect(reloaded?.grade).toBe("Grade 11");
+    expect(reloaded?.availableHoursPerWeek).toBe(15);
   });
 });

@@ -6,9 +6,9 @@ import type {
 } from "./types";
 
 /**
- * Anonymous-first storage helper for StudyMate.
- * Uses localStorage when unauthenticated (same discipline as useApplicationChecklist.ts),
- * allowing full access to StudyMate without forcing registration.
+ * Anonymous-first storage helper for StudyMate / VarsityPath AI.
+ * Uses localStorage when unauthenticated — no forced registration needed.
+ * Returns null when no profile is saved so the UI shows proper onboarding.
  */
 
 const PROFILE_KEY = "ucag_studymate_profile";
@@ -16,37 +16,15 @@ const MATERIALS_KEY = "ucag_studymate_materials";
 const QUIZ_ATTEMPTS_KEY = "ucag_studymate_quiz_attempts";
 const MOCK_ATTEMPTS_KEY = "ucag_studymate_mock_attempts";
 
-const DEFAULT_PROFILE: StudentStudyProfile = {
-  grade: "Grade 12",
-  subjects: [
-    { code: "MATH", name: "Mathematics", currentPercent: 54, targetPercent: 70, isWeakArea: true },
-    { code: "PHS", name: "Physical Sciences", currentPercent: 62, targetPercent: 75, isWeakArea: true },
-    { code: "ENG", name: "English Home Language", currentPercent: 78, targetPercent: 82, isWeakArea: false },
-    { code: "LIFE", name: "Life Sciences", currentPercent: 68, targetPercent: 75, isWeakArea: false },
-  ],
-  availableHoursPerWeek: 12,
-  preferredStyle: "practice",
-  upcomingAssessments: [
-    {
-      id: "assess-1",
-      subjectCode: "MATH",
-      title: "Mathematics Algebra Test",
-      date: new Date(Date.now() + 12 * 86400000).toISOString().split("T")[0],
-      type: "test",
-      topics: ["Algebraic Expressions", "Quadratic Equations"],
-    },
-  ],
-  updatedAt: new Date().toISOString(),
-};
-
-export function loadStudyProfile(): StudentStudyProfile {
-  if (typeof window === "undefined") return DEFAULT_PROFILE;
+/** Returns null when no profile has been saved yet — callers must show onboarding. */
+export function loadStudyProfile(): StudentStudyProfile | null {
+  if (typeof window === "undefined") return null;
   try {
     const raw = localStorage.getItem(PROFILE_KEY);
-    if (!raw) return DEFAULT_PROFILE;
+    if (!raw) return null;
     return JSON.parse(raw) as StudentStudyProfile;
   } catch {
-    return DEFAULT_PROFILE;
+    return null;
   }
 }
 
