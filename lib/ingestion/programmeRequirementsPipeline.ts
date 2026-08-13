@@ -7,6 +7,7 @@ import {
   type ProgrammeExtractionItem,
 } from "./schemas/programmeRequirements";
 import { INGESTION_KILL_SWITCH } from "@/config/ingestion";
+import { normalizeSubjectCode } from "@/config/subjects";
 import type { Programme, Source, SubjectRequirement, VerificationQueueItem } from "@/lib/firestore/types";
 import type { BudgetCheckResult } from "./types";
 
@@ -134,7 +135,7 @@ function normalizeSubjectRequirements(
   requirements: { subjectCode: string; minLevel: number | null; minPercent: number | null }[]
 ): SubjectRequirement[] {
   return requirements.map(({ subjectCode, minLevel, minPercent }) => ({
-    subjectCode,
+    subjectCode: normalizeSubjectCode(subjectCode),
     ...(minLevel !== null ? { minLevel } : {}),
     ...(minPercent !== null ? { minPercent } : {}),
   }));

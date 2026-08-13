@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { subjectMarksToFormState } from "./subjects";
+import { normalizeSubjectCode, resolveSubjectLabel, subjectMarksToFormState } from "./subjects";
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
 describe("subjectMarksToFormState", () => {
@@ -91,5 +91,22 @@ describe("subjectMarksToFormState", () => {
       lifeOrientationMark: null,
       electives: [],
     });
+  });
+});
+
+describe("normalizeSubjectCode & resolveSubjectLabel", () => {
+  it("normalizes shorthand codes like MAT, ENG, PHY to canonical system codes", () => {
+    expect(normalizeSubjectCode("MAT")).toBe("MATH");
+    expect(normalizeSubjectCode("ENG")).toBe("ENG-HL");
+    expect(normalizeSubjectCode("PHY")).toBe("PHS");
+    expect(normalizeSubjectCode("BIO")).toBe("LFS");
+  });
+
+  it("resolves shorthand subject codes to user-friendly labels", () => {
+    expect(resolveSubjectLabel("MAT")).toBe("Mathematics");
+    expect(resolveSubjectLabel("ENG")).toBe("English (Home Language)");
+    expect(resolveSubjectLabel("PHY")).toBe("Physical Sciences");
+    expect(resolveSubjectLabel("MATH")).toBe("Mathematics");
+    expect(resolveSubjectLabel("LO")).toBe("Life Orientation");
   });
 });

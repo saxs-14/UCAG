@@ -209,37 +209,65 @@ const SUBJECT_LABEL_LOOKUP: Record<string, string> = Object.fromEntries(
   ])
 );
 
-/**
- * Non-canonical codes that AI ingestion may produce mapped to their canonical
- * NSC equivalents. This keeps the label lookup clean without forking the
- * SUBJECT_LABEL_LOOKUP table.
- */
-const CODE_ALIASES: Record<string, string> = {
-  MAT: "MATH",   // short for Mathematics → canonical MATH
-  MATHS: "MATH", // common shorthand
-  ENG: "ENG-HL", // bare "ENG" treated as English Home Language
-  ENGL: "ENG-HL",
+export const SUBJECT_CODE_ALIASES: Record<string, string> = {
+  MAT: "MATH",
+  MATHS: "MATH",
+  MATHEMATICS: "MATH",
+  MATHLIT: "MATHLIT",
+  TECHMATH: "TECHMATH",
+  ENG: "ENG-HL",
+  ENGLISH: "ENG-HL",
+  AFR: "AFR-HL",
+  AFRIKAANS: "AFR-HL",
+  ZUL: "ZUL-HL",
+  ZULU: "ZUL-HL",
+  ISIZULU: "ZUL-HL",
+  XHO: "XHO-HL",
+  XHOSA: "XHO-HL",
+  ISIXHOSA: "XHO-HL",
+  PHY: "PHS",
+  PHYS: "PHS",
+  "PHYSICAL SCIENCES": "PHS",
+  "PHYSICAL SCIENCE": "PHS",
+  BIO: "LFS",
+  "LIFE SCIENCES": "LFS",
+  "LIFE SCIENCE": "LFS",
+  BIOLOGY: "LFS",
+  ACC: "ACC",
+  ACCOUNTING: "ACC",
+  BUS: "BUS",
+  "BUSINESS STUDIES": "BUS",
+  ECO: "ECO",
+  ECONOMICS: "ECO",
+  GEO: "GEO",
+  GEOGRAPHY: "GEO",
+  HIS: "HIS",
+  HISTORY: "HIS",
+  CAT: "CAT",
+  IT: "IT",
+  LO: "LO",
+  "LIFE ORIENTATION": "LO",
 };
 
-/** Normalises a non-canonical subject code to its canonical NSC equivalent.
- * E.g. "MAT" → "MATH", "ENG" → "ENG-HL". Returns the input unchanged if
- * it is already canonical or unrecognised. */
-export function normaliseSubjectCode(code: string): string {
-  return CODE_ALIASES[code] ?? code;
+/** Normalises any raw or non-canonical subject code (e.g. "MAT", "ENG", "PHY")
+ * to its canonical DBE system code ("MATH", "ENG-HL", "PHS"). */
+export function normalizeSubjectCode(code: string): string {
+  if (!code) return code;
+  const upper = code.trim().toUpperCase();
+  return SUBJECT_CODE_ALIASES[upper] || upper;
 }
 
-/** Resolves any canonical subject code (elective, Mathematics variant, LO,
- * or a derived language code like "ENG-HL") to a human-readable label.
- * Aliased codes (e.g. MAT, ENG) are normalised to their canonical form first
- * so that mismatched ingestion data still renders a proper label. Falls back
- * to the raw code for anything unrecognised rather than throwing. */
+/** Resolves any canonical or shorthand subject code (elective, Mathematics variant, LO,
+ * shorthand like "MAT"/"ENG", or a derived language code like "ENG-HL") to a human-readable label.
+ * Used by matching/results copy so reasons read as "Mathematics" not
+ * "MATH". Falls back to the raw code for anything unrecognised. */
 export function resolveSubjectLabel(code: string): string {
-  // Normalise non-canonical aliases first
-  const canonical = normaliseSubjectCode(code);
+  if (!code) return "";
+  const normalized = normalizeSubjectCode(code);
+  if (SUBJECT_LABEL_LOOKUP[normalized]) return SUBJECT_LABEL_LOOKUP[normalized];
+  if (SUBJECT_LABEL_LOOKUP[code]) return SUBJECT_LABEL_LOOKUP[code];
 
-  if (SUBJECT_LABEL_LOOKUP[canonical]) return SUBJECT_LABEL_LOOKUP[canonical];
-
-  const languageMatch = /^([A-Z]+)-(HL|FAL)$/.exec(canonical);
+  const languageMatch = /^([A-Z]+)-(HL|FAL)$/.exec(normalized) || /^([A-Z]+)-(HL|FAL)$/.exec(code.toUpperCase());
   if (languageMatch) {
     const [, langCode, slot] = languageMatch;
     const language = REVERSE_LANGUAGE_CODES[langCode!];
@@ -248,7 +276,10 @@ export function resolveSubjectLabel(code: string): string {
     }
   }
 
-  return canonical;
+  if (code.toUpperCase() === "ENG" || code.toUpperCase() === "ENGLISH") return "English";
+  if (code.toUpperCase() === "MAT" || code.toUpperCase() === "MATHS") return "Mathematics";
+
+  return code;
 }
 
 /** Initial UI state for SubjectForm's granular per-field selects, as opposed

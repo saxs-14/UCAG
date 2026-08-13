@@ -1,7 +1,7 @@
 import { calculateAps } from "@/lib/aps/engine";
 import { percentageToPoints } from "@/lib/aps/bands";
 import { STANDARD_NSC_SCALE } from "@/config/aps-scales";
-import { normaliseSubjectCode, resolveSubjectLabel } from "@/config/subjects";
+import { normalizeSubjectCode, resolveSubjectLabel } from "@/config/subjects";
 import {
   ALMOST_QUALIFY_APS_GAP_FALLBACK,
   ALMOST_QUALIFY_APS_GAP_RATIO,
@@ -18,7 +18,33 @@ import type { MatchBucket, MatchReason, MatchResult } from "./types";
 const VARIANT_GROUPS: string[][] = [["MATH", "MATHLIT", "TECHMATH"]];
 
 function findVariantGroup(subjectCode: string): string[] | undefined {
-  return VARIANT_GROUPS.find((group) => group.includes(subjectCode));
+  const norm = normalizeSubjectCode(subjectCode);
+  return VARIANT_GROUPS.find((group) => group.includes(norm) || group.includes(subjectCode));
+}
+
+function findMatchingMark(
+  requirementCode: string,
+  marks: SubjectMarkInput[]
+): SubjectMarkInput | undefined {
+  const normalizedReq = normalizeSubjectCode(requirementCode);
+
+  // 1. Direct match by exact code or normalized code
+  const direct = marks.find(
+    (m) => m.subjectCode === requirementCode || normalizeSubjectCode(m.subjectCode) === normalizedReq
+  );
+  if (direct) return direct;
+
+  // 2. Generic language match (e.g. requirement is "ENG" / "ENG-HL", learner took "ENG-HL" or "ENG-FAL")
+  const reqLangPrefix = requirementCode.split("-")[0]!.toUpperCase();
+  const normalizedLangPrefix = normalizedReq.split("-")[0]!.toUpperCase();
+
+  return marks.find((m) => {
+    const markCode = m.subjectCode.toUpperCase();
+    const markLangPrefix = markCode.split("-")[0]!;
+    return (
+      markLangPrefix === reqLangPrefix || markLangPrefix === normalizedLangPrefix
+    );
+  });
 }
 
 function isReasonMet(reason: MatchReason): boolean {
@@ -64,24 +90,20 @@ function buildSubjectReasons(
   programme: Programme,
   marks: SubjectMarkInput[]
 ): MatchReason[] {
-  const marksByCode = new Map(marks.map((m) => [m.subjectCode, m]));
   const reasons: MatchReason[] = [];
 
-  for (const rawRequirement of programme.subjectRequirements) {
-    // Normalise any non-canonical codes stored by the ingestion pipeline
-    // (e.g. "MAT" → "MATH", "ENG" → "ENG-HL") before any comparison.
-    const requirement = {
-      ...rawRequirement,
-      subjectCode: normaliseSubjectCode(rawRequirement.subjectCode),
-    };
-    const directMark = marksByCode.get(requirement.subjectCode);
-    const mark = directMark;
+  for (const requirement of programme.subjectRequirements) {
+    const mark = findMatchingMark(requirement.subjectCode, marks);
 
     if (!mark) {
       const variantGroup = findVariantGroup(requirement.subjectCode);
       const takenVariant = variantGroup
-        ?.map((code) => marksByCode.get(code))
-        .find((m): m is SubjectMarkInput => m !== undefined && m.subjectCode !== requirement.subjectCode);
+        ?.map((code) => marks.find((m) => m.subjectCode === code || normalizeSubjectCode(m.subjectCode) === code))
+        .find(
+          (m): m is SubjectMarkInput =>
+            m !== undefined &&
+            normalizeSubjectCode(m.subjectCode) !== normalizeSubjectCode(requirement.subjectCode)
+        );
 
       if (takenVariant) {
         reasons.push({
