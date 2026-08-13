@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { StudyMateNav } from "@/components/studymate/StudyMateNav";
 import { loadStudyProfile, loadQuizAttempts, loadMockExamAttempts } from "@/lib/studymate/storage";
 import type { StudentStudyProfile, QuizAttempt, MockExamAttempt } from "@/lib/studymate/types";
@@ -9,14 +10,37 @@ export default function StudyMateProgressPage() {
   const [profile, setProfile] = useState<StudentStudyProfile | null>(null);
   const [quizAttempts, setQuizAttempts] = useState<QuizAttempt[]>([]);
   const [mockAttempts, setMockAttempts] = useState<MockExamAttempt[]>([]);
+  const [hydrated, setHydrated] = useState(false);
 
   useEffect(() => {
     setProfile(loadStudyProfile());
     setQuizAttempts(loadQuizAttempts());
     setMockAttempts(loadMockExamAttempts());
+    setHydrated(true);
   }, []);
 
-  if (!profile) return null;
+  if (!hydrated) return null;
+
+  if (!profile) {
+    return (
+      <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
+        <StudyMateNav />
+        <div className="mx-auto flex w-full max-w-3xl flex-col items-center justify-center gap-5 p-10 text-center">
+          <span className="text-5xl">📈</span>
+          <h1 className="text-2xl font-bold tracking-tight text-ink">No Progress Yet</h1>
+          <p className="text-sm text-ink-soft max-w-md">
+            Set up your study profile first so VarsityPath AI can track your academic progress over time.
+          </p>
+          <Link
+            href="/studymate/profile"
+            className="inline-flex items-center gap-2 rounded-full bg-brand-teal px-7 py-3 text-sm font-bold text-white shadow-md transition hover:opacity-90"
+          >
+            Set Up Study Profile →
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">

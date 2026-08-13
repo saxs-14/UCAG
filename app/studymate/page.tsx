@@ -1,3 +1,4 @@
+// cSpell:words VarsityPath StudyMate
 "use client";
 
 import { useEffect, useState } from "react";
@@ -7,98 +8,204 @@ import { loadStudyProfile } from "@/lib/studymate/storage";
 import { generateLocalDiagnosis } from "@/lib/ai/studymate/studyDiagnosis";
 import type { StudentStudyProfile, StudyDiagnosisResult } from "@/lib/studymate/types";
 
-export default function StudyMateDashboardPage() {
-  const [profile, setProfile] = useState<StudentStudyProfile | null>(null);
+// ── Onboarding screen shown to brand-new users ────────────────────────────────
+function VarsityPathOnboarding() {
+  return (
+    <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
+      <StudyMateNav />
+
+      {/* Hero */}
+      <div
+        className="w-full py-20 px-6 text-white text-center relative overflow-hidden"
+        style={{
+          background: "linear-gradient(135deg, #0b192c 0%, #0f2d4a 55%, #0d9488 100%)",
+        }}
+      >
+        {/* Subtle geometric accent */}
+        <div
+          aria-hidden
+          className="pointer-events-none absolute inset-0 opacity-10"
+          style={{
+            backgroundImage:
+              "radial-gradient(circle at 20% 50%, #0d9488 0px, transparent 50%), radial-gradient(circle at 80% 20%, #14b8a6 0px, transparent 40%)",
+          }}
+        />
+
+        <div className="relative mx-auto max-w-2xl flex flex-col items-center gap-5">
+          <span className="inline-block rounded-full border border-white/20 bg-white/10 px-4 py-1.5 text-xs font-bold uppercase tracking-widest text-teal-200 backdrop-blur-sm">
+            🚀 VarsityPath AI
+          </span>
+          <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl leading-tight">
+            Your Personal<br />
+            <span className="text-transparent bg-clip-text" style={{ backgroundImage: "linear-gradient(90deg, #5eead4, #34d399)" }}>
+              Academic Coach
+            </span>
+          </h1>
+          <p className="max-w-lg text-sm sm:text-base text-slate-300 leading-relaxed">
+            AI-powered study planning, smart quizzes, timetables and mock exams — built for Grade 10–12 learners and first-year UMP students.
+          </p>
+          <Link
+            href="/studymate/profile"
+            className="mt-2 inline-flex items-center gap-2 rounded-full px-8 py-3.5 text-sm font-extrabold shadow-xl transition-all duration-300 hover:-translate-y-0.5 hover:shadow-2xl active:translate-y-0"
+            style={{ background: "linear-gradient(135deg, #0d9488, #14b8a6)", color: "white" }}
+          >
+            Set Up My Study Profile →
+          </Link>
+          <p className="text-xs text-slate-400">Free · No account required · Takes 2 minutes</p>
+        </div>
+      </div>
+
+      {/* Feature grid */}
+      <div className="mx-auto w-full max-w-5xl grid gap-5 p-6 sm:p-10 sm:grid-cols-2 lg:grid-cols-4">
+        {[
+          {
+            icon: "🤖",
+            title: "AI Tutor",
+            desc: "Get step-by-step explanations for any Maths, Science or English problem.",
+            href: "/studymate/tutor",
+          },
+          {
+            icon: "⚡",
+            title: "Smart Quizzes",
+            desc: "AI-generated topic quizzes that adapt to your weak areas instantly.",
+            href: "/studymate/quiz",
+          },
+          {
+            icon: "📅",
+            title: "Study Timetable",
+            desc: "Auto-built weekly revision timetable based on your subjects and goals.",
+            href: "/studymate/timetable",
+          },
+          {
+            icon: "📝",
+            title: "Mock Exams",
+            desc: "Full 150-mark exam simulations with model answers and mark schemes.",
+            href: "/studymate/mock-exam",
+          },
+        ].map((f) => (
+          <Link
+            key={f.href}
+            href="/studymate/profile"
+            className="card-learner group flex flex-col gap-3 rounded-2xl p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+          >
+            <span className="text-3xl" aria-hidden>{f.icon}</span>
+            <p className="font-bold text-ink group-hover:text-brand-teal transition-colors">{f.title}</p>
+            <p className="text-xs text-ink-soft leading-relaxed">{f.desc}</p>
+            <span className="mt-auto text-xs font-bold text-brand-teal">Get started →</span>
+          </Link>
+        ))}
+      </div>
+    </main>
+  );
+}
+
+// ── Dashboard shown to users who have a saved profile ────────────────────────
+interface DashboardProps {
+  profile: StudentStudyProfile;
+}
+
+function VarsityPathDashboard({ profile }: DashboardProps) {
   const [diagnosis, setDiagnosis] = useState<StudyDiagnosisResult | null>(null);
-  const [tasks, setTasks] = useState<Array<{ id: string; text: string; done: boolean }>>([
-    { id: "t1", text: "Mathematics Algebra Expressions Practice", done: false },
-    { id: "t2", text: "Physical Sciences Mechanics Theory Review", done: true },
-    { id: "t3", text: "English Essay Structure Practice", done: false },
+  const [tasks, setTasks] = useState([
+    { id: "t1", text: "Review your weakest subject today", done: false },
+    { id: "t2", text: "Complete one quiz in a strong subject", done: false },
+    { id: "t3", text: "Update any upcoming assessment dates", done: false },
   ]);
 
   useEffect(() => {
-    const loaded = loadStudyProfile();
-    setProfile(loaded);
-    setDiagnosis(generateLocalDiagnosis(loaded));
-  }, []);
-
-  if (!profile) return null;
+    setDiagnosis(generateLocalDiagnosis(profile));
+  }, [profile]);
 
   const currentAvg = Math.round(
     profile.subjects.reduce((sum, s) => sum + s.currentPercent, 0) / (profile.subjects.length || 1)
   );
-
   const targetAvg = Math.round(
     profile.subjects.reduce((sum, s) => sum + s.targetPercent, 0) / (profile.subjects.length || 1)
   );
 
-  const toggleTask = (id: string) => {
-    setTasks((prev) =>
-      prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t))
-    );
-  };
+  const toggleTask = (id: string) =>
+    setTasks((prev) => prev.map((t) => (t.id === id ? { ...t, done: !t.done } : t)));
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
       <StudyMateNav />
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-6 sm:p-8">
-        {/* Welcome Hero */}
-        <div className="hero-atmosphere rounded-3xl p-6 sm:p-8 text-white shadow-lg">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+
+        {/* ── Welcome Hero ── */}
+        <div
+          className="rounded-3xl p-6 sm:p-8 text-white shadow-lg relative overflow-hidden"
+          style={{ background: "linear-gradient(135deg, #0b192c 0%, #0f2d4a 55%, #0d9488 100%)" }}
+        >
+          <div
+            aria-hidden
+            className="pointer-events-none absolute inset-0 opacity-10"
+            style={{
+              backgroundImage:
+                "radial-gradient(circle at 10% 80%, #14b8a6 0px, transparent 40%), radial-gradient(circle at 90% 10%, #0d9488 0px, transparent 40%)",
+            }}
+          />
+          <div className="relative flex flex-wrap items-start justify-between gap-4">
             <div>
-              <span className="rounded-full bg-white/20 px-3 py-1 text-xs font-bold text-teal-100">
+              <span className="inline-block rounded-full bg-white/15 border border-white/20 px-3 py-1 text-xs font-bold text-teal-200 backdrop-blur-sm">
                 🎓 VarsityPath AI Companion
               </span>
-              <h1 className="mt-2 text-2xl font-extrabold sm:text-3xl tracking-tight">
+              <h1 className="mt-3 text-2xl font-extrabold sm:text-3xl tracking-tight">
                 Welcome back 👋
               </h1>
-              <p className="mt-1 text-sm text-teal-100/90">
-                {profile.grade} Varsity Goal Progress & Study Overview
+              <p className="mt-1 text-sm text-slate-300">
+                {profile.grade} · {profile.subjects.length} subjects tracked
               </p>
             </div>
             <Link
               href="/studymate/profile"
-              className="rounded-xl bg-brand-teal px-4 py-2 text-xs font-bold text-white shadow hover:opacity-90 transition"
+              className="rounded-xl bg-white/15 border border-white/25 px-4 py-2.5 text-xs font-bold text-white backdrop-blur-sm hover:bg-white/25 transition"
             >
-              ⚙️ Edit Study Profile
+              ⚙️ Edit Profile
             </Link>
           </div>
 
-          {/* Average progress bar */}
-          <div className="mt-6 rounded-2xl bg-white/10 p-5 backdrop-blur-sm border border-white/10">
-            <div className="flex justify-between text-xs font-semibold mb-2">
-              <span>Current Average: <strong className="text-white text-sm">{currentAvg}%</strong></span>
-              <span>Target Average: <strong className="text-teal-200 text-sm">{targetAvg}%</strong></span>
+          {/* Average progress */}
+          <div className="relative mt-6 rounded-2xl bg-white/10 border border-white/10 p-5 backdrop-blur-sm">
+            <div className="flex justify-between text-xs font-semibold mb-2.5">
+              <span>Current Average: <strong className="text-lg text-white">{currentAvg}%</strong></span>
+              <span>Target: <strong className="text-lg text-teal-300">{targetAvg}%</strong></span>
             </div>
             <div className="h-3 w-full rounded-full bg-white/20 overflow-hidden">
               <div
-                className="h-full bg-gradient-to-r from-teal-300 to-mark-green transition-all duration-500"
-                style={{ width: `${Math.min(currentAvg, 100)}%` }}
+                className="h-full rounded-full transition-all duration-700"
+                style={{
+                  width: `${Math.min(currentAvg, 100)}%`,
+                  background: "linear-gradient(90deg, #5eead4, #34d399)",
+                }}
               />
             </div>
+            <p className="mt-2 text-[11px] text-slate-400">
+              {targetAvg - currentAvg > 0
+                ? `${targetAvg - currentAvg}% improvement needed across all subjects`
+                : "You're meeting your targets! 🎉"}
+            </p>
           </div>
         </div>
 
-        {/* AI Diagnosis Callout */}
+        {/* ── AI Diagnosis ── */}
         {diagnosis && (
           <section aria-labelledby="ai-diagnosis-heading" className="card-learner rounded-2xl p-6">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xl" aria-hidden>🤖</span>
-              <h2 id="ai-diagnosis-heading" className="text-base font-bold text-ink">
-                AI Academic Diagnosis
-              </h2>
+            <div className="flex items-center gap-2.5 mb-3">
+              <div className="flex size-9 items-center justify-center rounded-xl bg-brand-teal/10 text-xl">🤖</div>
+              <div>
+                <h2 id="ai-diagnosis-heading" className="text-sm font-bold text-ink">AI Academic Diagnosis</h2>
+                <p className="text-[10px] text-ink-faint">Based on your current subject marks</p>
+              </div>
             </div>
-            <p className="text-xs text-ink-soft leading-relaxed mb-4">
-              {diagnosis.overallSummary}
-            </p>
-            <div className="rounded-xl bg-mark-gold-soft p-4 border border-mark-gold/30">
-              <p className="text-xs font-bold text-mark-gold mb-1">💡 Recommended Focus Areas:</p>
-              <ul className="flex flex-col gap-1 text-xs text-ink-soft">
+            <p className="text-xs text-ink-soft leading-relaxed mb-4">{diagnosis.overallSummary}</p>
+            <div className="rounded-xl bg-mark-gold-soft border border-mark-gold/25 p-4">
+              <p className="text-xs font-bold text-mark-gold mb-2">💡 Priority Focus Areas</p>
+              <ul className="flex flex-col gap-1.5 text-xs text-ink-soft">
                 {diagnosis.recommendedFocusTopics.map((rec, i) => (
                   <li key={i} className="flex items-start gap-1.5">
-                    <span className="text-mark-gold font-bold">›</span>
-                    <span><strong>{rec.subjectCode}</strong>: {rec.topic} ({rec.reason})</span>
+                    <span className="text-mark-gold font-bold mt-0.5">›</span>
+                    <span><strong>{rec.subjectCode}</strong>: {rec.topic} — {rec.reason}</span>
                   </li>
                 ))}
               </ul>
@@ -107,40 +214,42 @@ export default function StudyMateDashboardPage() {
           </section>
         )}
 
-        {/* Subjects Needing Attention */}
+        {/* ── Subject Cards ── */}
         <section aria-labelledby="subjects-heading">
           <h2 id="subjects-heading" className="text-lg font-bold tracking-tight text-ink mb-3">
             Subjects & Progress
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             {profile.subjects.map((sub) => {
-              const statusColor =
-                sub.currentPercent < 55
-                  ? "bg-mark-red/10 text-mark-red border-mark-red/30"
-                  : sub.currentPercent < 65
-                  ? "bg-brand-amber/10 text-brand-amber border-brand-amber/30"
-                  : "bg-mark-green/10 text-mark-green border-mark-green/30";
-
-              const dotColor =
-                sub.currentPercent < 55
-                  ? "bg-mark-red"
-                  : sub.currentPercent < 65
-                  ? "bg-brand-amber"
-                  : "bg-mark-green";
+              const pct = sub.currentPercent;
+              const isWeak = pct < 55;
+              const isMid = pct >= 55 && pct < 65;
+              const color = isWeak ? "#dc2626" : isMid ? "#d97706" : "#059669";
+              const bg = isWeak ? "#fef2f2" : isMid ? "#fffbeb" : "#ecfdf5";
+              const border = isWeak ? "#fca5a5" : isMid ? "#fcd34d" : "#6ee7b7";
 
               return (
-                <div key={sub.code} className="card-learner rounded-2xl p-4 flex flex-col gap-2">
+                <div key={sub.code} className="card-learner rounded-2xl p-4 flex flex-col gap-2.5">
                   <div className="flex items-center justify-between">
-                    <span className={`size-2.5 rounded-full ${dotColor}`} />
-                    <span className={`rounded-full border px-2 py-0.5 text-[10px] font-bold ${statusColor}`}>
-                      {sub.currentPercent}% (Target: {sub.targetPercent}%)
+                    <span
+                      className="size-2.5 rounded-full"
+                      style={{ background: color }}
+                    />
+                    <span
+                      className="rounded-full border px-2 py-0.5 text-[10px] font-bold"
+                      style={{ background: bg, borderColor: border, color }}
+                    >
+                      {pct}%
                     </span>
                   </div>
-                  <p className="font-bold text-sm text-ink">{sub.name}</p>
-                  <div className="h-1.5 w-full rounded-full bg-slate-soft overflow-hidden mt-1">
+                  <div>
+                    <p className="font-bold text-sm text-ink leading-snug">{sub.name}</p>
+                    <p className="text-[10px] text-ink-faint">Target: {sub.targetPercent}%</p>
+                  </div>
+                  <div className="h-1.5 w-full rounded-full bg-slate-soft overflow-hidden">
                     <div
-                      className={`h-full ${dotColor}`}
-                      style={{ width: `${Math.min(sub.currentPercent, 100)}%` }}
+                      className="h-full rounded-full transition-all duration-500"
+                      style={{ width: `${Math.min(pct, 100)}%`, background: color }}
                     />
                   </div>
                 </div>
@@ -149,15 +258,20 @@ export default function StudyMateDashboardPage() {
           </div>
         </section>
 
-        {/* Split Section: Upcoming & Today's Tasks */}
-        <div className="grid gap-6 md:grid-cols-2">
-          {/* Upcoming Assessments */}
+        {/* ── Upcoming & Tasks ── */}
+        <div className="grid gap-5 md:grid-cols-2">
+          {/* Upcoming assessments */}
           <section aria-labelledby="assessments-heading" className="card-learner rounded-2xl p-5">
-            <h2 id="assessments-heading" className="text-base font-bold text-ink mb-3">
-              📅 Upcoming Tests & Exams
+            <h2 id="assessments-heading" className="text-sm font-bold text-ink mb-3 flex items-center gap-1.5">
+              <span>📅</span> Upcoming Tests & Exams
             </h2>
             {profile.upcomingAssessments.length === 0 ? (
-              <p className="text-xs text-ink-faint">No upcoming assessments added yet.</p>
+              <div className="rounded-xl bg-slate-soft p-4 text-center">
+                <p className="text-xs text-ink-faint">No upcoming assessments added yet.</p>
+                <Link href="/studymate/profile" className="mt-2 inline-block text-xs font-bold text-brand-teal hover:underline">
+                  Add in Profile →
+                </Link>
+              </div>
             ) : (
               <ul className="flex flex-col gap-2.5 text-xs">
                 {profile.upcomingAssessments.map((a) => (
@@ -166,28 +280,31 @@ export default function StudyMateDashboardPage() {
                       <span>{a.title}</span>
                       <span className="text-brand-teal font-mono">{a.date}</span>
                     </div>
-                    <p className="text-ink-soft">Subject: {a.subjectCode} · Topics: {a.topics.join(", ")}</p>
+                    <p className="text-ink-faint">{a.subjectCode} · {a.topics.join(", ")}</p>
                   </li>
                 ))}
               </ul>
             )}
           </section>
 
-          {/* Today's Tasks */}
+          {/* Today's tasks */}
           <section aria-labelledby="tasks-heading" className="card-learner rounded-2xl p-5">
-            <h2 id="tasks-heading" className="text-base font-bold text-ink mb-3">
-              ✅ Today&apos;s Study Tasks
+            <h2 id="tasks-heading" className="text-sm font-bold text-ink mb-3 flex items-center gap-1.5">
+              <span>✅</span> Today&apos;s Study Tasks
             </h2>
-            <ul className="flex flex-col gap-2 text-xs">
+            <ul className="flex flex-col gap-1.5 text-xs">
               {tasks.map((task) => (
-                <label key={task.id} className="flex items-center gap-2 cursor-pointer text-ink p-2 rounded-lg hover:bg-slate-soft transition">
+                <label
+                  key={task.id}
+                  className="flex items-center gap-2.5 cursor-pointer rounded-xl p-2.5 hover:bg-slate-soft transition"
+                >
                   <input
                     type="checkbox"
                     checked={task.done}
                     onChange={() => toggleTask(task.id)}
-                    className="size-4 text-brand-teal rounded"
+                    className="size-4 rounded accent-brand-teal"
                   />
-                  <span className={task.done ? "line-through text-ink-faint" : "font-medium"}>
+                  <span className={task.done ? "line-through text-ink-faint" : "font-medium text-ink"}>
                     {task.text}
                   </span>
                 </label>
@@ -196,35 +313,43 @@ export default function StudyMateDashboardPage() {
           </section>
         </div>
 
-        {/* Quick Launch Tools */}
+        {/* ── Quick Launch Tools ── */}
         <section aria-labelledby="tools-heading">
-          <h2 id="tools-heading" className="text-base font-bold text-ink mb-3">
-            ⚡ VarsityPath AI Tools
-          </h2>
-          <div className="grid gap-3 sm:grid-cols-4 text-xs">
-            <Link href="/studymate/tutor" className="card-learner rounded-xl p-4 flex flex-col gap-1 hover:-translate-y-0.5 transition">
-              <span className="text-2xl mb-1">🤖</span>
-              <p className="font-bold text-ink">AI Tutor</p>
-              <p className="text-ink-soft">Step-by-step problem solver.</p>
-            </Link>
-            <Link href="/studymate/quiz" className="card-learner rounded-xl p-4 flex flex-col gap-1 hover:-translate-y-0.5 transition">
-              <span className="text-2xl mb-1">⚡</span>
-              <p className="font-bold text-ink">Quiz Generator</p>
-              <p className="text-ink-soft">Test your knowledge fast.</p>
-            </Link>
-            <Link href="/studymate/timetable" className="card-learner rounded-xl p-4 flex flex-col gap-1 hover:-translate-y-0.5 transition">
-              <span className="text-2xl mb-1">📅</span>
-              <p className="font-bold text-ink">Study Timetable</p>
-              <p className="text-ink-soft">Weekly scheduled revision.</p>
-            </Link>
-            <Link href="/studymate/mock-exam" className="card-learner rounded-xl p-4 flex flex-col gap-1 hover:-translate-y-0.5 transition">
-              <span className="text-2xl mb-1">📝</span>
-              <p className="font-bold text-ink">Mock Exams</p>
-              <p className="text-ink-soft">150-mark full test simulator.</p>
-            </Link>
+          <h2 id="tools-heading" className="text-sm font-bold text-ink mb-3">⚡ AI Tools</h2>
+          <div className="grid gap-3 sm:grid-cols-4">
+            {[
+              { href: "/studymate/tutor", icon: "🤖", label: "AI Tutor", sub: "Step-by-step solver" },
+              { href: "/studymate/quiz", icon: "⚡", label: "Quiz", sub: "Test your knowledge" },
+              { href: "/studymate/timetable", icon: "📅", label: "Timetable", sub: "Weekly schedule" },
+              { href: "/studymate/mock-exam", icon: "📝", label: "Mock Exam", sub: "Full 150-mark test" },
+            ].map((t) => (
+              <Link
+                key={t.href}
+                href={t.href}
+                className="card-learner group flex flex-col gap-1.5 rounded-xl p-4 text-xs transition hover:-translate-y-0.5"
+              >
+                <span className="text-2xl">{t.icon}</span>
+                <p className="font-bold text-ink group-hover:text-brand-teal transition-colors">{t.label}</p>
+                <p className="text-ink-faint">{t.sub}</p>
+              </Link>
+            ))}
           </div>
         </section>
       </div>
     </main>
   );
+}
+
+// ── Root page component ────────────────────────────────────────────────────────
+export default function StudyMateDashboardPage() {
+  const [profile, setProfile] = useState<StudentStudyProfile | null | undefined>(undefined);
+
+  useEffect(() => {
+    setProfile(loadStudyProfile());
+  }, []);
+
+  // undefined = still hydrating (avoid flash)
+  if (profile === undefined) return null;
+  if (profile === null) return <VarsityPathOnboarding />;
+  return <VarsityPathDashboard profile={profile} />;
 }

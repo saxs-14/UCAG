@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { StudyMateNav } from "@/components/studymate/StudyMateNav";
 import { loadStudyProfile } from "@/lib/studymate/storage";
 import { generateLocalTimetable } from "@/lib/ai/studymate/studyTimetable";
@@ -18,11 +19,37 @@ const DAYS: TimetableSlot["day"][] = [
 
 export default function StudyMateTimetablePage() {
   const [timetable, setTimetable] = useState<WeeklyStudyTimetable | null>(null);
+  const [noProfile, setNoProfile] = useState(false);
 
   useEffect(() => {
     const profile = loadStudyProfile();
+    if (!profile) {
+      setNoProfile(true);
+      return;
+    }
     setTimetable(generateLocalTimetable(profile));
   }, []);
+
+  if (noProfile) {
+    return (
+      <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
+        <StudyMateNav />
+        <div className="mx-auto flex w-full max-w-3xl flex-col items-center gap-5 p-10 text-center">
+          <span className="text-5xl">📅</span>
+          <h1 className="text-2xl font-bold tracking-tight text-ink">No Timetable Yet</h1>
+          <p className="text-sm text-ink-soft max-w-md">
+            Set up your study profile first so VarsityPath AI can build a personalised weekly timetable.
+          </p>
+          <Link
+            href="/studymate/profile"
+            className="rounded-full bg-brand-teal px-7 py-3 text-sm font-bold text-white shadow-md transition hover:opacity-90"
+          >
+            Set Up Study Profile →
+          </Link>
+        </div>
+      </main>
+    );
+  }
 
   if (!timetable) return null;
 
@@ -40,7 +67,10 @@ export default function StudyMateTimetablePage() {
           </div>
           <button
             type="button"
-            onClick={() => setTimetable(generateLocalTimetable(loadStudyProfile()))}
+            onClick={() => {
+              const profile = loadStudyProfile();
+              if (profile) setTimetable(generateLocalTimetable(profile));
+            }}
             className="rounded-xl border border-line bg-paper-raised px-4 py-2 text-xs font-bold text-ink hover:bg-slate-soft transition"
           >
             🔄 Regenerate Timetable

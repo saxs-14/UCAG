@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { LABELS } from "@/config/labels";
-import { PageHero } from "@/components/PageHero";
+import { UmpHeader } from "@/components/ump/UmpHeader";
 import { CareerRoadmapView } from "@/components/career/CareerRoadmapView";
 import type { RoadmapStep } from "@/components/career/CareerRoadmapView";
+
+const UMP_NAVY = "#003b5c";
+
 
 export const metadata: Metadata = {
   title: `UMP Career Roadmaps -- ${LABELS.app.name}`,
@@ -222,18 +225,27 @@ const ROADMAPS: RoadmapTab[] = [
 export default function UmpCareerRoadmapsPage() {
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
-      <PageHero
-        title="UMP Career Roadmaps"
-        subtitle="Step-by-step paths from Grade 12 through your UMP degree to a career in your chosen field. Each roadmap shows what to study, how to build experience, and where to go next."
-      />
+      <UmpHeader />
+
+      {/* Hero */}
+      <div
+        className="w-full py-10 px-6 sm:px-10 text-white"
+        style={{ background: `linear-gradient(135deg, ${UMP_NAVY} 0%, #004f7c 60%, #003348 100%)` }}
+      >
+        <div className="mx-auto max-w-5xl flex flex-col gap-3">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs opacity-70">
+            <Link href="/ump" className="hover:opacity-100 hover:underline">UMP Hub</Link>
+            <span>›</span>
+            <span>Career Roadmaps</span>
+          </nav>
+          <h1 className="text-3xl font-extrabold tracking-tight">🗺️ Career Roadmaps</h1>
+          <p className="text-slate-300 text-sm max-w-2xl">
+            Step-by-step paths from Grade 12 through your UMP degree to a career in your chosen field.
+          </p>
+        </div>
+      </div>
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-6 sm:p-8">
-        {/* Breadcrumb */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-ink-faint">
-          <Link href="/ump" className="hover:text-brand-teal hover:underline">UMP Hub</Link>
-          <span>›</span>
-          <span className="text-ink-soft font-medium">Career Roadmaps</span>
-        </nav>
 
         {/* Disclaimer */}
         <div className="rounded-xl border border-line bg-slate-soft p-4 text-xs text-ink-soft leading-relaxed">

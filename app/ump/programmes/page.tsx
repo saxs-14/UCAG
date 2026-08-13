@@ -2,8 +2,12 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { LABELS } from "@/config/labels";
 import { fetchUmpData } from "@/lib/catalog/getUmpData";
-import { PageHero } from "@/components/PageHero";
+import { UmpHeader } from "@/components/ump/UmpHeader";
 import type { FieldTag } from "@/lib/firestore/types";
+
+const UMP_NAVY = "#003b5c";
+const UMP_GOLD = "#d4af37";
+
 
 export const metadata: Metadata = {
   title: `${LABELS.ump.programmesPageTitle} -- ${LABELS.app.name}`,
@@ -78,26 +82,31 @@ export default async function UmpProgrammesPage({ searchParams }: PageProps) {
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
-      <PageHero
-        title={LABELS.ump.programmesPageTitle}
-        subtitle={LABELS.ump.programmesPageSubtitle}
-      />
+      <UmpHeader />
+
+      {/* Hero */}
+      <div
+        className="w-full py-10 px-6 sm:px-10 text-white"
+        style={{ background: `linear-gradient(135deg, ${UMP_NAVY} 0%, #004f7c 60%, #003348 100%)` }}
+      >
+        <div className="mx-auto max-w-5xl flex flex-col gap-3">
+          <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs opacity-70">
+            <Link href="/ump" className="hover:opacity-100 hover:underline">UMP Hub</Link>
+            <span>›</span>
+            <span>Programmes</span>
+            {activeFaculty && (
+              <>
+                <span>›</span>
+                <span>{activeFaculty.name}</span>
+              </>
+            )}
+          </nav>
+          <h1 className="text-3xl font-extrabold tracking-tight">📚 {LABELS.ump.programmesPageTitle}</h1>
+          <p className="text-slate-300 text-sm max-w-2xl">{LABELS.ump.programmesPageSubtitle}</p>
+        </div>
+      </div>
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-6 sm:p-8">
-        {/* ── Breadcrumb ── */}
-        <nav aria-label="Breadcrumb" className="flex items-center gap-1.5 text-xs text-ink-faint">
-          <Link href="/ump" className="hover:text-brand-teal hover:underline">
-            UMP Hub
-          </Link>
-          <span>›</span>
-          <span className="text-ink-soft font-medium">Programmes</span>
-          {activeFaculty && (
-            <>
-              <span>›</span>
-              <span className="text-ink-soft font-medium">{activeFaculty.name}</span>
-            </>
-          )}
-        </nav>
 
         {/* ── Filter bar ── */}
         <section aria-label="Filters" className="flex flex-col gap-4">
@@ -109,23 +118,21 @@ export default async function UmpProgrammesPage({ searchParams }: PageProps) {
             <div className="flex flex-wrap gap-2">
               <Link
                 href={filterHref("faculty", null)}
-                className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                  !filters.faculty
-                    ? "bg-brand-teal text-white shadow-sm"
-                    : "bg-slate-soft text-ink-soft hover:bg-line"
-                }`}
+                className="rounded-full px-3 py-1.5 text-xs font-semibold transition"
+                style={!filters.faculty
+                  ? { background: UMP_NAVY, color: "white" }
+                  : {}}
               >
-                {LABELS.ump.filterAllFaculties}
+                {!filters.faculty ? LABELS.ump.filterAllFaculties : <span className="text-ink-soft hover:text-ink">{LABELS.ump.filterAllFaculties}</span>}
               </Link>
               {faculties.map((f) => (
                 <Link
                   key={f.id}
                   href={filterHref("faculty", f.id)}
-                  className={`rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                    filters.faculty === f.id
-                      ? "bg-brand-teal text-white shadow-sm"
-                      : "bg-slate-soft text-ink-soft hover:bg-line"
-                  }`}
+                  className="rounded-full px-3 py-1.5 text-xs font-semibold transition"
+                  style={filters.faculty === f.id
+                    ? { background: UMP_NAVY, color: "white" }
+                    : { background: "var(--color-slate-soft)", color: "var(--color-ink-soft)" }}
                 >
                   {f.name}
                 </Link>
