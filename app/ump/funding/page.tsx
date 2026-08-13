@@ -5,7 +5,6 @@ import { LABELS } from "@/config/labels";
 import { UmpHeader } from "@/components/ump/UmpHeader";
 
 const UMP_NAVY = "#003b5c";
-const UMP_GOLD = "#d4af37";
 const UMP_TEAL = "#00a896";
 
 export const metadata: Metadata = {

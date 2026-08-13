@@ -6,7 +6,6 @@ import { UmpHeader } from "@/components/ump/UmpHeader";
 import type { FieldTag } from "@/lib/firestore/types";
 
 const UMP_NAVY = "#003b5c";
-const UMP_GOLD = "#d4af37";
 
 
 export const metadata: Metadata = {
