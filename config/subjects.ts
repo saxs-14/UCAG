@@ -209,15 +209,37 @@ const SUBJECT_LABEL_LOOKUP: Record<string, string> = Object.fromEntries(
   ])
 );
 
+/**
+ * Non-canonical codes that AI ingestion may produce mapped to their canonical
+ * NSC equivalents. This keeps the label lookup clean without forking the
+ * SUBJECT_LABEL_LOOKUP table.
+ */
+const CODE_ALIASES: Record<string, string> = {
+  MAT: "MATH",   // short for Mathematics → canonical MATH
+  MATHS: "MATH", // common shorthand
+  ENG: "ENG-HL", // bare "ENG" treated as English Home Language
+  ENGL: "ENG-HL",
+};
+
+/** Normalises a non-canonical subject code to its canonical NSC equivalent.
+ * E.g. "MAT" → "MATH", "ENG" → "ENG-HL". Returns the input unchanged if
+ * it is already canonical or unrecognised. */
+export function normaliseSubjectCode(code: string): string {
+  return CODE_ALIASES[code] ?? code;
+}
+
 /** Resolves any canonical subject code (elective, Mathematics variant, LO,
  * or a derived language code like "ENG-HL") to a human-readable label.
- * Used by matching/results copy so reasons read as "Mathematics" not
- * "MATH". Falls back to the raw code for anything unrecognised rather
- * than throwing -- a label lookup failing shouldn't break a result page. */
+ * Aliased codes (e.g. MAT, ENG) are normalised to their canonical form first
+ * so that mismatched ingestion data still renders a proper label. Falls back
+ * to the raw code for anything unrecognised rather than throwing. */
 export function resolveSubjectLabel(code: string): string {
-  if (SUBJECT_LABEL_LOOKUP[code]) return SUBJECT_LABEL_LOOKUP[code];
+  // Normalise non-canonical aliases first
+  const canonical = normaliseSubjectCode(code);
 
-  const languageMatch = /^([A-Z]+)-(HL|FAL)$/.exec(code);
+  if (SUBJECT_LABEL_LOOKUP[canonical]) return SUBJECT_LABEL_LOOKUP[canonical];
+
+  const languageMatch = /^([A-Z]+)-(HL|FAL)$/.exec(canonical);
   if (languageMatch) {
     const [, langCode, slot] = languageMatch;
     const language = REVERSE_LANGUAGE_CODES[langCode!];
@@ -226,7 +248,7 @@ export function resolveSubjectLabel(code: string): string {
     }
   }
 
-  return code;
+  return canonical;
 }
 
 /** Initial UI state for SubjectForm's granular per-field selects, as opposed

@@ -1,7 +1,7 @@
 import { calculateAps } from "@/lib/aps/engine";
 import { percentageToPoints } from "@/lib/aps/bands";
 import { STANDARD_NSC_SCALE } from "@/config/aps-scales";
-import { resolveSubjectLabel } from "@/config/subjects";
+import { normaliseSubjectCode, resolveSubjectLabel } from "@/config/subjects";
 import {
   ALMOST_QUALIFY_APS_GAP_FALLBACK,
   ALMOST_QUALIFY_APS_GAP_RATIO,
@@ -67,7 +67,13 @@ function buildSubjectReasons(
   const marksByCode = new Map(marks.map((m) => [m.subjectCode, m]));
   const reasons: MatchReason[] = [];
 
-  for (const requirement of programme.subjectRequirements) {
+  for (const rawRequirement of programme.subjectRequirements) {
+    // Normalise any non-canonical codes stored by the ingestion pipeline
+    // (e.g. "MAT" → "MATH", "ENG" → "ENG-HL") before any comparison.
+    const requirement = {
+      ...rawRequirement,
+      subjectCode: normaliseSubjectCode(rawRequirement.subjectCode),
+    };
     const directMark = marksByCode.get(requirement.subjectCode);
     const mark = directMark;
 
