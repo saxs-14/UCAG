@@ -153,8 +153,8 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 26,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 4 },
-      { subjectCode: "MAT", minLevel: 4 },
+      { subjectCode: "ENG-HL", minLevel: 4 },
+      { subjectCode: "MATH", minLevel: 4 },
     ],
     additionalRequirements: [
       "Mathematical Literacy accepted at Level 5 with min APS of 28",
@@ -186,8 +186,8 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 24,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 4 },
-      { subjectCode: "MAT", minLevel: 3 },
+      { subjectCode: "ENG-HL", minLevel: 4 },
+      { subjectCode: "MATH", minLevel: 3 },
     ],
     additionalRequirements: [
       "Mathematical Literacy accepted at Level 4",
@@ -220,7 +220,7 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 32,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 5 },
+      { subjectCode: "ENG-HL", minLevel: 5 },
     ],
     additionalRequirements: [
       "NSC Bachelor endorsement required",
@@ -253,7 +253,7 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 26,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 4 },
+      { subjectCode: "ENG-HL", minLevel: 4 },
     ],
     additionalRequirements: [],
     careerOutcomes: [
@@ -283,7 +283,7 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 26,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 4 },
+      { subjectCode: "ENG-HL", minLevel: 4 },
     ],
     additionalRequirements: [],
     careerOutcomes: [
@@ -315,7 +315,7 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 22,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 3 },
+      { subjectCode: "ENG-HL", minLevel: 3 },
     ],
     additionalRequirements: [
       "Hospitality Studies or Consumer Studies is recommended",
@@ -346,7 +346,7 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 22,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 3 },
+      { subjectCode: "ENG-HL", minLevel: 3 },
     ],
     additionalRequirements: [],
     careerOutcomes: [
@@ -377,8 +377,8 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 28,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 4 },
-      { subjectCode: "MAT", minLevel: 4 },
+      { subjectCode: "ENG-HL", minLevel: 4 },
+      { subjectCode: "MATH", minLevel: 4 },
     ],
     additionalRequirements: [
       "Mathematical Literacy accepted at Level 6 with min APS of 30",
@@ -411,8 +411,8 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 26,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 4 },
-      { subjectCode: "MAT", minLevel: 4 },
+      { subjectCode: "ENG-HL", minLevel: 4 },
+      { subjectCode: "MATH", minLevel: 4 },
       { subjectCode: "PHS", minLevel: 4 },
     ],
     additionalRequirements: [
@@ -445,8 +445,8 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 26,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 4 },
-      { subjectCode: "MAT", minLevel: 4 },
+      { subjectCode: "ENG-HL", minLevel: 4 },
+      { subjectCode: "MATH", minLevel: 4 },
       { subjectCode: "PHS", minLevel: 4 },
     ],
     additionalRequirements: [
@@ -480,7 +480,7 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 26,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 4 },
+      { subjectCode: "ENG-HL", minLevel: 4 },
     ],
     additionalRequirements: [
       "siswati or isiNdebele Home Language or First Additional Language recommended",
@@ -510,7 +510,7 @@ export const UMP_PROGRAMMES: Programme[] = [
     modeOfDelivery: "contact",
     minAps: 26,
     subjectRequirements: [
-      { subjectCode: "ENG", minLevel: 4 },
+      { subjectCode: "ENG-HL", minLevel: 4 },
     ],
     additionalRequirements: [
       "Mathematics or Natural Sciences at Level 4 required for respective teaching specializations",

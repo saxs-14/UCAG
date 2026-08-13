@@ -138,13 +138,13 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     nbtPolicy: "none",
     bonusRules: [
       {
-        subjectCode: "ENG",
+        subjectCode: "ENG-HL",
         condition: "none",
         bonusPoints: 2,
         description: "Flat +2 bonus added to the band-derived points for English (Home Language or First Additional Language).",
       },
       {
-        subjectCode: "MAT",
+        subjectCode: "MATH",
         condition: "none",
         bonusPoints: 2,
         description: "Flat +2 bonus added to the band-derived points for Mathematics (compulsory for numerate programmes).",
