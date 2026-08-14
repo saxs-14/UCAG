@@ -24,16 +24,6 @@ const STATIC_PATHS = [
   "/institutions",
   "/account/parent",
   "/account/mentor",
-  "/studymate",
-  "/studymate/profile",
-  "/studymate/timetable",
-  "/studymate/plan",
-  "/studymate/materials",
-  "/studymate/tutor",
-  "/studymate/quiz",
-  "/studymate/mock-exam",
-  "/studymate/progress",
-  "/studymate/past-papers",
 ];
 
 describe("app/sitemap.ts", () => {

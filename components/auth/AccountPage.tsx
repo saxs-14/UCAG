@@ -112,8 +112,8 @@ export function AccountPage() {
           📌 Role Dashboards & Portals
         </h2>
         <div className="grid gap-2 sm:grid-cols-2 text-xs font-semibold">
-          <Link href="/studymate" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
-            <span>🚀 Learner / Student Portal</span>
+          <Link href="/institutions" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
+            <span>🏛️ Institutions & Programmes Portal</span>
           </Link>
           <Link href="/account/parent" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
             <span>👨‍👩‍👧 Parent & Guardian Portal</span>
