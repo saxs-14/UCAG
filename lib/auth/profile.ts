@@ -40,15 +40,61 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 }
 
 export async function updateSavedMarks(uid: string, marks: SubjectMark[]): Promise<void> {
-  await updateDoc(profileRef(uid), { marks });
+  const ref = profileRef(uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    const profile: UserProfile = {
+      uid,
+      marks,
+      shortlist: [],
+      consentRecord: null,
+      isMinor: false,
+      guardianConsentAt: null,
+      createdAt: new Date().toISOString(),
+    };
+    await setDoc(ref, profile);
+  } else {
+    await updateDoc(ref, { marks });
+  }
 }
 
 export async function updateShortlist(uid: string, shortlist: string[]): Promise<void> {
-  await updateDoc(profileRef(uid), { shortlist });
+  const ref = profileRef(uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    const profile: UserProfile = {
+      uid,
+      marks: [],
+      shortlist,
+      consentRecord: null,
+      isMinor: false,
+      guardianConsentAt: null,
+      createdAt: new Date().toISOString(),
+    };
+    await setDoc(ref, profile);
+  } else {
+    await updateDoc(ref, { shortlist });
+  }
 }
 
 export async function updateChecklistProgress(uid: string, checklistProgress: string[]): Promise<void> {
-  await updateDoc(profileRef(uid), { checklistProgress });
+  const ref = profileRef(uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) {
+    const profile: UserProfile = {
+      uid,
+      marks: [],
+      shortlist: [],
+      checklistProgress,
+      consentRecord: null,
+      isMinor: false,
+      guardianConsentAt: null,
+      createdAt: new Date().toISOString(),
+    };
+    await setDoc(ref, profile);
+  } else {
+    await updateDoc(ref, { checklistProgress });
+  }
 }
 
 /** POPIA "delete my account" -- removes the Firestore profile. Deleting
