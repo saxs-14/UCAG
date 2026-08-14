@@ -7,6 +7,7 @@ import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { ChatWidgetLoader } from "@/components/chat/ChatWidgetLoader";
 import { getCatalogStats } from "@/lib/catalog/getCatalogStats";
+import { MobileNavBar } from "@/components/MobileNavBar";
 import "./globals.css";
 
 const RICH_FONTS_SCRIPT = `try {
@@ -54,9 +55,10 @@ export default async function RootLayout({
         </a>
         <AuthProvider>
           <NavBar stats={stats} />
-          <main id="main-content" className="flex-1 w-full">
+          <main id="main-content" className="flex-1 w-full pb-16 sm:pb-0">
             {children}
           </main>
+          <MobileNavBar />
         </AuthProvider>
         <Footer />
         <ServiceWorkerRegistration />

@@ -81,6 +81,35 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Verified peer mentor profiles: public read for verified mentors,
+    // owner read for own profile, admin full access. Client creation
+    // cannot self-assign "verified" status.
+    match /mentorProfiles/{uid} {
+      allow read: if resource.data.verificationStatus == "verified" || isOwner(uid) || isAdmin();
+      allow create: if isOwner(uid) && request.resource.data.verificationStatus == "pending";
+      allow update: if (isOwner(uid) && request.resource.data.verificationStatus == resource.data.verificationStatus) || isAdmin();
+      allow delete: if isOwner(uid) || isAdmin();
+    }
+
+    // Guardian consent links between parents and learners (POPIA compliant).
+    match /guardianLinks/{docId} {
+      allow read: if request.auth != null && (
+        request.auth.uid == resource.data.guardianUid ||
+        request.auth.uid == resource.data.learnerUid ||
+        isAdmin()
+      );
+      allow create: if request.auth != null && request.auth.uid == request.resource.data.guardianUid;
+      allow update: if request.auth != null && (
+        request.auth.uid == resource.data.guardianUid ||
+        request.auth.uid == resource.data.learnerUid ||
+        isAdmin()
+      );
+      allow delete: if request.auth != null && (
+        request.auth.uid == resource.data.guardianUid ||
+        isAdmin()
+      );
+    }
+
     // A learner's own profile. Per-user ownership plus the POPIA-relevant
     // invariants a client write must satisfy -- these are the actual
     // enforcement mechanism for "a minor's data requires guardian
