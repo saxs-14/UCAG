@@ -2,8 +2,17 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useAuth } from "@/components/auth/AuthProvider";
 
-const MOBILE_NAV_ITEMS = [
+const GUEST_MOBILE_NAV_ITEMS = [
+  { href: "/", label: "APS Calc", icon: "🎓" },
+  { href: "/institutions", label: "Universities", icon: "🏛️" },
+  { href: "/programmes", label: "Programmes", icon: "📚" },
+  { href: "/bursaries", label: "Bursaries", icon: "💰" },
+  { href: "/login", label: "Sign In", icon: "🔑" },
+] as const;
+
+const USER_MOBILE_NAV_ITEMS = [
   { href: "/", label: "APS Calc", icon: "🎓" },
   { href: "/institutions", label: "Universities", icon: "🏛️" },
   { href: "/programmes", label: "Programmes", icon: "📚" },
@@ -13,13 +22,17 @@ const MOBILE_NAV_ITEMS = [
 
 export function MobileNavBar() {
   const pathname = usePathname();
+  const { user } = useAuth();
+  const isLoggedIn = !!user && !user.isAnonymous;
 
   // Hide mobile navbar on admin pages
   if (pathname.startsWith("/admin")) return null;
 
+  const navItems = isLoggedIn ? USER_MOBILE_NAV_ITEMS : GUEST_MOBILE_NAV_ITEMS;
+
   return (
     <nav aria-label="Mobile Bottom Navigation" className="no-print fixed bottom-0 left-0 right-0 z-50 flex items-center justify-around border-t border-line bg-paper-raised/95 py-2 backdrop-blur-md shadow-lg sm:hidden">
-      {MOBILE_NAV_ITEMS.map(({ href, label, icon }) => {
+      {navItems.map(({ href, label, icon }) => {
         const active = pathname === href || (href !== "/" && pathname.startsWith(href));
         return (
           <Link

@@ -23,20 +23,47 @@ function downloadJson(filename: string, json: string) {
   URL.revokeObjectURL(url);
 }
 
+import { useRouter } from "next/navigation";
+
 export function AccountPage() {
+  const router = useRouter();
   const { user, loading, authUnavailable } = useAuth();
   const [mode, setMode] = useState<"signUp" | "signIn">("signUp");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [stashedNotice, setStashedNotice] = useState(false);
 
   useEffect(() => {
-    if (!user) {
-      setProfile(null);
+    if (!loading && !user) {
+      router.push("/login");
       return;
     }
-    getUserProfile(user.uid).then(setProfile).catch((err) => setError(String(err)));
-  }, [user]);
+
+    if (user) {
+      getUserProfile(user.uid)
+        .then(async (fetchedProfile) => {
+          setProfile(fetchedProfile);
+
+          // Check if there are stashed marks from the calculator
+          try {
+            const rawStashed = sessionStorage.getItem("ucag_stashed_marks");
+            if (rawStashed) {
+              const stashedMarks = JSON.parse(rawStashed);
+              if (Array.isArray(stashedMarks) && stashedMarks.length > 0) {
+                const { updateSavedMarks } = await import("@/lib/auth/profile");
+                await updateSavedMarks(user.uid, stashedMarks);
+                sessionStorage.removeItem("ucag_stashed_marks");
+                setStashedNotice(true);
+                const updated = await getUserProfile(user.uid);
+                setProfile(updated);
+              }
+            }
+          } catch {}
+        })
+        .catch((err) => setError(String(err)));
+    }
+  }, [user, loading, router]);
 
   async function handleDownloadData() {
     if (!profile) return;
@@ -63,7 +90,7 @@ export function AccountPage() {
     }
   }
 
-  if (loading) return <p className="text-sm text-ink-faint">Loading...</p>;
+  if (loading) return <p className="text-sm text-ink-faint p-6">Checking authentication status...</p>;
 
   if (authUnavailable) {
     return (
@@ -81,7 +108,7 @@ export function AccountPage() {
 
   if (!user) {
     return (
-      <div className="flex w-full max-w-sm flex-col gap-4">
+      <div className="flex w-full max-w-sm flex-col gap-4 p-6">
         <p className="text-sm text-ink-faint">{LABELS.account.optionalNote}</p>
         {mode === "signUp" ? (
           <SignUpForm onSwitchToSignIn={() => setMode("signIn")} />
@@ -97,6 +124,13 @@ export function AccountPage() {
 
   return (
     <div className="flex w-full max-w-xl flex-col gap-6">
+      {stashedNotice && (
+        <div role="status" className="animate-rise-in rounded-2xl bg-mark-green-soft p-4 text-xs font-extrabold text-mark-green border border-mark-green/30 shadow-sm flex items-center gap-2">
+          <span>🎉</span>
+          <span>Your subject marks from the APS Calculator have been automatically saved to your profile!</span>
+        </div>
+      )}
+
       <p className="animate-rise-in text-sm text-ink">
         Signed in as <strong>{user.email ?? user.uid}</strong>
       </p>

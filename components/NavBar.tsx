@@ -4,14 +4,14 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { LABELS } from "@/config/labels";
+import { useAuth } from "@/components/auth/AuthProvider";
 import type { CatalogStats } from "@/lib/catalog/getCatalogStats";
 
-const NAV_ITEMS = [
+const PUBLIC_NAV_ITEMS = [
   { href: "/", label: `🎓 ${LABELS.nav.calculator}` },
   { href: "/institutions", label: "🏛️ Institutions" },
   { href: "/bursaries", label: `💰 ${LABELS.nav.bursaries}` },
   { href: "/statistics", label: `📊 ${LABELS.nav.statistics}` },
-  { href: "/account", label: `👤 ${LABELS.nav.profile}` },
 ];
 
 interface NavBarProps {
@@ -20,6 +20,8 @@ interface NavBarProps {
 
 export function NavBar({ stats }: NavBarProps) {
   const pathname = usePathname();
+  const { user, loading } = useAuth();
+  const isLoggedIn = !!user && !user.isAnonymous;
 
   return (
     <header className="no-print brand-band border-b border-white/10 shadow-sm sticky top-0 z-40 backdrop-blur-md">
@@ -35,14 +37,14 @@ export function NavBar({ stats }: NavBarProps) {
         )}
 
         <div className="flex flex-wrap items-center gap-1.5 text-sm font-medium">
-          {NAV_ITEMS.map(({ href, label }) => {
+          {PUBLIC_NAV_ITEMS.map(({ href, label }) => {
             const active = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-10 items-center rounded-lg px-3.5 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
+                className={`flex min-h-10 items-center rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
                   active
                     ? "bg-teal-600 text-white shadow-sm"
                     : "text-white/85 hover:bg-white/10 hover:text-white"
@@ -52,6 +54,37 @@ export function NavBar({ stats }: NavBarProps) {
               </Link>
             );
           })}
+
+          {!loading && (
+            isLoggedIn ? (
+              <Link
+                href="/account"
+                aria-current={pathname === "/account" ? "page" : undefined}
+                className={`flex min-h-10 items-center rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
+                  pathname === "/account"
+                    ? "bg-teal-600 text-white shadow-sm"
+                    : "text-white/85 hover:bg-white/10 hover:text-white"
+                }`}
+              >
+                👤 {LABELS.nav.profile}
+              </Link>
+            ) : (
+              <div className="flex items-center gap-2 ml-1">
+                <Link
+                  href="/login"
+                  className="flex min-h-9 items-center rounded-lg border border-white/20 bg-white/5 px-3 py-1 text-xs font-bold text-white hover:bg-white/15 transition"
+                >
+                  Sign In
+                </Link>
+                <Link
+                  href="/register"
+                  className="flex min-h-9 items-center rounded-lg bg-teal-500 px-3.5 py-1 text-xs font-extrabold text-white shadow hover:bg-teal-400 transition active:scale-95"
+                >
+                  Create Account
+                </Link>
+              </div>
+            )
+          )}
         </div>
       </nav>
     </header>
