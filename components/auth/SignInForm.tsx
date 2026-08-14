@@ -8,6 +8,7 @@ import {
   signInWithPopup,
 } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
+import { formatAuthError } from "@/lib/auth/formatAuthError";
 import { LABELS } from "@/config/labels";
 
 export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
@@ -23,7 +24,7 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
     try {
       await signInWithEmailAndPassword(getFirebaseAuth(), email, password);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(formatAuthError(err));
     } finally {
       setSubmitting(false);
     }
@@ -33,13 +34,9 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
     setError(null);
     setSubmitting(true);
     try {
-      // Resolver passed explicitly here, not attached to the Auth instance
-      // -- see lib/firebase/client.ts for why (avoids loading Google's
-      // iframe-helper script on every route that merely checks sign-in
-      // state, not just the ones with a Google sign-in button).
       await signInWithPopup(getFirebaseAuth(), new GoogleAuthProvider(), browserPopupRedirectResolver);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(formatAuthError(err));
     } finally {
       setSubmitting(false);
     }

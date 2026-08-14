@@ -9,19 +9,12 @@ import {
 } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
 import { createUserProfile } from "@/lib/auth/profile";
+import { formatAuthError } from "@/lib/auth/formatAuthError";
 import { LABELS } from "@/config/labels";
 import type { ConsentRecord } from "@/lib/firestore/types";
 
 type Step = "ageGate" | "guardianConsent" | "credentials";
 
-/**
- * The age gate + guardian consent flow is not a UI nicety -- it's the
- * only place a ConsentRecord with consentedBy: "guardian" gets created,
- * and firestore.rules rejects any userProfiles write for a minor that
- * doesn't have one (see tests/firestore-rules.test.ts). A learner cannot
- * get past this step and end up with an unconsented minor profile: the
- * write would fail server-side even if this component had a bug.
- */
 export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
   const [step, setStep] = useState<Step>("ageGate");
   const [isMinor, setIsMinor] = useState<boolean | null>(null);
@@ -65,7 +58,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
       const credential = await createUserWithEmailAndPassword(getFirebaseAuth(), email, password);
       await handleCreateAccount(credential.user.uid);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(formatAuthError(err));
     } finally {
       setSubmitting(false);
     }
@@ -75,7 +68,6 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
     setError(null);
     setSubmitting(true);
     try {
-      // Resolver passed explicitly -- see lib/firebase/client.ts.
       const credential = await signInWithPopup(
         getFirebaseAuth(),
         new GoogleAuthProvider(),
@@ -83,7 +75,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
       );
       await handleCreateAccount(credential.user.uid);
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      setError(formatAuthError(err));
     } finally {
       setSubmitting(false);
     }
