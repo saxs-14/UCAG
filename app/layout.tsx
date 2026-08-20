@@ -16,7 +16,7 @@ const RICH_FONTS_SCRIPT = `try {
     document.documentElement.setAttribute('data-rich-fonts', 'true');
     var link = document.createElement('link');
     link.rel = 'stylesheet';
-    link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap';
+    link.href = 'https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lexend:wght@500;600;700;800&display=swap';
     document.head.appendChild(link);
   }
 } catch (e) {}`;
