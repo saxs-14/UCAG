@@ -2,17 +2,18 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { BadgeCheck, BarChart3, GraduationCap, Landmark, User, Wallet } from "lucide-react";
 import { Logo } from "@/components/Logo";
 import { LABELS } from "@/config/labels";
 import { useAuth } from "@/components/auth/AuthProvider";
 import type { CatalogStats } from "@/lib/catalog/getCatalogStats";
 
 const PUBLIC_NAV_ITEMS = [
-  { href: "/", label: `🎓 ${LABELS.nav.calculator}` },
-  { href: "/institutions", label: "🏛️ Institutions" },
-  { href: "/bursaries", label: `💰 ${LABELS.nav.bursaries}` },
-  { href: "/statistics", label: `📊 ${LABELS.nav.statistics}` },
-];
+  { href: "/", label: LABELS.nav.calculator, icon: GraduationCap },
+  { href: "/institutions", label: LABELS.nav.institutions, icon: Landmark },
+  { href: "/bursaries", label: LABELS.nav.bursaries, icon: Wallet },
+  { href: "/statistics", label: LABELS.nav.statistics, icon: BarChart3 },
+] as const;
 
 interface NavBarProps {
   stats: CatalogStats | null;
@@ -31,25 +32,27 @@ export function NavBar({ stats }: NavBarProps) {
         </Link>
 
         {stats && (
-          <span className="hidden text-xs text-emerald-300 font-medium bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30 md:inline">
-            ✨ {stats.institutionCount} SA Universities · {stats.programmeCount > 0 ? `${stats.programmeCount} Degrees` : ""}
+          <span className="hidden items-center gap-1 text-xs text-emerald-300 font-medium bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30 md:inline-flex">
+            <BadgeCheck className="h-3.5 w-3.5" aria-hidden="true" />
+            {stats.institutionCount} SA Universities · {stats.programmeCount > 0 ? `${stats.programmeCount} Degrees` : ""}
           </span>
         )}
 
         <div className="flex flex-wrap items-center gap-1.5 text-sm font-medium">
-          {PUBLIC_NAV_ITEMS.map(({ href, label }) => {
+          {PUBLIC_NAV_ITEMS.map(({ href, label, icon: Icon }) => {
             const active = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-10 items-center rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
+                className={`flex min-h-10 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
                   active
                     ? "bg-teal-600 text-white shadow-sm"
                     : "text-white/85 hover:bg-white/10 hover:text-white"
                 }`}
               >
+                <Icon className="h-4 w-4" aria-hidden="true" />
                 {label}
               </Link>
             );
@@ -60,13 +63,14 @@ export function NavBar({ stats }: NavBarProps) {
               <Link
                 href="/account"
                 aria-current={pathname === "/account" ? "page" : undefined}
-                className={`flex min-h-10 items-center rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
+                className={`flex min-h-10 items-center gap-1.5 rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
                   pathname === "/account"
                     ? "bg-teal-600 text-white shadow-sm"
                     : "text-white/85 hover:bg-white/10 hover:text-white"
                 }`}
               >
-                👤 {LABELS.nav.profile}
+                <User className="h-4 w-4" aria-hidden="true" />
+                {LABELS.nav.profile}
               </Link>
             ) : (
               <div className="flex items-center gap-2 ml-1">
