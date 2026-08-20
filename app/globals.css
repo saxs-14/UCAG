@@ -17,6 +17,9 @@
   --color-slate: #475569;
   --color-slate-soft: #f1f5f9;
   --color-focus: #2563eb;
+  --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+  --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+  --shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.12), 0 16px 48px rgba(0, 0, 0, 0.08);
 
   --color-brand-navy: #0b192c;
   --color-brand-navy-soft: #1e293b;
@@ -61,6 +64,9 @@
     --color-mark-red-soft: #7f1d1d;
     --color-slate: #9ca3af;
     --color-slate-soft: #1f2937;
+    --shadow-card: 0 1px 3px rgba(0, 0, 0, 0.3), 0 4px 12px rgba(0, 0, 0, 0.2);
+    --shadow-card-hover: 0 4px 16px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.3);
+    --shadow-overlay: 0 8px 24px rgba(0, 0, 0, 0.5), 0 16px 48px rgba(0, 0, 0, 0.4);
 
     --color-brand-navy: #030712;
     --color-brand-navy-soft: #111827;
@@ -76,7 +82,7 @@
 }
 
 :root[data-rich-fonts="true"] {
-  --font-display: "Fredoka", "Inter", sans-serif;
+  --font-display: "Lexend", var(--font-sans);
 }
 
 body {
@@ -97,12 +103,12 @@ h1, h2, h3 {
 .card-learner {
   background: var(--color-paper-raised);
   border: 1px solid var(--color-line);
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.02);
+  box-shadow: var(--shadow-card);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
 }
 
 .card-learner:hover {
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08), 0 8px 24px rgba(0, 0, 0, 0.04);
+  box-shadow: var(--shadow-card-hover);
 }
 
 .hero-atmosphere {
