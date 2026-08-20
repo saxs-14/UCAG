@@ -68,14 +68,27 @@ separate macro-phase, deliberately sequenced after, per the owner's approved App
 
 - Keep the existing `--color-*` token structure and hex values — they already match
   verified "government/institutional-trust" reference palettes. No palette rewrite.
-- Add `--font-heading: "Lexend", var(--font-sans)` alongside the existing
-  `--font-sans: "Inter", ...` body font. Lexend is a readability-optimized typeface and
-  the top domain-search match for "government/enterprise/accessibility-focused" —
-  a real, defensible reason for a school-leaver-facing product, not decoration.
-- Add a documented elevation scale (`--shadow-1` low, `--shadow-2` card-hover,
-  `--shadow-3` modal/sheet) replacing the ad-hoc `rgba(0,0,0,0.04)`-style one-off shadow
-  values currently duplicated across `.card-learner`, `TiltCard`, etc.
-- Add a documented radius scale (`--radius-sm/md/lg/pill`) for the same reason.
+- **Correction (2026-08-20):** `app/globals.css` already has a `--font-display` token
+  (default `var(--font-sans)`, i.e. Inter) used correctly on headings/score displays in
+  `ResultsSection.tsx` and `CircledMark.tsx`. It's overridden to `"Fredoka", "Inter",
+  sans-serif` under `:root[data-rich-fonts="true"]` — but the script that sets
+  `data-rich-fonts` (`RICH_FONTS_SCRIPT` in `app/layout.tsx`) only ever fetches Inter,
+  never Fredoka, so that override is dead: it silently falls back to Inter every time.
+  This is vestigial wiring from the earlier "Marked Script"/hand-drawn design pass the
+  owner rejected. Fix, not addition: point `--font-display` at **Lexend** (the top
+  domain-search match for "government/enterprise/accessibility-focused") and update
+  `RICH_FONTS_SCRIPT` to actually fetch it. No new token name — `--font-display` is
+  already the right token, already used in the right places.
+- Add a documented elevation scale using Tailwind v4's `--shadow-*` theme namespace
+  (`--shadow-card`, `--shadow-card-hover`, `--shadow-overlay`), replacing the raw
+  `rgba(0,0,0,0.04)`-style values currently inlined directly in `.card-learner`. Include
+  dark-mode variants — currently `.card-learner`'s shadow is the *same* low-opacity
+  black value in dark mode, which is close to invisible against a near-black
+  background; this is a real, easy-to-fix elevation bug in the file already being
+  touched, not new scope.
+- No radius-scale token: Tailwind v4's built-in `rounded-*` utilities are already used
+  consistently across the codebase — adding a parallel custom scale would just
+  duplicate what already works. Dropped from an earlier draft of this section.
 - Formalize the existing implicit 8px spacing rhythm as the only spacing scale used in
   new/touched components (Tailwind's default scale already aligns; the change is
   discipline, not new tokens).
@@ -93,20 +106,20 @@ separate macro-phase, deliberately sequenced after, per the owner's approved App
 
 ### 3. Mobile bottom navigation
 
-- `components/MobileNavBar.tsx` already exists as a file, but the current state audit
-  (`UCAG_CURRENT_STATE_AUDIT.md` §4, "What Is Missing") lists an app-like mobile bottom
-  nav as absent — implementation must first read that file to establish whether it's an
-  unused stub, a partial component not wired into the layout, or already functioning
-  and the audit is stale, then extend or rebuild accordingly rather than assuming either
-  state.
-- Persistent bottom tab bar, `<768px` viewports only, replacing reliance on the desktop
-  header nav on mobile.
-- Max 4 items per the `bottom-nav-limit` UX rule: Calculator, Institutions, Bursaries,
-  Account (Bursaries chosen over Statistics as the 4th — it's the more action-oriented,
-  learner-relevant surface; Statistics stays header/desktop-only).
-- Icon + label per item (not icon-only), current-page state visually highlighted,
-  safe-area-aware bottom inset, `position: sticky` content padding added to `<main>` so
-  page content isn't hidden behind it.
+**Correction (2026-08-20, verified by reading the actual files during plan-writing):**
+`components/MobileNavBar.tsx` is not missing — it exists, is wired into
+`app/layout.tsx`, and already renders a working `<768px` bottom tab bar (5 items,
+icon+label, active-state highlight, `sm:hidden`, admin routes excluded, `<main>` already
+gets `pb-16 sm:pb-0` clearance for it). `UCAG_CURRENT_STATE_AUDIT.md`'s "What Is
+Missing" claim about this was stale at the time this spec was written. The real,
+verified gap is narrower: both `MobileNavBar.tsx` and `NavBar.tsx` use raw emoji as the
+item icons (🎓🏛️📚💰🔑👤), and the two navs use different labels for the same
+`/institutions` destination ("Institutions" in `NavBar.tsx` vs "Universities" in
+`MobileNavBar.tsx`, neither sourced from `config/labels.ts`, both hardcoded inline —
+a `config/labels.ts`-rule violation worth fixing while these exact lines are already
+being touched). This phase's mobile-nav work is: replace the emoji icons with the same
+`lucide-react` set used in the desktop nav, and unify the label via
+`LABELS.nav.institutions`. No new component, no layout restructuring.
 
 ### 4. Page-by-page redesign scope
 
