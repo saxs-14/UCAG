@@ -51,3 +51,6 @@ firestore-debug.log
 .vercel
 .env*
 .devswarm-temp/
+
+# superpowers subagent-driven-development scratch (progress ledger, review packages)
+/.superpowers/
