@@ -14,6 +14,7 @@ export const LABELS = {
   },
   nav: {
     calculator: "APS Calculator",
+    institutions: "Institutions",
     bursaries: "Bursaries & Internships",
     statistics: "Statistics",
     profile: "My Profile",
