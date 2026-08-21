@@ -2,6 +2,7 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { AlertTriangle, BookOpen, Target } from "lucide-react";
 import { SubjectCombobox } from "./SubjectCombobox";
 import { MarkInput } from "./MarkInput";
 import {
@@ -162,13 +163,14 @@ export function SubjectForm({
 
   return (
     <form
-      className="animate-rise-in stagger-1 flex w-full max-w-2xl flex-col gap-6"
+      className="animate-rise-in stagger-1 flex w-full max-w-2xl flex-col gap-5"
       onSubmit={(e) => e.preventDefault()}
     >
       {/* Introduction Card */}
-      <div className="flex flex-col gap-1.5 rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+      <div className="flex flex-col gap-1 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
         <h2 className="font-bold text-lg text-ink flex items-center gap-2">
-          <span>📚 Enter Your Matric Subjects & Percentages</span>
+          <BookOpen className="h-5 w-5 text-brand-teal shrink-0" aria-hidden="true" />
+          <span>Enter Your Matric Subjects & Percentages</span>
         </h2>
         <p className="text-xs text-ink-soft leading-relaxed">
           Enter your percentage marks for your 4 compulsory subjects and 3 to 4 electives below. Your APS points will automatically update for every university in South Africa.
@@ -176,14 +178,14 @@ export function SubjectForm({
       </div>
 
       {/* Compulsory Subjects Fieldset */}
-      <fieldset className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+      <fieldset className="flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
         <legend className="mb-1 flex items-center gap-2 rounded-full bg-brand-teal-soft px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-teal border border-brand-teal/20">
           <span aria-hidden className="h-2 w-2 rounded-full bg-brand-teal animate-pulse" />
           Compulsory NSC Subjects (4)
         </legend>
 
         {/* Home Language */}
-        <div className="flex flex-col gap-2 rounded-xl bg-paper p-3.5 border border-line/60">
+        <div className="flex flex-col gap-2 rounded-xl bg-paper p-3 border border-line/60">
           <label className="text-sm font-semibold text-ink" htmlFor="home-language">
             Home Language
           </label>
@@ -216,7 +218,7 @@ export function SubjectForm({
         </div>
 
         {/* First Additional Language */}
-        <div className="flex flex-col gap-2 rounded-xl bg-paper p-3.5 border border-line/60">
+        <div className="flex flex-col gap-2 rounded-xl bg-paper p-3 border border-line/60">
           <label className="text-sm font-semibold text-ink" htmlFor="fal">
             First Additional Language (FAL)
           </label>
@@ -245,7 +247,7 @@ export function SubjectForm({
         </div>
 
         {/* Mathematics */}
-        <div className="flex flex-col gap-2 rounded-xl bg-paper p-3.5 border border-line/60">
+        <div className="flex flex-col gap-2 rounded-xl bg-paper p-3 border border-line/60">
           <label className="text-sm font-semibold text-ink" htmlFor="mathematics">
             Mathematics Option
           </label>
@@ -270,7 +272,7 @@ export function SubjectForm({
         </div>
 
         {/* Life Orientation */}
-        <div className="rounded-xl bg-paper p-3.5 border border-line/60">
+        <div className="rounded-xl bg-paper p-3 border border-line/60">
           <MarkInput
             label="Life Orientation"
             percentage={lifeOrientationMark}
@@ -280,7 +282,7 @@ export function SubjectForm({
       </fieldset>
 
       {/* Elective Subjects Fieldset */}
-      <fieldset className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+      <fieldset className="flex flex-col gap-3 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
         <legend className="mb-1 flex items-center gap-2 rounded-full bg-brand-coral-soft px-3 py-1 text-xs font-bold uppercase tracking-wider text-brand-coral border border-brand-coral/20">
           <span aria-hidden className="h-2 w-2 rounded-full bg-brand-coral animate-pulse" />
           Elective Subjects ({electives.length} of {MIN_ELECTIVES}-{MAX_ELECTIVES})
@@ -294,7 +296,7 @@ export function SubjectForm({
           return (
             <div
               key={index}
-              className={`${removingIndex === index ? "animate-pop-out" : `stagger-${stagger} animate-pop-in`} flex flex-col gap-3 rounded-xl border border-line bg-paper p-3.5 shadow-2xs`}
+              className={`${removingIndex === index ? "animate-pop-out" : `stagger-${stagger} animate-pop-in`} flex flex-col gap-3 rounded-xl border border-line bg-paper p-3 shadow-2xs`}
             >
               <div className="flex items-start justify-between gap-2">
                 <div className="flex-1">
@@ -341,10 +343,11 @@ export function SubjectForm({
       </fieldset>
 
       {/* Calculate APS Action Button */}
-      <div className="flex flex-col gap-3 rounded-2xl border border-brand-teal/40 bg-brand-teal/5 p-5 shadow-sm">
+      <div className="flex flex-col gap-3 rounded-2xl border border-brand-teal/40 bg-brand-teal/5 p-4 shadow-sm">
         {validationError && (
-          <p role="alert" className="text-xs font-bold text-mark-red bg-mark-red-soft p-2.5 rounded-lg border border-mark-red/30">
-            ⚠️ {validationError}
+          <p role="alert" className="flex items-center gap-2 text-xs font-bold text-mark-red bg-mark-red-soft p-2.5 rounded-lg border border-mark-red/30">
+            <AlertTriangle className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {validationError}
           </p>
         )}
 
@@ -353,7 +356,8 @@ export function SubjectForm({
           onClick={handleCalculate}
           className="inline-flex min-h-12 w-full cursor-pointer items-center justify-center gap-2 rounded-xl bg-brand-teal px-6 py-3 text-base font-extrabold text-white shadow-md transition-all hover:bg-teal-700 active:scale-[0.98]"
         >
-          <span>🎯 CALCULATE APS & MATCH PROGRAMMES</span>
+          <Target className="h-5 w-5" aria-hidden="true" />
+          <span>CALCULATE APS & MATCH PROGRAMMES</span>
         </button>
       </div>
     </form>
