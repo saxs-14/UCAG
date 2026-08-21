@@ -67,7 +67,6 @@ export function SubjectForm({
   });
   const [removingIndex, setRemovingIndex] = useState<number | null>(null);
 
-  const [targetInstitution, setTargetInstitution] = useState<string>("ump");
   const [validationError, setValidationError] = useState<string | null>(null);
 
   const firstAdditionalLanguageOptions = FIRST_ADDITIONAL_LANGUAGE_OPTIONS.filter(
@@ -343,25 +342,6 @@ export function SubjectForm({
 
       {/* Calculate APS Action Button */}
       <div className="flex flex-col gap-3 rounded-2xl border border-brand-teal/40 bg-brand-teal/5 p-5 shadow-sm">
-        <div className="flex flex-col gap-1">
-          <label htmlFor="target-institution" className="text-xs font-bold text-ink uppercase tracking-wider">
-            Target Institution Rule
-          </label>
-          <select
-            id="target-institution"
-            className="min-h-11 rounded-xl border border-line bg-paper-raised px-3.5 py-2 text-sm font-semibold text-ink focus:border-brand-teal focus:outline-none"
-            value={targetInstitution}
-            onChange={(e) => setTargetInstitution(e.target.value)}
-          >
-            <option value="ump">University of Mpumalanga (UMP) -- LO ÷ 2 Rule</option>
-            <option value="up">University of Pretoria (UP) -- LO Excluded Rule</option>
-            <option value="wits">University of the Witwatersrand (Wits) -- LO Included + Bonus Rule</option>
-            <option value="uj">University of Johannesburg (UJ) -- LO Excluded Rule</option>
-            <option value="tut">Tshwane University of Technology (TUT) -- LO Excluded Rule</option>
-            <option value="all">All South African Universities</option>
-          </select>
-        </div>
-
         {validationError && (
           <p role="alert" className="text-xs font-bold text-mark-red bg-mark-red-soft p-2.5 rounded-lg border border-mark-red/30">
             ⚠️ {validationError}
