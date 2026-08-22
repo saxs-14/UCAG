@@ -36,10 +36,7 @@ export function CalculatorPage() {
 
   return (
     <div className="flex w-full flex-col items-center gap-5">
-      <PageHero
-        title="Find Your University Degree Pathways"
-        subtitle="Enter your NSC Matric marks to instantly calculate your official APS score across South African universities, discover degrees you qualify for, and unlock personalized backup plans."
-      />
+      <PageHero title="Find Your University Degree Pathways" compact />
 
       <div className="flex w-full max-w-3xl flex-col items-center gap-5 px-4">
         <ApsFormulaBanner />
