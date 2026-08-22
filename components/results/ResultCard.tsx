@@ -1,8 +1,12 @@
 import Link from "next/link";
+import { Check, Clock, Lightbulb, MapPin, Ruler, Rocket, Star, X } from "lucide-react";
 import { deriveApplicationWindowStatus, resolveApplicationCta } from "@/lib/applicationStatus";
 import { calculateReadiness } from "@/lib/readiness";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
+import { gapCloserText } from "./gapCloserText";
+import { ApsBreakdown } from "./ApsBreakdown";
+import { DeadlineCountdown } from "./DeadlineCountdown";
 import { CircledMark } from "@/components/CircledMark";
 import { ReadinessBar } from "./ReadinessBar";
 import { ReadinessScorecard } from "@/components/readiness/ReadinessScorecard";
@@ -89,9 +93,16 @@ export function ResultCard({
   const apsGap = matchResult.bucket === "almostQualify" ? findApsGap(matchResult) : null;
   const stagger = Math.min(staggerIndex + 1, 6);
 
+  const gapClosers =
+    matchResult.bucket === "almostQualify"
+      ? matchResult.unmetReasons
+          .map((reason) => gapCloserText(reason))
+          .filter((text): text is string => text !== null)
+      : [];
+
   return (
     <div className={`stagger-${stagger} animate-rise-in`}>
-      <article className={`flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-5 shadow-sm transition-all hover:shadow-md ${BUCKET_SPINE[matchResult.bucket]}`}>
+      <article className={`card-learner flex flex-col gap-4 rounded-2xl p-5 ${BUCKET_SPINE[matchResult.bucket]}`}>
         <header className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/40 pb-2.5">
             <span className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wider ${BUCKET_LABEL_STYLE[matchResult.bucket]}`}>
@@ -120,12 +131,14 @@ export function ResultCard({
           {/* Institution APS Formula Callout */}
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="inline-flex items-center gap-1 rounded-lg bg-teal-950/80 px-2.5 py-1 font-semibold text-teal-200 border border-teal-500/30 text-2xs">
-              <span>📐 {institution.shortName || institution.name} Formula:</span>
+              <Ruler className="h-3 w-3 shrink-0" aria-hidden="true" />
+              <span>{institution.shortName || institution.name} Formula:</span>
               <span>{matchResult.apsResult.loTreatmentMessage}</span>
             </span>
             {matchResult.apsResult.appliedBonuses.length > 0 && (
               <span className="inline-flex items-center gap-1 rounded-lg bg-purple-100 px-2.5 py-1 font-semibold text-purple-800 border border-purple-300 text-2xs">
-                <span>★ Bonus:</span>
+                <Star className="h-3 w-3 shrink-0" aria-hidden="true" fill="currentColor" />
+                <span>Bonus:</span>
                 <span>{matchResult.apsResult.appliedBonuses.map((b) => b.description).join(", ")}</span>
               </span>
             )}
@@ -162,24 +175,27 @@ export function ResultCard({
                 <button
                   type="button"
                   onClick={onToggleShortlist}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 shadow-2xs ${
+                  className={`inline-flex items-center gap-1 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 shadow-2xs ${
                     isShortlisted
                       ? "border-rose-500 bg-rose-600 text-white"
                       : "border-line bg-paper text-ink-soft hover:bg-slate-soft hover:text-ink"
                   }`}
                 >
-                  {isShortlisted ? "★ Shortlisted" : "☆ Shortlist"}
+                  <Star className="h-3.5 w-3.5 shrink-0" aria-hidden="true" fill={isShortlisted ? "currentColor" : "none"} />
+                  {isShortlisted ? "Shortlisted" : "Shortlist"}
                 </button>
               )}
             </div>
           </div>
           {(programme.campuses?.length > 0 || programme.modeOfDelivery) && (
-            <p className="text-xs text-ink-faint font-medium">
-              📍 {[programme.campuses?.length > 0 ? programme.campuses.join(", ") : null, programme.modeOfDelivery]
+            <p className="flex items-center gap-1 text-xs text-ink-faint font-medium">
+              <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
+              {[programme.campuses?.length > 0 ? programme.campuses.join(", ") : null, programme.modeOfDelivery]
                 .filter(Boolean)
                 .join(" · ")}
             </p>
           )}
+          <DeadlineCountdown applicationWindow={applicationWindow} status={status} />
         </header>
 
         <ul className="flex flex-col gap-2 rounded-xl border border-line/60 bg-paper p-3.5 text-xs">
@@ -187,8 +203,8 @@ export function ResultCard({
             const met = "met" in reason ? reason.met : false;
             return (
               <li key={i} className="flex items-start gap-2.5">
-                <span aria-hidden className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-2xs font-bold ${met ? "bg-emerald-600 text-white" : "bg-amber-600 text-white"}`}>
-                  {met ? "✓" : "✗"}
+                <span aria-hidden className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full ${met ? "bg-emerald-600 text-white" : "bg-amber-600 text-white"}`}>
+                  {met ? <Check className="h-2.5 w-2.5" strokeWidth={3} /> : <X className="h-2.5 w-2.5" strokeWidth={3} />}
                 </span>
                 <span className="text-ink font-medium leading-relaxed">{reasonText(reason)}</span>
               </li>
@@ -199,12 +215,30 @@ export function ResultCard({
           )}
         </ul>
 
+        {gapClosers.length > 0 && (
+          <div className="flex flex-col gap-1.5 rounded-xl bg-amber-50 p-3 text-xs text-amber-900 border border-amber-200/80">
+            <p className="font-bold uppercase tracking-wide text-2xs">How to close the gap</p>
+            <ul className="flex flex-col gap-1">
+              {gapClosers.map((text, i) => (
+                <li key={i} className="font-medium leading-relaxed">
+                  {text}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {matchResult.suggestedNextStep && (
-          <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900 border border-amber-200/80 font-medium">
-            💡 <strong>Next step: </strong>
-            {matchResult.suggestedNextStep}
+          <p className="flex items-start gap-2 rounded-xl bg-amber-50 p-3 text-xs text-amber-900 border border-amber-200/80 font-medium">
+            <Lightbulb className="h-3.5 w-3.5 shrink-0 mt-0.5" aria-hidden="true" />
+            <span>
+              <strong>Next step: </strong>
+              {matchResult.suggestedNextStep}
+            </span>
           </p>
         )}
+
+        <ApsBreakdown apsResult={matchResult.apsResult} institutionName={institution.shortName || institution.name} />
 
         <div className="flex flex-wrap items-center gap-2 border-t border-line pt-2.5 text-xs">
           {cta.kind === "apply" && (
@@ -212,14 +246,16 @@ export function ResultCard({
               href={cta.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-10 items-center rounded-xl bg-teal-600 px-4 font-bold text-white transition-all hover:bg-teal-500 shadow-sm active:scale-95"
+              className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-teal-600 px-4 font-bold text-white transition-all hover:bg-teal-500 shadow-sm active:scale-95"
             >
-              🚀 {cta.label}
+              <Rocket className="h-4 w-4 shrink-0" aria-hidden="true" />
+              {cta.label}
             </a>
           )}
           {cta.kind === "openingSoon" && (
-            <span className="inline-flex min-h-10 items-center rounded-xl bg-emerald-100 px-3.5 font-bold text-emerald-800 border border-emerald-300">
-              ⏳ {cta.label}
+            <span className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-emerald-100 px-3.5 font-bold text-emerald-800 border border-emerald-300">
+              <Clock className="h-4 w-4 shrink-0" aria-hidden="true" />
+              {cta.label}
             </span>
           )}
           {cta.kind === "statusCheck" && (
