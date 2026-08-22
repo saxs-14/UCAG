@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { matchProgramme } from "@/lib/matching/engine";
 import { ResultCard } from "./ResultCard";
 import { UnscoredProgrammeCard } from "./UnscoredProgrammeCard";
+import { MentorSnippet } from "./MentorSnippet";
 import { ConfettiBurst } from "./ConfettiBurst";
 import { ShareBar } from "./ShareBar";
 import { ApplicationChecklist } from "./ApplicationChecklist";
@@ -220,6 +221,11 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   for (const bucket of BUCKET_ORDER) byBucket.set(bucket, []);
   for (const entry of scored) byBucket.get(entry.matchResult.bucket)!.push(entry);
 
+  // Mentor coverage is UMP-only (lib/mentors/getMentors.ts) -- only show
+  // the snippet when a UMP programme is actually among this learner's
+  // scored results, per the owner's 2026-08-21 decision.
+  const hasUmpResult = scored.some((entry) => entry.programme.institutionId === "ump");
+
   if (scored.length === 0 && unscored.length === 0) {
     return (
       <p className="rounded border border-dashed border-line bg-paper-raised p-3 text-sm text-ink-soft">
@@ -242,6 +248,8 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       />
 
       {scored.length > 0 && <ApsFormulaBanner />}
+
+      {hasUmpResult && <MentorSnippet />}
 
       {scored.length > 0 && (
         <AdmissionPathwayGraph
