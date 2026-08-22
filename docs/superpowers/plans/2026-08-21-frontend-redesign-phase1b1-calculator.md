@@ -29,10 +29,22 @@ dependency (installed in Phase 1a).
 - `components/results/ResultsSection.tsx` and everything under `components/results/`
   is explicitly OUT OF SCOPE for this plan — that's Phase 1b-2, a separate plan, because
   it's a 1,419-line, 12-file surface that needs its own full read-through first.
-- `components/PageHero.tsx`, `components/aps/ApsFormulaBanner.tsx`,
-  `components/SaveMarksButton.tsx` are shared/adjacent components this plan does NOT
-  modify — they're reused elsewhere (`PageHero` across multiple pages) and their own
-  emoji/spacing is a separate, later cleanup pass, not blocking this plan's goal.
+- `components/SaveMarksButton.tsx` is a shared/adjacent component this plan does NOT
+  modify — its own emoji/spacing is a separate, later cleanup pass, not blocking this
+  plan's goal.
+- **Scope expansion (owner, 2026-08-21):** Task 3's real browser measurement (see its
+  report) found the no-scroll goal is NOT achievable by trimming
+  `CalculatorPage.tsx`/`SubjectForm.tsx` alone — `PageHero.tsx` (296px) and
+  `ApsFormulaBanner.tsx` (254px collapsed) together already exceed a 668px-tall mobile
+  viewport before the form even starts. The owner approved expanding this plan to touch
+  both, added as Tasks 4-6 below. `PageHero.tsx` is used on 4 pages
+  (`CalculatorPage.tsx`, `app/account/page.tsx`, `app/statistics/page.tsx`,
+  `app/bursaries/page.tsx`) — Task 4 adds an opt-in `compact` prop defaulting to `false`,
+  so the other 3 pages are provably unaffected (they don't pass the prop).
+  `ApsFormulaBanner.tsx` is used in 2 places (`CalculatorPage.tsx` and
+  `components/results/ResultsSection.tsx`) with no props at all — Task 5 tightens its
+  one and only layout, which benefits both call sites and changes no prop signature, so
+  `ResultsSection.tsx` (out of scope for this plan) needs no edit.
 - The owner decision on record (spec `docs/superpowers/specs/2026-08-20-frontend-redesign-design.md`
   §4, 2026-08-21): the two non-functional institution selectors are REMOVED, not wired
   up — results already compute against every institution, which is more useful than a
@@ -662,3 +674,307 @@ state which one actually happened:
 Use `take_screenshot` at both 375×667 and 390×844 after the reload, before running the
 `evaluate_script` measurement (so the screenshot shows the real initial-load state a
 learner would see).
+
+**Result (controller, 2026-08-21, real chrome-devtools measurement):** Outcome 3 — not
+met. At the achieved viewport (~502×668 — the resize tool did not land on exactly
+375×667, but the shortfall is large enough that the width discrepancy doesn't change the
+conclusion: a narrower width only increases text wrapping and thus height, it can't
+help): Header nav 163px + `PageHero` 296px + `ApsFormulaBanner` (collapsed) 254px =
+713px, already past the 668px viewport, before `SubjectForm`'s own intro card starts.
+Home Language (`#home-language`) doesn't appear until 1035px down; Mathematics
+(`#mathematics`) needs 1298px. Per this step's own instruction, trimming further inside
+`CalculatorPage.tsx`/`SubjectForm.tsx` cannot close a 45px+ gap that exists before those
+files' content even begins, so this was escalated to the human rather than attempting a
+futile further trim or silently touching the out-of-scope files. Owner approved
+expanding scope — see the Global Constraints "Scope expansion" note above and Tasks 4-6
+below.
+
+---
+
+## Task 4: Add a `compact` mode to `PageHero`
+
+**Files:**
+- Modify: `components/PageHero.tsx` (full file rewrite below)
+- Modify: `components/CalculatorPage.tsx` (pass `compact` prop — one-line change)
+
+**Interfaces:**
+- Produces: `PageHero`'s prop type gains `compact?: boolean` (default `false`). Existing
+  call sites (`app/account/page.tsx`, `app/statistics/page.tsx`, `app/bursaries/page.tsx`)
+  don't pass it, so they get `compact={false}` — byte-identical rendering to before.
+
+- [ ] **Step 1: Replace the full contents of `components/PageHero.tsx`**
+
+```tsx
+export function PageHero({
+  title,
+  subtitle,
+  compact = false,
+}: {
+  title: React.ReactNode;
+  subtitle?: React.ReactNode;
+  compact?: boolean;
+}) {
+  return (
+    <div
+      className={`hero-atmosphere w-full border-b border-white/10 shadow-md ${
+        compact ? "py-5" : "py-10"
+      }`}
+    >
+      <div
+        className={`mx-auto flex w-full max-w-5xl flex-col px-6 sm:px-8 ${
+          compact ? "gap-1.5" : "gap-3"
+        }`}
+      >
+        {!compact && (
+          <div className="inline-flex items-center gap-2 rounded-full bg-teal-500/20 px-3.5 py-1 text-xs font-semibold text-teal-200 border border-teal-400/30 w-fit">
+            <span>🇿🇦 South Africa Matric & University Admission Guide</span>
+          </div>
+        )}
+        <h1
+          className={`animate-rise-in font-extrabold tracking-tight text-white leading-tight ${
+            compact ? "text-xl sm:text-2xl" : "text-3xl sm:text-4xl"
+          }`}
+        >
+          {title}
+        </h1>
+        {subtitle && !compact && (
+          <p className="animate-rise-in max-w-2xl text-sm sm:text-base text-teal-100/90 leading-relaxed">
+            {subtitle}
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+```
+
+Rationale for what's dropped in compact mode (not just shrunk): the 🇿🇦 badge and the
+subtitle are both re-statements of context the calculator's own intro card immediately
+below already provides ("Enter Your Matric Subjects & Percentages" + its description) —
+dropping them here isn't a content loss, it's removing duplication. The title alone,
+smaller, is enough for a returning or link-arriving visitor to orient.
+
+- [ ] **Step 2: Pass `compact` from `CalculatorPage.tsx`**
+
+In `components/CalculatorPage.tsx`, change:
+
+```tsx
+      <PageHero
+        title="Find Your University Degree Pathways"
+        subtitle="Enter your NSC Matric marks to instantly calculate your official APS score across South African universities, discover degrees you qualify for, and unlock personalized backup plans."
+      />
+```
+
+to:
+
+```tsx
+      <PageHero title="Find Your University Degree Pathways" compact />
+```
+
+(The `subtitle` prop is removed from this call site since compact mode never renders it
+— passing it would be dead code.)
+
+- [ ] **Step 3: Run typecheck and lint**
+
+Run: `npm run typecheck && npm run lint`
+Expected: both clean.
+
+- [ ] **Step 4: Manually confirm the other 3 call sites are visually unaffected**
+
+Using the `chrome-devtools` MCP against the running dev server, load `/account`,
+`/statistics`, and `/bursaries` and take a screenshot of each hero section. Compare
+against the Task 3 screenshots (or a fresh screenshot taken before this change, if those
+weren't captured) — the hero on these three pages must look identical to before (full
+badge, full title size, subtitle present), since none of them pass `compact`.
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add components/PageHero.tsx components/CalculatorPage.tsx
+git commit -m "feat: add compact PageHero variant, use it on the calculator page"
+```
+
+---
+
+## Task 5: Tighten `ApsFormulaBanner`'s collapsed layout
+
+**Files:**
+- Modify: `components/aps/ApsFormulaBanner.tsx` (full file rewrite below)
+
+**Interfaces:**
+- Produces: no prop signature change (`ApsFormulaBanner` still takes no props) — both
+  call sites (`CalculatorPage.tsx`, `components/results/ResultsSection.tsx`) need no
+  edit.
+
+- [ ] **Step 1: Replace the full contents of `components/aps/ApsFormulaBanner.tsx`**
+
+```tsx
+"use client";
+
+import { useState } from "react";
+import { Lightbulb, Target } from "lucide-react";
+
+export function ApsFormulaBanner() {
+  const [expanded, setExpanded] = useState(false);
+
+  return (
+    <div className="no-print w-full rounded-2xl border border-teal-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-teal-950 p-4 text-white shadow-md">
+      <div className="flex flex-col gap-2.5 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex items-start gap-2.5">
+          <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/30">
+            <Lightbulb className="h-4 w-4" aria-hidden="true" />
+          </div>
+          <div className="flex flex-col gap-0.5">
+            <div className="flex flex-wrap items-center gap-2">
+              <h3 className="font-bold text-sm sm:text-base text-white">
+                Important: APS Scores Vary by University!
+              </h3>
+              <span className="rounded-full bg-amber-500 px-2.5 py-0.5 text-2xs font-bold uppercase tracking-wider text-slate-950">
+                Formula Rule
+              </span>
+            </div>
+            <p className="text-xs text-slate-300 leading-relaxed max-w-xl line-clamp-2 sm:line-clamp-none">
+              There is no single national APS number in South Africa. Each university converts your Matric marks using its own verified formula (e.g. UMP, Wits, UP, UJ, UCT).
+            </p>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          onClick={() => setExpanded(!expanded)}
+          className="self-start sm:self-center shrink-0 rounded-xl bg-teal-600 px-4 py-1.5 text-xs font-semibold text-white transition-all hover:bg-teal-500 active:scale-95 shadow-sm"
+        >
+          {expanded ? "Hide University Rules ▲" : "Compare University Rules ▼"}
+        </button>
+      </div>
+
+      {expanded && (
+        <div className="mt-4 border-t border-white/10 pt-4 text-xs text-slate-200 animate-rise-in">
+          <p className="font-semibold text-teal-300 mb-3 text-2xs uppercase tracking-wider">
+            Official South African University APS Formula Breakdown:
+          </p>
+
+          <div className="grid gap-3 sm:grid-cols-2 md:grid-cols-3">
+            <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
+              <span className="font-bold text-teal-200 block border-b border-white/10 pb-1 mb-1">University of Mpumalanga (UMP)</span>
+              <p className="text-2xs text-slate-300 leading-relaxed">
+                Uses 7 subjects total. Life Orientation is counted at <strong>50% weight</strong>.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
+              <span className="font-bold text-teal-200 block border-b border-white/10 pb-1 mb-1">Wits University</span>
+              <p className="text-2xs text-slate-300 leading-relaxed">
+                Uses best 7 subjects including LO, plus bonus points for 60%+ in English & Maths.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
+              <span className="font-bold text-teal-200 block border-b border-white/10 pb-1 mb-1">University of Pretoria (UP)</span>
+              <p className="text-2xs text-slate-300 leading-relaxed">
+                Uses best 6 subjects. <strong>Life Orientation is completely excluded</strong> from total.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
+              <span className="font-bold text-teal-200 block border-b border-white/10 pb-1 mb-1">University of Johannesburg (UJ)</span>
+              <p className="text-2xs text-slate-300 leading-relaxed">
+                Uses 7-point scale. LO is excluded or capped depending on faculty requirements.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
+              <span className="font-bold text-teal-200 block border-b border-white/10 pb-1 mb-1">North-West University (NWU)</span>
+              <p className="text-2xs text-slate-300 leading-relaxed">
+                Best 6 subjects, Life Orientation excluded. Math Literacy restricted for STEM.
+              </p>
+            </div>
+
+            <div className="rounded-xl bg-white/5 p-3.5 border border-white/10">
+              <span className="font-bold text-slate-200 block border-b border-white/10 pb-1 mb-1">University of Cape Town (UCT)</span>
+              <p className="text-2xs text-slate-300 leading-relaxed">
+                Faculty points score (/600 or /800) using raw percentages, not standard point bands.
+              </p>
+            </div>
+          </div>
+
+          <div className="mt-3.5 rounded-xl bg-teal-500/10 p-3 text-2xs text-teal-200 border border-teal-500/20 flex items-center gap-2">
+            <Target className="h-3.5 w-3.5 shrink-0" aria-hidden="true" />
+            <span>
+              <strong>UCAG Engine Guarantee:</strong> We calculate your exact points per university using their official rules automatically!
+            </span>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
+```
+
+Changes: `p-5`→`p-4` outer, `gap-3.5`→`gap-2.5`, icon box `h-10 w-10`→`h-9 w-9` with the
+💡 emoji replaced by a `Lightbulb` icon, heading `text-base`→`text-sm sm:text-base`,
+description gets `line-clamp-2 sm:line-clamp-none` (capped at 2 lines on mobile, full
+text from `sm:` up), button padding `py-2`→`py-1.5`, and the 🎯 emoji in the expanded
+detail section replaced by a `Target` icon. The expanded-detail grid content itself
+(6 university cards) is unchanged — it only affects height when the user opts to expand
+it, not the collapsed-state measurement this task is trying to fix.
+
+- [ ] **Step 2: Run typecheck and lint**
+
+Run: `npm run typecheck && npm run lint`
+Expected: both clean.
+
+- [ ] **Step 3: Grep to confirm no emoji remain**
+
+Run: `grep -P '[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}]' components/aps/ApsFormulaBanner.tsx`
+Expected: no output.
+
+- [ ] **Step 4: Confirm the `ResultsSection.tsx` usage still renders correctly**
+
+Using the `chrome-devtools` MCP, enter subject marks on the calculator (or use whatever
+minimal path reaches a rendered `ResultsSection`) and screenshot the
+`ApsFormulaBanner` instance rendered there — confirm the tighter layout doesn't clip or
+overlap anything given `ResultsSection`'s surrounding context (this call site wasn't
+part of the height problem being solved, so it should just look like a smaller,
+tidier version of what was there before).
+
+- [ ] **Step 5: Commit**
+
+```bash
+git add components/aps/ApsFormulaBanner.tsx
+git commit -m "feat: tighten ApsFormulaBanner collapsed layout, replace emoji with icons"
+```
+
+---
+
+## Task 6: Re-verify the no-scroll goal after the scope expansion
+
+**Files:** none (verification only)
+
+**Interfaces:** none.
+
+- [ ] **Step 1: Repeat Task 3's measurement exactly**
+
+Using the `chrome-devtools` MCP against a freshly reloaded (cache-busted) page, resize
+to as close to 375×667 as the tool achieves, `wait_for` the page content, then run the
+same `evaluate_script` measurement from Task 3 Step 2 against `#home-language`, `#fal`,
+`#mathematics`. Repeat at 390×844.
+
+- [ ] **Step 2: Report the real result**
+
+Same four-outcome framework as Task 3 Step 4. If still not met, measure the new
+header+hero+banner+intro-card height breakdown (same diagnostic technique as the
+Task 3 finding above — walk `document.body`'s children and read `getBoundingClientRect()`
+on each) to see exactly how much further trimming is needed and where, and report that
+precisely rather than iterating blindly. Do not expand scope to a third file without
+going back to the human, per the same rule Task 3 followed.
+
+- [ ] **Step 3: Take fresh screenshots at both viewports**
+
+For the checkpoint record, same as Task 3 Step 5.
+
+- [ ] **Step 4: Full regression pass**
+
+Run: `npm run typecheck && npm run lint && npm test && npm run build`
+Expected: all clean — this is the final checkpoint for the whole Phase 1b-1 plan (Tasks
+1-6), so it gets the same full verification as the Phase 1a checkpoint did.
