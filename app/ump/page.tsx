@@ -263,13 +263,6 @@ export default async function UmpHubPage() {
                 desc: "Mbombela Main Campus & Siyabuswa Education Campus — residences, labs, and services.",
                 accent: UMP_TEAL,
               },
-              {
-                href: "/ump/mentors",
-                icon: "👥",
-                title: "Student Mentors",
-                desc: "Connect with senior UMP students who can guide you through admission and first year.",
-                accent: UMP_GOLD,
-              },
             ].map(({ href, icon, title, desc, accent, badge }) => (
               <Link
                 key={href}

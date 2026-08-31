@@ -149,12 +149,6 @@ export function AccountPage() {
           <Link href="/institutions" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
             <span>🏛️ Institutions & Programmes Portal</span>
           </Link>
-          <Link href="/account/parent" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
-            <span>👨‍👩‍👧 Parent & Guardian Portal</span>
-          </Link>
-          <Link href="/account/mentor" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
-            <span>🤝 Peer Mentor Portal</span>
-          </Link>
           <Link href="/admin" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
             <span>🏛️ University Admin Portal</span>
           </Link>

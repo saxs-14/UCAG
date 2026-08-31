@@ -9,7 +9,7 @@ import { useAuth } from "@/components/auth/AuthProvider";
 export default function LoginPage() {
   const router = useRouter();
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<"learner" | "parent" | "mentor" | "admin">("learner");
+  const [activeTab, setActiveTab] = useState<"learner" | "admin">("learner");
 
   // Redirect if already logged in
   if (user && !user.isAnonymous) {
@@ -43,18 +43,6 @@ export default function LoginPage() {
           >
             Learner
           </button>
-          <Link
-            href="/parent/login"
-            className="flex-1 py-2 rounded-lg text-center text-ink-soft hover:text-ink transition"
-          >
-            Parent
-          </Link>
-          <Link
-            href="/mentor/login"
-            className="flex-1 py-2 rounded-lg text-center text-ink-soft hover:text-ink transition"
-          >
-            Mentor
-          </Link>
           <Link
             href="/admin/login"
             className="flex-1 py-2 rounded-lg text-center text-ink-soft hover:text-ink transition"

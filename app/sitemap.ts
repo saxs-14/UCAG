@@ -33,11 +33,8 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/ump/funding",
     "/ump/careers",
     "/ump/campus",
-    "/ump/mentors",
     "/application/documents",
     "/institutions",
-    "/account/parent",
-    "/account/mentor",
   ].map((path) => ({
     url: `${base}${path}`,
     lastModified: new Date(),

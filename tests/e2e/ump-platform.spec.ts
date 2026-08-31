@@ -42,14 +42,10 @@ test.describe("UMP AI Education Platform E2E", () => {
     await expect(page.getByText("Achieve at least level 4 (50%) in Mathematics")).toBeVisible();
   });
 
-  test("visits UMP Campus Guide and Peer Mentors", async ({ page }) => {
+  test("visits UMP Campus Guide", async ({ page }) => {
     await page.goto("/ump/campus");
     await expect(page.getByRole("heading", { name: "UMP Campus Guide" })).toBeVisible();
     await expect(page.getByText("Mbombela Campus (Main Campus)")).toBeVisible();
-
-    await page.goto("/ump/mentors");
-    await expect(page.getByRole("heading", { name: "UMP Student Peer Mentors" })).toBeVisible();
-    await expect(page.getByText("Sibusiso Nkosi")).toBeVisible();
   });
 
   test("verifies Application Document Assistant POPIA privacy shield", async ({ page }) => {
