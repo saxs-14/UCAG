@@ -12,7 +12,7 @@ vi.mock("@/lib/catalog/getRealProgrammeDetail", () => ({
 const STATIC_PATHS = [
   "",
   "/bursaries",
-  "/statistics",
+  "/programmes",
   "/privacy",
   "/ump",
   "/ump/programmes",
