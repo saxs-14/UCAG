@@ -11,7 +11,7 @@ import { listVerifiedProgrammeIds } from "@/lib/catalog/getRealProgrammeDetail";
  * Deliberately excludes /account (a form, not a landing page worth
  * indexing) and /admin (internal, also blocked in robots.ts).
  *
- * Unlike /bursaries, /statistics, /programmes/[id] (all `force-dynamic`),
+ * Unlike /bursaries, /programmes, /programmes/[id] (all `force-dynamic`),
  * this route is statically prerendered at build time -- so if
  * listVerifiedProgrammeIds() throws (e.g. FIREBASE_ADMIN_* unset in a
  * given Vercel environment), it takes the *entire deployment* down, not
@@ -26,7 +26,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     "",
     "/bursaries",
-    "/statistics",
+    "/programmes",
     "/privacy",
     "/ump",
     "/ump/programmes",

@@ -14,8 +14,8 @@ export const LABELS = {
   },
   nav: {
     calculator: "APS Calculator",
-    bursaries: "Bursaries & Internships",
-    statistics: "Statistics",
+    bursaries: "Bursary",
+    programmes: "Programme Explorer",
     profile: "My Profile",
     ump: "UMP",
   },
@@ -99,14 +99,18 @@ export const LABELS = {
     scamExplainerOutro:
       "Every listing on this page shows its real provider and a source link -- click through and verify independently before you apply.",
   },
-  statistics: {
-    pageTitle: "Statistics",
-    pageSubtitle: "Independently verified national education data -- every chart cites its own source, and shows an honest \"pending verification\" state until one exists.",
-    higherEducationHeading: "Higher Education",
-    schoolsHeading: "Schools",
-    pendingVerification: "Data pending verification",
-    downloadCsv: "Download as CSV",
-    sourceLine: "Source: {publisher} · {year} · Verified {date}",
+  programmes: {
+    pageTitle: "Programme Explorer",
+    pageSubtitle: "Search and filter verified degree, diploma, and certificate programmes across every institution on UCAG -- then check your APS against any one of them.",
+    filterInstitutionLabel: "Institution",
+    filterAllInstitutions: "All institutions",
+    filterQualificationLabel: "Qualification",
+    filterAllQualifications: "All qualifications",
+    filterFieldLabel: "Field of study",
+    filterAllFields: "All fields",
+    searchLabel: "Search",
+    searchPlaceholder: "Search programmes by name...",
+    noResults: "No programmes match your filters right now.",
   },
   account: {
     pageTitle: "My Profile",

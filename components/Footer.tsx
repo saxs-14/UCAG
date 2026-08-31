@@ -31,8 +31,8 @@ export function Footer() {
           <Link href="/bursaries" className="text-white/80 hover:text-white hover:underline">
             {LABELS.nav.bursaries}
           </Link>
-          <Link href="/statistics" className="text-white/80 hover:text-white hover:underline">
-            {LABELS.nav.statistics}
+          <Link href="/programmes" className="text-white/80 hover:text-white hover:underline">
+            {LABELS.nav.programmes}
           </Link>
           <Link href="/privacy" className="text-white/80 hover:text-white hover:underline">
             {LABELS.account.privacyNoticeLink}

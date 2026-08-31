@@ -8,7 +8,7 @@ const GUEST_MOBILE_NAV_ITEMS = [
   { href: "/", label: "APS Calc", icon: "🎓" },
   { href: "/institutions", label: "Universities", icon: "🏛️" },
   { href: "/programmes", label: "Programmes", icon: "📚" },
-  { href: "/bursaries", label: "Bursaries", icon: "💰" },
+  { href: "/bursaries", label: "Bursary", icon: "💰" },
   { href: "/login", label: "Sign In", icon: "🔑" },
 ] as const;
 
@@ -16,7 +16,7 @@ const USER_MOBILE_NAV_ITEMS = [
   { href: "/", label: "APS Calc", icon: "🎓" },
   { href: "/institutions", label: "Universities", icon: "🏛️" },
   { href: "/programmes", label: "Programmes", icon: "📚" },
-  { href: "/bursaries", label: "Bursaries", icon: "💰" },
+  { href: "/bursaries", label: "Bursary", icon: "💰" },
   { href: "/account", label: "Profile", icon: "👤" },
 ] as const;
 

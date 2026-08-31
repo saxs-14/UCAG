@@ -11,7 +11,7 @@ const PUBLIC_NAV_ITEMS = [
   { href: "/", label: `🎓 ${LABELS.nav.calculator}` },
   { href: "/institutions", label: "🏛️ Institutions" },
   { href: "/bursaries", label: `💰 ${LABELS.nav.bursaries}` },
-  { href: "/statistics", label: `📊 ${LABELS.nav.statistics}` },
+  { href: "/programmes", label: `📚 ${LABELS.nav.programmes}` },
 ];
 
 interface NavBarProps {

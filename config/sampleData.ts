@@ -22,7 +22,6 @@ import type {
   Internship,
   Programme,
   School,
-  Statistic,
 } from "@/lib/firestore/types";
 
 const SAMPLE_VERIFIED_ON = "2026-07-23";
@@ -295,41 +294,6 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
     sourceUrl: SAMPLE_SOURCE_URL,
     verifiedOn: SAMPLE_VERIFIED_ON,
     academicYear: SAMPLE_ACADEMIC_YEAR,
-  },
-];
-
-/** Fictional statistics -- exist only to prove a chart CAN render once a
- * statistic is fully verified. Every real dataset (DHET/DBE enrolment,
- * graduation, NSC pass-rate figures) has zero entries here on purpose:
- * extracting real numbers out of the PDF-only sources in
- * config/sources.seed.ts is Phase 4 ingestion work that isn't live yet,
- * so those charts correctly show "data pending verification" instead of
- * a fabricated number. See lib/statistics/select.ts for the gate that
- * enforces this. */
-export const SAMPLE_STATISTICS: Statistic[] = [
-  {
-    id: "sample-stat-enrolments-2024",
-    dataset: "sample-higher-ed-enrolments",
-    dimension: "2024",
-    metric: "Total first-time undergraduate enrolments",
-    value: 142000,
-    unit: "learners",
-    sourceUrl: SAMPLE_SOURCE_URL,
-    verifiedOn: SAMPLE_VERIFIED_ON,
-    publisher: "[Sample] Fictional Publisher",
-    year: 2024,
-  },
-  {
-    id: "sample-stat-enrolments-2023",
-    dataset: "sample-higher-ed-enrolments",
-    dimension: "2023",
-    metric: "Total first-time undergraduate enrolments",
-    value: 138500,
-    unit: "learners",
-    sourceUrl: SAMPLE_SOURCE_URL,
-    verifiedOn: SAMPLE_VERIFIED_ON,
-    publisher: "[Sample] Fictional Publisher",
-    year: 2023,
   },
 ];
 
