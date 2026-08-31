@@ -19,11 +19,8 @@ const STATIC_PATHS = [
   "/ump/funding",
   "/ump/careers",
   "/ump/campus",
-  "/ump/mentors",
   "/application/documents",
   "/institutions",
-  "/account/parent",
-  "/account/mentor",
 ];
 
 describe("app/sitemap.ts", () => {

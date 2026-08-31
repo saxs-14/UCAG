@@ -437,8 +437,7 @@ export interface ConsentRecord {
   guardianEmail?: string;
 }
 
-export type UserRole = "learner" | "parent" | "mentor" | "staff" | "admin";
-export type MentorVerificationStatus = "pending" | "verified" | "suspended" | "rejected";
+export type UserRole = "learner" | "staff" | "admin";
 
 export interface UserProfile {
   uid: string;
@@ -456,29 +455,6 @@ export interface UserProfile {
   isMinor: boolean;
   guardianConsentAt: string | null;
   createdAt: string;
-}
-
-export interface MentorProfile {
-  uid: string;
-  name: string;
-  email: string;
-  institutionId: string;
-  campus: string;
-  faculty: string;
-  specialties: string[];
-  bio: string;
-  verificationStatus: MentorVerificationStatus;
-  createdAt: string;
-}
-
-export interface GuardianLink {
-  id: string;
-  guardianUid: string;
-  learnerUid: string;
-  learnerEmail?: string;
-  consentStatus: "active" | "revoked";
-  grantedAt: string;
-  revokedAt: string | null;
 }
 
 // ---------------------------------------------------------------------------

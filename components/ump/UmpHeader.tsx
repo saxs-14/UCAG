@@ -17,7 +17,6 @@ const UMP_NAV = [
   { href: "/ump/funding", label: "Funding" },
   { href: "/ump/campus", label: "Campuses" },
   { href: "/ump/careers", label: "Careers" },
-  { href: "/ump/mentors", label: "Mentors" },
 ];
 
 export function UmpHeader() {

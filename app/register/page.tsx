@@ -28,19 +28,6 @@ export default function RegisterPage() {
           </p>
         </div>
 
-        {/* Role choices */}
-        <div className="grid grid-cols-3 gap-2 mb-6 text-[11px] font-bold text-center">
-          <span className="rounded-xl bg-brand-teal/15 text-brand-teal p-2 border border-brand-teal/30">
-            👨‍🎓 Learner
-          </span>
-          <Link href="/parent/register" className="rounded-xl bg-paper p-2 border border-line text-ink-soft hover:border-brand-teal transition">
-            👨‍👩‍👧 Parent
-          </Link>
-          <Link href="/mentor/register" className="rounded-xl bg-paper p-2 border border-line text-ink-soft hover:border-brand-teal transition">
-            🤝 Mentor
-          </Link>
-        </div>
-
         <SignUpForm onSwitchToSignIn={() => router.push("/login")} />
 
         <div className="mt-6 border-t border-line/60 pt-4 text-center text-xs text-ink-soft">
