@@ -30,9 +30,9 @@ export function NavBar({ stats }: NavBarProps) {
           <Logo size={28} wordmarkClassName="text-lg font-bold tracking-tight text-white" />
         </Link>
 
-        {stats && (
+        {stats && stats.institutionCount > 0 && (
           <span className="hidden text-xs text-emerald-300 font-medium bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30 md:inline">
-            ✨ {stats.institutionCount} SA Universities · {stats.programmeCount > 0 ? `${stats.programmeCount} Degrees` : ""}
+            ✨ {stats.institutionCount} SA Universities{stats.programmeCount > 0 ? ` · ${stats.programmeCount} Degrees` : ""}
           </span>
         )}
 
