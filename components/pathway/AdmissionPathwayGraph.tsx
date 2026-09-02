@@ -190,7 +190,7 @@ export function AdmissionPathwayGraph({
                 {/* Qualify Branch */}
                 {renderQualify.length > 0 && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-xs font-bold text-mark-green">&check; Qualified ({renderQualify.length})</span>
+                    <span className="text-xs font-bold text-mark-green">✓ Qualified ({renderQualify.length})</span>
                     {renderQualify.map(({ programme }) => (
                       <div
                         key={programme.id}
@@ -206,7 +206,7 @@ export function AdmissionPathwayGraph({
                 {/* Almost Qualify Branch */}
                 {renderAlmost.length > 0 && (
                   <div className="flex flex-col gap-1.5">
-                    <span className="text-xs font-bold text-mark-amber">&excl; Near-Miss ({renderAlmost.length})</span>
+                    <span className="text-xs font-bold text-mark-amber">! Near-Miss ({renderAlmost.length})</span>
                     {renderAlmost.map(({ programme, matchResult }) => (
                       <div
                         key={programme.id}
