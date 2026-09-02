@@ -96,7 +96,7 @@ export function ApplicationMission({
             <div className="flex items-center justify-between">
               <span className="font-mono text-2xs font-bold text-ink-faint">STEP 0{i + 1}</span>
               {step.completed ? (
-                <span className="font-bold text-mark-green">&check;</span>
+                <span className="font-bold text-mark-green">✓</span>
               ) : (
                 <span className="h-2 w-2 rounded-full bg-line" />
               )}
