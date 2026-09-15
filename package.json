@@ -17,6 +17,7 @@
     "seed:bursaries-statistics": "tsx --env-file=.env.local scripts/seed-real-bursaries-and-statistics.mts",
     "seed:aps-rules": "tsx --env-file=.env.local scripts/seed-real-aps-rules.mts",
     "seed:ump-data": "tsx --env-file=.env.local scripts/seed-ump-data.mts",
+    "train:bursary-scam-model": "tsx scripts/train-bursary-scam-model.mts",
     "emulators:demo": "firebase emulators:start --only firestore,auth --import=./demo-data-export --export-on-exit"
   },
   "dependencies": {

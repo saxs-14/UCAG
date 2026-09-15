@@ -103,10 +103,23 @@ export default function RunsPage() {
             {runningTask === "/api/admin/programme-requirements/run" ? "Running..." : "Run programme requirements now"}
           </button>
         </div>
+        <div>
+          <button
+            type="button"
+            disabled={runningTask !== null}
+            onClick={() => runIngestionTask("/api/admin/bursaries/run")}
+            className="rounded border px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-gray-700"
+          >
+            {runningTask === "/api/admin/bursaries/run" ? "Running..." : "Run bursaries now"}
+          </button>
+        </div>
       </div>
       <p className="-mt-2 text-xs text-gray-500">
-        Both require LLM_PROVIDER + LLM_API_KEY to be configured (see .env.example) -- return a
-        clear error instead of a fake success if they aren&apos;t set.
+        All three require LLM_PROVIDER + LLM_API_KEY to be configured (see .env.example) -- return
+        a clear error instead of a fake success if they aren&apos;t set. Bursaries are additionally
+        screened for scam patterns (keyword checks + a trained classifier, lib/ingestion/
+        bursaryScamModel/) before queuing -- every proposal, including a flagged one, still lands
+        in the Verification Queue for a human to see and decide on, never auto-rejected silently.
       </p>
       {error && (
         <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">

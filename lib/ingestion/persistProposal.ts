@@ -1,6 +1,6 @@
 import "server-only";
 import { getAdminDb } from "@/lib/firebase/admin";
-import type { ApplicationWindow, IngestionRun, Programme, VerificationQueueItem } from "@/lib/firestore/types";
+import type { ApplicationWindow, Bursary, IngestionRun, Programme, VerificationQueueItem } from "@/lib/firestore/types";
 
 /**
  * Real Firestore writers for the ingestion pipeline's two output
@@ -53,4 +53,14 @@ export async function getExistingProgramme(docId: string): Promise<Programme | n
   const doc = await db.collection("programmes").doc(docId).get();
   if (!doc.exists) return null;
   return doc.data() as Programme;
+}
+
+/** Bursary on record for this exact derived docId, if any -- what a
+ * bursaries proposal is diffed against. See lib/ingestion/bursaryPipeline.ts
+ * for how docId is derived and its known collision/drift limitations. */
+export async function getExistingBursary(docId: string): Promise<Bursary | null> {
+  const db = getAdminDb();
+  const doc = await db.collection("bursaries").doc(docId).get();
+  if (!doc.exists) return null;
+  return doc.data() as Bursary;
 }

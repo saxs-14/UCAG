@@ -306,7 +306,8 @@ export type BursaryLevelRequired =
 export type BursaryRiskFlag =
   | "requiresUpfrontPayment"
   | "noVerifiableProviderWebsite"
-  | "sourcedFromSocialMediaOnly";
+  | "sourcedFromSocialMediaOnly"
+  | "mlHighScamRisk";
 
 export interface Bursary extends FactProvenance {
   id: string;
