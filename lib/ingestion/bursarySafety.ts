@@ -1,25 +1,17 @@
 import type { BursaryRiskFlag } from "@/lib/firestore/types";
 
 /**
- * Bursary/internship scam rules, encoded per CLAUDE.md non-negotiable
- * #5 and docs/MASTER_PROMPT_v2.md Phase 4 ("Bursary and internship
- * safety"). Bursary scams targeting South African school-leavers are a
- * real, active problem -- these checks run on every candidate listing
- * before it can be routed anywhere near auto-publish or the
- * verification queue as "safe."
+ * Bursary/internship safety types plus the two checks that also run
+ * client-side at display time (lib/bursaries/filter.ts's "defence in
+ * depth" re-check) -- kept free of any server-only dependency for
+ * exactly that reason. The actual risk-detection logic (keyword scan +
+ * ML classifier) that only ever needs to run once, at ingestion time,
+ * lives in bursaryScamModel/detectRisk.ts instead, which is marked
+ * server-only -- importing anything from it here would silently make
+ * this whole file (and therefore the client bundle that needs
+ * isSafeToPublish) server-only too, the same mistake lib/env/server.ts's
+ * own comment warns about.
  */
-
-const UPFRONT_PAYMENT_KEYWORDS = [
-  "registration fee",
-  "admin fee",
-  "administration fee",
-  "processing fee",
-  "activation fee",
-  "insurance fee",
-  "upfront payment",
-  "pay to apply",
-  "deposit required",
-];
 
 export type ListingSourceType = "officialProviderSite" | "aggregator" | "socialMedia";
 
@@ -29,28 +21,13 @@ export interface BursaryScamCheckInput {
   criteria: string[];
   providerWebsiteUrl: string | null;
   sourceType: ListingSourceType;
-}
-
-/** Never publish a listing with any of these flags -- see
- * lib/ingestion/route.ts, which treats bursaries/internships as
- * always-high-risk regardless of confidence for exactly this reason. */
-export function detectBursaryRiskFlags(input: BursaryScamCheckInput): BursaryRiskFlag[] {
-  const flags: BursaryRiskFlag[] = [];
-  const haystack = [input.name, input.value, ...input.criteria].join(" ").toLowerCase();
-
-  if (UPFRONT_PAYMENT_KEYWORDS.some((keyword) => haystack.includes(keyword))) {
-    flags.push("requiresUpfrontPayment");
-  }
-
-  if (!input.providerWebsiteUrl) {
-    flags.push("noVerifiableProviderWebsite");
-  }
-
-  if (input.sourceType === "socialMedia") {
-    flags.push("sourcedFromSocialMediaOnly");
-  }
-
-  return flags;
+  /** The full scraped/extracted listing text, when the ingestion step
+   * captured one, before it was structured into name/value/criteria --
+   * richer signal for both the keyword scan and the ML classifier in
+   * bursaryScamModel/detectRisk.ts (urgency/guarantee phrasing tends to
+   * live in the surrounding prose, not in a terse value or criteria
+   * list). Falls back to name+value+criteria when not available. */
+  rawText?: string;
 }
 
 export function isSafeToPublish(flags: BursaryRiskFlag[]): boolean {

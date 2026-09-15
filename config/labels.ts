@@ -98,6 +98,9 @@ export const LABELS = {
     ],
     scamExplainerOutro:
       "Every listing on this page shows its real provider and a source link -- click through and verify independently before you apply.",
+    scamShieldTitle: "Every listing here is already screened",
+    scamShieldBody:
+      "Beyond checking the signs above yourself: every bursary submitted to UCAG is automatically screened for scam patterns before it's ever added -- a keyword check for common scam phrasing, plus a machine-learning model trained to catch scam wording that doesn't match an exact phrase (e.g. \"a quick refundable fee\" instead of \"registration fee\"). Nothing that fails this check is shown on this page.",
   },
   programmes: {
     pageTitle: "Programme Explorer",
