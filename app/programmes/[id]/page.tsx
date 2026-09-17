@@ -24,12 +24,17 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const detail = await getRealProgrammeDetail(id);
-  if (!detail) return { title: `Programme not found -- ${LABELS.app.name}` };
+  if (!detail) {
+    // Thin/error content -- must never be indexed as if it were a real
+    // programme page.
+    return { title: `Programme not found -- ${LABELS.app.name}`, robots: { index: false } };
+  }
 
   const { programme, institution } = detail;
   return {
     title: `${programme.name} -- ${institution.name} -- ${LABELS.app.name}`,
     description: `${programme.qualificationType} at ${institution.name}, ${programme.duration}. Check your APS against this programme's requirements on ${LABELS.app.name}.`,
+    alternates: { canonical: `/programmes/${id}` },
   };
 }
 

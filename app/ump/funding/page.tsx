@@ -11,6 +11,7 @@ export const metadata: Metadata = {
   title: `UMP Funding & Bursaries -- ${LABELS.app.name}`,
   description:
     "Funding options for University of Mpumalanga students — NSFAS, UMP merit bursaries, Mpumalanga provincial bursaries, and external scholarships. All independently verified.",
+  alternates: { canonical: "/ump/funding" },
 };
 
 /**

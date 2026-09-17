@@ -6,6 +6,7 @@ export const metadata: Metadata = {
   title: "South African Universities Directory -- UCAG",
   description:
     "Explore South African public universities, admission requirements, application portals, and verified degree programmes.",
+  alternates: { canonical: "/institutions" },
 };
 
 export const dynamic = "force-dynamic";

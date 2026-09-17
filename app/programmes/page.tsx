@@ -7,6 +7,7 @@ import type { FieldTag, QualificationType } from "@/lib/firestore/types";
 export const metadata: Metadata = {
   title: `${LABELS.programmes.pageTitle} -- ${LABELS.app.name}`,
   description: LABELS.programmes.pageSubtitle,
+  alternates: { canonical: "/programmes" },
 };
 
 // Real, cross-institution catalogue -- the calculator's Institution

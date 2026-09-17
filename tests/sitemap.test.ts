@@ -17,6 +17,7 @@ const STATIC_PATHS = [
   "/ump",
   "/ump/programmes",
   "/ump/funding",
+  "/ump/learnerships",
   "/ump/careers",
   "/ump/campus",
   "/application/documents",

@@ -2,6 +2,8 @@ import { LABELS } from "@/config/labels";
 
 export const metadata = {
   title: `${LABELS.privacy.pageTitle} -- ${LABELS.app.name}`,
+  description: LABELS.privacy.intro,
+  alternates: { canonical: "/privacy" },
 };
 
 export default function Privacy() {

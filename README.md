@@ -23,6 +23,9 @@ Owner: Phathutshedzo "Saxs" Mamagau — SaxsProjects.
   repo is built: the non-negotiable rules, the stack, the workflow.
 - [`docs/MASTER_PROMPT_v2.md`](docs/MASTER_PROMPT_v2.md) — the full governing
   brief this rebuild follows, phase by phase.
+- [`docs/BACKLINK_STRATEGY.md`](docs/BACKLINK_STRATEGY.md) — the off-page
+  half of SEO (on-page: sitemap/meta/canonical/schema, all in code already;
+  backlinks need real outreach, not a build step).
 
 ## The one rule that matters most
 

@@ -31,6 +31,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     "/ump",
     "/ump/programmes",
     "/ump/funding",
+    "/ump/learnerships",
     "/ump/careers",
     "/ump/campus",
     "/application/documents",

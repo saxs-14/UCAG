@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: `Learnerships & Apprenticeships -- ${LABELS.app.name}`,
   description:
     "SETA-registered learnerships and apprenticeships for Grade 11/12 learners and school leavers in Mpumalanga — AgriSETA, MICT SETA, MERSETA, and more. No degree required.",
+  alternates: { canonical: "/ump/learnerships" },
 };
 
 const UMP_NAVY = "#003b5c";

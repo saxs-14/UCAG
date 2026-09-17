@@ -8,6 +8,7 @@ export const metadata: Metadata = {
   title: `UMP Campus Guide -- ${LABELS.app.name}`,
   description:
     "Comprehensive guide to University of Mpumalanga Mbombela and Siyabuswa campuses — residences, libraries, laboratories, student services, and facilities.",
+  alternates: { canonical: "/ump/campus" },
 };
 
 const UMP_NAVY = "#003b5c";

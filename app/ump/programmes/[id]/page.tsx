@@ -35,12 +35,19 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { id } = await params;
   const detail = await getRealProgrammeDetail(id);
-  if (!detail) return { title: `Programme not found -- ${LABELS.app.name}` };
+  if (!detail) return { title: `Programme not found -- ${LABELS.app.name}`, robots: { index: false } };
 
   const { programme } = detail;
   return {
     title: `${programme.name} -- UMP -- ${LABELS.app.name}`,
     description: `${QUALIFICATION_LABELS[programme.qualificationType] ?? programme.qualificationType} at the University of Mpumalanga. ${programme.duration}. Minimum APS: ${programme.minAps ?? "see requirements"}.`,
+    // Self-canonical, not pointed at /programmes/${id} -- this reads
+    // getRealProgrammeDetail same as the general catalogue page, but this
+    // is the UMP-branded hub's own framing of it (see components/ump/),
+    // not a thin duplicate. Worth a second look if these two pages ever
+    // end up with genuinely identical body content, not just similar
+    // metadata -- that's when they should consolidate onto one canonical.
+    alternates: { canonical: `/ump/programmes/${id}` },
   };
 }
 

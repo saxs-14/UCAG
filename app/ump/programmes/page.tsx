@@ -11,6 +11,7 @@ const UMP_NAVY = "#003b5c";
 export const metadata: Metadata = {
   title: `${LABELS.ump.programmesPageTitle} -- ${LABELS.app.name}`,
   description: LABELS.ump.programmesPageSubtitle,
+  alternates: { canonical: "/ump/programmes" },
 };
 
 // Live Firestore data -- always current, never a stale build snapshot.
