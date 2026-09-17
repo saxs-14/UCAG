@@ -12,11 +12,16 @@ interface PageProps {
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { id } = await params;
   const inst = SEED_INSTITUTIONS.find((i) => i.id.toLowerCase() === id.toLowerCase());
-  if (!inst) return { title: "Institution Not Found -- UCAG" };
+  if (!inst) return { title: "Institution Not Found -- UCAG", robots: { index: false } };
 
   return {
     title: `${inst.name} (${inst.shortName}) -- UCAG Institution Directory`,
     description: `Admission requirements, APS calculation rules, and verified programme information for ${inst.name}.`,
+    // inst.id (the seed's own canonical casing), not the raw incoming
+    // `id` param -- the lookup above is case-insensitive, so
+    // /institutions/UCT and /institutions/uct must declare the SAME
+    // canonical rather than each pointing at its own case variant.
+    alternates: { canonical: `/institutions/${inst.id}` },
   };
 }
 

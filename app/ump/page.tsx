@@ -9,6 +9,7 @@ import { UmpHeader } from "@/components/ump/UmpHeader";
 export const metadata: Metadata = {
   title: `${LABELS.ump.hubPageTitle} -- ${LABELS.app.name}`,
   description: LABELS.ump.hubPageSubtitle,
+  alternates: { canonical: "/ump" },
 };
 
 export const dynamic = "force-dynamic";

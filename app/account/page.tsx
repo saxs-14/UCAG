@@ -4,6 +4,12 @@ import { PageHero } from "@/components/PageHero";
 
 export const metadata = {
   title: `${LABELS.account.pageTitle} -- ${LABELS.app.name}`,
+  description: LABELS.account.pageSubtitle,
+  alternates: { canonical: "/account" },
+  // Real account settings behind auth -- nothing here is content worth a
+  // stranger finding via search, and indexing it would just show Google
+  // an empty/signed-out shell.
+  robots: { index: false, follow: true },
 };
 
 export default function Account() {

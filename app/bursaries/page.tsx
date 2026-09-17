@@ -5,6 +5,8 @@ import { fetchRealBursariesAndInternships } from "@/lib/catalog/getRealBursaries
 
 export const metadata = {
   title: `${LABELS.bursaries.pageTitle} -- ${LABELS.app.name}`,
+  description: LABELS.bursaries.pageSubtitle,
+  alternates: { canonical: "/bursaries" },
 };
 
 // Real data, not a static snapshot -- also correctness-critical here

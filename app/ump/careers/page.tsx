@@ -12,6 +12,7 @@ export const metadata: Metadata = {
   title: `UMP Career Roadmaps -- ${LABELS.app.name}`,
   description:
     "Step-by-step career roadmaps for University of Mpumalanga students — from Grade 12 through your UMP degree to a successful career in ICT, Agriculture, Education, or Business.",
+  alternates: { canonical: "/ump/careers" },
 };
 
 /**
