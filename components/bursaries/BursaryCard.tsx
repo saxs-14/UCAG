@@ -29,8 +29,8 @@ export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; s
             </div>
             <DeadlineBadge closesOn={bursary.closesOn} />
           </div>
-          <p className="mt-2 text-sm text-ink-soft">{bursary.provider}</p>
-          <p className="mt-1 text-sm font-mono tabular-nums text-ink">{bursary.value}</p>
+          <p className="mt-2 text-sm font-semibold text-ink">{bursary.provider}</p>
+          <p className="mt-1 text-xs text-ink-faint">Funding amount recorded: <span className="font-medium text-ink-soft">{bursary.value}</span></p>
           <p className="mt-1 font-mono text-xs tabular-nums text-ink-soft">
             {formatApplicationWindow(bursary.opensOn, bursary.closesOn)}
           </p>
@@ -47,7 +47,8 @@ export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; s
               ))}
             </ul>
           )}
-          <div className="mt-3 flex items-center justify-between border-t border-line pt-2 text-xs">
+          <p className="mt-3 rounded-lg bg-slate-soft px-3 py-2 text-xs leading-5 text-ink-soft">Check the criteria and dates on the provider's page before submitting. UCAG does not guarantee funding.</p>
+          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-2 text-xs">
             <a
               href={bursary.applyUrl}
               target="_blank"
