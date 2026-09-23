@@ -1,4 +1,5 @@
 import "server-only";
+import { createHash } from "node:crypto";
 import { getAdminDb } from "@/lib/firebase/admin";
 import type { ApplicationWindow, Bursary, IngestionRun, Programme, VerificationQueueItem } from "@/lib/firestore/types";
 
@@ -9,13 +10,37 @@ import type { ApplicationWindow, Bursary, IngestionRun, Programme, VerificationQ
  * written to either until now.
  */
 
+function proposalKey(item: Omit<VerificationQueueItem, "id">): string {
+  const canonical = JSON.stringify({
+    collection: item.collection,
+    docId: item.docId,
+    field: item.field,
+    currentValue: item.currentValue ?? null,
+    proposedValue: item.proposedValue ?? null,
+    sourceUrl: item.sourceUrl,
+  });
+  return createHash("sha256").update(canonical).digest("hex");
+}
+
 export async function persistVerificationQueueItem(
   item: Omit<VerificationQueueItem, "id">
 ): Promise<string> {
   const db = getAdminDb();
-  const ref = db.collection("verificationQueue").doc();
-  await ref.set({ id: ref.id, ...item });
-  return ref.id;
+  const key = proposalKey(item);
+  const pendingQuery = db
+    .collection("verificationQueue")
+    .where("proposalKey", "==", key)
+    .where("status", "==", "pending")
+    .limit(1);
+
+  return db.runTransaction(async (transaction) => {
+    const existing = await transaction.get(pendingQuery);
+    if (!existing.empty) return existing.docs[0]!.id;
+
+    const ref = db.collection("verificationQueue").doc();
+    transaction.set(ref, { id: ref.id, proposalKey: key, ...item });
+    return ref.id;
+  });
 }
 
 export async function persistIngestionRun(run: Omit<IngestionRun, "id">): Promise<string> {
