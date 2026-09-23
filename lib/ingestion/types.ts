@@ -21,6 +21,7 @@ export interface FetchOutcome {
   error: string | null;
   fetchedAt: string;
   contentHash?: string;
+  skipped?: boolean;
 }
 
 export interface DiffOutcome<T = unknown> {
