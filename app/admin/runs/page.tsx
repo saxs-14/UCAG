@@ -56,6 +56,22 @@ export default function RunsPage() {
     }
   }
 
+  async function recoverStaleRuns() {
+    setBusyId("stale-recovery");
+    setMessage(null);
+    setError(null);
+    try {
+      const res = await adminFetch("/api/admin/runs/recover", { method: "POST" });
+      const body = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(body.error ?? `Request failed (${res.status}).`);
+      setMessage(`${body.recovered ?? 0} stale run${body.recovered === 1 ? "" : "s"} recovered.`);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setBusyId(null);
+    }
+  }
+
   async function rerun(id: string) {
     setBusyId(id);
     setMessage(null);
@@ -83,6 +99,9 @@ export default function RunsPage() {
         directly, so proposals there matter even more than most -- review carefully.
       </p>
       <div className="flex flex-wrap gap-4">
+        <button type="button" disabled={busyId !== null} onClick={recoverStaleRuns} className="rounded border px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-gray-700">
+          {busyId === "stale-recovery" ? "Recovering..." : "Recover stale runs"}
+        </button>
         <div>
           <button
             type="button"

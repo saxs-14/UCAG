@@ -159,3 +159,45 @@ export async function getExistingBursary(docId: string): Promise<Bursary | null>
   if (!doc.exists) return null;
   return doc.data() as Bursary;
 }
+
+
+/**
+ * Marks abandoned ingestion runs as failed. This is deliberately explicit:
+ * a run must be older than the supplied threshold and still be "running".
+ * The transaction prevents a concurrently completing run from being
+ * overwritten.
+ */
+export async function recoverStaleIngestionRuns(
+  maxAgeMs = 60 * 60 * 1000,
+  now = new Date()
+): Promise<number> {
+  const db = getAdminDb();
+  const cutoff = now.getTime() - maxAgeMs;
+  const snapshot = await db.collection("ingestionRuns").where("status", "==", "running").get();
+  let recovered = 0;
+
+  for (const doc of snapshot.docs) {
+    const data = doc.data();
+    const startedMs = typeof data.startedAt === "string" ? Date.parse(data.startedAt) : NaN;
+    if (!Number.isFinite(startedMs) || startedMs >= cutoff) continue;
+
+    const ref = doc.ref;
+    const recoveredAt = now.toISOString();
+    const changed = await db.runTransaction(async (transaction) => {
+      const fresh = await transaction.get(ref);
+      if (!fresh.exists || fresh.data()?.status !== "running") return false;
+      transaction.update(ref, {
+        status: "failed",
+        finishedAt: recoveredAt,
+        errors: [
+          ...(Array.isArray(fresh.data()?.errors) ? fresh.data()?.errors : []),
+          "Run marked failed by stale-run recovery after exceeding the recovery threshold.",
+        ],
+      });
+      return true;
+    });
+    if (changed) recovered++;
+  }
+
+  return recovered;
+}
