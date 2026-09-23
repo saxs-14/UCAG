@@ -67,7 +67,6 @@ function validMajorProfile(uid: string) {
   return {
     uid,
     institutionId: "ump",
-    institutionId: "ump",
     marks: [],
     shortlist: [],
     consentRecord: null,
@@ -80,6 +79,7 @@ function validMajorProfile(uid: string) {
 function validMinorProfileWithConsent(uid: string) {
   return {
     uid,
+    institutionId: "ump",
     marks: [],
     shortlist: [],
     consentRecord: {
