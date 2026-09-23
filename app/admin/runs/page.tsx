@@ -160,6 +160,7 @@ export default function RunsPage() {
               <th className="py-1 pr-3">Proposed</th>
               <th className="py-1 pr-3">Auto-published</th>
               <th className="py-1 pr-3">Queued</th>
+              <th className="py-1 pr-3">Retries</th>
               <th className="py-1 pr-3">Errors</th>
               <th className="py-1 pr-3" />
             </tr>
@@ -176,6 +177,7 @@ export default function RunsPage() {
                 <td className="py-1.5 pr-3 text-xs">{run.itemsProposed}</td>
                 <td className="py-1.5 pr-3 text-xs">{run.itemsAutoPublished}</td>
                 <td className="py-1.5 pr-3 text-xs">{run.itemsQueued}</td>
+                <td className="py-1.5 pr-3 text-xs">{(run.sourceResults ?? []).reduce((n, r) => n + (r.retryCount ?? 0), 0)}</td>
                 <td className="py-1.5 pr-3 text-xs text-mark-red">
                   {run.errors.length > 0 ? run.errors.join("; ") : "-"}
                 </td>

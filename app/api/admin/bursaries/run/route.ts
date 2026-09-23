@@ -83,6 +83,7 @@ export async function POST(request: NextRequest) {
       etag: r.etag,
       lastModified: r.lastModified,
       contentHash: r.contentHash,
+      retryCount: r.retryCount,
     }));
     await completeIngestionRun(runId, {
       startedAt: summary.startedAt,
