@@ -16,13 +16,17 @@ const patchSchema = z
   .refine((v) => Object.keys(v).length > 0, { message: "No fields to update." });
 
 export async function PATCH(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+  let admin;
   try {
-    await requireAdmin(request);
+    admin = await requireAdmin(request);
   } catch (err) {
     return adminErrorResponse(err);
   }
 
   const { id } = await params;
+  if (!/^[a-z0-9][a-z0-9-]{0,99}$/.test(id)) {
+    return NextResponse.json({ error: "Invalid source id." }, { status: 400 });
+  }
   const parsed = patchSchema.safeParse(await request.json().catch(() => null));
   if (!parsed.success) {
     return NextResponse.json(
@@ -38,6 +42,10 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
     return NextResponse.json({ error: "Source not found." }, { status: 404 });
   }
 
-  await ref.update(parsed.data);
+  await ref.update({
+    ...parsed.data,
+    updatedAt: new Date().toISOString(),
+    updatedBy: admin.uid,
+  });
   return NextResponse.json({ ok: true });
 }
