@@ -58,11 +58,15 @@ beforeEach(async (ctx) => {
     return;
   }
   await testEnv.clearFirestore();
+  await testEnv.withSecurityRulesDisabled(async (adminCtx) => {
+    await adminCtx.firestore().doc("institutions/ump").set({ name: "University of Mpumalanga" });
+  });
 });
 
 function validMajorProfile(uid: string) {
   return {
     uid,
+    institutionId: "ump",
     marks: [],
     shortlist: [],
     consentRecord: null,
@@ -75,6 +79,7 @@ function validMajorProfile(uid: string) {
 function validMinorProfileWithConsent(uid: string) {
   return {
     uid,
+    institutionId: "ump",
     marks: [],
     shortlist: [],
     consentRecord: {
@@ -90,6 +95,24 @@ function validMinorProfileWithConsent(uid: string) {
 }
 
 describe("userProfiles security rules", () => {
+  it("a user cannot create a profile without an institution", async () => {
+    const alice = testEnv.authenticatedContext("user-a");
+    const profile = { ...validMajorProfile("user-a") };
+    delete profile.institutionId;
+    await assertFails(alice.firestore().doc("userProfiles/user-a").set(profile));
+  });
+
+  it("a user cannot select an unknown institution", async () => {
+    const alice = testEnv.authenticatedContext("user-a");
+    await assertFails(
+      alice.firestore().doc("userProfiles/user-a").set({
+        ...validMajorProfile("user-a"),
+        institutionId: "does-not-exist",
+      })
+    );
+  });
+
+
   it("an unauthenticated user cannot read or write any profile", async () => {
     const unauth = testEnv.unauthenticatedContext();
     await assertFails(unauth.firestore().doc("userProfiles/user-a").get());
