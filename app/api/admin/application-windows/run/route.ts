@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminErrorResponse } from "@/lib/admin/respond";
 import { getAdminDb } from "@/lib/firebase/admin";
+import type { DecodedIdToken } from "firebase-admin/auth";
 import { getLlmClient } from "@/lib/ingestion/llm/getLlmClient";
 import { runApplicationWindowIngestion } from "@/lib/ingestion/applicationWindowPipeline";
 import { acquireIngestionLock, completeIngestionRun, createIngestionRun, failIngestionRun, getCurrentApplicationWindow, persistVerificationQueueItem } from "@/lib/ingestion/persistProposal";
@@ -23,7 +24,7 @@ import type { Source } from "@/lib/firestore/types";
  * yet" surface in this app (see runs/[id]/rerun).
  */
 export async function POST(request: NextRequest) {
-  let admin;
+  let admin: DecodedIdToken;
   try {
     admin = await requireAdmin(request);
   } catch (err) {
