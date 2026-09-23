@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminErrorResponse } from "@/lib/admin/respond";
-import { isEditableFactCollection } from "@/lib/admin/allowlist";
+import { isEditableFactCollection, isEditableFactField } from "@/lib/admin/allowlist";
 import { getAdminDb } from "@/lib/firebase/admin";
 
 /**
@@ -25,7 +25,7 @@ const bodySchema = z.object({
   patch: z
     .record(z.string(), z.unknown())
     .refine((v) => Object.keys(v).length > 0, { message: "patch must have at least one field." }),
-  sourceUrl: z.string().url(),
+  sourceUrl: z.string().url().refine((value) => /^https?:\\/\\//i.test(value), { message: "sourceUrl must use http or https." }),
 });
 
 export async function POST(request: NextRequest) {
