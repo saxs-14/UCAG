@@ -88,7 +88,7 @@ service cloud.firestore {
     // calling the Firestore SDK directly.
     match /userProfiles/{uid} {
       allow read: if isOwner(uid);
-      allow create: if isOwner(uid) && isValidProfileWrite(uid, request.resource.data);
+      allow create: if isOwner(uid) && isValidProfileWrite(uid, request.resource.data) && clientCreatedRoleIsLearner();
       allow update: if isOwner(uid)
         && isValidProfileWrite(uid, request.resource.data)
         && consentRecordNotRemoved()
@@ -131,7 +131,7 @@ service cloud.firestore {
     // Once a consent record exists, a client write can replace it (e.g.
     // re-confirming consent) but can never null it out -- consent is a
     // record to preserve, not a flag to toggle off from the client.
-    function roleUnchanged() {\n      return request.resource.data.role == resource.data.role;\n    }\n\n    function onlyLearnerEditableFieldsChanged() {\n      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([\n        "institutionId",\n        "marks",\n        "shortlist",\n        "checklistProgress",\n        "consentRecord",\n        "isMinor",\n        "guardianConsentAt"\n      ]);\n    }\n\n    function consentRecordNotRemoved() {
+    function clientCreatedRoleIsLearner() {\n      return !request.resource.data.keys().hasAny(["role"])\n        || request.resource.data.role == "learner";\n    }\n\n    function roleUnchanged() {\n      return request.resource.data.role == resource.data.role;\n    }\n\n    function onlyLearnerEditableFieldsChanged() {\n      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([\n        "institutionId",\n        "marks",\n        "shortlist",\n        "checklistProgress",\n        "consentRecord",\n        "isMinor",\n        "guardianConsentAt"\n      ]);\n    }\n\n    function consentRecordNotRemoved() {
       return resource.data.consentRecord == null || request.resource.data.consentRecord != null;
     }
 
