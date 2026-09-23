@@ -71,7 +71,7 @@ export function calculateDetailedReadiness(
   const applicationScore = checklistTotal === 0 ? 100 : Math.round((checklistMet / checklistTotal) * 100);
 
   // 3. Documentation Readiness (ID/ID Document/Certificates items in checklist)
-  const docItemIds = ["certified-id", "nsc-results", "proof-of-residence"];
+  const docItemIds = ["certified-id", "certified-results", "proof-of-residence"];
   const docMet = docItemIds.filter((id) => checkedItemIds.has(id)).length;
   const docScore = Math.round((docMet / docItemIds.length) * 100);
 
@@ -96,7 +96,7 @@ export function calculateDetailedReadiness(
     }
   }
 
-  // 6. Career Alignment (100% if qualified degree/diploma, 70% if near-miss)
+  // 6. Programme Pathway (derived from the current match bucket; this is not a career prediction)
   const careerScore = matchResult.bucket === "qualify" ? 100 : matchResult.bucket === "almostQualify" ? 70 : 40;
 
   const categories: DetailedReadinessCategory[] = [
@@ -132,9 +132,9 @@ export function calculateDetailedReadiness(
     },
     {
       id: "career",
-      name: "Career Alignment",
+      name: "Programme Pathway",
       score: careerScore,
-      statusText: matchResult.bucket === "qualify" ? "Strong degree fit" : "Requires mark boost for direct fit",
+      statusText: matchResult.bucket === "qualify" ? "Meets the recorded requirements" : matchResult.bucket === "almostQualify" ? "Review what is missing" : "Review alternative pathways",
     },
   ];
 

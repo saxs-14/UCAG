@@ -219,6 +219,14 @@ export function ResultCard({
           </p>
         )}
 
+        <div className="rounded-xl border border-teal-200 bg-teal-50/70 p-3 text-xs text-teal-950">
+          <p className="font-bold">Before you apply</p>
+          <p className="mt-1 leading-relaxed">
+            General preparation: have your ID and latest results ready, then check the official programme page for any documents or steps this institution requires.
+          </p>
+          <p className="mt-1 text-2xs font-medium text-teal-800">UCAG guidance only — this is not the institution&apos;s official document list.</p>
+        </div>
+
         <div className="flex flex-col gap-2 border-t border-line pt-3 text-xs sm:flex-row sm:flex-wrap sm:items-center">
           {cta.kind === "apply" && (
             <a
@@ -231,12 +239,22 @@ export function ResultCard({
             </a>
           )}
           {cta.kind === "openingSoon" && (
-            <span className="inline-flex min-h-10 items-center rounded-xl bg-emerald-100 px-3.5 font-bold text-emerald-800 border border-emerald-300">
-              ⏳ {cta.label}
-            </span>
+            <>
+              <div className="w-full rounded-xl bg-emerald-50 p-3 text-xs text-emerald-900 border border-emerald-200">
+                <p className="font-bold">Prepare before applications open</p>
+                <p className="mt-1">Use this time to prepare your documents and check the official programme page.</p>
+              </div>
+              <span className="inline-flex min-h-10 items-center rounded-xl bg-emerald-100 px-3.5 font-bold text-emerald-800 border border-emerald-300">
+                ⏳ {cta.label}
+              </span>
+            </>
           )}
           {cta.kind === "statusCheck" && (
             <>
+              <div className="w-full rounded-xl bg-slate-50 p-3 text-xs text-slate-800 border border-slate-200">
+                <p className="font-bold">This application window is closed</p>
+                <p className="mt-1">You can still review the programme and prepare for the next application cycle.</p>
+              </div>
               <span className="inline-flex min-h-10 items-center rounded-xl bg-slate-100 px-3.5 font-semibold text-slate-700">
                 {LABELS.applicationStatus.closed}
               </span>
@@ -254,6 +272,10 @@ export function ResultCard({
           )}
           {cta.kind === "datesBeingVerified" && (
             <>
+              <div className="w-full rounded-xl bg-slate-50 p-3 text-xs text-slate-800 border border-slate-200">
+                <p className="font-bold">Dates need verification</p>
+                <p className="mt-1">UCAG has not verified this application window yet. Use the official institution site for the current deadline.</p>
+              </div>
               <span className="inline-flex min-h-10 items-center rounded-xl bg-slate-100 px-3.5 font-semibold text-slate-700">
                 {cta.label}
               </span>
