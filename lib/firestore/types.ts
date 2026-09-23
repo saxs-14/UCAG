@@ -414,6 +414,10 @@ export interface IngestionRun {
     detail?: string;
     tokensUsed: number;
     fieldsQueued: string[];
+    fetchedAt?: string;
+    statusCode?: number | null;
+    etag?: string | null;
+    lastModified?: string | null;
   }>;
 }
 
