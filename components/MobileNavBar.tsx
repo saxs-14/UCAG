@@ -5,9 +5,9 @@ import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
 
 const GUEST_MOBILE_NAV_ITEMS = [
-  { href: "/", label: "Home", icon: "⌂" },
+  { href: "/", label: "Check", icon: "⌂" },
   { href: "/institutions", label: "Universities", icon: "▦" },
-  { href: "/programmes", label: "Degrees", icon: "▤" },
+  { href: "/programmes", label: "Programmes", icon: "▤" },
   { href: "/bursaries", label: "Funding", icon: "₊" },
   { href: "/login", label: "Profile", icon: "◯" },
 ] as const;
