@@ -50,8 +50,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: `"${collection}" is not an editable fact collection.` }, { status: 422 });
   }
 
-  const write = { ...patch, sourceUrl, verifiedOn: new Date().toISOString().slice(0, 10) };
-  await getAdminDb().collection(collection).doc(docId).set(write, { merge: true });
+  const invalidFields = Object.keys(patch).filter((field) => !isEditableFactField(collection, field));
+  if (invalidFields.length > 0) {
+    return NextResponse.json(
+      { error: `These fields cannot be edited through this route: ${invalidFields.join(", ")}.` },
+      { status: 422 }
+    );
+  }
+
+  const db = getAdminDb();
+  const targetRef = db.collection(collection).doc(docId);
+  if (!(await targetRef.get()).exists) {
+    return NextResponse.json({ error: "Fact document not found." }, { status: 404 });
+  }
+
+  const write = {
+    ...patch,
+    sourceUrl,
+    verifiedOn: new Date().toISOString().slice(0, 10),
+    ...(collection === "statistics" ? {} : { academicYear: new Date().getUTCFullYear() }),
+  };
+  await targetRef.set(write, { merge: true });
 
   return NextResponse.json({ ok: true, editedBy: admin.uid });
 }
