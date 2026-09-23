@@ -68,6 +68,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [catalog, setCatalog] = useState<RealCatalog | null>(null);
   const [catalogError, setCatalogError] = useState<string | null>(null);
+  const [activeFilter, setActiveFilter] = useState<"all" | MatchBucket>("all");
   const MAX_COMPARE = 3;
 
   useEffect(() => {
@@ -166,6 +167,8 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
     () => scored.filter((entry) => entry.matchResult.bucket === "qualify").length,
     [scored]
   );
+  const filterCounts = { all: scored.length, qualify: qualifyCount, almostQualify: almostCount, notYet: notYetCount } as const;
+
   const hadQualifyRef = useRef(false);
   const [celebrate, setCelebrate] = useState(false);
 
@@ -269,6 +272,36 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         signedIn={!!user}
       />
 
+      {scored.length > 0 && (
+        <div className="sticky top-[4.5rem] z-20 -mx-1 rounded-xl border border-line bg-paper/95 p-2 shadow-sm backdrop-blur">
+          <div className="flex items-center justify-between gap-3 px-1 pb-2">
+            <div>
+              <p className="text-sm font-semibold text-ink">Your matches</p>
+              <p className="text-xs text-ink-faint">{scored.length} verified programme{scored.length === 1 ? "" : "s"}</p>
+            </div>
+            <span className="hidden text-xs text-ink-faint sm:block">Choose a view</span>
+          </div>
+          <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" role="tablist" aria-label="Filter programme matches">
+            {FILTERS.map((filter) => {
+              const count = filterCounts[filter.key];
+              const selected = activeFilter === filter.key;
+              return (
+                <button
+                  key={filter.key}
+                  type="button"
+                  role="tab"
+                  aria-selected={selected}
+                  onClick={() => setActiveFilter(filter.key)}
+                  className={"min-h-11 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors " + (selected ? "border-brand-teal bg-brand-teal text-white" : "border-line bg-paper-raised text-ink-soft hover:border-brand-teal/60 hover:text-ink")}
+                >
+                  {filter.label} <span className="opacity-75">({count})</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {compareIds.length >= 2 && (
         <CourseComparisonTable
           programmes={compareIds
@@ -278,7 +311,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         />
       )}
 
-      {BUCKET_ORDER.map((bucket) => {
+      {(activeFilter === "all" ? BUCKET_ORDER : [activeFilter]).map((bucket) => {
         const entries = byBucket.get(bucket)!;
         if (entries.length === 0) return null;
         return (
@@ -318,7 +351,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         );
       })}
 
-      {unscored.length > 0 && (
+      {activeFilter === "all" && unscored.length > 0 && (
         <div className="flex flex-col gap-3">
           <h2 className="animate-rise-in font-display text-xl font-bold tracking-tight text-ink">
             Real programmes, score not yet available
