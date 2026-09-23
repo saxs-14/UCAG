@@ -85,6 +85,7 @@ export interface ProgrammeRequirementsSourceResult {
   etag?: string | null;
   lastModified?: string | null;
   contentHash?: string;
+  retryCount?: number;
 }
 
 export interface ProgrammeRequirementsSummary {
@@ -222,7 +223,7 @@ export async function runProgrammeRequirementsIngestion(
 
     const fetchOutcome = await fetchSource(source, fetchImpl, MAX_SOURCE_TEXT_CHARS, now);
     if (fetchOutcome.skipped) {
-      results.push({ sourceId: source.id, ...(source.institutionId !== undefined ? { institutionId: source.institutionId } : {}), outcome: "skipped", detail: fetchOutcome.error ?? "Source is not due for fetching.", tokensUsed: 0, ...(path.includes("bursary") ? { bursariesFound: 0, fieldsQueued: 0, flaggedBursaryNames: [] } : path.includes("programme") ? { programmesFound: 0, fieldsQueued: 0 } : { fieldsQueued: [] }), fetchedAt: fetchOutcome.fetchedAt, statusCode: fetchOutcome.statusCode, etag: fetchOutcome.etag, lastModified: fetchOutcome.lastModified, contentHash: fetchOutcome.contentHash });
+      results.push({ sourceId: source.id, ...(source.institutionId !== undefined ? { institutionId: source.institutionId } : {}), outcome: "skipped", detail: fetchOutcome.error ?? "Source is not due for fetching.", tokensUsed: 0, ...(path.includes("bursary") ? { bursariesFound: 0, fieldsQueued: 0, flaggedBursaryNames: [] } : path.includes("programme") ? { programmesFound: 0, fieldsQueued: 0 } : { fieldsQueued: [] }), fetchedAt: fetchOutcome.fetchedAt, statusCode: fetchOutcome.statusCode, etag: fetchOutcome.etag, lastModified: fetchOutcome.lastModified, contentHash: fetchOutcome.contentHash, retryCount: fetchOutcome.retryCount });
       continue;
     }
     if (fetchOutcome.error || fetchOutcome.body === null) {
@@ -239,6 +240,7 @@ export async function runProgrammeRequirementsIngestion(
         etag: fetchOutcome.etag,
         lastModified: fetchOutcome.lastModified,
         contentHash: fetchOutcome.contentHash,
+        retryCount: fetchOutcome.retryCount,
       });
       continue;
     }

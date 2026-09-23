@@ -39,9 +39,11 @@ export async function fetchSource(
     if (source.lastModified) headers["If-Modified-Since"] = source.lastModified;
 
     let res: Response;
+    let retryCount = 0;
     for (let attempt = 0; ; attempt++) {
       res = await fetchImpl(source.url, { headers, signal: controller.signal });
       if (!(res.status === 429 || res.status >= 500) || attempt >= MAX_RETRIES) break;
+      retryCount++;
       const retryAfter = Number(res.headers.get("retry-after"));
       const delayMs = Number.isFinite(retryAfter) && retryAfter >= 0 ? Math.min(retryAfter * 1000, 5000) : RETRY_BASE_MS * 2 ** attempt;
       await new Promise((resolve) => setTimeout(resolve, delayMs));
@@ -64,6 +66,7 @@ export async function fetchSource(
       url: source.url,
       changed: previousHash === null || currentHash !== previousHash || (etag !== null && etag !== source.etag) || (lastModified !== null && lastModified !== source.lastModified),
       statusCode: res.status,
+      retryCount,
       etag,
       lastModified,
       body,

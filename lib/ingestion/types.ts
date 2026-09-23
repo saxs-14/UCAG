@@ -21,6 +21,7 @@ export interface FetchOutcome {
   error: string | null;
   fetchedAt: string;
   contentHash?: string;
+  retryCount?: number;
   skipped?: boolean;
 }
 

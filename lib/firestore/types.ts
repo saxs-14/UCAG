@@ -420,6 +420,7 @@ export interface IngestionRun {
     etag?: string | null;
     lastModified?: string | null;
     contentHash?: string;
+    retryCount?: number;
   }>;
 }
 
