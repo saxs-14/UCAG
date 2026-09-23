@@ -20,6 +20,7 @@ export interface FetchOutcome {
    * error, timeout, etc. Never throws; the pipeline logs and moves on. */
   error: string | null;
   fetchedAt: string;
+  contentHash?: string;
 }
 
 export interface DiffOutcome<T = unknown> {
