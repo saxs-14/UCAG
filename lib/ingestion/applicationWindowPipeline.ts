@@ -1,7 +1,7 @@
 import { extractStructuredData } from "./extract";
 import { diffValue } from "./diff";
 import { routeProposal } from "./route";
-import { fetchSourceText } from "./fetchSourceText";
+import { fetchSource } from "./fetchSourceText";
 import { applicationWindowExtractionSchema } from "./schemas/applicationWindow";
 import { INGESTION_KILL_SWITCH } from "@/config/ingestion";
 import type { LlmClient } from "./llm/client";
@@ -101,20 +101,19 @@ export async function runApplicationWindowIngestion(
       continue;
     }
 
-    let sourceText: string;
-    try {
-      sourceText = await fetchSourceText(source.url, fetchImpl, MAX_SOURCE_TEXT_CHARS);
-    } catch (err) {
+    const fetchOutcome = await fetchSource(source.url, fetchImpl, MAX_SOURCE_TEXT_CHARS, now);
+    if (fetchOutcome.error || fetchOutcome.body === null) {
       results.push({
         sourceId: source.id,
         institutionId: source.institutionId,
         outcome: "fetchError",
-        detail: err instanceof Error ? err.message : String(err),
+        detail: fetchOutcome.error ?? "Source returned no body.",
         tokensUsed: 0,
         fieldsQueued: [],
       });
       continue;
     }
+    const sourceText = fetchOutcome.body;
 
     const estimatedTokens = Math.ceil(sourceText.length / 4) + ESTIMATED_OUTPUT_TOKENS;
     const budgetCheck = await deps.checkBudgetLive(estimatedTokens, tokensUsedThisRun);
