@@ -8,6 +8,22 @@ import type { Source, SourceType } from "@/lib/firestore/types";
 
 type SourceRow = Source & { id: string };
 
+function nextDue(source: SourceRow): string {
+  if (!source.lastFetchedAt) return "due now";
+  const last = Date.parse(source.lastFetchedAt);
+  if (!Number.isFinite(last)) return "due now";
+  const due = last + source.fetchIntervalHours * 60 * 60 * 1000;
+  return due <= Date.now() ? "due now" : new Date(due).toISOString();
+}
+
+function healthLabel(source: SourceRow): string {
+  if (!source.enabled) return "disabled";
+  if (!source.robotsAllowed) return "robots blocked";
+  if (source.lastFetchError) return "fetch error";
+  if (!source.lastFetchedAt) return "never fetched";
+  return "healthy";
+}
+
 const SOURCE_TYPES: SourceType[] = [
   "governmentStatistics",
   "governmentRegister",
@@ -195,6 +211,9 @@ export default function SourcesPage() {
               <th className="py-1 pr-3">Cadence (h)</th>
               <th className="py-1 pr-3">Reliability</th>
               <th className="py-1 pr-3">Last fetched</th>
+              <th className="py-1 pr-3">Next due</th>
+              <th className="py-1 pr-3">Health</th>
+              <th className="py-1 pr-3">HTTP</th>
               <th className="py-1 pr-3">Enabled</th>
             </tr>
           </thead>
@@ -213,6 +232,11 @@ export default function SourcesPage() {
                 <td className="py-1.5 pr-3 text-xs">{source.fetchIntervalHours}</td>
                 <td className="py-1.5 pr-3 text-xs">{source.reliabilityScore}</td>
                 <td className="py-1.5 pr-3 text-xs">{source.lastFetchedAt ?? "never"}</td>
+                <td className="py-1.5 pr-3 text-xs">{nextDue(source)}</td>
+                <td className="py-1.5 pr-3 text-xs">
+                  <span title={source.lastFetchError ?? undefined}>{healthLabel(source)}</span>
+                </td>
+                <td className="py-1.5 pr-3 text-xs">{source.lastFetchStatusCode ?? "--"}</td>
                 <td className="py-1.5 pr-3">
                   <button
                     type="button"
