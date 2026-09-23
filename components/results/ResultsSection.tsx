@@ -232,42 +232,32 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   return (
     <section className="flex w-full max-w-2xl flex-col gap-6">
       {celebrate && <ConfettiBurst />}
+      <div className="rounded-2xl border border-line bg-paper-raised p-4 shadow-sm sm:p-5">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-teal">Your results</p>
+            <h2 className="mt-1 text-lg font-black text-ink">
+              {scored.filter((entry) => entry.matchResult.bucket === "qualify").length} possible matches found
+            </h2>
+            <p className="mt-1 text-xs leading-5 text-ink-soft">
+              Start with the cards below. Each one explains the requirement behind the result and what you can do next.
+            </p>
+          </div>
+          <div className="flex shrink-0 flex-wrap gap-2 text-xs font-bold">
+            <span className="rounded-full bg-emerald-100 px-3 py-1.5 text-emerald-800">
+              {byBucket.get("qualify")?.length ?? 0} qualify
+            </span>
+            <span className="rounded-full bg-amber-100 px-3 py-1.5 text-amber-900">
+              {byBucket.get("almostQualify")?.length ?? 0} almost
+            </span>
+            <span className="rounded-full bg-slate-100 px-3 py-1.5 text-slate-700">
+              {byBucket.get("notYet")?.length ?? 0} not yet
+            </span>
+          </div>
+        </div>
+      </div>
+
       <ShareBar marks={marks} />
-
-      <ApplicationMission
-        marks={marks}
-        shortlistCount={shortlist.length}
-        checkedChecklistCount={checklistChecked.size}
-        signedIn={!!user}
-      />
-
-      {scored.length > 0 && <ApsFormulaBanner />}
-
-      {scored.length > 0 && (
-        <AdmissionPathwayGraph
-          marks={marks}
-          scored={scored}
-          institutions={catalog.institutions}
-        />
-      )}
-
-      {scored.length > 0 && (
-        <ApsImprovementSimulator
-          marks={marks}
-          scored={scored}
-          apsRules={catalog.apsRules}
-          programmes={catalog.programmes}
-          institutions={catalog.institutions}
-        />
-      )}
-
-      {scored.length > 0 && <InterestQuiz entries={scored} />}
-
-      <ApplicationChecklist
-        checked={checklistChecked}
-        onToggle={toggleChecklistItem}
-        signedIn={!!user}
-      />
 
       {compareIds.length >= 2 && (
         <CourseComparisonTable
@@ -335,6 +325,44 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
           ))}
         </div>
       )}
+
+      <details className="rounded-2xl border border-line bg-paper-raised shadow-sm">
+        <summary className="cursor-pointer list-none px-4 py-4 text-sm font-extrabold text-ink sm:px-5">
+          More tools for planning your application
+          <span className="ml-2 text-xs font-medium text-ink-faint">Compare, simulate, check and share</span>
+        </summary>
+        <div className="flex flex-col gap-5 border-t border-line px-4 py-5 sm:px-5">
+          <ApplicationMission
+            marks={marks}
+            shortlistCount={shortlist.length}
+            checkedChecklistCount={checklistChecked.size}
+            signedIn={!!user}
+          />
+          {scored.length > 0 && <ApsFormulaBanner />}
+          {scored.length > 0 && (
+            <AdmissionPathwayGraph
+              marks={marks}
+              scored={scored}
+              institutions={catalog.institutions}
+            />
+          )}
+          {scored.length > 0 && (
+            <ApsImprovementSimulator
+              marks={marks}
+              scored={scored}
+              apsRules={catalog.apsRules}
+              programmes={catalog.programmes}
+              institutions={catalog.institutions}
+            />
+          )}
+          {scored.length > 0 && <InterestQuiz entries={scored} />}
+          <ApplicationChecklist
+            checked={checklistChecked}
+            onToggle={toggleChecklistItem}
+            signedIn={!!user}
+          />
+        </div>
+      </details>
     </section>
   );
 }
