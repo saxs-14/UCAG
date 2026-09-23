@@ -43,10 +43,52 @@ export async function persistVerificationQueueItem(
   });
 }
 
+export async function createIngestionRun(sourceIds: string[], startedAt = new Date().toISOString()): Promise<string> {
+  const db = getAdminDb();
+  const ref = db.collection("ingestionRuns").doc();
+  await ref.set({
+    id: ref.id,
+    status: "running",
+    startedAt,
+    finishedAt: null,
+    sourceIds,
+    tokensUsed: 0,
+    costEstimate: 0,
+    itemsProposed: 0,
+    itemsAutoPublished: 0,
+    itemsQueued: 0,
+    errors: [],
+    sourceResults: [],
+  });
+  return ref.id;
+}
+
+export async function completeIngestionRun(
+  runId: string,
+  run: Omit<IngestionRun, "id" | "status">
+): Promise<void> {
+  const db = getAdminDb();
+  await db.collection("ingestionRuns").doc(runId).update({
+    ...run,
+    status: "completed",
+    finishedAt: run.finishedAt ?? new Date().toISOString(),
+  });
+}
+
+export async function failIngestionRun(runId: string, error: string): Promise<void> {
+  const db = getAdminDb();
+  await db.collection("ingestionRuns").doc(runId).update({
+    status: "failed",
+    finishedAt: new Date().toISOString(),
+    errors: [error],
+  });
+}
+
+/** Backwards-compatible one-shot writer for completed historical runs. */
 export async function persistIngestionRun(run: Omit<IngestionRun, "id">): Promise<string> {
   const db = getAdminDb();
   const ref = db.collection("ingestionRuns").doc();
-  await ref.set({ id: ref.id, ...run });
+  await ref.set({ id: ref.id, status: "completed", ...run });
   return ref.id;
 }
 
