@@ -1,7 +1,7 @@
 import { extractStructuredData } from "./extract";
 import { diffValue } from "./diff";
 import { routeProposal } from "./route";
-import { fetchSourceText } from "./fetchSourceText";
+import { fetchSource } from "./fetchSourceText";
 import {
   programmeRequirementsExtractionSchema,
   type ProgrammeExtractionItem,
@@ -215,15 +215,13 @@ export async function runProgrammeRequirementsIngestion(
       continue;
     }
 
-    let sourceText: string;
-    try {
-      sourceText = await fetchSourceText(source.url, fetchImpl, MAX_SOURCE_TEXT_CHARS);
-    } catch (err) {
+    const fetchOutcome = await fetchSource(source, fetchImpl, MAX_SOURCE_TEXT_CHARS, now);
+    if (fetchOutcome.error || fetchOutcome.body === null) {
       results.push({
         sourceId: source.id,
         institutionId: source.institutionId,
         outcome: "fetchError",
-        detail: err instanceof Error ? err.message : String(err),
+        detail: fetchOutcome.error ?? "Source returned no body.",
         tokensUsed: 0,
         programmesFound: 0,
         fieldsQueued: 0,
@@ -231,6 +229,11 @@ export async function runProgrammeRequirementsIngestion(
       continue;
     }
 
+    if (!fetchOutcome.changed) {
+      results.push({ sourceId: source.id, institutionId: source.institutionId, outcome: "noChange", tokensUsed: 0, programmesFound: 0, fieldsQueued: 0 });
+      continue;
+    }
+    const sourceText = fetchOutcome.body;
     const estimatedTokens = Math.ceil(sourceText.length / 4) + ESTIMATED_OUTPUT_TOKENS;
     const budgetCheck = await deps.checkBudgetLive(estimatedTokens, tokensUsedThisRun);
     if (!budgetCheck.allowed) {

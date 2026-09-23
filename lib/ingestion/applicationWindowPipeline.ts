@@ -105,7 +105,7 @@ export async function runApplicationWindowIngestion(
       continue;
     }
 
-    const fetchOutcome = await fetchSource(source.url, fetchImpl, MAX_SOURCE_TEXT_CHARS, now);
+    const fetchOutcome = await fetchSource(source, fetchImpl, MAX_SOURCE_TEXT_CHARS, now);
     if (fetchOutcome.error || fetchOutcome.body === null) {
       results.push({
         sourceId: source.id,
@@ -119,6 +119,10 @@ export async function runApplicationWindowIngestion(
         etag: fetchOutcome.etag,
         lastModified: fetchOutcome.lastModified,
       });
+      continue;
+    }
+    if (!fetchOutcome.changed) {
+      results.push({ sourceId: source.id, institutionId: source.institutionId, outcome: "noChange", tokensUsed: 0, fieldsQueued: [], fetchedAt: fetchOutcome.fetchedAt, statusCode: fetchOutcome.statusCode, etag: fetchOutcome.etag, lastModified: fetchOutcome.lastModified });
       continue;
     }
     const sourceText = fetchOutcome.body;
