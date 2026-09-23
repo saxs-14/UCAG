@@ -19,6 +19,14 @@ export async function fetchSource(
   now = new Date()
 ): Promise<FetchOutcome> {
   const fetchedAt = now.toISOString();
+  if (source.robotsAllowed === false) return { url: source.url, changed: false, statusCode: null, etag: source.etag, lastModified: source.lastModified, body: null, error: "Source blocked by robots policy.", fetchedAt };
+  if (source.lastFetchedAt && source.fetchIntervalHours > 0) {
+    const lastFetchedMs = Date.parse(source.lastFetchedAt);
+    const intervalMs = source.fetchIntervalHours * 60 * 60 * 1000;
+    if (Number.isFinite(lastFetchedMs) && now.getTime() - lastFetchedMs < intervalMs) {
+      return { url: source.url, changed: false, statusCode: null, etag: source.etag, lastModified: source.lastModified, body: null, error: null, fetchedAt, detail: "Source cadence not due." };
+    }
+  }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
 
