@@ -43,6 +43,34 @@ export async function persistVerificationQueueItem(
   });
 }
 
+export async function acquireIngestionLock(kind: string, ownerId: string, now = new Date()): Promise<boolean> {
+  const db = getAdminDb();
+  const ref = db.collection("ingestionLocks").doc(kind);
+  const nowMs = now.getTime();
+  return db.runTransaction(async (transaction) => {
+    const snap = await transaction.get(ref);
+    const data = snap.exists ? snap.data() : null;
+    const expiresAt = typeof data?.expiresAt === "string" ? Date.parse(data.expiresAt) : 0;
+    if (expiresAt > nowMs && data?.ownerId !== ownerId) return false;
+    transaction.set(ref, {
+      kind,
+      ownerId,
+      acquiredAt: now.toISOString(),
+      expiresAt: new Date(nowMs + 30 * 60 * 1000).toISOString(),
+    });
+    return true;
+  });
+}
+
+export async function releaseIngestionLock(kind: string, ownerId: string): Promise<void> {
+  const db = getAdminDb();
+  const ref = db.collection("ingestionLocks").doc(kind);
+  await db.runTransaction(async (transaction) => {
+    const snap = await transaction.get(ref);
+    if (snap.exists && snap.data()?.ownerId === ownerId) transaction.delete(ref);
+  });
+}
+
 export async function createIngestionRun(sourceIds: string[], startedAt = new Date().toISOString()): Promise<string> {
   const db = getAdminDb();
   const ref = db.collection("ingestionRuns").doc();
