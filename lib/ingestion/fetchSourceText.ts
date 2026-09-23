@@ -13,7 +13,7 @@ function bodyHash(body: string): string {
 }
 
 export async function fetchSource(
-  source: Pick<Source, "url" | "etag" | "lastModified">,
+  source: Pick<Source, "url" | "etag" | "lastModified" | "robotsAllowed" | "fetchIntervalHours" | "lastFetchedAt" | "contentHash">,
   fetchImpl: typeof fetch,
   maxChars: number,
   now = new Date()
