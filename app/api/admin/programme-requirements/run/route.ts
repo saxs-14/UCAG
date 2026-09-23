@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { randomUUID } from "node:crypto";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminErrorResponse } from "@/lib/admin/respond";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { getLlmClient } from "@/lib/ingestion/llm/getLlmClient";
 import { runProgrammeRequirementsIngestion } from "@/lib/ingestion/programmeRequirementsPipeline";
-import { getExistingProgramme, persistIngestionRun, persistVerificationQueueItem } from "@/lib/ingestion/persistProposal";
+import { acquireIngestionLock, completeIngestionRun, createIngestionRun, failIngestionRun, getExistingProgramme, persistVerificationQueueItem, releaseIngestionLock } from "@/lib/ingestion/persistProposal";
 import { checkBudgetLive } from "@/lib/ingestion/budgetTracker";
 import { INGESTION_KILL_SWITCH } from "@/config/ingestion";
 import type { Source } from "@/lib/firestore/types";
@@ -16,8 +17,9 @@ import type { Source } from "@/lib/firestore/types";
  * configured rather than a fabricated success.
  */
 export async function POST(request: NextRequest) {
+  let admin;
   try {
-    await requireAdmin(request);
+    admin = await requireAdmin(request);
   } catch (err) {
     return adminErrorResponse(err);
   }
@@ -37,12 +39,16 @@ export async function POST(request: NextRequest) {
   }
 
   const db = getAdminDb();
+  const lockOwner = admin.uid + ":" + randomUUID();
+  if (!(await acquireIngestionLock("programmeRequirements", lockOwner))) return NextResponse.json({ error: "An ingestion run is already in progress." }, { status: 409 });
   const snapshot = await db.collection("sources").where("enabled", "==", true).get();
   const sources = snapshot.docs
     .map((doc) => doc.data() as Source)
     .filter((source) => source.institutionId !== null);
 
+  let runId: string | null = null;
   try {
+    runId = await createIngestionRun(sources.map((s) => s.id));
     const summary = await runProgrammeRequirementsIngestion(sources, {
       llmClient,
       getExistingProgramme,
@@ -54,7 +60,8 @@ export async function POST(request: NextRequest) {
       .filter((r) => r.outcome === "fetchError" || r.outcome === "extractionError")
       .map((r) => `${r.sourceId}: ${r.detail ?? r.outcome}`);
 
-    const runId = await persistIngestionRun({
+    const sourceResults = summary.results.map((r) => ({ sourceId: r.sourceId, outcome: r.outcome, detail: r.detail, tokensUsed: r.tokensUsed, fieldsQueued: [], fetchedAt: r.fetchedAt, statusCode: r.statusCode, etag: r.etag, lastModified: r.lastModified }));
+    await completeIngestionRun(runId, {
       startedAt: summary.startedAt,
       finishedAt: summary.finishedAt,
       sourceIds: sources.map((s) => s.id),
@@ -64,10 +71,15 @@ export async function POST(request: NextRequest) {
       itemsAutoPublished: 0, // programmeRequirements never auto-publishes, see config/ingestion.ts
       itemsQueued: summary.itemsQueued,
       errors,
+      sourceResults,
     });
 
     return NextResponse.json({ runId, ...summary });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    if (runId) await failIngestionRun(runId, message).catch(() => undefined);
+    return NextResponse.json({ error: message, runId }, { status: 500 });
+  } finally {
+    await releaseIngestionLock("programmeRequirements", lockOwner).catch(() => undefined);
   }
 }
