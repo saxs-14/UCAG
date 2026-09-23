@@ -82,7 +82,7 @@ const PROTECTED_FACT_FIELDS = new Set([
 export function isEditableFactField(
   collection: string,
   field: string,
-): collection is EditableFactCollection {
+): boolean {
   return isEditableFactCollection(collection)
     && !PROTECTED_FACT_FIELDS.has(field)
     && EDITABLE_FACT_FIELDS[collection].includes(field);
