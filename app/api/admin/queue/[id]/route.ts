@@ -67,7 +67,18 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     );
   }
 
-  if (!isEditableFactField(item.collection, item.field)) {\n    return NextResponse.json(\n      { error: `Refusing to write field "${item.field}" in collection "${item.collection}".` },\n      { status: 422 }\n    );\n  }\n\n  if (!/^https?:\\/\\//i.test(item.sourceUrl)) {\n    return NextResponse.json({ error: "Queue item has an invalid source URL." }, { status: 422 });\n  }\n\n  const { action } = parsedBody.data;
+  if (!isEditableFactField(item.collection, item.field)) {\n    return NextResponse.json(\n      { error: `Refusing to write field "${item.field}" in collection "${item.collection}".` },\n      { status: 422 }\n    );\n  }\n\n  if (!/^https?:\\/\\//i.test(item.sourceUrl)) {\n    return NextResponse.json({ error: "Queue item has an invalid source URL." }, { status: 422 });\n  }\n\n  if (!isEditableFactField(item.collection, item.field)) {
+    return NextResponse.json(
+      { error: `Refusing to write field "${item.field}" in collection "${item.collection}".` },
+      { status: 422 }
+    );
+  }
+
+  if (!/^https?:\/\//i.test(item.sourceUrl)) {
+    return NextResponse.json({ error: "Queue item has an invalid source URL." }, { status: 422 });
+  }
+
+  const { action } = parsedBody.data;
   const now = new Date().toISOString();
   const newStatus = action === "reject" ? "rejected" : action === "edit" ? "edited" : "approved";
   const batch = db.batch();
