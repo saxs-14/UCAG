@@ -30,6 +30,22 @@ jobs:
       - name: Lint (ESLint)
         run: npm run lint
 
+      - name: Start Firestore emulator
+        run: |
+          npx --yes firebase-tools@latest emulators:start --only firestore --project demo-ucag-rules-test > /tmp/ucag-firestore-emulator.log 2>&1 &
+          echo $! > /tmp/ucag-firestore-emulator.pid
+          for i in {1..30}; do
+            if curl --silent --fail http://127.0.0.1:8080/ > /dev/null; then
+              echo "Firestore emulator is ready."
+              break
+            fi
+            sleep 2
+          done
+          curl --silent --fail http://127.0.0.1:8080/ > /dev/null || {
+            cat /tmp/ucag-firestore-emulator.log
+            exit 1
+          }
+
       - name: Run Vitest Unit Tests
         run: npm test
 
