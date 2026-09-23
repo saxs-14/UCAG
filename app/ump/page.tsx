@@ -255,7 +255,7 @@ export default async function UmpHubPage() {
           </ol>
         </section>
 
-        {/* ── Quick Nav cards ── */
+        {/* ── Quick Nav cards ── */}
         <section aria-labelledby="ump-explore-heading">
           <h2 id="ump-explore-heading" className="mb-4 text-xl font-bold tracking-tight text-ink">
             Explore UMP
