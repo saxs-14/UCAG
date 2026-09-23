@@ -271,22 +271,28 @@ export function ResultCard({
           )}
         </div>
 
-        <ReadinessBar readiness={readiness} />
-
-        <ReadinessScorecard
-          matchResult={matchResult}
-          checkedItemIds={checkedChecklistIds}
-          applicationWindow={applicationWindow}
-        />
-
-        {matchResult.bucket !== "qualify" && (
-          <SmartBackupPlan
-            programme={programme}
-            institution={institution}
-            matchResult={matchResult}
-            allProgrammes={allProgrammes}
-          />
-        )}
+        <details className="rounded-xl border border-line/70 bg-paper">
+          <summary className="cursor-pointer list-none px-3.5 py-3 text-xs font-extrabold text-ink">
+            Readiness & planning
+            <span className="ml-2 font-medium text-ink-faint">Open for more detail</span>
+          </summary>
+          <div className="flex flex-col gap-4 border-t border-line/60 px-3.5 py-3.5">
+            <ReadinessBar readiness={readiness} />
+            <ReadinessScorecard
+              matchResult={matchResult}
+              checkedItemIds={checkedChecklistIds}
+              applicationWindow={applicationWindow}
+            />
+            {matchResult.bucket !== "qualify" && (
+              <SmartBackupPlan
+                programme={programme}
+                institution={institution}
+                matchResult={matchResult}
+                allProgrammes={allProgrammes}
+              />
+            )}
+          </div>
+        </details>
 
         <p className="text-2xs font-mono tabular-nums text-ink-faint border-t border-line/40 pt-2">
           Verified {programme.verifiedOn} ·{" "}
