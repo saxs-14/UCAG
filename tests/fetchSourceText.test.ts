@@ -99,6 +99,20 @@ describe("fetchSource", () => {
     expect(result.error).toBeNull();
   });
 
+  it("retries transient HTTP failures and reports the retry count", async () => {
+    const fetchImpl = vi
+      .fn()
+      .mockResolvedValueOnce(response(503, "temporary failure"))
+      .mockResolvedValueOnce(response(200, "<p>Recovered</p>"));
+
+    const result = await fetchSource(source(), fetchImpl, 1000);
+
+    expect(fetchImpl).toHaveBeenCalledTimes(2);
+    expect(result.statusCode).toBe(200);
+    expect(result.retryCount).toBe(1);
+    expect(result.error).toBeNull();
+  });
+
   it("marks content unchanged when the normalized body hash is the same", async () => {
     const body = "<html><body><p>Same content</p></body></html>";
     const firstFetch = vi.fn().mockResolvedValue(response(200, body));
