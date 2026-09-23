@@ -6,7 +6,7 @@ import { getAdminDb } from "@/lib/firebase/admin";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import { getLlmClient } from "@/lib/ingestion/llm/getLlmClient";
 import { runApplicationWindowIngestion } from "@/lib/ingestion/applicationWindowPipeline";
-import { acquireIngestionLock, completeIngestionRun, createIngestionRun, failIngestionRun, getCurrentApplicationWindow, persistVerificationQueueItem } from "@/lib/ingestion/persistProposal";
+import { acquireIngestionLock, completeIngestionRun, createIngestionRun, failIngestionRun, getCurrentApplicationWindow, persistVerificationQueueItem, releaseIngestionLock } from "@/lib/ingestion/persistProposal";
 import { checkBudgetLive } from "@/lib/ingestion/budgetTracker";
 import { INGESTION_KILL_SWITCH } from "@/config/ingestion";
 import type { Source } from "@/lib/firestore/types";
@@ -57,8 +57,9 @@ export async function POST(request: NextRequest) {
     .map((doc) => doc.data() as Source)
     .filter((source) => source.institutionId !== null);
 
-  const runId = await createIngestionRun(sources.map((s) => s.id));
+  let runId: string | null = null;
   try {
+    runId = await createIngestionRun(sources.map((s) => s.id));
     const summary = await runApplicationWindowIngestion(sources, {
       llmClient,
       getCurrentWindow: getCurrentApplicationWindow,
@@ -114,7 +115,7 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ runId, ...summary });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
-    await failIngestionRun(runId, message).catch(() => undefined);
+    if (runId) await failIngestionRun(runId, message).catch(() => undefined);
     return NextResponse.json({ error: message, runId }, { status: 500 });
   } finally {
     await releaseIngestionLock("applicationWindows", lockOwner).catch(() => undefined);
