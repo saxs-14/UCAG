@@ -24,7 +24,7 @@ export async function fetchSource(
     const lastFetchedMs = Date.parse(source.lastFetchedAt);
     const intervalMs = source.fetchIntervalHours * 60 * 60 * 1000;
     if (Number.isFinite(lastFetchedMs) && now.getTime() - lastFetchedMs < intervalMs) {
-      return { url: source.url, changed: false, statusCode: null, etag: source.etag, lastModified: source.lastModified, body: null, error: null, fetchedAt, detail: "Source cadence not due." };
+      return { url: source.url, changed: false, statusCode: null, etag: source.etag, lastModified: source.lastModified, body: null, error: "Source cadence not due.", fetchedAt };
     }
   }
   const controller = new AbortController();
