@@ -29,6 +29,7 @@ export async function fetchSource(
   }
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), DEFAULT_TIMEOUT_MS);
+  let retryCount = 0;
 
   try {
     const headers: Record<string, string> = {
@@ -39,7 +40,6 @@ export async function fetchSource(
     if (source.lastModified) headers["If-Modified-Since"] = source.lastModified;
 
     let res: Response;
-    let retryCount = 0;
     for (let attempt = 0; ; attempt++) {
       res = await fetchImpl(source.url, { headers, signal: controller.signal });
       if (!(res.status === 429 || res.status >= 500) || attempt >= MAX_RETRIES) break;
@@ -52,10 +52,10 @@ export async function fetchSource(
     const lastModified = res.headers.get("last-modified");
 
     if (res.status === 304) {
-      return { url: source.url, changed: false, statusCode: 304, etag: etag ?? source.etag, lastModified: lastModified ?? source.lastModified, body: null, error: null, fetchedAt };
+      return { url: source.url, changed: false, statusCode: 304, etag: etag ?? source.etag, lastModified: lastModified ?? source.lastModified, body: null, error: null, fetchedAt, retryCount };
     }
     if (!res.ok) {
-      return { url: source.url, changed: false, statusCode: res.status, etag, lastModified, body: null, error: "HTTP " + res.status, fetchedAt };
+      return { url: source.url, changed: false, statusCode: res.status, etag, lastModified, body: null, error: "HTTP " + res.status, fetchedAt, retryCount };
     }
 
     const rawBody = await res.text();
@@ -75,7 +75,7 @@ export async function fetchSource(
       contentHash: currentHash,
     };
   } catch (err) {
-    return { url: source.url, changed: false, statusCode: null, etag: null, lastModified: null, body: null, error: err instanceof Error && err.name === "AbortError" ? "Request timed out." : err instanceof Error ? err.message : String(err), fetchedAt };
+    return { url: source.url, changed: false, statusCode: null, etag: null, lastModified: null, body: null, error: err instanceof Error && err.name === "AbortError" ? "Request timed out." : err instanceof Error ? err.message : String(err), fetchedAt, retryCount };
   } finally {
     clearTimeout(timeout);
   }
