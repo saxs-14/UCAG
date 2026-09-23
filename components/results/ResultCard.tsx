@@ -40,9 +40,15 @@ const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
 };
 
 const BUCKET_LABEL_STYLE: Record<MatchResult["bucket"], string> = {
-  qualify: "bg-emerald-100 text-emerald-800 font-bold border-emerald-300",
-  almostQualify: "bg-amber-100 text-amber-900 font-bold border-amber-300",
-  notYet: "bg-slate-100 text-slate-700 font-semibold border-slate-300",
+  qualify: "bg-emerald-100 text-emerald-800 border-emerald-300",
+  almostQualify: "bg-amber-100 text-amber-900 border-amber-300",
+  notYet: "bg-slate-100 text-slate-700 border-slate-300",
+};
+
+const BUCKET_EXPLANATION: Record<MatchResult["bucket"], string> = {
+  qualify: "Your recorded marks meet the verified requirements currently on file.",
+  almostQualify: "You are close. Check the requirements below to see what is missing.",
+  notYet: "At least one verified requirement is not met yet. You can still review the pathway.",
 };
 
 function findApsGap(matchResult: MatchResult): number | null {
@@ -91,7 +97,7 @@ export function ResultCard({
 
   return (
     <div className={`stagger-${stagger} animate-rise-in`}>
-      <article className={`flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-5 shadow-sm transition-all hover:shadow-md ${BUCKET_SPINE[matchResult.bucket]}`}>
+      <article className={`flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm transition-all hover:shadow-md sm:p-5 ${BUCKET_SPINE[matchResult.bucket]}`}>
         <header className="flex flex-col gap-3">
           <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/40 pb-2.5">
             <span className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wider ${BUCKET_LABEL_STYLE[matchResult.bucket]}`}>
@@ -118,6 +124,13 @@ export function ResultCard({
           </div>
 
           {/* Institution APS Formula Callout */}
+          <div className="rounded-xl bg-slate-50 p-3 text-sm text-ink-soft border border-line/60">
+            <p className="font-semibold text-ink">{BUCKET_EXPLANATION[matchResult.bucket]}</p>
+            {matchResult.bucket === "almostQualify" && apsGap !== null && (
+              <p className="mt-1 font-bold text-amber-800">APS gap: {apsGap} point{apsGap === 1 ? "" : "s"}</p>
+            )}
+          </div>
+
           <div className="flex flex-wrap items-center gap-2 text-xs">
             <span className="inline-flex items-center gap-1 rounded-lg bg-teal-950/80 px-2.5 py-1 font-semibold text-teal-200 border border-teal-500/30 text-2xs">
               <span>📐 {institution.shortName || institution.name} Formula:</span>
@@ -146,7 +159,7 @@ export function ResultCard({
               </p>
             </div>
             <div className="no-print flex flex-wrap items-center gap-2">
-              <label className="flex items-center gap-1.5 rounded-lg border border-line bg-paper px-3 py-1.5 text-xs font-semibold text-ink-soft cursor-pointer hover:bg-slate-soft shadow-2xs">
+              <label className="min-h-11 flex items-center gap-1.5 rounded-lg border border-line bg-paper px-3 py-1.5 text-xs font-semibold text-ink-soft cursor-pointer hover:bg-slate-soft shadow-2xs">
                 <input
                   type="checkbox"
                   id={`compare-${programme.id}`}
@@ -206,13 +219,13 @@ export function ResultCard({
           </p>
         )}
 
-        <div className="flex flex-wrap items-center gap-2 border-t border-line pt-2.5 text-xs">
+        <div className="flex flex-col gap-2 border-t border-line pt-3 text-xs sm:flex-row sm:flex-wrap sm:items-center">
           {cta.kind === "apply" && (
             <a
               href={cta.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-10 items-center rounded-xl bg-teal-600 px-4 font-bold text-white transition-all hover:bg-teal-500 shadow-sm active:scale-95"
+              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-teal-600 sm:w-auto px-4 font-bold text-white transition-all hover:bg-teal-500 shadow-sm active:scale-95"
             >
               🚀 {cta.label}
             </a>
