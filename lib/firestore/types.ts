@@ -407,6 +407,9 @@ export type VerificationQueueStatus = "pending" | "approved" | "rejected" | "edi
 
 export interface VerificationQueueItem {
   id: string;
+  /** Deterministic identity for a proposal so repeated ingestion runs cannot
+   * create duplicate pending reviews for the same source/value change. */
+  proposalKey?: string;
   collection: string;
   docId: string;
   field: string;
@@ -421,7 +424,6 @@ export interface VerificationQueueItem {
   reviewedBy: string | null;
   reviewedAt: string | null;
 }
-
 // ---------------------------------------------------------------------------
 // userProfiles -- see Phase 6 (POPIA) for consent flow detail
 // ---------------------------------------------------------------------------
