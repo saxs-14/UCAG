@@ -5,30 +5,12 @@ import { resolveApplicationCta, deriveApplicationWindowStatus } from "@/lib/appl
 import { LABELS } from "@/config/labels";
 import { getRealProgrammeDetail } from "@/lib/catalog/getRealProgrammeDetail";
 
-/**
- * Server-rendered programme detail page (docs/MASTER_PROMPT_v2.md Phase
- * 9: "server-rendered programme pages, structured data, sitemap --
- * learners find this through search"). Backed by real Firestore data
- * (lib/catalog/getRealProgrammeDetail.ts) -- config/sampleData.ts's
- * fictional SAMPLE_PROGRAMMES is gone from this page entirely. Not
- * statically generated at build time (no generateStaticParams): the
- * verified catalogue grows independently of deploys, and a hardcoded id
- * list would 404 every real programme added after the last build.
- */
 export const dynamic = "force-dynamic";
 
-export async function generateMetadata({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}): Promise<Metadata> {
+export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   const detail = await getRealProgrammeDetail(id);
-  if (!detail) {
-    // Thin/error content -- must never be indexed as if it were a real
-    // programme page.
-    return { title: `Programme not found -- ${LABELS.app.name}`, robots: { index: false } };
-  }
+  if (!detail) return { title: `Programme not found -- ${LABELS.app.name}`, robots: { index: false } };
 
   const { programme, institution } = detail;
   return {
@@ -44,52 +26,24 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
   if (!detail) notFound();
 
   const { programme, institution, faculty, school, applicationWindow } = detail;
-  // lib/ingestion/schemas/programmeRequirements.ts deliberately only
-  // extracts the fields that drive APS matching -- campuses/
-  // modeOfDelivery/careerOutcomes are real Programme fields with no
-  // extraction/queue path to ever populate them, so a real approved
-  // programme document simply won't have them. Guard here rather than
-  // trust the type (which says these are always arrays/strings) --
-  // Programme.campuses.length crashed the page outright on the first
-  // real programme before this fix.
   const campuses = programme.campuses ?? [];
   const careerOutcomes = programme.careerOutcomes ?? [];
   const status = applicationWindow?.status ?? deriveApplicationWindowStatus(
-    {
-      opensOn: applicationWindow?.opensOn ?? null,
-      closesOn: applicationWindow?.closesOn ?? null,
-      lateClosesOn: applicationWindow?.lateClosesOn ?? null,
-    },
+    { opensOn: applicationWindow?.opensOn ?? null, closesOn: applicationWindow?.closesOn ?? null, lateClosesOn: applicationWindow?.lateClosesOn ?? null },
     new Date()
   );
   const cta = resolveApplicationCta(
     status,
-    {
-      applyUrl: programme.applyUrl,
-      statusCheckUrl: institution.statusCheckUrl,
-      websiteUrl: institution.websiteUrl,
-    },
+    { applyUrl: programme.applyUrl, statusCheckUrl: institution.statusCheckUrl, websiteUrl: institution.websiteUrl },
     applicationWindow?.opensOn ?? null
   );
 
-  // schema.org EducationalOccupationalProgram -- the type built for
-  // exactly this (a degree/certificate program with entry requirements
-  // and occupational outcomes), so search engines can render this as a
-  // rich result. sourceUrl/verifiedOn are attached as-is; a program page
-  // is a fact-bearing page like any other, subject to the same
-  // provenance rule (CLAUDE.md).
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "EducationalOccupationalProgram",
     name: programme.name,
-    description: careerOutcomes.length
-      ? `Prepares graduates for: ${careerOutcomes.join(", ")}.`
-      : undefined,
-    provider: {
-      "@type": "CollegeOrUniversity",
-      name: institution.name,
-      url: institution.websiteUrl,
-    },
+    description: careerOutcomes.length ? `Prepares graduates for: ${careerOutcomes.join(", ")}.` : undefined,
+    provider: { "@type": "CollegeOrUniversity", name: institution.name, url: institution.websiteUrl },
     educationalProgramMode: programme.modeOfDelivery ?? undefined,
     programType: programme.qualificationType,
     timeToComplete: programme.duration,
@@ -97,123 +51,107 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
   };
 
   return (
-    <main id="main-content" className="flex flex-1 flex-col items-center gap-6 p-6 sm:p-8">
-      <script
-        type="application/ld+json"
-        // Built entirely from our own verified Firestore data above, not user input.
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
-      <article className="flex w-full max-w-xl flex-col gap-4">
-        <header className="flex flex-col gap-1">
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink sm:text-3xl">
-            {programme.name}
-          </h1>
-          <p className="text-sm text-ink-soft">
-            {programme.qualificationType}
-            {programme.nqfLevel !== null ? ` · NQF ${programme.nqfLevel}` : ""}
-            {programme.duration ? ` · ${programme.duration}` : ""}
-          </p>
-          <p className="text-sm text-ink-soft">
-            {faculty.name} &middot; {school.name} &middot; {institution.name}
-          </p>
-          {(campuses.length > 0 || programme.modeOfDelivery) && (
-            <p className="text-sm text-ink-faint">
-              {[campuses.length > 0 ? campuses.join(", ") : null, programme.modeOfDelivery]
-                .filter(Boolean)
-                .join(" · ")}
-            </p>
-          )}
-        </header>
+    <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 
-        <section className="flex flex-col gap-2">
-          <h2 className="text-lg font-bold tracking-tight text-ink">Entry requirements</h2>
-          <ul className="flex flex-col gap-1 text-sm text-ink">
-            {programme.minAps !== null && (
-              <li>
-                Minimum APS:{" "}
-                <span className="font-mono tabular-nums">{programme.minAps}</span>
-              </li>
-            )}
-            {programme.subjectRequirements.map((req) => (
-              <li key={req.subjectCode}>
-                {req.subjectCode}
-                {req.minLevel !== undefined && (
-                  <>
-                    {" "}
-                    &mdash; level <span className="font-mono tabular-nums">{req.minLevel}</span>+
-                  </>
-                )}
-                {req.minPercent !== undefined && (
-                  <>
-                    {" "}
-                    &mdash; <span className="font-mono tabular-nums">{req.minPercent}</span>%+
-                  </>
-                )}
-              </li>
-            ))}
-            {programme.additionalRequirements.map((req, i) => (
-              <li key={i}>{req}</li>
-            ))}
-          </ul>
-        </section>
-
-        {careerOutcomes.length > 0 && (
-          <section className="flex flex-col gap-2">
-            <h2 className="text-lg font-bold tracking-tight text-ink">Career outcomes</h2>
-            <ul className="list-inside list-disc text-sm text-ink-soft">
-              {careerOutcomes.map((outcome, i) => (
-                <li key={i}>{outcome}</li>
-              ))}
-            </ul>
-          </section>
-        )}
-
-        <section className="flex flex-wrap items-center gap-3 border-t border-line pt-3 text-sm">
-          {cta.kind === "apply" && (
-            <a
-              href={cta.url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="rounded bg-mark-green px-3 py-1.5 font-medium text-white hover:opacity-90"
-            >
-              {cta.label}
-            </a>
-          )}
-          {cta.kind === "openingSoon" && (
-            <span className="rounded bg-mark-green-soft px-3 py-1.5 font-medium text-mark-green">
-              {cta.label}
-            </span>
-          )}
-          {(cta.kind === "statusCheck" || cta.kind === "datesBeingVerified") && (
-            <>
-              <span className="rounded bg-slate-soft px-3 py-1.5 font-medium text-ink-soft">
-                {cta.label}
-              </span>
-              {cta.url && (
-                <a
-                  href={cta.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-mark-green hover:underline"
-                >
-                  Visit institution site
-                </a>
-              )}
-            </>
-          )}
-        </section>
-
-        <p className="font-mono text-xs tabular-nums text-ink-faint">
-          Verified {programme.verifiedOn} &middot;{" "}
-          <a href={programme.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
-            Source
-          </a>
-        </p>
-
-        <Link href="/" className="text-sm font-medium text-mark-green hover:underline">
-          &larr; Back to the calculator
+      <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 p-6 sm:p-8">
+        <Link href="/programmes" className="inline-flex min-h-11 w-fit items-center text-sm font-semibold text-brand-teal hover:underline focus:outline-none focus:ring-2 focus:ring-brand-teal focus:ring-offset-2">
+          ← Back to programme explorer
         </Link>
-      </article>
+
+        <article className="card-learner overflow-hidden rounded-2xl border border-line">
+          <header className="bg-brand-navy p-5 text-white sm:p-7">
+            <div className="flex flex-wrap gap-2">
+              <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">{programme.qualificationType}</span>
+              {programme.nqfLevel !== null && <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">NQF {programme.nqfLevel}</span>}
+              {programme.duration && <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">{programme.duration}</span>}
+            </div>
+            <h1 className="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">{programme.name}</h1>
+            <p className="mt-2 text-sm text-white/80">{institution.name} · {faculty.name} · {school.name}</p>
+            {(campuses.length > 0 || programme.modeOfDelivery) && (
+              <p className="mt-2 text-xs text-white/70">{[campuses.length ? campuses.join(", ") : null, programme.modeOfDelivery].filter(Boolean).join(" · ")}</p>
+            )}
+          </header>
+
+          <div className="flex flex-col gap-5 p-5 sm:p-7">
+            <section aria-labelledby="requirements-heading" className="rounded-2xl border border-line bg-paper p-4 sm:p-5">
+              <div className="flex flex-col gap-1">
+                <h2 id="requirements-heading" className="text-lg font-bold text-ink">What you need</h2>
+                <p className="text-sm text-ink-soft">These are the verified requirements currently recorded for this programme.</p>
+              </div>
+              <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+                {programme.minAps !== null && (
+                  <li className="rounded-xl border border-line bg-paper-raised p-3 text-sm text-ink">
+                    <span className="block text-xs font-semibold uppercase tracking-wide text-ink-faint">Minimum APS</span>
+                    <span className="mt-1 block text-2xl font-extrabold text-brand-teal">{programme.minAps}</span>
+                  </li>
+                )}
+                {programme.subjectRequirements.map((req) => (
+                  <li key={req.subjectCode} className="rounded-xl border border-line bg-paper-raised p-3 text-sm text-ink">
+                    <span className="block font-bold">{req.subjectCode}</span>
+                    <span className="text-ink-soft">
+                      {req.minLevel !== undefined ? `Level ${req.minLevel}+` : ""}
+                      {req.minLevel !== undefined && req.minPercent !== undefined ? " · " : ""}
+                      {req.minPercent !== undefined ? `${req.minPercent}%+` : ""}
+                    </span>
+                  </li>
+                ))}
+                {programme.additionalRequirements.map((req, i) => (
+                  <li key={i} className="rounded-xl border border-line bg-paper-raised p-3 text-sm text-ink">{req}</li>
+                ))}
+              </ul>
+              {programme.minAps === null && programme.subjectRequirements.length === 0 && programme.additionalRequirements.length === 0 && (
+                <p className="mt-4 rounded-xl bg-amber-50 p-3 text-sm text-amber-900">No verified entry requirements are currently recorded. Check the official source before applying.</p>
+              )}
+            </section>
+
+            <section aria-labelledby="apply-heading" className="rounded-2xl border border-teal-200 bg-teal-50/70 p-4 sm:p-5">
+              <h2 id="apply-heading" className="text-lg font-bold text-teal-950">Application</h2>
+              <p className="mt-1 text-sm leading-relaxed text-teal-950/80">
+                {cta.kind === "apply" ? "Applications can be started through the official application link below." :
+                  cta.kind === "openingSoon" ? "Applications are not open yet. Use this time to prepare and confirm the official requirements." :
+                  cta.kind === "statusCheck" ? "This application window is closed. Review the programme and prepare for the next cycle." :
+                  "Application dates are still being verified. Use the official institution site for the current information."}
+              </p>
+              <div className="mt-4 flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">
+                {cta.kind === "apply" && (
+                  <a href={cta.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-teal px-5 text-sm font-bold text-white hover:opacity-90 focus:outline-none focus:ring-2 focus:ring-brand-teal focus:ring-offset-2">
+                    {cta.label} ↗
+                  </a>
+                )}
+                {cta.kind === "openingSoon" && <span className="inline-flex min-h-11 items-center rounded-xl border border-emerald-300 bg-emerald-100 px-4 text-sm font-bold text-emerald-800">{cta.label}</span>}
+                {(cta.kind === "statusCheck" || cta.kind === "datesBeingVerified") && (
+                  <>
+                    <span className="inline-flex min-h-11 items-center rounded-xl bg-slate-100 px-4 text-sm font-semibold text-slate-700">{cta.label}</span>
+                    {cta.url && <a href={cta.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center px-2 text-sm font-bold text-brand-teal hover:underline">Visit official site ↗</a>}
+                  </>
+                )}
+              </div>
+            </section>
+
+            {careerOutcomes.length > 0 && (
+              <section aria-labelledby="careers-heading">
+                <h2 id="careers-heading" className="text-lg font-bold text-ink">Possible career directions</h2>
+                <p className="mt-1 text-xs text-ink-faint">These are recorded programme outcomes, not a prediction of your career.</p>
+                <ul className="mt-3 grid gap-2 sm:grid-cols-2">
+                  {careerOutcomes.map((outcome, i) => <li key={i} className="rounded-xl border border-line bg-paper-raised p-3 text-sm text-ink">{outcome}</li>)}
+                </ul>
+              </section>
+            )}
+
+            <section className="border-t border-line pt-4">
+              <p className="text-xs leading-relaxed text-ink-faint">
+                Verified {programme.verifiedOn} ·{" "}
+                <a href={programme.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-semibold underline hover:text-ink">Official source ↗</a>
+              </p>
+            </section>
+
+            <Link href="/" className="inline-flex min-h-11 items-center justify-center rounded-xl border border-line px-4 text-sm font-bold text-ink hover:border-brand-teal hover:text-brand-teal">
+              Check my APS for this programme →
+            </Link>
+          </div>
+        </article>
+      </div>
     </main>
   );
 }
