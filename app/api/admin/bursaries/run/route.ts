@@ -1,10 +1,11 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { randomUUID } from "node:crypto";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminErrorResponse } from "@/lib/admin/respond";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { getLlmClient } from "@/lib/ingestion/llm/getLlmClient";
 import { runBursaryIngestion } from "@/lib/ingestion/bursaryPipeline";
-import { getExistingBursary, persistIngestionRun, persistVerificationQueueItem } from "@/lib/ingestion/persistProposal";
+import { acquireIngestionLock, completeIngestionRun, createIngestionRun, failIngestionRun, getExistingBursary, persistVerificationQueueItem, releaseIngestionLock } from "@/lib/ingestion/persistProposal";
 import { checkBudgetLive } from "@/lib/ingestion/budgetTracker";
 import { INGESTION_KILL_SWITCH } from "@/config/ingestion";
 import type { Source } from "@/lib/firestore/types";
@@ -26,8 +27,9 @@ import type { Source } from "@/lib/firestore/types";
  * yet" surface in this app.
  */
 export async function POST(request: NextRequest) {
+  let admin;
   try {
-    await requireAdmin(request);
+    admin = await requireAdmin(request);
   } catch (err) {
     return adminErrorResponse(err);
   }
@@ -47,6 +49,8 @@ export async function POST(request: NextRequest) {
   }
 
   const db = getAdminDb();
+  const lockOwner = admin.uid + ":" + randomUUID();
+  if (!(await acquireIngestionLock("bursaries", lockOwner))) return NextResponse.json({ error: "An ingestion run is already in progress." }, { status: 409 });
   const snapshot = await db
     .collection("sources")
     .where("enabled", "==", true)
@@ -54,7 +58,9 @@ export async function POST(request: NextRequest) {
     .get();
   const sources = snapshot.docs.map((doc) => doc.data() as Source);
 
+  let runId: string | null = null;
   try {
+    runId = await createIngestionRun(sources.map((s) => s.id));
     const summary = await runBursaryIngestion(sources, {
       llmClient,
       getExistingBursary,
@@ -66,7 +72,8 @@ export async function POST(request: NextRequest) {
       .filter((r) => r.outcome === "fetchError" || r.outcome === "extractionError")
       .map((r) => `${r.sourceId}: ${r.detail ?? r.outcome}`);
 
-    const runId = await persistIngestionRun({
+    const sourceResults = summary.results.map((r) => ({ sourceId: r.sourceId, outcome: r.outcome, detail: r.detail, tokensUsed: r.tokensUsed, fieldsQueued: [] }));
+    await completeIngestionRun(runId, {
       startedAt: summary.startedAt,
       finishedAt: summary.finishedAt,
       sourceIds: sources.map((s) => s.id),
@@ -79,10 +86,15 @@ export async function POST(request: NextRequest) {
       itemsAutoPublished: 0, // bursaries never auto-publish, see config/ingestion.ts
       itemsQueued: summary.itemsQueued,
       errors,
+      sourceResults,
     });
 
     return NextResponse.json({ runId, ...summary });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    if (runId) await failIngestionRun(runId, message).catch(() => undefined);
+    return NextResponse.json({ error: message, runId }, { status: 500 });
+  } finally {
+    await releaseIngestionLock("bursaries", lockOwner).catch(() => undefined);
   }
 }
