@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminErrorResponse } from "@/lib/admin/respond";
-import { isEditableFactCollection } from "@/lib/admin/allowlist";
+import { isEditableFactCollection, isEditableFactField } from "@/lib/admin/allowlist";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { CURRENT_ACADEMIC_YEAR } from "@/config/academicYear";
 
@@ -67,7 +67,7 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     );
   }
 
-  const { action } = parsedBody.data;
+  if (!isEditableFactField(item.collection, item.field)) {\n    return NextResponse.json(\n      { error: `Refusing to write field "${item.field}" in collection "${item.collection}".` },\n      { status: 422 }\n    );\n  }\n\n  if (!/^https?:\\/\\//i.test(item.sourceUrl)) {\n    return NextResponse.json({ error: "Queue item has an invalid source URL." }, { status: 422 });\n  }\n\n  const { action } = parsedBody.data;
   const now = new Date().toISOString();
   const newStatus = action === "reject" ? "rejected" : action === "edit" ? "edited" : "approved";
   const batch = db.batch();
