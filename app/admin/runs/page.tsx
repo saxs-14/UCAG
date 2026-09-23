@@ -138,12 +138,22 @@ export default function RunsPage() {
           Phase 4 status).
         </p>
       )}
+      <div className="rounded border p-3 text-sm dark:border-gray-700">
+        <p className="font-medium">Source monitor</p>
+        <div className="mt-2 grid gap-2 sm:grid-cols-4">
+          {["processed", "skipped", "noChange", "fetchError"].map((outcome) => {
+            const count = runs.reduce((total, run) => total + (run.sourceResults?.filter((r) => r.outcome === outcome).length ?? 0), 0);
+            return <div key={outcome} className="rounded bg-gray-50 p-2 dark:bg-gray-900"><div className="text-xs text-gray-500">{outcome}</div><div className="text-lg font-semibold">{count}</div></div>;
+          })}
+        </div>
+      </div>
       <div className="overflow-x-auto">
         <table className="w-full min-w-max text-left text-sm">
           <thead>
             <tr className="border-b text-xs text-gray-500 dark:border-gray-700">
               <th className="py-1 pr-3">Started</th>
               <th className="py-1 pr-3">Finished</th>
+              <th className="py-1 pr-3">Status</th>
               <th className="py-1 pr-3">Sources</th>
               <th className="py-1 pr-3">Tokens</th>
               <th className="py-1 pr-3">Cost (USD)</th>
@@ -159,6 +169,7 @@ export default function RunsPage() {
               <tr key={run.id} className="border-b align-top last:border-0 dark:border-gray-800">
                 <td className="py-1.5 pr-3 text-xs">{run.startedAt}</td>
                 <td className="py-1.5 pr-3 text-xs">{run.finishedAt ?? "in progress"}</td>
+                <td className="py-1.5 pr-3 text-xs font-medium">{run.status ?? (run.finishedAt ? "completed" : "running")}</td>
                 <td className="py-1.5 pr-3 text-xs">{run.sourceIds.length}</td>
                 <td className="py-1.5 pr-3 text-xs">{run.tokensUsed.toLocaleString()}</td>
                 <td className="py-1.5 pr-3 text-xs">${run.costEstimate.toFixed(2)}</td>
