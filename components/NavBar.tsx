@@ -8,10 +8,10 @@ import { useAuth } from "@/components/auth/AuthProvider";
 import type { CatalogStats } from "@/lib/catalog/getCatalogStats";
 
 const PUBLIC_NAV_ITEMS = [
-  { href: "/", label: `🎓 ${LABELS.nav.calculator}` },
-  { href: "/institutions", label: "🏛️ Institutions" },
-  { href: "/bursaries", label: `💰 ${LABELS.nav.bursaries}` },
-  { href: "/programmes", label: `📚 ${LABELS.nav.programmes}` },
+  { href: "/", label: LABELS.nav.calculator },
+  { href: "/institutions", label: "Universities" },
+  { href: "/programmes", label: LABELS.nav.programmes },
+  { href: "/bursaries", label: LABELS.nav.bursaries },
 ];
 
 interface NavBarProps {
@@ -24,67 +24,47 @@ export function NavBar({ stats }: NavBarProps) {
   const isLoggedIn = !!user && !user.isAnonymous;
 
   return (
-    <header className="no-print brand-band border-b border-white/10 shadow-sm sticky top-0 z-40 backdrop-blur-md">
-      <nav className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-x-6 gap-y-2 px-4 py-3 sm:px-8">
-        <Link href="/" className="flex min-h-11 items-center text-white transition-transform hover:scale-[1.02] active:scale-95">
-          <Logo size={28} wordmarkClassName="text-lg font-bold tracking-tight text-white" />
+    <header className="no-print sticky top-0 z-40 border-b border-white/10 bg-brand-navy/95 text-white shadow-sm backdrop-blur-md">
+      <nav className="mx-auto flex min-h-14 w-full max-w-6xl items-center gap-3 px-4 sm:px-6" aria-label="Primary navigation">
+        <Link href="/" className="flex min-h-11 shrink-0 items-center text-white" aria-label="UCAG home">
+          <Logo size={30} wordmarkClassName="text-lg font-black tracking-tight text-white" />
         </Link>
 
-        {stats && stats.institutionCount > 0 && (
-          <span className="hidden text-xs text-emerald-300 font-medium bg-emerald-950/60 px-3 py-1 rounded-full border border-emerald-500/30 md:inline">
-            ✨ {stats.institutionCount} SA Universities{stats.programmeCount > 0 ? ` · ${stats.programmeCount} Degrees` : ""}
-          </span>
-        )}
-
-        <div className="flex flex-wrap items-center gap-1.5 text-sm font-medium">
+        <div className="hidden min-w-0 flex-1 items-center justify-center gap-1 md:flex">
           {PUBLIC_NAV_ITEMS.map(({ href, label }) => {
-            const active = pathname === href;
+            const active = pathname === href || (href !== "/" && pathname.startsWith(href));
             return (
               <Link
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`flex min-h-10 items-center rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
-                  active
-                    ? "bg-teal-600 text-white shadow-sm"
-                    : "text-white/85 hover:bg-white/10 hover:text-white"
-                }`}
+                className={`min-h-10 rounded-xl px-3 py-2 text-xs font-bold transition-colors ${active ? "bg-white/12 text-white" : "text-white/75 hover:bg-white/8 hover:text-white"}`}
               >
                 {label}
               </Link>
             );
           })}
+        </div>
 
-          {!loading && (
-            isLoggedIn ? (
-              <Link
-                href="/account"
-                aria-current={pathname === "/account" ? "page" : undefined}
-                className={`flex min-h-10 items-center rounded-lg px-3 py-1.5 text-xs sm:text-sm font-semibold transition-all ${
-                  pathname === "/account"
-                    ? "bg-teal-600 text-white shadow-sm"
-                    : "text-white/85 hover:bg-white/10 hover:text-white"
-                }`}
-              >
-                👤 {LABELS.nav.profile}
-              </Link>
-            ) : (
-              <div className="flex items-center gap-2 ml-1">
-                <Link
-                  href="/login"
-                  className="flex min-h-9 items-center rounded-lg border border-white/20 bg-white/5 px-3 py-1 text-xs font-bold text-white hover:bg-white/15 transition"
-                >
-                  Sign In
-                </Link>
-                <Link
-                  href="/register"
-                  className="flex min-h-9 items-center rounded-lg bg-teal-500 px-3.5 py-1 text-xs font-extrabold text-white shadow hover:bg-teal-400 transition active:scale-95"
-                >
-                  Create Account
-                </Link>
-              </div>
-            )
+        <div className="ml-auto flex shrink-0 items-center gap-2">
+          {stats && stats.institutionCount > 0 && (
+            <span className="hidden rounded-full border border-emerald-400/20 bg-emerald-950/40 px-3 py-1 text-[10px] font-bold text-emerald-200 lg:inline">
+              {stats.institutionCount} institutions
+            </span>
           )}
+          {!loading && (isLoggedIn ? (
+            <Link
+              href="/account"
+              className={`min-h-10 rounded-xl px-3 py-2 text-xs font-bold ${pathname === "/account" ? "bg-brand-teal text-white" : "text-white/80 hover:bg-white/10 hover:text-white"}`}
+            >
+              Profile
+            </Link>
+          ) : (
+            <>
+              <Link href="/login" className="min-h-10 rounded-xl px-3 py-2 text-xs font-bold text-white/80 hover:bg-white/10 hover:text-white">Sign in</Link>
+              <Link href="/register" className="hidden min-h-10 items-center rounded-xl bg-brand-teal px-3.5 py-2 text-xs font-black text-white sm:flex">Create account</Link>
+            </>
+          ))}
         </div>
       </nav>
     </header>
