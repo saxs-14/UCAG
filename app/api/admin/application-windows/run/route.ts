@@ -1,4 +1,5 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { randomUUID } from "node:crypto";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminErrorResponse } from "@/lib/admin/respond";
 import { getAdminDb } from "@/lib/firebase/admin";
@@ -44,7 +45,7 @@ export async function POST(request: NextRequest) {
   }
 
   const db = getAdminDb();
-  const lockOwner = admin.uid + ":" + crypto.randomUUID();
+  const lockOwner = admin.uid + ":" + randomUUID();
   if (!(await acquireIngestionLock("applicationWindows", lockOwner))) {
     return NextResponse.json({ error: "An application-window ingestion run is already in progress." }, { status: 409 });
   }
@@ -74,6 +75,10 @@ export async function POST(request: NextRequest) {
       detail: r.detail,
       tokensUsed: r.tokensUsed,
       fieldsQueued: r.fieldsQueued,
+      fetchedAt: r.fetchedAt,
+      statusCode: r.statusCode,
+      etag: r.etag,
+      lastModified: r.lastModified,
     }));
     await completeIngestionRun(runId, {
       startedAt: summary.startedAt,
@@ -95,12 +100,14 @@ export async function POST(request: NextRequest) {
       if (!source) return;
       const ref = db.collection("sources").doc(source.id);
       const patch: Record<string, unknown> = {
-        lastFetchedAt: summary.finishedAt,
-        lastFetchError: result.detail ?? null,
+        lastFetchError: result.outcome === "fetchError" ? (result.detail ?? "Source fetch failed.") : null,
         updatedAt: new Date().toISOString(),
         updatedBy: admin.uid,
       };
-      if (result.outcome === "fetchError") patch.lastFetchStatusCode = null;
+      if (result.fetchedAt) patch.lastFetchedAt = result.fetchedAt;
+      if (result.statusCode !== undefined) patch.lastFetchStatusCode = result.statusCode;
+      if (result.etag !== undefined) patch.etag = result.etag;
+      if (result.lastModified !== undefined) patch.lastModified = result.lastModified;
       await ref.update(patch);
     }));
     return NextResponse.json({ runId, ...summary });
