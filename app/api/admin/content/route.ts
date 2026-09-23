@@ -25,7 +25,7 @@ const bodySchema = z.object({
   patch: z
     .record(z.string(), z.unknown())
     .refine((v) => Object.keys(v).length > 0, { message: "patch must have at least one field." }),
-  sourceUrl: z.string().url().refine((value) => /^https?:\\/\\//i.test(value), { message: "sourceUrl must use http or https." }),
+  sourceUrl: z.string().url().refine((value) => /^https?:\/\//i.test(value), { message: "sourceUrl must use http or https." }),
 });
 
 export async function POST(request: NextRequest) {
