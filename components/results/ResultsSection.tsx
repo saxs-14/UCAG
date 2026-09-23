@@ -167,7 +167,28 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
     () => scored.filter((entry) => entry.matchResult.bucket === "qualify").length,
     [scored]
   );
-  const filterCounts = { all: scored.length, qualify: qualifyCount, almostQualify: almostCount, notYet: notYetCount } as const;
+  const almostCount = useMemo(
+    () => scored.filter((entry) => entry.matchResult.bucket === "almostQualify").length,
+    [scored]
+  );
+  const notYetCount = useMemo(
+    () => scored.filter((entry) => entry.matchResult.bucket === "notYet").length,
+    [scored]
+  );
+
+  const FILTERS = [
+    { key: "all" as const, label: "All matches" },
+    { key: "qualify" as const, label: "You qualify" },
+    { key: "almostQualify" as const, label: "Almost" },
+    { key: "notYet" as const, label: "Not yet" },
+  ];
+
+  const filterCounts = {
+    all: scored.length,
+    qualify: qualifyCount,
+    almostQualify: almostCount,
+    notYet: notYetCount,
+  } as const;
 
   const hadQualifyRef = useRef(false);
   const [celebrate, setCelebrate] = useState(false);
