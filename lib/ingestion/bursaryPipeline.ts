@@ -1,7 +1,7 @@
 import { extractStructuredData } from "./extract";
 import { diffValue } from "./diff";
 import { routeProposal } from "./route";
-import { fetchSourceText } from "./fetchSourceText";
+import { fetchSource } from "./fetchSourceText";
 import { bursaryExtractionSchema, type BursaryExtractionItem } from "./schemas/bursary";
 import { detectBursaryRiskFlags } from "./bursaryScamModel/detectRisk";
 import type { ListingSourceType } from "./bursarySafety";
@@ -218,14 +218,12 @@ export async function runBursaryIngestion(
       continue;
     }
 
-    let sourceText: string;
-    try {
-      sourceText = await fetchSourceText(source.url, fetchImpl, MAX_SOURCE_TEXT_CHARS);
-    } catch (err) {
+    const fetchOutcome = await fetchSource(source, fetchImpl, MAX_SOURCE_TEXT_CHARS, now);
+    if (fetchOutcome.error || fetchOutcome.body === null) {
       results.push({
         sourceId: source.id,
         outcome: "fetchError",
-        detail: err instanceof Error ? err.message : String(err),
+        detail: fetchOutcome.error ?? "Source returned no body.",
         tokensUsed: 0,
         bursariesFound: 0,
         fieldsQueued: 0,
@@ -234,6 +232,11 @@ export async function runBursaryIngestion(
       continue;
     }
 
+    if (!fetchOutcome.changed) {
+      results.push({ sourceId: source.id, outcome: "noChange", tokensUsed: 0, bursariesFound: 0, fieldsQueued: 0, flaggedBursaryNames: [] });
+      continue;
+    }
+    const sourceText = fetchOutcome.body;
     const estimatedTokens = Math.ceil(sourceText.length / 4) + ESTIMATED_OUTPUT_TOKENS;
     const budgetCheck = await deps.checkBudgetLive(estimatedTokens, tokensUsedThisRun);
     if (!budgetCheck.allowed) {

@@ -391,6 +391,7 @@ export interface Source {
   lastFetchStatusCode?: number | null;
   lastFetchError?: string | null;
   lastModified?: string | null;
+  contentHash?: string | null;
 }
 
 export type IngestionRunStatus = "running" | "completed" | "failed";
