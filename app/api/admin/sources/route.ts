@@ -31,8 +31,9 @@ const createSourceSchema = z.object({
 });
 
 export async function POST(request: NextRequest) {
+  let admin;
   try {
-    await requireAdmin(request);
+    admin = await requireAdmin(request);
   } catch (err) {
     return adminErrorResponse(err);
   }
@@ -60,7 +61,6 @@ export async function POST(request: NextRequest) {
   }
 
   const now = new Date().toISOString();
-  const admin = await requireAdmin(request);
   await ref.set({
     ...parsed.data,
     institutionId,

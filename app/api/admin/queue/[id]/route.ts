@@ -5,6 +5,7 @@ import { adminErrorResponse } from "@/lib/admin/respond";
 import { isEditableFactCollection, isEditableFactField } from "@/lib/admin/allowlist";
 import { getAdminDb } from "@/lib/firebase/admin";
 import { CURRENT_ACADEMIC_YEAR } from "@/config/academicYear";
+import { diffValue } from "@/lib/ingestion/diff";
 
 /**
  * Verification queue approve/edit/reject.
@@ -22,7 +23,7 @@ const bodySchema = z.discriminatedUnion("action", [
 ]);
 
 function valuesEqual(a: unknown, b: unknown): boolean {
-  return JSON.stringify(a) === JSON.stringify(b);
+  return !diffValue(a, b).changed;
 }
 
 export async function POST(
