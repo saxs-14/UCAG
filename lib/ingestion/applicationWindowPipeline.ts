@@ -42,7 +42,8 @@ export type ApplicationWindowOutcome =
   | "skippedNoInstitution"
   | "fetchError"
   | "extractionError"
-  | "budgetExceeded";
+  | "budgetExceeded"
+  | "skipped";
 
 export interface ApplicationWindowSourceResult {
   sourceId: string;
@@ -109,7 +110,20 @@ export async function runApplicationWindowIngestion(
 
     const fetchOutcome = await fetchSource(source, fetchImpl, MAX_SOURCE_TEXT_CHARS, now);
     if (fetchOutcome.skipped) {
-      results.push({ sourceId: source.id, ...(source.institutionId !== undefined ? { institutionId: source.institutionId } : {}), outcome: "skipped", detail: fetchOutcome.error ?? "Source is not due for fetching.", tokensUsed: 0, ...(path.includes("bursary") ? { bursariesFound: 0, fieldsQueued: 0, flaggedBursaryNames: [] } : path.includes("programme") ? { programmesFound: 0, fieldsQueued: 0 } : { fieldsQueued: [] }), fetchedAt: fetchOutcome.fetchedAt, statusCode: fetchOutcome.statusCode, etag: fetchOutcome.etag, lastModified: fetchOutcome.lastModified, contentHash: fetchOutcome.contentHash, retryCount: fetchOutcome.retryCount });
+      results.push({
+        sourceId: source.id,
+        institutionId: source.institutionId,
+        outcome: "skipped",
+        detail: fetchOutcome.error ?? "Source is not due for fetching.",
+        tokensUsed: 0,
+        fieldsQueued: [],
+        fetchedAt: fetchOutcome.fetchedAt,
+        statusCode: fetchOutcome.statusCode,
+        etag: fetchOutcome.etag,
+        lastModified: fetchOutcome.lastModified,
+        contentHash: fetchOutcome.contentHash,
+        retryCount: fetchOutcome.retryCount,
+      });
       continue;
     }
     if (fetchOutcome.error || fetchOutcome.body === null) {
