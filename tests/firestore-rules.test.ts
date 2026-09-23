@@ -207,6 +207,40 @@ describe("userProfiles security rules", () => {
     );
   });
 
+
+
+  it("a client cannot create a profile with a privileged role", async () => {
+    const alice = testEnv.authenticatedContext("user-a");
+    await assertFails(
+      alice.firestore().doc("userProfiles/user-a").set({
+        ...validMajorProfile("user-a"),
+        role: "admin",
+      })
+    );
+  });
+
+  it("a client cannot change the profile role after creation", async () => {
+    await testEnv.withSecurityRulesDisabled(async (adminCtx) => {
+      await adminCtx.firestore().doc("userProfiles/user-a").set(validMajorProfile("user-a"));
+    });
+
+    const alice = testEnv.authenticatedContext("user-a");
+    await assertFails(
+      alice.firestore().doc("userProfiles/user-a").update({ role: "admin" })
+    );
+  });
+
+  it("a client cannot add arbitrary fields to a profile", async () => {
+    await testEnv.withSecurityRulesDisabled(async (adminCtx) => {
+      await adminCtx.firestore().doc("userProfiles/user-a").set(validMajorProfile("user-a"));
+    });
+
+    const alice = testEnv.authenticatedContext("user-a");
+    await assertFails(
+      alice.firestore().doc("userProfiles/user-a").update({ isSuperUser: true })
+    );
+  });
+
   it("a user can delete their own profile (account deletion flow)", async () => {
     await testEnv.withSecurityRulesDisabled(async (adminCtx) => {
       await adminCtx.firestore().doc("userProfiles/user-a").set(validMajorProfile("user-a"));
