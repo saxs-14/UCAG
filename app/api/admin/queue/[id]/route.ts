@@ -7,11 +7,12 @@ import { getAdminDb } from "@/lib/firebase/admin";
 import { CURRENT_ACADEMIC_YEAR } from "@/config/academicYear";
 
 /**
- * Verification queue approve/edit/reject (docs/MASTER_PROMPT_v2.md Phase
- * 7: "Approve / edit / reject, one keystroke each"). Approve writes the
- * queue item's proposedValue; edit writes a human-supplied replacement
- * instead; reject writes nothing to the target document. Either way the
- * queue item itself is stamped reviewed so it can't be actioned twice.
+ * Verification queue approve/edit/reject.
+ *
+ * Approval is transactional: the queue item must still be pending and the
+ * target field must still equal the value captured when the proposal was
+ * created. This prevents an older proposal from overwriting a newer verified
+ * value when two ingestion runs or two admins race.
  */
 
 const bodySchema = z.discriminatedUnion("action", [
@@ -20,7 +21,14 @@ const bodySchema = z.discriminatedUnion("action", [
   z.object({ action: z.literal("edit"), editedValue: z.unknown() }),
 ]);
 
-export async function POST(request: NextRequest, { params }: { params: Promise<{ id: string }> }) {
+function valuesEqual(a: unknown, b: unknown): boolean {
+  return JSON.stringify(a) === JSON.stringify(b);
+}
+
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
   let admin;
   try {
     admin = await requireAdmin(request);
@@ -48,17 +56,11 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     collection: string;
     docId: string;
     field: string;
+    currentValue: unknown;
     proposedValue: unknown;
     sourceUrl: string;
     status: string;
   };
-
-  if (item.status !== "pending") {
-    return NextResponse.json(
-      { error: `This item was already reviewed (status: ${item.status}).` },
-      { status: 409 }
-    );
-  }
 
   if (!isEditableFactCollection(item.collection)) {
     return NextResponse.json(
@@ -67,45 +69,82 @@ export async function POST(request: NextRequest, { params }: { params: Promise<{
     );
   }
 
-  if (!isEditableFactField(item.collection, item.field)) {\n    return NextResponse.json(\n      { error: `Refusing to write field "${item.field}" in collection "${item.collection}".` },\n      { status: 422 }\n    );\n  }\n\n  if (!/^https?:\\/\\//i.test(item.sourceUrl)) {\n    return NextResponse.json({ error: "Queue item has an invalid source URL." }, { status: 422 });\n  }\n\n  if (!isEditableFactField(item.collection, item.field)) {
+  if (!isEditableFactField(item.collection, item.field)) {
     return NextResponse.json(
       { error: `Refusing to write field "${item.field}" in collection "${item.collection}".` },
       { status: 422 }
     );
   }
 
-  if (!/^https?:\/\//i.test(item.sourceUrl)) {
+  if (!/^https?:\\/\\//i.test(item.sourceUrl)) {
     return NextResponse.json({ error: "Queue item has an invalid source URL." }, { status: 422 });
   }
 
   const { action } = parsedBody.data;
   const now = new Date().toISOString();
   const newStatus = action === "reject" ? "rejected" : action === "edit" ? "edited" : "approved";
-  const batch = db.batch();
+  const targetRef = db.collection(item.collection).doc(item.docId);
 
-  if (action !== "reject") {
-    const value = action === "edit" ? parsedBody.data.editedValue : item.proposedValue;
-    const targetRef = db.collection(item.collection).doc(item.docId);
-    // academicYear isn't itself a per-fact extracted field (VerificationQueueItem
-    // has no academicYear of its own) -- every approved fact belongs to the
-    // one admission cycle this whole app is currently populated for (see
-    // config/academicYear.ts). Without stamping it here, isFactVerified()
-    // (lib/firestore/types.ts) would reject every approved document forever,
-    // since it requires sourceUrl + verifiedOn + academicYear together.
-    batch.set(
-      targetRef,
-      {
-        [item.field]: value,
-        sourceUrl: item.sourceUrl,
-        verifiedOn: now.slice(0, 10),
-        academicYear: CURRENT_ACADEMIC_YEAR,
-      },
-      { merge: true }
-    );
+  try {
+    await db.runTransaction(async (transaction) => {
+      const [freshQueue, freshTarget] = await Promise.all([
+        transaction.get(queueRef),
+        transaction.get(targetRef),
+      ]);
+
+      if (!freshQueue.exists) {
+        throw new Error("QUEUE_NOT_FOUND");
+      }
+
+      const freshItem = freshQueue.data() as typeof item;
+      if (freshItem.status !== "pending") {
+        throw new Error("QUEUE_ALREADY_REVIEWED");
+      }
+
+      const currentTargetValue = freshTarget.exists
+        ? (freshTarget.data() as Record<string, unknown>)[freshItem.field]
+        : null;
+
+      if (!valuesEqual(currentTargetValue ?? null, freshItem.currentValue ?? null)) {
+        throw new Error("QUEUE_STALE");
+      }
+
+      if (action !== "reject") {
+        const value = action === "edit" ? parsedBody.data.editedValue : freshItem.proposedValue;
+        transaction.set(
+          targetRef,
+          {
+            [freshItem.field]: value,
+            sourceUrl: freshItem.sourceUrl,
+            verifiedOn: now.slice(0, 10),
+            academicYear: CURRENT_ACADEMIC_YEAR,
+          },
+          { merge: true }
+        );
+      }
+
+      transaction.update(queueRef, {
+        status: newStatus,
+        reviewedBy: admin.uid,
+        reviewedAt: now,
+      });
+    });
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    if (message === "QUEUE_NOT_FOUND") {
+      return NextResponse.json({ error: "Verification queue item not found." }, { status: 404 });
+    }
+    if (message === "QUEUE_ALREADY_REVIEWED") {
+      return NextResponse.json({ error: "This item was already reviewed." }, { status: 409 });
+    }
+    if (message === "QUEUE_STALE") {
+      return NextResponse.json(
+        { error: "This proposal is stale because the target value changed after it was queued. Re-run verification before approving it." },
+        { status: 409 }
+      );
+    }
+    throw err;
   }
-
-  batch.update(queueRef, { status: newStatus, reviewedBy: admin.uid, reviewedAt: now });
-  await batch.commit();
 
   return NextResponse.json({ ok: true, status: newStatus });
 }
