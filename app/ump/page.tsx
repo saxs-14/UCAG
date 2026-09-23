@@ -221,13 +221,54 @@ export default async function UmpHubPage() {
           </section>
         )}
 
-        {/* ── Quick Nav cards ── */}
+        {/* ── Application path ── */}
+        <section aria-labelledby="ump-application-path-heading" className="card-learner rounded-2xl p-5 sm:p-6">
+          <div className="max-w-2xl">
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-teal">Application path</p>
+            <h2 id="ump-application-path-heading" className="mt-1 text-xl font-bold tracking-tight text-ink">
+              Get ready before you open the UMP portal.
+            </h2>
+            <p className="mt-1 text-sm leading-6 text-ink-soft">
+              Use UCAG to check a programme, review the recorded application window, prepare your documents, then continue on the official UMP portal.
+            </p>
+          </div>
+          <ol className="mt-4 grid gap-3 sm:grid-cols-3">
+            <li className="rounded-xl border border-line bg-paper-raised p-4">
+              <span className="font-mono text-xs font-bold text-brand-teal">1</span>
+              <p className="mt-1 text-sm font-bold text-ink">Check your programme</p>
+              <Link href="/ump/programmes" className="mt-2 inline-flex min-h-11 items-center text-xs font-semibold text-brand-teal underline">Browse programmes</Link>
+            </li>
+            <li className="rounded-xl border border-line bg-paper-raised p-4">
+              <span className="font-mono text-xs font-bold text-brand-teal">2</span>
+              <p className="mt-1 text-sm font-bold text-ink">Prepare documents</p>
+              <p className="mt-1 text-xs leading-5 text-ink-soft">Check files in your browser before submitting them.</p>
+              <Link href="/application/documents" className="mt-2 inline-flex min-h-11 items-center text-xs font-semibold text-brand-teal underline">Open document checker</Link>
+            </li>
+            <li className="rounded-xl border border-line bg-paper-raised p-4">
+              <span className="font-mono text-xs font-bold text-brand-teal">3</span>
+              <p className="mt-1 text-sm font-bold text-ink">Apply on UMP</p>
+              <p className="mt-1 text-xs leading-5 text-ink-soft">Use the official portal when the application window is open.</p>
+              {institution?.applicationPortalUrl && (
+                <a href={institution.applicationPortalUrl} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center text-xs font-semibold text-brand-teal underline">Open UMP portal ↗</a>
+              )}
+            </li>
+          </ol>
+        </section>
+
+        {/* ── Quick Nav cards ── */
         <section aria-labelledby="ump-explore-heading">
           <h2 id="ump-explore-heading" className="mb-4 text-xl font-bold tracking-tight text-ink">
             Explore UMP
           </h2>
           <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {[
+              {
+                href: "/application/documents",
+                icon: "📄",
+                title: "Application Documents",
+                desc: "Check your files in your browser before you submit an application.",
+                accent: UMP_TEAL,
+              },
               {
                 href: "/ump/programmes",
                 icon: "📚",
