@@ -4,14 +4,16 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { deleteUser, signOut } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
-import { deleteUserProfile, getUserProfile } from "@/lib/auth/profile";
+import { deleteUserProfile, getUserProfile, updateProfilePreferences } from "@/lib/auth/profile";
 import { profileToExportJson } from "@/lib/auth/export";
 import { resolveSubjectLabel } from "@/config/subjects";
+import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
 import { useAuth } from "./AuthProvider";
 import { SignUpForm } from "./SignUpForm";
 import { SignInForm } from "./SignInForm";
 import { LABELS } from "@/config/labels";
 import type { UserProfile } from "@/lib/firestore/types";
+import { useRouter } from "next/navigation";
 
 function downloadJson(filename: string, json: string) {
   const blob = new Blob([json], { type: "application/json;charset=utf-8;" });
@@ -23,51 +25,72 @@ function downloadJson(filename: string, json: string) {
   URL.revokeObjectURL(url);
 }
 
-import { useRouter } from "next/navigation";
-
 export function AccountPage() {
   const router = useRouter();
-  const { user, loading, authUnavailable } = useAuth();
+  const { user, loading, authUnavailable, isAdmin } = useAuth();
   const [mode, setMode] = useState<"signUp" | "signIn">("signUp");
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [institutionId, setInstitutionId] = useState("");
+  const [editing, setEditing] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [savingProfile, setSavingProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [stashedNotice, setStashedNotice] = useState(false);
+  const [notice, setNotice] = useState<string | null>(null);
 
   useEffect(() => {
     if (!loading && !user) {
       router.push("/login");
       return;
     }
+    if (!user) return;
 
-    if (user) {
-      getUserProfile(user.uid)
-        .then(async (fetchedProfile) => {
-          setProfile(fetchedProfile);
+    let cancelled = false;
+    getUserProfile(user.uid)
+      .then(async (fetchedProfile) => {
+        if (cancelled) return;
+        setProfile(fetchedProfile);
+        setInstitutionId(fetchedProfile?.institutionId ?? "");
 
-          // Check if there are stashed marks from the calculator
-          try {
-            const rawStashed = sessionStorage.getItem("ucag_stashed_marks");
-            if (rawStashed) {
-              const stashedMarks = JSON.parse(rawStashed);
-              if (Array.isArray(stashedMarks) && stashedMarks.length > 0) {
-                const { updateSavedMarks } = await import("@/lib/auth/profile");
-                await updateSavedMarks(user.uid, stashedMarks);
-                sessionStorage.removeItem("ucag_stashed_marks");
-                setStashedNotice(true);
-                const updated = await getUserProfile(user.uid);
+        try {
+          const rawStashed = sessionStorage.getItem("ucag_stashed_marks");
+          if (rawStashed) {
+            const stashedMarks = JSON.parse(rawStashed);
+            if (Array.isArray(stashedMarks) && stashedMarks.length > 0) {
+              const { updateSavedMarks } = await import("@/lib/auth/profile");
+              await updateSavedMarks(user.uid, stashedMarks);
+              sessionStorage.removeItem("ucag_stashed_marks");
+              const updated = await getUserProfile(user.uid);
+              if (!cancelled) {
                 setProfile(updated);
+                setInstitutionId(updated?.institutionId ?? "");
+                setNotice(LABELS.account.stashedMarksNotice);
               }
             }
-          } catch {}
-        })
-        .catch((err) => setError(String(err)));
-    }
+          }
+        } catch {
+          // A failed optional session hand-off must not break the account page.
+        }
+      })
+      .catch((err) => setError(err instanceof Error ? err.message : String(err)));
+
+    return () => { cancelled = true; };
   }, [user, loading, router]);
 
-  async function handleDownloadData() {
-    if (!profile) return;
-    downloadJson("ucag-my-data.json", profileToExportJson(profile));
+  async function handleSaveProfile() {
+    if (!user || !institutionId) return;
+    setSavingProfile(true);
+    setError(null);
+    setNotice(null);
+    try {
+      await updateProfilePreferences(user.uid, { institutionId });
+      setProfile((current) => current ? { ...current, institutionId } : current);
+      setEditing(false);
+      setNotice(LABELS.account.profileSaved);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : String(err));
+    } finally {
+      setSavingProfile(false);
+    }
   }
 
   async function handleDeleteAccount() {
@@ -77,31 +100,22 @@ export function AccountPage() {
       await deleteUserProfile(user.uid);
       await deleteUser(user);
     } catch (err) {
-      // Firebase requires a recent sign-in for account deletion; surface
-      // that plainly rather than a raw SDK error code.
       setError(
         err instanceof Error && err.message.includes("requires-recent-login")
-          ? "For your security, please sign out and sign in again before deleting your account."
-          : err instanceof Error
-            ? err.message
-            : String(err)
+          ? LABELS.account.recentLoginRequired
+          : err instanceof Error ? err.message : String(err)
       );
       setConfirmingDelete(false);
     }
   }
 
-  if (loading) return <p className="text-sm text-ink-faint p-6">Checking authentication status...</p>;
+  if (loading) return <p className="p-6 text-sm text-ink-faint">{LABELS.account.checkingAuth}</p>;
 
   if (authUnavailable) {
     return (
       <div className="flex w-full max-w-sm flex-col gap-2">
-        <p className="text-sm text-ink-soft">
-          Accounts aren&apos;t available on this deployment right now -- the calculator, bursaries,
-          and statistics pages all work fully without one.
-        </p>
-        <Link href="/privacy" className="text-sm text-mark-green hover:underline">
-          {LABELS.account.privacyNoticeLink}
-        </Link>
+        <p className="text-sm text-ink-soft">{LABELS.account.authUnavailable}</p>
+        <Link href="/privacy" className="text-sm text-mark-green hover:underline">{LABELS.account.privacyNoticeLink}</Link>
       </div>
     );
   }
@@ -110,136 +124,98 @@ export function AccountPage() {
     return (
       <div className="flex w-full max-w-sm flex-col gap-4 p-6">
         <p className="text-sm text-ink-faint">{LABELS.account.optionalNote}</p>
-        {mode === "signUp" ? (
-          <SignUpForm onSwitchToSignIn={() => setMode("signIn")} />
-        ) : (
-          <SignInForm onSwitchToSignUp={() => setMode("signUp")} />
-        )}
-        <Link href="/privacy" className="text-sm text-mark-green hover:underline">
-          {LABELS.account.privacyNoticeLink}
-        </Link>
+        {mode === "signUp" ? <SignUpForm onSwitchToSignIn={() => setMode("signIn")} /> : <SignInForm onSwitchToSignUp={() => setMode("signUp")} />}
+        <Link href="/privacy" className="text-sm text-mark-green hover:underline">{LABELS.account.privacyNoticeLink}</Link>
       </div>
     );
   }
 
+  const selectedInstitution = SEED_INSTITUTIONS.find((institution) => institution.id === profile?.institutionId);
+
   return (
-    <div className="flex w-full max-w-xl flex-col gap-6">
-      {stashedNotice && (
-        <div role="status" className="animate-rise-in rounded-2xl bg-mark-green-soft p-4 text-xs font-extrabold text-mark-green border border-mark-green/30 shadow-sm flex items-center gap-2">
-          <span>🎉</span>
-          <span>Your subject marks from the APS Calculator have been automatically saved to your profile!</span>
+    <div className="flex w-full max-w-xl flex-col gap-5">
+      {notice && <div role="status" className="rounded-2xl border border-mark-green/30 bg-mark-green-soft p-4 text-sm font-semibold text-mark-green">{notice}</div>}
+      {error && <p role="alert" className="rounded-2xl border border-mark-red/30 bg-mark-red-soft p-4 text-sm text-mark-red">{error}</p>}
+
+      <section className="rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <p className="text-xs font-extrabold uppercase tracking-wide text-brand-teal">{LABELS.account.profileHeading}</p>
+            <h2 className="mt-1 text-lg font-black text-ink">{user.email ?? user.uid}</h2>
+            <p className="mt-1 text-xs leading-5 text-ink-soft">{LABELS.account.profileIntro}</p>
+          </div>
+          {!editing && <button type="button" onClick={() => setEditing(true)} className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink hover:bg-slate-soft">{LABELS.account.editProfileButton}</button>}
         </div>
-      )}
 
-      <p className="animate-rise-in text-sm text-ink">
-        Signed in as <strong>{user.email ?? user.uid}</strong>
-      </p>
-
-      {error && (
-        <p role="alert" className="rounded-lg bg-mark-red-soft p-3 text-sm text-mark-red">
-          {error}
-        </p>
-      )}
-
-      <section className="animate-rise-in flex flex-col gap-2.5 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-navy">
-          📌 Role Dashboards & Portals
-        </h2>
-        <div className="grid gap-2 sm:grid-cols-2 text-xs font-semibold">
-          <Link href="/institutions" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
-            <span>🏛️ Institutions & Programmes Portal</span>
-          </Link>
-          <Link href="/admin" className="flex items-center gap-2 rounded-xl bg-paper p-3 border border-line hover:border-brand-teal text-ink">
-            <span>🏛️ University Admin Portal</span>
-          </Link>
+        <div className="mt-4 rounded-xl border border-line/70 bg-paper p-4">
+          <p className="text-xs font-bold text-ink-soft">{LABELS.account.institutionLabel}</p>
+          {editing ? (
+            <div className="mt-2 flex flex-col gap-3">
+              <select value={institutionId} onChange={(e) => setInstitutionId(e.target.value)} className="min-h-11 rounded-xl border border-line bg-paper-raised px-3 text-sm text-ink focus:border-mark-green focus:outline-none">
+                <option value="">{LABELS.account.institutionPlaceholder}</option>
+                {SEED_INSTITUTIONS.filter((institution) => institution.tier <= 2).map((institution) => (
+                  <option key={institution.id} value={institution.id}>{institution.name} ({institution.shortName})</option>
+                ))}
+              </select>
+              <div className="flex flex-wrap gap-2">
+                <button type="button" disabled={!institutionId || savingProfile} onClick={handleSaveProfile} className="min-h-11 rounded-xl bg-brand-teal px-4 text-sm font-bold text-white disabled:opacity-50">{savingProfile ? LABELS.account.savingProfileButton : LABELS.account.saveProfileButton}</button>
+                <button type="button" onClick={() => { setInstitutionId(profile?.institutionId ?? ""); setEditing(false); }} className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-soft">{LABELS.account.cancelEditButton}</button>
+              </div>
+            </div>
+          ) : (
+            <p className="mt-1 text-sm font-semibold text-ink">{selectedInstitution?.name ?? LABELS.account.institutionMissing}</p>
+          )}
         </div>
       </section>
 
-      <section className="animate-rise-in flex flex-col gap-2 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-teal">
-          {LABELS.account.savedMarksHeading}
-        </h2>
-        {profile && profile.marks.length > 0 ? (
-          <ul className="flex flex-col gap-1 font-mono text-sm tabular-nums text-ink-soft">
-            {profile.marks.map((m) => (
-              <li key={m.subjectCode} className="flex justify-between border-b border-line/60 py-1 last:border-0">
-                <span>{resolveSubjectLabel(m.subjectCode)}</span>
-                <span className="font-semibold text-ink">{m.percentage}%</span>
-              </li>
-            ))}
+      <section className="rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <h2 className="text-sm font-extrabold uppercase tracking-wide text-brand-teal">{LABELS.account.savedMarksHeading}</h2>
+            <p className="mt-1 text-xs text-ink-soft">{LABELS.account.savedMarksIntro}</p>
+          </div>
+          <Link href="/#calculator" className="min-h-11 inline-flex items-center rounded-xl border border-line px-3 text-xs font-bold text-ink hover:bg-slate-soft">{LABELS.account.openCalculatorButton}</Link>
+        </div>
+        {profile?.marks.length ? (
+          <ul className="mt-4 divide-y divide-line/60 text-sm">
+            {profile.marks.map((m) => <li key={m.subjectCode} className="flex justify-between py-2 text-ink-soft"><span>{resolveSubjectLabel(m.subjectCode)}</span><strong className="text-ink">{m.percentage}%</strong></li>)}
           </ul>
-        ) : (
-          <p className="text-sm text-ink-faint">{LABELS.account.savedMarksEmpty}</p>
-        )}
+        ) : <p className="mt-4 rounded-xl bg-paper p-4 text-sm text-ink-faint">{LABELS.account.savedMarksEmpty}</p>}
       </section>
 
-      <section className="animate-rise-in flex flex-col gap-2 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm">
-        <h2 className="text-sm font-semibold uppercase tracking-wide text-brand-coral">
-          {LABELS.account.shortlistHeading}
-        </h2>
-        {profile && profile.shortlist.length > 0 ? (
-          <ul className="flex flex-col gap-1 text-sm text-ink-soft">
-            {profile.shortlist.map((id) => (
-              <li key={id} className="border-b border-line/60 py-1 last:border-0">
-                {id}
-              </li>
-            ))}
+      <section className="rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+        <h2 className="text-sm font-extrabold uppercase tracking-wide text-brand-coral">{LABELS.account.shortlistHeading}</h2>
+        <p className="mt-1 text-xs text-ink-soft">{LABELS.account.shortlistIntro}</p>
+        {profile?.shortlist.length ? (
+          <ul className="mt-4 divide-y divide-line/60 text-sm">
+            {profile.shortlist.map((id) => <li key={id} className="py-2"><Link href={`/programmes/${id}`} className="font-semibold text-brand-teal hover:underline">{id}</Link></li>)}
           </ul>
-        ) : (
-          <p className="text-sm text-ink-faint">{LABELS.account.shortlistEmpty}</p>
-        )}
+        ) : <p className="mt-4 rounded-xl bg-paper p-4 text-sm text-ink-faint">{LABELS.account.shortlistEmpty}</p>}
       </section>
+
+      {isAdmin && (
+        <section className="rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
+          <h2 className="text-sm font-extrabold uppercase tracking-wide text-brand-navy">{LABELS.account.adminHeading}</h2>
+          <Link href="/admin" className="mt-3 inline-flex min-h-11 items-center rounded-xl border border-line px-4 text-sm font-semibold text-ink hover:bg-slate-soft">{LABELS.account.adminPortalButton}</Link>
+        </section>
+      )}
 
       <div className="flex flex-wrap gap-2 border-t border-line pt-4">
-        <button
-          type="button"
-          onClick={() => signOut(getFirebaseAuth())}
-          className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-[background-color,transform] duration-150 ease-out hover:bg-slate-soft active:scale-[0.97]"
-        >
-          {LABELS.account.signOutButton}
-        </button>
-        <button
-          type="button"
-          onClick={handleDownloadData}
-          disabled={!profile}
-          className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-[background-color,transform] duration-150 ease-out hover:bg-slate-soft active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          {LABELS.account.downloadDataButton}
-        </button>
+        <button type="button" onClick={() => signOut(getFirebaseAuth())} className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-soft hover:bg-slate-soft">{LABELS.account.signOutButton}</button>
+        <button type="button" onClick={() => profile && downloadJson("ucag-my-data.json", profileToExportJson(profile))} disabled={!profile} className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-soft hover:bg-slate-soft disabled:opacity-50">{LABELS.account.downloadDataButton}</button>
         {!confirmingDelete ? (
-          <button
-            type="button"
-            onClick={() => setConfirmingDelete(true)}
-            className="min-h-11 cursor-pointer rounded-xl border border-mark-red px-3 text-sm font-medium text-mark-red transition-[background-color,transform] duration-150 ease-out hover:bg-mark-red-soft active:scale-[0.97]"
-          >
-            {LABELS.account.deleteAccountButton}
-          </button>
+          <button type="button" onClick={() => setConfirmingDelete(true)} className="min-h-11 rounded-xl border border-mark-red px-4 text-sm font-semibold text-mark-red hover:bg-mark-red-soft">{LABELS.account.deleteAccountButton}</button>
         ) : (
-          <div className="animate-pop-in flex w-full flex-col gap-2 rounded-xl border border-mark-red bg-mark-red-soft p-3">
+          <div className="w-full rounded-xl border border-mark-red bg-mark-red-soft p-4">
             <p className="text-sm text-ink">{LABELS.account.deleteAccountConfirm}</p>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={handleDeleteAccount}
-                className="min-h-11 cursor-pointer rounded-xl bg-mark-red px-3 text-sm font-medium text-white transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97]"
-              >
-                {LABELS.account.deleteAccountConfirmButton}
-              </button>
-              <button
-                type="button"
-                onClick={() => setConfirmingDelete(false)}
-                className="min-h-11 cursor-pointer rounded-xl border border-line px-3 text-sm font-medium text-ink-soft transition-[background-color,transform] duration-150 ease-out hover:bg-slate-soft active:scale-[0.97]"
-              >
-                {LABELS.account.deleteAccountCancelButton}
-              </button>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <button type="button" onClick={handleDeleteAccount} className="min-h-11 rounded-xl bg-mark-red px-4 text-sm font-bold text-white">{LABELS.account.deleteAccountConfirmButton}</button>
+              <button type="button" onClick={() => setConfirmingDelete(false)} className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-soft">{LABELS.account.deleteAccountCancelButton}</button>
             </div>
           </div>
         )}
       </div>
-
-      <Link href="/privacy" className="text-sm text-mark-green hover:underline">
-        {LABELS.account.privacyNoticeLink}
-      </Link>
+      <Link href="/privacy" className="text-sm text-mark-green hover:underline">{LABELS.account.privacyNoticeLink}</Link>
     </div>
   );
 }

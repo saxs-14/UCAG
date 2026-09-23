@@ -16,14 +16,20 @@ function profileRef(uid: string) {
 
 export interface NewProfileInput {
   uid: string;
+  institutionId: string;
   isMinor: boolean;
   consentRecord: ConsentRecord | null;
   guardianConsentAt: string | null;
 }
 
+export interface ProfilePreferences {
+  institutionId: string;
+}
+
 export async function createUserProfile(input: NewProfileInput): Promise<void> {
   const profile: UserProfile = {
     uid: input.uid,
+    institutionId: input.institutionId,
     marks: [],
     shortlist: [],
     consentRecord: input.consentRecord,
@@ -32,6 +38,13 @@ export async function createUserProfile(input: NewProfileInput): Promise<void> {
     createdAt: new Date().toISOString(),
   };
   await setDoc(profileRef(input.uid), profile);
+}
+
+export async function updateProfilePreferences(uid: string, preferences: ProfilePreferences): Promise<void> {
+  const ref = profileRef(uid);
+  const snap = await getDoc(ref);
+  if (!snap.exists()) throw new Error("Profile not found.");
+  await updateDoc(ref, { institutionId: preferences.institutionId });
 }
 
 export async function getUserProfile(uid: string): Promise<UserProfile | null> {
