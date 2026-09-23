@@ -80,6 +80,11 @@ export interface ProgrammeRequirementsSourceResult {
   tokensUsed: number;
   programmesFound: number;
   fieldsQueued: number;
+  fetchedAt?: string;
+  statusCode?: number | null;
+  etag?: string | null;
+  lastModified?: string | null;
+  contentHash?: string;
 }
 
 export interface ProgrammeRequirementsSummary {
@@ -225,12 +230,17 @@ export async function runProgrammeRequirementsIngestion(
         tokensUsed: 0,
         programmesFound: 0,
         fieldsQueued: 0,
+        fetchedAt: fetchOutcome.fetchedAt,
+        statusCode: fetchOutcome.statusCode,
+        etag: fetchOutcome.etag,
+        lastModified: fetchOutcome.lastModified,
+        contentHash: fetchOutcome.contentHash,
       });
       continue;
     }
 
     if (!fetchOutcome.changed) {
-      results.push({ sourceId: source.id, institutionId: source.institutionId, outcome: "noChange", tokensUsed: 0, programmesFound: 0, fieldsQueued: 0 });
+      results.push({ sourceId: source.id, institutionId: source.institutionId, outcome: "noChange", tokensUsed: 0, programmesFound: 0, fieldsQueued: 0, fetchedAt: fetchOutcome.fetchedAt, statusCode: fetchOutcome.statusCode, etag: fetchOutcome.etag, lastModified: fetchOutcome.lastModified, contentHash: fetchOutcome.contentHash });
       continue;
     }
     const sourceText = fetchOutcome.body;
@@ -333,6 +343,11 @@ export async function runProgrammeRequirementsIngestion(
       tokensUsed: extraction.tokensUsed,
       programmesFound: extraction.data.programmes.length,
       fieldsQueued: fieldsQueuedThisSource,
+      fetchedAt: fetchOutcome.fetchedAt,
+      statusCode: fetchOutcome.statusCode,
+      etag: fetchOutcome.etag,
+      lastModified: fetchOutcome.lastModified,
+      contentHash: fetchOutcome.contentHash,
     });
   }
 

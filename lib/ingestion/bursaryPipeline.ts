@@ -82,6 +82,11 @@ export interface BursarySourceResult {
    * surfaced here too (not just inside the queued riskFlags field) so a
    * run summary is scannable without opening every queue item. */
   flaggedBursaryNames: string[];
+  fetchedAt?: string;
+  statusCode?: number | null;
+  etag?: string | null;
+  lastModified?: string | null;
+  contentHash?: string;
 }
 
 export interface BursaryIngestionSummary {
@@ -228,12 +233,17 @@ export async function runBursaryIngestion(
         bursariesFound: 0,
         fieldsQueued: 0,
         flaggedBursaryNames: [],
+        fetchedAt: fetchOutcome.fetchedAt,
+        statusCode: fetchOutcome.statusCode,
+        etag: fetchOutcome.etag,
+        lastModified: fetchOutcome.lastModified,
+        contentHash: fetchOutcome.contentHash,
       });
       continue;
     }
 
     if (!fetchOutcome.changed) {
-      results.push({ sourceId: source.id, outcome: "noChange", tokensUsed: 0, bursariesFound: 0, fieldsQueued: 0, flaggedBursaryNames: [] });
+      results.push({ sourceId: source.id, outcome: "noChange", tokensUsed: 0, bursariesFound: 0, fieldsQueued: 0, flaggedBursaryNames: [], fetchedAt: fetchOutcome.fetchedAt, statusCode: fetchOutcome.statusCode, etag: fetchOutcome.etag, lastModified: fetchOutcome.lastModified, contentHash: fetchOutcome.contentHash });
       continue;
     }
     const sourceText = fetchOutcome.body;
@@ -313,6 +323,11 @@ export async function runBursaryIngestion(
       bursariesFound: extraction.data.bursaries.length,
       fieldsQueued: fieldsQueuedThisSource,
       flaggedBursaryNames,
+      fetchedAt: fetchOutcome.fetchedAt,
+      statusCode: fetchOutcome.statusCode,
+      etag: fetchOutcome.etag,
+      lastModified: fetchOutcome.lastModified,
+      contentHash: fetchOutcome.contentHash,
     });
   }
 

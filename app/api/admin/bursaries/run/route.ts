@@ -72,7 +72,17 @@ export async function POST(request: NextRequest) {
       .filter((r) => r.outcome === "fetchError" || r.outcome === "extractionError")
       .map((r) => `${r.sourceId}: ${r.detail ?? r.outcome}`);
 
-    const sourceResults = summary.results.map((r) => ({ sourceId: r.sourceId, outcome: r.outcome, detail: r.detail, tokensUsed: r.tokensUsed, fieldsQueued: [] }));
+    const sourceResults = summary.results.map((r) => ({
+      sourceId: r.sourceId,
+      outcome: r.outcome,
+      detail: r.detail,
+      tokensUsed: r.tokensUsed,
+      fieldsQueued: [],
+      fetchedAt: r.fetchedAt,
+      statusCode: r.statusCode,
+      etag: r.etag,
+      lastModified: r.lastModified,
+    }));
     await completeIngestionRun(runId, {
       startedAt: summary.startedAt,
       finishedAt: summary.finishedAt,
@@ -88,6 +98,21 @@ export async function POST(request: NextRequest) {
       errors,
       sourceResults,
     });
+    await Promise.all(summary.results.map(async (result) => {
+      const source = sources.find((item) => item.id === result.sourceId);
+      if (!source) return;
+      const patch: Record<string, unknown> = {
+        lastFetchError: result.outcome === "fetchError" ? (result.detail ?? "Source fetch failed.") : null,
+        updatedAt: new Date().toISOString(),
+        updatedBy: admin.uid,
+      };
+      if (result.fetchedAt) patch.lastFetchedAt = result.fetchedAt;
+      if (result.statusCode !== undefined) patch.lastFetchStatusCode = result.statusCode;
+      if (result.etag !== undefined) patch.etag = result.etag;
+      if (result.lastModified !== undefined) patch.lastModified = result.lastModified;
+      if (result.contentHash !== undefined) patch.contentHash = result.contentHash;
+      await db.collection("sources").doc(source.id).update(patch);
+    }));
 
     return NextResponse.json({ runId, ...summary });
   } catch (err) {

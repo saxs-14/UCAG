@@ -55,6 +55,7 @@ export interface ApplicationWindowSourceResult {
   statusCode?: number | null;
   etag?: string | null;
   lastModified?: string | null;
+  contentHash?: string;
 }
 
 export interface ApplicationWindowIngestionSummary {
@@ -118,11 +119,12 @@ export async function runApplicationWindowIngestion(
         statusCode: fetchOutcome.statusCode,
         etag: fetchOutcome.etag,
         lastModified: fetchOutcome.lastModified,
+        contentHash: fetchOutcome.contentHash,
       });
       continue;
     }
     if (!fetchOutcome.changed) {
-      results.push({ sourceId: source.id, institutionId: source.institutionId, outcome: "noChange", tokensUsed: 0, fieldsQueued: [], fetchedAt: fetchOutcome.fetchedAt, statusCode: fetchOutcome.statusCode, etag: fetchOutcome.etag, lastModified: fetchOutcome.lastModified });
+      results.push({ sourceId: source.id, institutionId: source.institutionId, outcome: "noChange", tokensUsed: 0, fieldsQueued: [], fetchedAt: fetchOutcome.fetchedAt, statusCode: fetchOutcome.statusCode, etag: fetchOutcome.etag, lastModified: fetchOutcome.lastModified, contentHash: fetchOutcome.contentHash });
       continue;
     }
     const sourceText = fetchOutcome.body;
@@ -244,6 +246,7 @@ export async function runApplicationWindowIngestion(
       statusCode: fetchOutcome.statusCode,
       etag: fetchOutcome.etag,
       lastModified: fetchOutcome.lastModified,
+      contentHash: fetchOutcome.contentHash,
     });
   }
 

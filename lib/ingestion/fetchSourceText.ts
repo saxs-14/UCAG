@@ -5,6 +5,8 @@ import type { Source } from "@/lib/firestore/types";
 import type { FetchOutcome } from "./types";
 
 const DEFAULT_TIMEOUT_MS = 20_000;
+const MAX_RETRIES = 2;
+const RETRY_BASE_MS = 500;
 
 function bodyHash(body: string): string {
   return createHash("sha256").update(body).digest("hex");
@@ -28,7 +30,14 @@ export async function fetchSource(
     if (source.etag) headers["If-None-Match"] = source.etag;
     if (source.lastModified) headers["If-Modified-Since"] = source.lastModified;
 
-    const res = await fetchImpl(source.url, { headers, signal: controller.signal });
+    let res: Response;
+    for (let attempt = 0; ; attempt++) {
+      res = await fetchImpl(source.url, { headers, signal: controller.signal });
+      if (!(res.status === 429 || res.status >= 500) || attempt >= MAX_RETRIES) break;
+      const retryAfter = Number(res.headers.get("retry-after"));
+      const delayMs = Number.isFinite(retryAfter) && retryAfter >= 0 ? Math.min(retryAfter * 1000, 5000) : RETRY_BASE_MS * 2 ** attempt;
+      await new Promise((resolve) => setTimeout(resolve, delayMs));
+    }
     const etag = res.headers.get("etag");
     const lastModified = res.headers.get("last-modified");
 
