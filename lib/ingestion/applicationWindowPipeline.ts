@@ -51,6 +51,10 @@ export interface ApplicationWindowSourceResult {
   detail?: string;
   tokensUsed: number;
   fieldsQueued: string[];
+  fetchedAt?: string;
+  statusCode?: number | null;
+  etag?: string | null;
+  lastModified?: string | null;
 }
 
 export interface ApplicationWindowIngestionSummary {
@@ -110,6 +114,10 @@ export async function runApplicationWindowIngestion(
         detail: fetchOutcome.error ?? "Source returned no body.",
         tokensUsed: 0,
         fieldsQueued: [],
+        fetchedAt: fetchOutcome.fetchedAt,
+        statusCode: fetchOutcome.statusCode,
+        etag: fetchOutcome.etag,
+        lastModified: fetchOutcome.lastModified,
       });
       continue;
     }
@@ -228,6 +236,10 @@ export async function runApplicationWindowIngestion(
       outcome: fieldsQueued.length > 0 ? "queued" : "noChange",
       tokensUsed: extraction.tokensUsed,
       fieldsQueued,
+      fetchedAt: fetchOutcome.fetchedAt,
+      statusCode: fetchOutcome.statusCode,
+      etag: fetchOutcome.etag,
+      lastModified: fetchOutcome.lastModified,
     });
   }
 
