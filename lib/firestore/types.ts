@@ -419,6 +419,7 @@ export interface IngestionRun {
     statusCode?: number | null;
     etag?: string | null;
     lastModified?: string | null;
+    contentHash?: string;
   }>;
 }
 
