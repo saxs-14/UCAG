@@ -85,21 +85,6 @@ export async function POST(request: NextRequest) {
       contentHash: r.contentHash,
       retryCount: r.retryCount,
     }));
-    await completeIngestionRun(runId, {
-      startedAt: summary.startedAt,
-      finishedAt: summary.finishedAt,
-      sourceIds: sources.map((s) => s.id),
-      tokensUsed: summary.totalTokensUsed,
-      // Per-provider token pricing isn't wired up yet -- see the
-      // application-windows route's identical comment on why this is 0,
-      // not a guess.
-      costEstimate: 0,
-      itemsProposed: summary.itemsQueued,
-      itemsAutoPublished: 0, // bursaries never auto-publish, see config/ingestion.ts
-      itemsQueued: summary.itemsQueued,
-      errors,
-      sourceResults,
-    });
     await Promise.all(summary.results.map(async (result) => {
       const source = sources.find((item) => item.id === result.sourceId);
       if (!source) return;
@@ -116,6 +101,22 @@ export async function POST(request: NextRequest) {
       await db.collection("sources").doc(source.id).update(patch);
     }));
 
+
+    await completeIngestionRun(runId, {
+      startedAt: summary.startedAt,
+      finishedAt: summary.finishedAt,
+      sourceIds: sources.map((s) => s.id),
+      tokensUsed: summary.totalTokensUsed,
+      // Per-provider token pricing isn't wired up yet -- see the
+      // application-windows route's identical comment on why this is 0,
+      // not a guess.
+      costEstimate: 0,
+      itemsProposed: summary.itemsQueued,
+      itemsAutoPublished: 0, // bursaries never auto-publish, see config/ingestion.ts
+      itemsQueued: summary.itemsQueued,
+      errors,
+      sourceResults,
+    });
     return NextResponse.json({ runId, ...summary });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
