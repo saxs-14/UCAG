@@ -92,7 +92,9 @@ service cloud.firestore {
       allow update: if isOwner(uid)
         && isValidProfileWrite(uid, request.resource.data)
         && consentRecordNotRemoved()
-        && createdAtUnchanged();
+        && createdAtUnchanged()
+        && roleUnchanged()
+        && onlyLearnerEditableFieldsChanged();
       // Self-service account deletion (docs/MASTER_PROMPT_v2.md Phase 6:
       // "a working delete my account flow, not a stub") -- a signed-in
       // user may delete only their own profile document.
@@ -131,7 +133,28 @@ service cloud.firestore {
     // Once a consent record exists, a client write can replace it (e.g.
     // re-confirming consent) but can never null it out -- consent is a
     // record to preserve, not a flag to toggle off from the client.
-    function clientCreatedRoleIsLearner() {\n      return !request.resource.data.keys().hasAny(["role"])\n        || request.resource.data.role == "learner";\n    }\n\n    function roleUnchanged() {\n      return request.resource.data.role == resource.data.role;\n    }\n\n    function onlyLearnerEditableFieldsChanged() {\n      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([\n        "institutionId",\n        "marks",\n        "shortlist",\n        "checklistProgress",\n        "consentRecord",\n        "isMinor",\n        "guardianConsentAt"\n      ]);\n    }\n\n    function consentRecordNotRemoved() {
+    function clientCreatedRoleIsLearner() {
+      return !request.resource.data.keys().hasAny(["role"])
+        || request.resource.data.role == "learner";
+    }
+
+    function roleUnchanged() {
+      return request.resource.data.role == resource.data.role;
+    }
+
+    function onlyLearnerEditableFieldsChanged() {
+      return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
+        "institutionId",
+        "marks",
+        "shortlist",
+        "checklistProgress",
+        "consentRecord",
+        "isMinor",
+        "guardianConsentAt"
+      ]);
+    }
+
+    function consentRecordNotRemoved() {
       return resource.data.consentRecord == null || request.resource.data.consentRecord != null;
     }
 
