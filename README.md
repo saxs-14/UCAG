@@ -7,15 +7,38 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: all 10 planned phases (0-9) complete. Live at
-[ucag-nine.vercel.app](https://ucag-nine.vercel.app). Post-launch feature round
-("admissions intelligence") also shipped -- see Status below.**
+**Status: core application and post-launch engineering hardening are complete.**
+The repository is live at [ucag-nine.vercel.app](https://ucag-nine.vercel.app).
+The remaining production activation steps are external configuration: connect a
+real Firebase project and provide an LLM provider key before account persistence
+and AI ingestion can run against production data. No code path fabricates success
+when those dependencies are absent.
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable
 rebuild.
 
 Owner: Phathutshedzo "Saxs" Mamagau — SaxsProjects.
+
+## Current engineering hardening
+
+The post-launch reliability pass is also complete on master. It includes
+canonical ingestion diffs, stale-run recovery, transactional verification
+queue race protection, duplicate pending-proposal protection, source cadence
+and robots-policy enforcement, conditional HTTP fetching with retries and
+content hashes, ingestion-run/source health monitoring, profile institution
+security rules, and Firestore-emulator CI startup with Java 17.
+
+The shared source-fetch boundary now retains retry metadata on success,
+304/unchanged, HTTP-error, and timeout outcomes. Focused tests cover robots
+blocking, cadence skips, conditional requests, 304 handling, content hashing,
+and transient retry recovery.
+
+The repository's GitHub Actions workflow is configured to typecheck, lint,
+start a real Firestore emulator, run Vitest, and perform a production build.
+A current repository status check is still subject to the external Vercel
+Hobby-plan build/rate-limit service; that failure is not treated as evidence
+that the application code is broken.
 
 ## Read this first
 
