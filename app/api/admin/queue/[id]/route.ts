@@ -77,7 +77,7 @@ export async function POST(
     );
   }
 
-  if (!/^https?:\\/\\//i.test(item.sourceUrl)) {
+  if (!/^https?:\/\//i.test(item.sourceUrl)) {
     return NextResponse.json({ error: "Queue item has an invalid source URL." }, { status: 422 });
   }
 
