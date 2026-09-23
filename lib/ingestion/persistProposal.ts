@@ -43,10 +43,80 @@ export async function persistVerificationQueueItem(
   });
 }
 
+export async function acquireIngestionLock(kind: string, ownerId: string, now = new Date()): Promise<boolean> {
+  const db = getAdminDb();
+  const ref = db.collection("ingestionLocks").doc(kind);
+  const nowMs = now.getTime();
+  return db.runTransaction(async (transaction) => {
+    const snap = await transaction.get(ref);
+    const data = snap.exists ? snap.data() : null;
+    const expiresAt = typeof data?.expiresAt === "string" ? Date.parse(data.expiresAt) : 0;
+    if (expiresAt > nowMs && data?.ownerId !== ownerId) return false;
+    transaction.set(ref, {
+      kind,
+      ownerId,
+      acquiredAt: now.toISOString(),
+      expiresAt: new Date(nowMs + 30 * 60 * 1000).toISOString(),
+    });
+    return true;
+  });
+}
+
+export async function releaseIngestionLock(kind: string, ownerId: string): Promise<void> {
+  const db = getAdminDb();
+  const ref = db.collection("ingestionLocks").doc(kind);
+  await db.runTransaction(async (transaction) => {
+    const snap = await transaction.get(ref);
+    if (snap.exists && snap.data()?.ownerId === ownerId) transaction.delete(ref);
+  });
+}
+
+export async function createIngestionRun(sourceIds: string[], startedAt = new Date().toISOString()): Promise<string> {
+  const db = getAdminDb();
+  const ref = db.collection("ingestionRuns").doc();
+  await ref.set({
+    id: ref.id,
+    status: "running",
+    startedAt,
+    finishedAt: null,
+    sourceIds,
+    tokensUsed: 0,
+    costEstimate: 0,
+    itemsProposed: 0,
+    itemsAutoPublished: 0,
+    itemsQueued: 0,
+    errors: [],
+    sourceResults: [],
+  });
+  return ref.id;
+}
+
+export async function completeIngestionRun(
+  runId: string,
+  run: Omit<IngestionRun, "id" | "status">
+): Promise<void> {
+  const db = getAdminDb();
+  await db.collection("ingestionRuns").doc(runId).update({
+    ...run,
+    status: "completed",
+    finishedAt: run.finishedAt ?? new Date().toISOString(),
+  });
+}
+
+export async function failIngestionRun(runId: string, error: string): Promise<void> {
+  const db = getAdminDb();
+  await db.collection("ingestionRuns").doc(runId).update({
+    status: "failed",
+    finishedAt: new Date().toISOString(),
+    errors: [error],
+  });
+}
+
+/** Backwards-compatible one-shot writer for completed historical runs. */
 export async function persistIngestionRun(run: Omit<IngestionRun, "id">): Promise<string> {
   const db = getAdminDb();
   const ref = db.collection("ingestionRuns").doc();
-  await ref.set({ id: ref.id, ...run });
+  await ref.set({ id: ref.id, status: "completed", ...run });
   return ref.id;
 }
 

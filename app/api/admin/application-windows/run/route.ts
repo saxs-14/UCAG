@@ -1,10 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
+import { randomUUID } from "node:crypto";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminErrorResponse } from "@/lib/admin/respond";
 import { getAdminDb } from "@/lib/firebase/admin";
+import type { DecodedIdToken } from "firebase-admin/auth";
 import { getLlmClient } from "@/lib/ingestion/llm/getLlmClient";
 import { runApplicationWindowIngestion } from "@/lib/ingestion/applicationWindowPipeline";
-import { getCurrentApplicationWindow, persistIngestionRun, persistVerificationQueueItem } from "@/lib/ingestion/persistProposal";
+import { acquireIngestionLock, completeIngestionRun, createIngestionRun, failIngestionRun, getCurrentApplicationWindow, persistVerificationQueueItem, releaseIngestionLock } from "@/lib/ingestion/persistProposal";
 import { checkBudgetLive } from "@/lib/ingestion/budgetTracker";
 import { INGESTION_KILL_SWITCH } from "@/config/ingestion";
 import type { Source } from "@/lib/firestore/types";
@@ -22,8 +24,9 @@ import type { Source } from "@/lib/firestore/types";
  * yet" surface in this app (see runs/[id]/rerun).
  */
 export async function POST(request: NextRequest) {
+  let admin: DecodedIdToken;
   try {
-    await requireAdmin(request);
+    admin = await requireAdmin(request);
   } catch (err) {
     return adminErrorResponse(err);
   }
@@ -43,6 +46,10 @@ export async function POST(request: NextRequest) {
   }
 
   const db = getAdminDb();
+  const lockOwner = admin.uid + ":" + randomUUID();
+  if (!(await acquireIngestionLock("applicationWindows", lockOwner))) {
+    return NextResponse.json({ error: "An application-window ingestion run is already in progress." }, { status: 409 });
+  }
   const snapshot = await db.collection("sources").where("enabled", "==", true).get();
   // institutionId != null filtered in JS, not a Firestore inequality --
   // source count is small (Tier 1 scale) and this avoids a composite index.
@@ -50,7 +57,9 @@ export async function POST(request: NextRequest) {
     .map((doc) => doc.data() as Source)
     .filter((source) => source.institutionId !== null);
 
+  let runId: string | null = null;
   try {
+    runId = await createIngestionRun(sources.map((s) => s.id));
     const summary = await runApplicationWindowIngestion(sources, {
       llmClient,
       getCurrentWindow: getCurrentApplicationWindow,
@@ -62,7 +71,18 @@ export async function POST(request: NextRequest) {
       .filter((r) => r.outcome === "fetchError" || r.outcome === "extractionError")
       .map((r) => `${r.sourceId}: ${r.detail ?? r.outcome}`);
 
-    const runId = await persistIngestionRun({
+    const sourceResults = summary.results.map((r) => ({
+      sourceId: r.sourceId,
+      outcome: r.outcome,
+      detail: r.detail,
+      tokensUsed: r.tokensUsed,
+      fieldsQueued: r.fieldsQueued,
+      fetchedAt: r.fetchedAt,
+      statusCode: r.statusCode,
+      etag: r.etag,
+      lastModified: r.lastModified,
+    }));
+    await completeIngestionRun(runId, {
       startedAt: summary.startedAt,
       finishedAt: summary.finishedAt,
       sourceIds: sources.map((s) => s.id),
@@ -75,10 +95,29 @@ export async function POST(request: NextRequest) {
       itemsAutoPublished: 0, // applicationWindows never auto-publishes, see config/ingestion.ts
       itemsQueued: summary.itemsQueued,
       errors,
+      sourceResults,
     });
-
+    await Promise.all(summary.results.map(async (result) => {
+      const source = sources.find((item) => item.id === result.sourceId);
+      if (!source) return;
+      const ref = db.collection("sources").doc(source.id);
+      const patch: Record<string, unknown> = {
+        lastFetchError: result.outcome === "fetchError" ? (result.detail ?? "Source fetch failed.") : null,
+        updatedAt: new Date().toISOString(),
+        updatedBy: admin.uid,
+      };
+      if (result.fetchedAt) patch.lastFetchedAt = result.fetchedAt;
+      if (result.statusCode !== undefined) patch.lastFetchStatusCode = result.statusCode;
+      if (result.etag !== undefined) patch.etag = result.etag;
+      if (result.lastModified !== undefined) patch.lastModified = result.lastModified;
+      await ref.update(patch);
+    }));
     return NextResponse.json({ runId, ...summary });
   } catch (err) {
-    return NextResponse.json({ error: err instanceof Error ? err.message : String(err) }, { status: 500 });
+    const message = err instanceof Error ? err.message : String(err);
+    if (runId) await failIngestionRun(runId, message).catch(() => undefined);
+    return NextResponse.json({ error: message, runId }, { status: 500 });
+  } finally {
+    await releaseIngestionLock("applicationWindows", lockOwner).catch(() => undefined);
   }
 }

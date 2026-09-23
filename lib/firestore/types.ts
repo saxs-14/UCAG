@@ -383,17 +383,23 @@ export interface Source {
    * -- for a source that's gone stale, gone behind a paywall, or is being
    * re-verified by hand. */
   enabled: boolean;
-  /** Caveats worth a human's attention: robots.txt/TLS couldn't be
-   * independently verified, an ethical judgment call was made (e.g. a
-   * site blocks AI crawlers by name but not this bot specifically), etc.
-   * Not every source needs one -- most don't. */
+  /** Caveats worth a human's attention. */
   notes?: string;
+  /** Server-side audit metadata; immutable source identity fields are never patched. */
+  updatedAt?: string;
+  updatedBy?: string;
+  lastFetchStatusCode?: number | null;
+  lastFetchError?: string | null;
+  lastModified?: string | null;
 }
+
+export type IngestionRunStatus = "running" | "completed" | "failed";
 
 export interface IngestionRun {
   id: string;
   startedAt: string;
   finishedAt: string | null;
+  status?: IngestionRunStatus;
   sourceIds: string[];
   tokensUsed: number;
   costEstimate: number;
@@ -401,6 +407,18 @@ export interface IngestionRun {
   itemsAutoPublished: number;
   itemsQueued: number;
   errors: string[];
+  /** Compact per-source outcome snapshot for audit/debugging. */
+  sourceResults?: Array<{
+    sourceId: string;
+    outcome: string;
+    detail?: string;
+    tokensUsed: number;
+    fieldsQueued: string[];
+    fetchedAt?: string;
+    statusCode?: number | null;
+    etag?: string | null;
+    lastModified?: string | null;
+  }>;
 }
 
 export type VerificationQueueStatus = "pending" | "approved" | "rejected" | "edited";
