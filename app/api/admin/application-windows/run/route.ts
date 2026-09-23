@@ -84,21 +84,6 @@ export async function POST(request: NextRequest) {
       contentHash: r.contentHash,
       retryCount: r.retryCount,
     }));
-    await completeIngestionRun(runId, {
-      startedAt: summary.startedAt,
-      finishedAt: summary.finishedAt,
-      sourceIds: sources.map((s) => s.id),
-      tokensUsed: summary.totalTokensUsed,
-      // Per-provider token pricing isn't wired up yet -- Gemini's free
-      // tier is $0 in practice, but this field should not fabricate a
-      // number for a paid provider. Left at 0 rather than guessed.
-      costEstimate: 0,
-      itemsProposed: summary.itemsQueued,
-      itemsAutoPublished: 0, // applicationWindows never auto-publishes, see config/ingestion.ts
-      itemsQueued: summary.itemsQueued,
-      errors,
-      sourceResults,
-    });
     await Promise.all(summary.results.map(async (result) => {
       const source = sources.find((item) => item.id === result.sourceId);
       if (!source) return;
@@ -115,6 +100,22 @@ export async function POST(request: NextRequest) {
       if (result.contentHash !== undefined) patch.contentHash = result.contentHash;
       await ref.update(patch);
     }));
+
+    await completeIngestionRun(runId, {
+      startedAt: summary.startedAt,
+      finishedAt: summary.finishedAt,
+      sourceIds: sources.map((s) => s.id),
+      tokensUsed: summary.totalTokensUsed,
+      // Per-provider token pricing isn't wired up yet -- Gemini's free
+      // tier is $0 in practice, but this field should not fabricate a
+      // number for a paid provider. Left at 0 rather than guessed.
+      costEstimate: 0,
+      itemsProposed: summary.itemsQueued,
+      itemsAutoPublished: 0, // applicationWindows never auto-publishes, see config/ingestion.ts
+      itemsQueued: summary.itemsQueued,
+      errors,
+      sourceResults,
+    });
     return NextResponse.json({ runId, ...summary });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
