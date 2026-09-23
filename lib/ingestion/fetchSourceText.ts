@@ -13,7 +13,7 @@ function bodyHash(body: string): string {
 }
 
 export async function fetchSource(
-  source: Pick<Source, "url" | "etag" | "lastModified">,
+  source: Pick<Source, "url" | "etag" | "lastModified" | "robotsAllowed" | "fetchIntervalHours" | "lastFetchedAt" | "contentHash">,
   fetchImpl: typeof fetch,
   maxChars: number,
   now = new Date()
@@ -79,7 +79,7 @@ export async function fetchSource(
 }
 
 export async function fetchSourceText(url: string, fetchImpl: typeof fetch, maxChars: number): Promise<string> {
-  const outcome = await fetchSource({ url, etag: null, lastModified: null }, fetchImpl, maxChars);
+  const outcome = await fetchSource({ url, etag: null, lastModified: null, robotsAllowed: true, fetchIntervalHours: 0, lastFetchedAt: null, contentHash: null }, fetchImpl, maxChars);
   if (outcome.error || outcome.body === null) throw new Error(outcome.error ?? "Source returned no body.");
   return outcome.body;
 }
