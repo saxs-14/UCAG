@@ -73,18 +73,6 @@ export async function POST(request: NextRequest) {
       contentHash: r.contentHash,
       retryCount: r.retryCount,
     }));
-    await completeIngestionRun(runId, {
-      startedAt: summary.startedAt,
-      finishedAt: summary.finishedAt,
-      sourceIds: sources.map((s) => s.id),
-      tokensUsed: summary.totalTokensUsed,
-      costEstimate: 0, // see application-windows/run -- per-provider pricing not wired up, not guessed
-      itemsProposed: summary.itemsQueued,
-      itemsAutoPublished: 0, // programmeRequirements never auto-publishes, see config/ingestion.ts
-      itemsQueued: summary.itemsQueued,
-      errors,
-      sourceResults,
-    });
     await Promise.all(summary.results.map(async (result) => {
       const source = sources.find((item) => item.id === result.sourceId);
       if (!source) return;
@@ -101,6 +89,19 @@ export async function POST(request: NextRequest) {
       await db.collection("sources").doc(source.id).update(patch);
     }));
 
+
+    await completeIngestionRun(runId, {
+      startedAt: summary.startedAt,
+      finishedAt: summary.finishedAt,
+      sourceIds: sources.map((s) => s.id),
+      tokensUsed: summary.totalTokensUsed,
+      costEstimate: 0, // see application-windows/run -- per-provider pricing not wired up, not guessed
+      itemsProposed: summary.itemsQueued,
+      itemsAutoPublished: 0, // programmeRequirements never auto-publishes, see config/ingestion.ts
+      itemsQueued: summary.itemsQueued,
+      errors,
+      sourceResults,
+    });
     return NextResponse.json({ runId, ...summary });
   } catch (err) {
     const message = err instanceof Error ? err.message : String(err);
