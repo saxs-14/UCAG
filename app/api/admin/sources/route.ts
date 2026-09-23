@@ -17,7 +17,7 @@ const sourceTypeSchema = z.enum([
 ]);
 
 const createSourceSchema = z.object({
-  id: z.string().min(1),
+  id: z.string().regex(/^[a-z0-9][a-z0-9-]{0,99}$/, "Use lowercase letters, numbers, and hyphens only."),
   url: z.string().url(),
   publisher: z.string().min(1),
   type: sourceTypeSchema,
@@ -46,6 +46,13 @@ export async function POST(request: NextRequest) {
   }
 
   const db = getAdminDb();
+  const institutionId = parsed.data.institutionId ?? null;
+  if ((parsed.data.type === "institutionAdmissions" || parsed.data.type === "institutionPortal") && !institutionId) {
+    return NextResponse.json({ error: "Institution sources must declare institutionId." }, { status: 400 });
+  }
+  if (institutionId && !(await db.collection("institutions").doc(institutionId).get()).exists) {
+    return NextResponse.json({ error: "institutionId does not reference a known institution." }, { status: 400 });
+  }
   const ref = db.collection("sources").doc(parsed.data.id);
   const existing = await ref.get();
   if (existing.exists) {
@@ -56,7 +63,7 @@ export async function POST(request: NextRequest) {
   const admin = await requireAdmin(request);
   await ref.set({
     ...parsed.data,
-    institutionId: parsed.data.institutionId ?? null,
+    institutionId,
     lastFetchedAt: null,
     etag: null,
     lastModified: null,
