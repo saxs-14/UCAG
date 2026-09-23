@@ -92,7 +92,9 @@ service cloud.firestore {
       allow update: if isOwner(uid)
         && isValidProfileWrite(uid, request.resource.data)
         && consentRecordNotRemoved()
-        && createdAtUnchanged();
+        && createdAtUnchanged()
+        && roleUnchanged()
+        && onlyLearnerEditableFieldsChanged();
       // Self-service account deletion (docs/MASTER_PROMPT_v2.md Phase 6:
       // "a working delete my account flow, not a stub") -- a signed-in
       // user may delete only their own profile document.
