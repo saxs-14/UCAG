@@ -81,6 +81,7 @@ export async function POST(request: NextRequest) {
       statusCode: r.statusCode,
       etag: r.etag,
       lastModified: r.lastModified,
+      contentHash: r.contentHash,
     }));
     await completeIngestionRun(runId, {
       startedAt: summary.startedAt,
@@ -110,6 +111,7 @@ export async function POST(request: NextRequest) {
       if (result.statusCode !== undefined) patch.lastFetchStatusCode = result.statusCode;
       if (result.etag !== undefined) patch.etag = result.etag;
       if (result.lastModified !== undefined) patch.lastModified = result.lastModified;
+      if (result.contentHash !== undefined) patch.contentHash = result.contentHash;
       await ref.update(patch);
     }));
     return NextResponse.json({ runId, ...summary });
