@@ -52,12 +52,19 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: `A source with id "${parsed.data.id}" already exists.` }, { status: 409 });
   }
 
+  const now = new Date().toISOString();
+  const admin = await requireAdmin(request);
   await ref.set({
     ...parsed.data,
     institutionId: parsed.data.institutionId ?? null,
     lastFetchedAt: null,
     etag: null,
+    lastModified: null,
+    lastFetchStatusCode: null,
+    lastFetchError: null,
     enabled: true,
+    updatedAt: now,
+    updatedBy: admin.uid,
   });
 
   return NextResponse.json({ ok: true, id: parsed.data.id }, { status: 201 });
