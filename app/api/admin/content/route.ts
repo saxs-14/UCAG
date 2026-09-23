@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { z } from "zod";
 import { requireAdmin } from "@/lib/admin/auth";
 import { adminErrorResponse } from "@/lib/admin/respond";
-import { isEditableFactCollection } from "@/lib/admin/allowlist";
+import { isEditableFactCollection, isEditableFactField } from "@/lib/admin/allowlist";
 import { getAdminDb } from "@/lib/firebase/admin";
 
 /**
@@ -25,7 +25,7 @@ const bodySchema = z.object({
   patch: z
     .record(z.string(), z.unknown())
     .refine((v) => Object.keys(v).length > 0, { message: "patch must have at least one field." }),
-  sourceUrl: z.string().url(),
+  sourceUrl: z.string().url().refine((value) => /^https?:\\/\\//i.test(value), { message: "sourceUrl must use http or https." }),
 });
 
 export async function POST(request: NextRequest) {
@@ -50,8 +50,27 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({ error: `"${collection}" is not an editable fact collection.` }, { status: 422 });
   }
 
-  const write = { ...patch, sourceUrl, verifiedOn: new Date().toISOString().slice(0, 10) };
-  await getAdminDb().collection(collection).doc(docId).set(write, { merge: true });
+  const invalidFields = Object.keys(patch).filter((field) => !isEditableFactField(collection, field));
+  if (invalidFields.length > 0) {
+    return NextResponse.json(
+      { error: `These fields cannot be edited through this route: ${invalidFields.join(", ")}.` },
+      { status: 422 }
+    );
+  }
+
+  const db = getAdminDb();
+  const targetRef = db.collection(collection).doc(docId);
+  if (!(await targetRef.get()).exists) {
+    return NextResponse.json({ error: "Fact document not found." }, { status: 404 });
+  }
+
+  const write = {
+    ...patch,
+    sourceUrl,
+    verifiedOn: new Date().toISOString().slice(0, 10),
+    ...(collection === "statistics" ? {} : { academicYear: new Date().getUTCFullYear() }),
+  };
+  await targetRef.set(write, { merge: true });
 
   return NextResponse.json({ ok: true, editedBy: admin.uid });
 }
