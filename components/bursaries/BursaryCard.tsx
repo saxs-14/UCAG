@@ -47,7 +47,7 @@ export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; s
               ))}
             </ul>
           )}
-          <p className="mt-3 rounded-lg bg-slate-soft px-3 py-2 text-xs leading-5 text-ink-soft">Check the criteria and dates on the provider's page before submitting. UCAG does not guarantee funding.</p>
+          <p className="mt-3 rounded-lg bg-slate-soft px-3 py-2 text-xs leading-5 text-ink-soft">Check the criteria and dates on the provider&apos;s page before submitting. UCAG does not guarantee funding.</p>
           <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-2 text-xs">
             <a
               href={bursary.applyUrl}

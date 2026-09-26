@@ -19,12 +19,12 @@ export async function fetchSource(
   now = new Date()
 ): Promise<FetchOutcome> {
   const fetchedAt = now.toISOString();
-  if (source.robotsAllowed === false) return { url: source.url, changed: false, statusCode: null, etag: source.etag, lastModified: source.lastModified, body: null, error: "Source blocked by robots policy.", fetchedAt, skipped: true };
+  if (source.robotsAllowed === false) return { url: source.url, changed: false, statusCode: null, etag: source.etag, lastModified: source.lastModified ?? null, body: null, error: "Source blocked by robots policy.", fetchedAt, skipped: true };
   if (source.lastFetchedAt && source.fetchIntervalHours > 0) {
     const lastFetchedMs = Date.parse(source.lastFetchedAt);
     const intervalMs = source.fetchIntervalHours * 60 * 60 * 1000;
     if (Number.isFinite(lastFetchedMs) && now.getTime() - lastFetchedMs < intervalMs) {
-      return { url: source.url, changed: false, statusCode: null, etag: source.etag, lastModified: source.lastModified, body: null, error: null, fetchedAt, skipped: true };
+      return { url: source.url, changed: false, statusCode: null, etag: source.etag, lastModified: source.lastModified ?? null, body: null, error: null, fetchedAt, skipped: true };
     }
   }
   const controller = new AbortController();
@@ -52,7 +52,7 @@ export async function fetchSource(
     const lastModified = res.headers.get("last-modified");
 
     if (res.status === 304) {
-      return { url: source.url, changed: false, statusCode: 304, etag: etag ?? source.etag, lastModified: lastModified ?? source.lastModified, body: null, error: null, fetchedAt, retryCount };
+      return { url: source.url, changed: false, statusCode: 304, etag: etag ?? source.etag, lastModified: lastModified ?? source.lastModified ?? null, body: null, error: null, fetchedAt, retryCount };
     }
     if (!res.ok) {
       return { url: source.url, changed: false, statusCode: res.status, etag, lastModified, body: null, error: "HTTP " + res.status, fetchedAt, retryCount };

@@ -73,7 +73,7 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
         <ol className="mt-5 grid gap-3 sm:grid-cols-3">
           <li className="rounded-xl border border-line bg-paper-raised p-4"><span className="font-mono text-xs font-bold text-brand-teal">1</span><h3 className="mt-1 text-sm font-bold text-ink">Filter</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Choose your level or field.</p></li>
           <li className="rounded-xl border border-line bg-paper-raised p-4"><span className="font-mono text-xs font-bold text-brand-teal">2</span><h3 className="mt-1 text-sm font-bold text-ink">Check</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Read the recorded criteria and dates.</p></li>
-          <li className="rounded-xl border border-line bg-paper-raised p-4"><span className="font-mono text-xs font-bold text-brand-teal">3</span><h3 className="mt-1 text-sm font-bold text-ink">Apply</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Open the provider's official application page.</p></li>
+          <li className="rounded-xl border border-line bg-paper-raised p-4"><span className="font-mono text-xs font-bold text-brand-teal">3</span><h3 className="mt-1 text-sm font-bold text-ink">Apply</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Open the provider&apos;s official application page.</p></li>
         </ol>
       </section>
 

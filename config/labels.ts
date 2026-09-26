@@ -153,6 +153,8 @@ export const LABELS = {
     savingProfileButton: "Saving...",
     cancelEditButton: "Cancel",
     profileSaved: "Profile updated.",
+    detailsHeading: "Create your account",
+    detailsIntro: "Choose your institution, then set an email and password. This is the only extra detail UCAG needs to save your marks and shortlist.",
     institutionLabel: "Institution",
     institutionPlaceholder: "Choose your institution",
     institutionRequired: "Choose an institution before creating your account.",

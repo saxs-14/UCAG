@@ -50,7 +50,7 @@ export function SubjectForm({
   const [mathematicsMark, setMathematicsMark] = useState<number | null>(initialState?.mathematicsMark ?? null);
   const [lifeOrientationMark, setLifeOrientationMark] = useState<number | null>(initialState?.lifeOrientationMark ?? null);
   const [electives, setElectives] = useState<ElectiveSlot[]>(() => {
-    const seeded = initialState?.electives.map((e) => ({ ...e })) ?? [];
+    const seeded: ElectiveSlot[] = initialState?.electives.map((e) => ({ ...e })) ?? [];
     while (seeded.length < MIN_ELECTIVES) seeded.push({ code: null, percentage: null });
     return seeded;
   });

@@ -86,7 +86,7 @@ class FakeLlmClient implements LlmClient {
 }
 
 function fakeFetchOk(html: string): typeof fetch {
-  return vi.fn(async () => ({ ok: true, text: async () => html })) as unknown as typeof fetch;
+  return vi.fn(async () => new Response(html, { status: 200 })) as unknown as typeof fetch;
 }
 
 const ALWAYS_ALLOW: (estimated: number, used: number) => Promise<BudgetCheckResult> = async () => ({
@@ -126,7 +126,7 @@ describe("runBursaryIngestion", () => {
     const llm = new FakeLlmClient({ kind: "returnValid", bursaries: [] });
     const summary = await runBursaryIngestion([makeSource({})], {
       llmClient: llm,
-      fetchImpl: vi.fn(async () => ({ ok: false, text: async () => "" })) as unknown as typeof fetch,
+      fetchImpl: vi.fn(async () => new Response("", { status: 404 })) as unknown as typeof fetch,
       getExistingBursary: async () => null,
       persistProposal: async () => "id",
       checkBudgetLive: ALWAYS_ALLOW,

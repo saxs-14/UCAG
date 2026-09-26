@@ -14,8 +14,10 @@ function source(overrides: Partial<Parameters<typeof fetchSource>[0]> = {}) {
   };
 }
 
+const NULL_BODY_STATUSES = new Set([204, 205, 304]);
+
 function response(status: number, body = "", headers: Record<string, string> = {}) {
-  return new Response(body, { status, headers });
+  return new Response(NULL_BODY_STATUSES.has(status) ? null : body, { status, headers });
 }
 
 describe("fetchSource", () => {
@@ -143,5 +145,26 @@ describe("fetchSource", () => {
 
     expect(result.changed).toBe(true);
     expect(result.contentHash).toMatch(/^[a-f0-9]{64}$/);
+  });
+
+  it("returns a structured failure instead of throwing when retries are exhausted", async () => {
+    const fetchImpl = vi.fn().mockResolvedValue(response(503, "unavailable"));
+
+    const result = await fetchSource(source(), fetchImpl, 1000);
+
+    expect(result.changed).toBe(false);
+    expect(result.statusCode).toBe(503);
+    expect(result.error).toBe("HTTP 503");
+    expect(result.body).toBeNull();
+  });
+
+  it("records network failures instead of throwing", async () => {
+    const fetchImpl = vi.fn().mockRejectedValue(new Error("network down"));
+
+    const result = await fetchSource(source(), fetchImpl, 1000);
+
+    expect(result.statusCode).toBeNull();
+    expect(result.error).toBe("network down");
+    expect(result.body).toBeNull();
   });
 });
