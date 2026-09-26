@@ -124,24 +124,28 @@ export default function SourcesPage() {
         <summary className="cursor-pointer font-medium">Add a source</summary>
         <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
           <input
+            aria-label="Source id"
             placeholder="id (e.g. some-university-admissions)"
             value={form.id}
             onChange={(e) => setForm({ ...form, id: e.target.value })}
             className="rounded border p-2 text-sm dark:border-gray-700 dark:bg-gray-900"
           />
           <input
+            aria-label="Publisher"
             placeholder="publisher"
             value={form.publisher}
             onChange={(e) => setForm({ ...form, publisher: e.target.value })}
             className="rounded border p-2 text-sm dark:border-gray-700 dark:bg-gray-900"
           />
           <input
+            aria-label="Source URL"
             placeholder="https://..."
             value={form.url}
             onChange={(e) => setForm({ ...form, url: e.target.value })}
             className="rounded border p-2 text-sm sm:col-span-2 dark:border-gray-700 dark:bg-gray-900"
           />
           <select
+            aria-label="Source type"
             value={form.type}
             onChange={(e) => setForm({ ...form, type: e.target.value as SourceType })}
             className="rounded border p-2 text-sm dark:border-gray-700 dark:bg-gray-900"
@@ -153,6 +157,7 @@ export default function SourcesPage() {
             ))}
           </select>
           <input
+            aria-label="Institution id"
             placeholder="institution id (e.g. ump) -- blank if not institution-specific"
             value={form.institutionId}
             onChange={(e) => setForm({ ...form, institutionId: e.target.value })}
