@@ -40,7 +40,14 @@ export const metadata: Metadata = {
   description: LABELS.app.tagline,
   manifest: "/manifest.json",
   icons: {
-    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+    icon: [
+      { url: "/icon.svg", type: "image/svg+xml" },
+      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
+      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
+    ],
+    // iOS ignores manifest.json icons entirely for "Add to Home Screen" --
+    // this is the only way it picks up a real icon rather than a screenshot.
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
   // Google Search Console's HTML-tag verification method -- the actual
   // ownership check still has to happen in Search Console itself (needs

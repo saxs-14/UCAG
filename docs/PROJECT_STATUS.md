@@ -366,13 +366,20 @@ Needed:
 
 ## 3.6 PWA polish
 
-**NOT DONE**
+**PARTIALLY DONE**
 
-- [ ] Add dedicated PNG icons.
-- [ ] Add Apple touch icon.
-- [ ] Add maskable icon where appropriate.
+- [x] Add dedicated PNG icons (192x192, 512x512, rasterized from the
+      existing `public/icon.svg` via `sharp`).
+- [x] Add Apple touch icon (180x180, wired into `app/layout.tsx`'s
+      metadata -- iOS ignores `manifest.json` icons entirely for "Add to
+      Home Screen", so this was the actual gap).
+- [x] Add maskable icon (512x512, artwork inset to an 80% safe zone so
+      OS icon masks don't clip it).
 - [ ] Verify installability on supported mobile browsers.
 - [ ] Verify offline shell after a clean install.
+
+The two remaining items need a real device/browser install test, not
+just the manifest/metadata being technically correct.
 
 ## 3.7 Bundle-budget CI gate
 
