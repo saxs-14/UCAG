@@ -20,22 +20,18 @@ import { test, expect } from "@playwright/test";
 test("learner enters marks, sees they qualify, and reaches a real apply link", async ({ page }) => {
   await page.goto("/");
 
+  // Single-screen entry -- every section is visible at once, no step
+  // navigation between them.
   await page.getByLabel("Home Language").selectOption("English");
   await page.getByLabel("English (HL)").fill("80");
 
   await page.getByLabel("First Additional Language").selectOption("Afrikaans");
   await page.getByLabel("Afrikaans (FAL)").fill("70");
 
-  await page.getByRole("button", { name: /Continue/ }).click();
-
   await page.getByLabel("Mathematics type").selectOption("Mathematics");
   await page.getByLabel("Mathematics", { exact: true }).fill("75");
 
-  await page.getByRole("button", { name: /Continue/ }).click();
-
   await page.getByLabel("Life Orientation", { exact: true }).fill("60");
-
-  await page.getByRole("button", { name: /Continue/ }).click();
 
   async function pickElective(index: number, query: string, optionName: string, mark: string) {
     const label = `Elective Subject ${index}`;
@@ -50,7 +46,6 @@ test("learner enters marks, sees they qualify, and reaches a real apply link", a
   await pickElective(2, "Life Sci", "Life Sciences", "70");
   await pickElective(3, "Geography", "Geography", "70");
 
-  await page.getByRole("button", { name: /Continue/ }).click();
   await page.getByRole("button", { name: /Calculate/ }).click();
 
   // Generous timeout: the first Firestore-emulator query in a test run can
