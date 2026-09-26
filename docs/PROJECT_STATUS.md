@@ -73,7 +73,6 @@ The application is designed to fail safely when these dependencies are missing; 
 - [x] Accessibility-focused keyboard/focus behaviour
 - [x] Reduced-motion support
 - [x] Skip-to-content support
-- [x] Save-data behaviour for statistics
 
 ## 2.2 Authentication and learner profiles
 
@@ -419,6 +418,36 @@ Current safe alternatives:
 - Review the resulting verification proposals.
 
 Do not change this to return a false success.
+
+## 3.9 Statistics dashboard
+
+**NOT DONE -- no page exists**
+
+`docs/MASTER_PROMPT_v2.md` Phase 5 calls for a statistics dashboard (two
+sections -- higher education: enrolments/graduations/throughput/funding
+coverage; schools: NSC results by province/district, bachelor-pass
+rates, subject-level performance -- every chart citing dataset/
+publisher/year, every dataset downloadable as CSV, "data pending
+verification" shown instead of a chart when a statistic has no verified
+source). This page was previously listed as done (a stale "[x] Save-data
+behaviour for statistics" line under §2.1, removed 2026-09-26) but there
+is no `/statistics` route, or any route, in `app/` at all. Confirmed by
+listing every directory under `app/` directly.
+
+`lib/catalog/getCatalogStats.ts` exists and is real, but it's only
+consumed by the nav bar's "N institutions" trust badge and
+`app/layout.tsx` -- not a dashboard. `lib/useSaveData.ts` (the
+low-data-mode hook the stale checklist line referred to) exists but is
+imported nowhere in `app/` or `components/` -- dead code, orphaned
+alongside whatever statistics page it used to serve.
+
+Needed, if/when this is picked up: the dashboard UI itself (Recharts is
+already a dependency), CSV export, and -- the real blocker -- actual
+verified national education statistics data (DBE/DHET published
+datasets) to populate it with. Per CLAUDE.md's core rule, building the
+UI without real sourced data would just be a differently-shaped way of
+displaying unverified information as if it were fact, so this is a data
+question first and a coding question second.
 
 ---
 
