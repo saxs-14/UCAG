@@ -25,7 +25,11 @@ jobs:
         uses: actions/setup-java@v5
         with:
           distribution: temurin
-          java-version: "17"
+          # firebase-tools requires Java 21+ as of its own 15.x line --
+          # bump this if a future firebase-tools major again raises the
+          # floor (check `npm view firebase-tools engines` alongside the
+          # pinned version below).
+          java-version: "21"
 
       - name: Install dependencies
         run: npm ci
@@ -38,7 +42,11 @@ jobs:
 
       - name: Start Firestore emulator
         run: |
-          npx --yes firebase-tools@latest emulators:start --only firestore --project demo-ucag-rules-test > /tmp/ucag-firestore-emulator.log 2>&1 &
+          # Pinned, not @latest -- an unpinned firebase-tools can silently
+          # raise its own Java/Node floor between CI runs with no change
+          # to this repo at all (this is exactly how this step broke:
+          # `emulators:start` started requiring Java 21 with no warning).
+          npx --yes firebase-tools@15.31.0 emulators:start --only firestore --project demo-ucag-rules-test > /tmp/ucag-firestore-emulator.log 2>&1 &
           echo $! > /tmp/ucag-firestore-emulator.pid
           for i in {1..30}; do
             if nc -z 127.0.0.1 8080; then
