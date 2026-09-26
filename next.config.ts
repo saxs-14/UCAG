@@ -65,6 +65,15 @@ const CONTENT_SECURITY_POLICY = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  images: {
+    // components/ump/UmpHeader.tsx renders UMP's own hardcoded logo via
+    // next/image, which throws a hard server-side render error for any
+    // remote host not explicitly allowed here -- this is UMP-specific
+    // branding on the UMP sub-experience, not a generic per-institution
+    // image path, so a single scoped host entry (not a wildcard) is the
+    // right fix rather than a "no fixed institution count" concern.
+    remotePatterns: [{ protocol: "https", hostname: "www.ump.ac.za" }],
+  },
   async headers() {
     return [
       {
