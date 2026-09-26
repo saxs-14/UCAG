@@ -258,41 +258,6 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       {celebrate && <ConfettiBurst />}
       <ShareBar marks={marks} />
 
-      <ApplicationMission
-        marks={marks}
-        shortlistCount={shortlist.length}
-        checkedChecklistCount={checklistChecked.size}
-        signedIn={!!user}
-      />
-
-      {scored.length > 0 && <ApsFormulaBanner />}
-
-      {scored.length > 0 && (
-        <AdmissionPathwayGraph
-          marks={marks}
-          scored={scored}
-          institutions={catalog.institutions}
-        />
-      )}
-
-      {scored.length > 0 && (
-        <ApsImprovementSimulator
-          marks={marks}
-          scored={scored}
-          apsRules={catalog.apsRules}
-          programmes={catalog.programmes}
-          institutions={catalog.institutions}
-        />
-      )}
-
-      {scored.length > 0 && <InterestQuiz entries={scored} />}
-
-      <ApplicationChecklist
-        checked={checklistChecked}
-        onToggle={toggleChecklistItem}
-        signedIn={!!user}
-      />
-
       {scored.length > 0 && (
         <div className="sticky top-[4.5rem] z-20 -mx-1 rounded-xl border border-line bg-paper/95 p-2 shadow-sm backdrop-blur">
           <div className="flex items-center justify-between gap-3 px-1 pb-2">
@@ -336,7 +301,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         const entries = byBucket.get(bucket)!;
         if (entries.length === 0) return null;
         return (
-          <div key={bucket} className="flex flex-col gap-3">
+          <div key={bucket} role="region" aria-label={LABELS.resultBuckets[bucket]} className="flex flex-col gap-3">
             <h2 className="animate-rise-in font-display text-xl font-bold tracking-tight text-ink">
               {LABELS.resultBuckets[bucket]}
             </h2>
@@ -389,6 +354,49 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
           ))}
         </div>
       )}
+
+      <details className="no-print rounded-xl border border-line bg-paper-raised p-4">
+        <summary className="cursor-pointer min-h-11 flex items-center text-base font-bold text-ink">
+          More tools for planning your application
+        </summary>
+
+        <div className="mt-4 flex flex-col gap-6">
+          <ApplicationMission
+            marks={marks}
+            shortlistCount={shortlist.length}
+            checkedChecklistCount={checklistChecked.size}
+            signedIn={!!user}
+          />
+
+          {scored.length > 0 && <ApsFormulaBanner />}
+
+          {scored.length > 0 && (
+            <AdmissionPathwayGraph
+              marks={marks}
+              scored={scored}
+              institutions={catalog.institutions}
+            />
+          )}
+
+          {scored.length > 0 && (
+            <ApsImprovementSimulator
+              marks={marks}
+              scored={scored}
+              apsRules={catalog.apsRules}
+              programmes={catalog.programmes}
+              institutions={catalog.institutions}
+            />
+          )}
+
+          {scored.length > 0 && <InterestQuiz entries={scored} />}
+
+          <ApplicationChecklist
+            checked={checklistChecked}
+            onToggle={toggleChecklistItem}
+            signedIn={!!user}
+          />
+        </div>
+      </details>
     </section>
   );
 }
