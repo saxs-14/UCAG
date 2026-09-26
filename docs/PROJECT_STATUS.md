@@ -383,17 +383,28 @@ just the manifest/metadata being technically correct.
 
 ## 3.7 Bundle-budget CI gate
 
-**NOT DONE**
+**DONE, at a documented exception to the original target**
 
-The calculator bundle was reduced substantially, but the target budget is not yet enforced automatically.
-
-Needed:
-
-- Define the exact route budget.
-- Produce a repeatable build-size measurement.
-- Add a CI assertion.
-- Fail CI if the agreed budget is exceeded.
-- Document intentional exceptions.
+- [x] Define the exact route budget: 260KB First Load JS for `/`
+      (`scripts/check-bundle-budget.mjs`).
+- [x] Produce a repeatable build-size measurement: parses Next's own
+      build-output table (the same "First Load JS" figure already
+      printed by `npm run build`), not internal manifest JSON.
+- [x] Add a CI assertion (`.github/workflows/ci.yml`, "Calculator route
+      bundle budget" step, after the build step).
+- [x] Fail CI if the agreed budget is exceeded (verified: the checker
+      correctly exits 1 when given a lower budget to test against).
+- [x] Document intentional exceptions: the brief's original target was
+      <200KB. Real measured size as of 2026-09-26 is ~257KB, almost
+      entirely Firebase Auth's SDK -- loaded globally
+      (`components/auth/AuthProvider.tsx` wraps every route) so the nav
+      bar always knows sign-in state, even on routes like the calculator
+      that don't otherwise need auth. Deferring that is a real
+      UX/architecture change (the nav's sign-in link would need a
+      skeleton/loading state), not something to make unreviewed just to
+      hit a number -- owner decision (2026-09-26) was to enforce a
+      realistic ~260KB baseline now and treat the Auth-deferral refactor
+      as its own separate piece of future work.
 
 ## 3.8 Historical ingestion rerun
 

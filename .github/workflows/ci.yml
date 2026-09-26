@@ -56,7 +56,10 @@ jobs:
         run: npm test
 
       - name: Production Build Verification
-        run: npm run build
+        run: npm run build 2>&1 | tee build-output.log
         env:
           NEXT_PUBLIC_USE_FIREBASE_EMULATOR: "true"
           CRON_SECRET: "ci-test-secret"
+
+      - name: Calculator route bundle budget
+        run: npm run check:bundle-budget -- build-output.log
