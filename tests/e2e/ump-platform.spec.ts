@@ -25,9 +25,13 @@ test.describe("UMP AI Education Platform E2E", () => {
     await expect(page.getByRole("heading", { name: /Academic Excellence/i })).toBeVisible();
     await expect(page.getByText("Faculties & Schools")).toBeVisible();
 
-    // 2. Click the hero "Explore Programmes" CTA
+    // 2. Click the hero "Explore Programmes" CTA. Generous timeout: this is
+    // /ump/programmes' first-ever request in a fresh dev server, and
+    // Turbopack compiles routes on demand -- the default 5s expect timeout
+    // isn't always enough for that first compile, unlike page.goto() (used
+    // by every other test in this file) which has its own longer default.
     await page.getByRole("link", { name: /Explore Programmes/i }).click();
-    await expect(page).toHaveURL(/\/ump\/programmes/);
+    await expect(page).toHaveURL(/\/ump\/programmes/, { timeout: 15000 });
     await expect(page.getByRole("heading", { name: /UMP Programmes/i })).toBeVisible();
 
     // 3. Filter by Faculty of Economics, Development and Business Sciences --
@@ -62,7 +66,7 @@ test.describe("UMP AI Education Platform E2E", () => {
     await page.goto("/ump/campus");
     await expect(page.getByRole("heading", { name: /Campus Guide/i })).toBeVisible();
     await expect(page.getByRole("heading", { name: "Mbombela Campus" })).toBeVisible();
-    await expect(page.getByText("Main Campus")).toBeVisible();
+    await expect(page.getByText("Main Campus", { exact: true })).toBeVisible();
   });
 
   test("verifies Application Document Assistant POPIA privacy shield", async ({ page }) => {
