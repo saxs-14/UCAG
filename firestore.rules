@@ -150,8 +150,16 @@ service cloud.firestore {
         || request.resource.data.role == "learner";
     }
 
+    // .get(key, default) not raw .role -- lib/auth/profile.ts's real
+    // createUserProfile() never writes a `role` field at all (matching
+    // clientCreatedRoleIsLearner()'s own tolerance for a missing role on
+    // create, implicitly "learner"). A raw `resource.data.role` access
+    // throws a hard rules-evaluation error on any document that was
+    // created that way -- which is every real learner profile in
+    // production -- permanently blocking every subsequent update
+    // (saved marks, shortlist, checklist progress, all of it).
     function roleUnchanged() {
-      return request.resource.data.role == resource.data.role;
+      return request.resource.data.get('role', 'learner') == resource.data.get('role', 'learner');
     }
 
     function onlyLearnerEditableFieldsChanged() {
