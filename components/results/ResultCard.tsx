@@ -123,27 +123,6 @@ export function ResultCard({
             </div>
           </div>
 
-          {/* Institution APS Formula Callout */}
-          <div className="rounded-xl bg-slate-50 p-3 text-sm text-ink-soft border border-line/60">
-            <p className="font-semibold text-ink">{BUCKET_EXPLANATION[matchResult.bucket]}</p>
-            {matchResult.bucket === "almostQualify" && apsGap !== null && (
-              <p className="mt-1 font-bold text-amber-800">APS gap: {apsGap} point{apsGap === 1 ? "" : "s"}</p>
-            )}
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2 text-xs">
-            <span className="inline-flex items-center gap-1 rounded-lg bg-teal-950/80 px-2.5 py-1 font-semibold text-teal-200 border border-teal-500/30 text-2xs">
-              <span>📐 {institution.shortName || institution.name} Formula:</span>
-              <span>{matchResult.apsResult.loTreatmentMessage}</span>
-            </span>
-            {matchResult.apsResult.appliedBonuses.length > 0 && (
-              <span className="inline-flex items-center gap-1 rounded-lg bg-purple-100 px-2.5 py-1 font-semibold text-purple-800 border border-purple-300 text-2xs">
-                <span>★ Bonus:</span>
-                <span>{matchResult.apsResult.appliedBonuses.map((b) => b.description).join(", ")}</span>
-              </span>
-            )}
-          </div>
-
           <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
             <div>
               <h3 className="text-lg font-bold text-ink">
@@ -186,6 +165,14 @@ export function ResultCard({
               )}
             </div>
           </div>
+
+          <div className="rounded-xl bg-slate-50 p-3 text-sm text-ink-soft border border-line/60">
+            <p className="font-semibold text-ink">{BUCKET_EXPLANATION[matchResult.bucket]}</p>
+            {matchResult.bucket === "almostQualify" && apsGap !== null && (
+              <p className="mt-1 font-bold text-amber-800">APS gap: {apsGap} point{apsGap === 1 ? "" : "s"}</p>
+            )}
+          </div>
+
           {(programme.campuses?.length > 0 || programme.modeOfDelivery) && (
             <p className="text-xs text-ink-faint font-medium">
               📍 {[programme.campuses?.length > 0 ? programme.campuses.join(", ") : null, programme.modeOfDelivery]
@@ -218,14 +205,6 @@ export function ResultCard({
             {matchResult.suggestedNextStep}
           </p>
         )}
-
-        <div className="rounded-xl border border-teal-200 bg-teal-50/70 p-3 text-xs text-teal-950">
-          <p className="font-bold">Before you apply</p>
-          <p className="mt-1 leading-relaxed">
-            General preparation: have your ID and latest results ready, then check the official programme page for any documents or steps this institution requires.
-          </p>
-          <p className="mt-1 text-2xs font-medium text-teal-800">UCAG guidance only — this is not the institution&apos;s official document list.</p>
-        </div>
 
         <div className="flex flex-col gap-2 border-t border-line pt-3 text-xs sm:flex-row sm:flex-wrap sm:items-center">
           {cta.kind === "apply" && (
@@ -293,22 +272,51 @@ export function ResultCard({
           )}
         </div>
 
-        <ReadinessBar readiness={readiness} />
+        <details className="no-print rounded-xl border border-line/60 bg-paper p-3.5 text-xs">
+          <summary className="cursor-pointer min-h-11 flex items-center font-bold text-ink">
+            Readiness & planning
+          </summary>
 
-        <ReadinessScorecard
-          matchResult={matchResult}
-          checkedItemIds={checkedChecklistIds}
-          applicationWindow={applicationWindow}
-        />
+          <div className="mt-3 flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="inline-flex items-center gap-1 rounded-lg bg-teal-950/80 px-2.5 py-1 font-semibold text-teal-200 border border-teal-500/30 text-2xs">
+                <span>📐 {institution.shortName || institution.name} Formula:</span>
+                <span>{matchResult.apsResult.loTreatmentMessage}</span>
+              </span>
+              {matchResult.apsResult.appliedBonuses.length > 0 && (
+                <span className="inline-flex items-center gap-1 rounded-lg bg-purple-100 px-2.5 py-1 font-semibold text-purple-800 border border-purple-300 text-2xs">
+                  <span>★ Bonus:</span>
+                  <span>{matchResult.apsResult.appliedBonuses.map((b) => b.description).join(", ")}</span>
+                </span>
+              )}
+            </div>
 
-        {matchResult.bucket !== "qualify" && (
-          <SmartBackupPlan
-            programme={programme}
-            institution={institution}
-            matchResult={matchResult}
-            allProgrammes={allProgrammes}
-          />
-        )}
+            <div className="rounded-xl border border-teal-200 bg-teal-50/70 p-3 text-teal-950">
+              <p className="font-bold">Before you apply</p>
+              <p className="mt-1 leading-relaxed">
+                General preparation: have your ID and latest results ready, then check the official programme page for any documents or steps this institution requires.
+              </p>
+              <p className="mt-1 text-2xs font-medium text-teal-800">UCAG guidance only — this is not the institution&apos;s official document list.</p>
+            </div>
+
+            <ReadinessBar readiness={readiness} />
+
+            <ReadinessScorecard
+              matchResult={matchResult}
+              checkedItemIds={checkedChecklistIds}
+              applicationWindow={applicationWindow}
+            />
+
+            {matchResult.bucket !== "qualify" && (
+              <SmartBackupPlan
+                programme={programme}
+                institution={institution}
+                matchResult={matchResult}
+                allProgrammes={allProgrammes}
+              />
+            )}
+          </div>
+        </details>
 
         <p className="text-2xs font-mono tabular-nums text-ink-faint border-t border-line/40 pt-2">
           Verified {programme.verifiedOn} ·{" "}
