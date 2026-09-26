@@ -36,10 +36,31 @@ import {
   type Firestore,
 } from "firebase/firestore";
 import { afterAll, beforeAll, beforeEach, describe, expect, it } from "vitest";
+import { initializeApp as initializeAdminApp, getApps as getAdminApps } from "firebase-admin/app";
+import { getFirestore as getAdminFirestore } from "firebase-admin/firestore";
 
 let app: FirebaseApp;
 let auth: Auth;
 let db: Firestore;
+
+/**
+ * A minimal institutions/ump document, seeded via the Admin SDK (bypasses
+ * firestore.rules -- institutions/{docId} is `allow write: if false` for
+ * every client, matching how the real ingestion pipeline/admin console
+ * write it, per lib/firebase/admin.ts's own header comment). Required
+ * because firestore.rules' institutionIsKnown() does a real exists()
+ * check against this collection -- a profile create with an institutionId
+ * that doesn't resolve to a real document is correctly rejected, so this
+ * suite's own profile-creation calls need a real institution to point at,
+ * the same way tests/firestore-rules.test.ts's beforeEach already does.
+ */
+async function seedInstitution() {
+  process.env.FIRESTORE_EMULATOR_HOST ??= "127.0.0.1:8080";
+  const existing = getAdminApps();
+  const adminApp = existing.length > 0 ? existing[0]! : initializeAdminApp({ projectId: "demo-ucag" });
+  const adminDb = getAdminFirestore(adminApp);
+  await adminDb.doc("institutions/ump").set({ name: "University of Mpumalanga" }, { merge: true });
+}
 
 function freshApp() {
   // A unique app name per call avoids "Firebase App already exists"
@@ -68,6 +89,7 @@ beforeAll(async () => {
   } catch {
     emulatorAvailable = false;
   }
+  if (emulatorAvailable) await seedInstitution();
 });
 
 beforeEach((ctx) => {
@@ -98,6 +120,7 @@ describe("sign-up flow (real Auth + Firestore emulators)", { timeout: 15000 }, (
 
     const profile = {
       uid: credential.user.uid,
+      institutionId: "ump",
       marks: [],
       shortlist: [],
       consentRecord: null,
@@ -118,6 +141,7 @@ describe("sign-up flow (real Auth + Firestore emulators)", { timeout: 15000 }, (
 
     const profileWithoutConsent = {
       uid: credential.user.uid,
+      institutionId: "ump",
       marks: [],
       shortlist: [],
       consentRecord: null,
@@ -169,6 +193,7 @@ describe("sign-up flow (real Auth + Firestore emulators)", { timeout: 15000 }, (
     const ref = doc(db, "userProfiles", credential.user.uid);
     await setDoc(ref, {
       uid: credential.user.uid,
+      institutionId: "ump",
       marks: [],
       shortlist: [],
       consentRecord: null,
