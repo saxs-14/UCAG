@@ -131,7 +131,7 @@ export function CalculatorPage() {
               <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-teal">Step 2 & 3</p>
               <h2 className="mt-1 text-2xl font-black tracking-tight text-ink">Your study options</h2>
               <p className="mt-1 max-w-2xl text-sm leading-6 text-ink-soft">
-                Read the exact requirement behind each result. There is no single national APS formula, so UCAG keeps the institution's rule visible.
+                Read the exact requirement behind each result. There is no single national APS formula, so UCAG keeps the institution&apos;s rule visible.
               </p>
             </div>
             <ResultsSection marks={marks} />

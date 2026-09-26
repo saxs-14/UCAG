@@ -175,7 +175,7 @@ export function LearnerApplicationJourney({ profile }: { profile: UserProfile })
             View preparation checklist
           </summary>
           <p className="mt-2 text-xs leading-5 text-ink-faint">
-            This is general guidance, not an institution's official document checklist. Confirm exact requirements on the official institution website.
+            This is general guidance, not an institution&apos;s official document checklist. Confirm exact requirements on the official institution website.
           </p>
 
           <div className="mt-3 grid gap-4 sm:grid-cols-2">

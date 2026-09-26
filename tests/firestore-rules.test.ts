@@ -97,7 +97,7 @@ function validMinorProfileWithConsent(uid: string) {
 describe("userProfiles security rules", () => {
   it("a user cannot create a profile without an institution", async () => {
     const alice = testEnv.authenticatedContext("user-a");
-    const profile = { ...validMajorProfile("user-a") };
+    const profile: Record<string, unknown> = { ...validMajorProfile("user-a") };
     delete profile.institutionId;
     await assertFails(alice.firestore().doc("userProfiles/user-a").set(profile));
   });
