@@ -7,6 +7,7 @@
  */
 
 import type { ApplicationWindow, ApplicationWindowStatus } from "@/lib/firestore/types";
+import { parseSastDayEnd, parseSastDayStart } from "@/lib/sastDate";
 
 /**
  * Cross-checks/derives status from raw dates. In production the
@@ -22,9 +23,9 @@ export function deriveApplicationWindowStatus(
   if (!window.opensOn && !window.closesOn) return "unknown";
 
   const nowTime = now.getTime();
-  const opensTime = window.opensOn ? new Date(window.opensOn).getTime() : null;
-  const closesTime = window.closesOn ? new Date(window.closesOn).getTime() : null;
-  const lateClosesTime = window.lateClosesOn ? new Date(window.lateClosesOn).getTime() : null;
+  const opensTime = window.opensOn ? parseSastDayStart(window.opensOn) : null;
+  const closesTime = window.closesOn ? parseSastDayEnd(window.closesOn) : null;
+  const lateClosesTime = window.lateClosesOn ? parseSastDayEnd(window.lateClosesOn) : null;
   const effectiveCloseTime = lateClosesTime ?? closesTime;
 
   if (opensTime !== null && nowTime < opensTime) return "openingSoon";

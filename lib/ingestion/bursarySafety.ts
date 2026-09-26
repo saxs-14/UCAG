@@ -1,4 +1,5 @@
 import type { BursaryRiskFlag } from "@/lib/firestore/types";
+import { parseSastDayEnd } from "@/lib/sastDate";
 
 /**
  * Bursary/internship safety types plus the two checks that also run
@@ -40,5 +41,5 @@ export function isSafeToPublish(flags: BursaryRiskFlag[]): boolean {
  * listings. */
 export function isPastClosingDate(closesOn: string | null, now: Date): boolean {
   if (!closesOn) return false;
-  return new Date(closesOn).getTime() < now.getTime();
+  return parseSastDayEnd(closesOn) < now.getTime();
 }
