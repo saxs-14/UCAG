@@ -216,6 +216,19 @@ export interface ApsBonusRule {
 export interface ApsRule extends FactProvenance {
   id: string;
   institutionId: string;
+  /** Null: this is the institution-wide default rule, applied to every
+   * faculty that doesn't have its own override below. Set: this rule
+   * applies ONLY to programmes in this specific faculty, overriding the
+   * institution-wide default for them. Added so an institution whose
+   * faculties genuinely use different formulas (e.g. Stellenbosch's
+   * Engineering/Science/Law layering a weighted formula on top of the
+   * general NSC-aggregate gate; UCT having no single university-wide
+   * formula at all) can be represented with more than one ApsRule
+   * document instead of forcing every programme through one formula
+   * that's wrong for some of them. Resolution order (see
+   * lib/matching/resolveApsRule.ts): an institution+faculty match wins
+   * over an institution-wide (facultyId: null) match. */
+  facultyId: string | null;
   scaleName: string;
   formulaType: ApsFormulaType;
   /** Point bands, if formulaType uses bands. Empty for percentage-based formulas. */
@@ -225,6 +238,34 @@ export interface ApsRule extends FactProvenance {
   loCap?: number;
   bestNSubjects: number;
   excludedSubjects: string[];
+  /** Subject codes guaranteed to be counted regardless of where they'd
+   * rank among the candidate's marks -- e.g. UCT's FPS/WPS always counts
+   * English (Home or First Additional Language) and Mathematics, then
+   * fills the remaining bestNSubjects slots with the best of what's left.
+   * A code ending in "-HL"/"-FAL" is treated as a language-family match
+   * (matches the candidate's actual HL/FAL subject in that language
+   * slot, whichever language they took) -- the same convention used by
+   * lib/matching/engine.ts's own subject matching, reimplemented locally
+   * here rather than imported, since lib/aps/ stays dependency-free of
+   * every other lib/ or config/ directory by design (see this directory's
+   * own header comment) -- keeps it trivially portable, and it's a
+   * handful of lines, not worth a cross-module dependency to save. Empty
+   * array (the default for every institution seeded before this field
+   * existed) is a no-op: best-N selection behaves exactly as before. */
+  forcedSubjects: string[];
+  /** Subject codes whose value is counted an ADDITIONAL time on top of
+   * their normal one-time inclusion -- e.g. Stellenbosch Engineering's
+   * "Mathematics% + Physical Sciences% + 6 x Matric average" (Mathematics
+   * and Physical Sciences are ordinary members of the 6-subject average,
+   * AND separately added again). Empty array (the default) is a no-op. */
+  extraCountedSubjects: string[];
+  /** When set, the final score (best-N/forced/extra sum + bonuses) is
+   * divided by this number -- for a genuine weighted-AVERAGE formula
+   * (e.g. Stellenbosch Science's "(Mathematics% x 2 + 5 other
+   * subjects%) / 7") rather than a point/percentage SUM. Undefined (the
+   * default) is a no-op: the score stays a sum, exactly as before this
+   * field existed. */
+  divisor?: number;
   mathLitPolicy: MathLitPolicy;
   /** Multiplier applied to a Mathematical Literacy subject's counted value
    * when mathLitPolicy is "penalised", e.g. 0.5. Defaults to 1 (no-op) when

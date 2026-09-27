@@ -554,6 +554,7 @@ export const UMP_APPLICATION_WINDOWS: ApplicationWindow[] = [
 export const UMP_APS_RULE: ApsRule = {
   id: "ump-aps-rule",
   institutionId: "ump",
+  facultyId: null,
   scaleName: "UMP Standard 7-Point Scale",
   formulaType: "pointBandSum",
   bands: STANDARD_NSC_SCALE,
@@ -561,6 +562,8 @@ export const UMP_APS_RULE: ApsRule = {
   loPolicy: "exclude",
   bestNSubjects: 6,
   excludedSubjects: [],
+  forcedSubjects: [],
+  extraCountedSubjects: [],
   mathLitPolicy: "equal",
   nbtPolicy: "none",
   bonusRules: [],

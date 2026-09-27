@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { calculateAps } from "@/lib/aps/engine";
 import { matchProgramme } from "@/lib/matching/engine";
+import { resolveApsRule } from "@/lib/matching/resolveApsRule";
 import { resolveSubjectLabel } from "@/config/subjects";
 import { CircledMark } from "@/components/CircledMark";
 import type { SubjectMarkInput } from "@/lib/aps/types";
@@ -60,7 +61,14 @@ export function ApsImprovementSimulator({
     }
   }, [scoredInstitutionIds, selectedInstitutionId]);
 
-  const apsRule = apsRules.find((r) => r.institutionId === selectedInstitutionId);
+  // The headline "APS: X -> Y" display represents this institution's
+  // general/default formula (facultyId: null) -- an institution can now
+  // have faculty-specific overrides too (see ApsRule.facultyId in
+  // lib/firestore/types.ts), but a single-institution-wide summary number
+  // wouldn't make sense scoped to one faculty here. Per-programme
+  // qualify/almost-qualify deltas below correctly resolve each
+  // programme's own faculty-specific rule instead.
+  const apsRule = apsRules.find((r) => r.institutionId === selectedInstitutionId && r.facultyId === null);
   const institution = institutions.find((i) => i.id === selectedInstitutionId);
   const institutionProgrammes = useMemo(
     () => programmes.filter((p) => p.institutionId === selectedInstitutionId),
@@ -107,15 +115,21 @@ export function ApsImprovementSimulator({
   );
 
   const newlyUnlocked = useMemo(() => {
-    if (!apsRule) return [];
     return institutionProgrammes.filter((programme) => {
-      const before = matchProgramme(programme, apsRule, marks, { catalog: institutionProgrammes }).bucket;
-      const after = matchProgramme(programme, apsRule, simulatedMarks, {
+      // Each programme is matched against ITS OWN correct rule (a
+      // faculty-specific override if one exists, otherwise the
+      // institution-wide default) -- not necessarily the same `apsRule`
+      // shown in the headline above, which is always the institution-wide
+      // default only.
+      const programmeRule = resolveApsRule(apsRules, programme.institutionId, programme.facultyId);
+      if (!programmeRule) return false;
+      const before = matchProgramme(programme, programmeRule, marks, { catalog: institutionProgrammes }).bucket;
+      const after = matchProgramme(programme, programmeRule, simulatedMarks, {
         catalog: institutionProgrammes,
       }).bucket;
       return before !== "qualify" && after === "qualify";
     });
-  }, [apsRule, institutionProgrammes, marks, simulatedMarks]);
+  }, [apsRules, institutionProgrammes, marks, simulatedMarks]);
 
   // Computed ahead of the early-return guard below so the showDeltaMark
   // state/effect (hooks) stay unconditional -- Rules of Hooks forbids

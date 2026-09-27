@@ -74,6 +74,7 @@ const NSC_7_POINT_BANDS = [
 const APS_RULES: Omit<ApsRule, "id">[] = [
   {
     institutionId: "ump",
+    facultyId: null,
     scaleName: "UMP Admission Point Score (APS)",
     formulaType: "pointBandSum",
     // Not restated verbatim in UMP's own brochure (it only uses "Level"
@@ -86,6 +87,8 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     loPolicy: "halfWeight",
     bestNSubjects: 7,
     excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: [],
     mathLitPolicy: "excludedForSomeProgrammes",
     nbtPolicy: "none",
     bonusRules: [],
@@ -97,6 +100,7 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
   },
   {
     institutionId: "up",
+    facultyId: null,
     scaleName: "NSC Admission Point Score (APS)",
     formulaType: "pointBandSum",
     bands: NSC_7_POINT_BANDS,
@@ -104,6 +108,8 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     loPolicy: "exclude",
     bestNSubjects: 6,
     excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: [],
     mathLitPolicy: "excludedForSomeProgrammes",
     nbtPolicy: "none",
     bonusRules: [],
@@ -116,6 +122,7 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
   },
   {
     institutionId: "wits",
+    facultyId: null,
     scaleName: "Wits APS (best 7 subjects including Life Orientation, with an English/Maths bonus)",
     formulaType: "pointBandWithBonus",
     bands: NSC_7_POINT_BANDS,
@@ -126,6 +133,8 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     loPolicy: "include",
     bestNSubjects: 7,
     excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: [],
     mathLitPolicy: "excludedForSomeProgrammes",
     nbtPolicy: "none",
     bonusRules: [
@@ -150,6 +159,7 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
   },
   {
     institutionId: "nmu",
+    facultyId: null,
     scaleName: "NMU Applicant Score (AS) -- also called APS on NMU's own FAQ page",
     formulaType: "percentageSum",
     bands: [],
@@ -157,6 +167,8 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     loPolicy: "exclude",
     bestNSubjects: 6,
     excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: [],
     mathLitPolicy: "equal",
     nbtPolicy: "none",
     bonusRules: [
@@ -177,6 +189,7 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
   },
   {
     institutionId: "uj",
+    facultyId: null,
     scaleName: "UJ Admission Point Score (APS)",
     formulaType: "pointBandSum",
     bands: NSC_7_POINT_BANDS,
@@ -184,6 +197,8 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     loPolicy: "exclude",
     bestNSubjects: 6,
     excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: [],
     mathLitPolicy: "equal",
     nbtPolicy: "none",
     bonusRules: [],
@@ -196,6 +211,7 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
   },
   {
     institutionId: "nwu",
+    facultyId: null,
     scaleName: "NWU Applicant Performance Score (APS)",
     formulaType: "pointBandSum",
     // NWU splits the top NSC band further (90-100%=8, 80-89%=7) rather
@@ -215,6 +231,8 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     loPolicy: "exclude",
     bestNSubjects: 6,
     excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: [],
     mathLitPolicy: "equal",
     nbtPolicy: "none",
     bonusRules: [],
@@ -227,6 +245,7 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
   },
   {
     institutionId: "ukzn",
+    facultyId: null,
     scaleName: "UKZN Academic Performance Score (APS)",
     formulaType: "pointBandSum",
     bands: [
@@ -243,6 +262,8 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     loPolicy: "exclude",
     bestNSubjects: 6,
     excludedSubjects: ["Mathematics Paper 3"],
+    forcedSubjects: [],
+    extraCountedSubjects: [],
     mathLitPolicy: "equal",
     nbtPolicy: "none",
     bonusRules: [],
@@ -255,6 +276,7 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
   },
   {
     institutionId: "tut",
+    facultyId: null,
     scaleName: "TUT Admission Point Score (APS)",
     formulaType: "pointBandSum",
     bands: NSC_7_POINT_BANDS,
@@ -262,6 +284,8 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     loPolicy: "exclude",
     bestNSubjects: 6,
     excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: [],
     mathLitPolicy: "equal",
     nbtPolicy: "none",
     bonusRules: [],
@@ -274,6 +298,7 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
   },
   {
     institutionId: "stellenbosch",
+    facultyId: null,
     scaleName: "Stellenbosch University NSC Aggregate (%)",
     formulaType: "percentageSum",
     bands: [],
@@ -281,6 +306,8 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     loPolicy: "exclude",
     bestNSubjects: 6,
     excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: [],
     mathLitPolicy: "equal",
     nbtPolicy: "requiredForSomeFaculties",
     bonusRules: [],

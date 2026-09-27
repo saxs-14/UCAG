@@ -72,6 +72,7 @@ export const SAMPLE_SCHOOL: School = {
 export const SAMPLE_APS_RULE: ApsRule = {
   id: "sample-aps-rule",
   institutionId: SAMPLE_INSTITUTION.id,
+  facultyId: null,
   scaleName: "[Sample] 7-point scale",
   formulaType: "pointBandSum",
   bands: STANDARD_NSC_SCALE,
@@ -79,6 +80,8 @@ export const SAMPLE_APS_RULE: ApsRule = {
   loPolicy: "exclude",
   bestNSubjects: 6,
   excludedSubjects: [],
+  forcedSubjects: [],
+  extraCountedSubjects: [],
   mathLitPolicy: "equal",
   nbtPolicy: "none",
   bonusRules: [],

@@ -16,6 +16,7 @@ import type { SubjectMarkInput } from "./types";
 const baseRule: ApsRule = {
   id: "test-rule",
   institutionId: "test-institution",
+  facultyId: null,
   scaleName: "Test 7-point scale",
   formulaType: "pointBandSum",
   bands: STANDARD_NSC_SCALE,
@@ -23,6 +24,8 @@ const baseRule: ApsRule = {
   loPolicy: "halfWeight",
   bestNSubjects: 7,
   excludedSubjects: [],
+  forcedSubjects: [],
+  extraCountedSubjects: [],
   mathLitPolicy: "equal",
   nbtPolicy: "none",
   bonusRules: [],
@@ -340,5 +343,130 @@ describe("bonus rules", () => {
     };
     const result = calculateAps(rule, sevenSubjectMarks); // LO is 80%
     expect(result.appliedBonuses).toHaveLength(0);
+  });
+});
+
+/**
+ * Weighted faculty-score formulas (formulaType "facultyPointScore" /
+ * "applicantScoreWeighted") -- added to represent real institutions like
+ * Stellenbosch's Engineering/Science faculties and UCT's FPS/WPS, whose
+ * real formulas force specific subjects into the count and/or count one
+ * subject's value more than once, rather than a plain best-N sum. Every
+ * fixture below hand-computes its expected score from the real formula
+ * text so these tests double as a worked-example proof, not just a
+ * regression snapshot.
+ */
+describe("forcedSubjects, extraCountedSubjects, and divisor (weighted faculty-score formulas)", () => {
+  const rawPercentRule: ApsRule = {
+    ...baseRule,
+    formulaType: "facultyPointScore",
+    usesRawPercentage: true,
+    bands: [],
+    loPolicy: "exclude",
+  };
+
+  const engineeringMarks: SubjectMarkInput[] = [
+    { subjectCode: "ENG-HL", percentage: 75 },
+    { subjectCode: "AFR-FAL", percentage: 68 },
+    { subjectCode: "MATH", percentage: 82 },
+    { subjectCode: "LO", percentage: 70 },
+    { subjectCode: "PHS", percentage: 78 },
+    { subjectCode: "LFS", percentage: 60 },
+    { subjectCode: "GEO", percentage: 55 },
+  ];
+
+  it("extraCountedSubjects adds that subject's value again on top of the normal best-N sum (Stellenbosch Engineering: Maths% + PhysSci% + 6 x Matric average)", () => {
+    // "6 x Matric average" of the best 6 non-LO subjects is mathematically
+    // the SAME as the sum of those 6 subjects' raw percentages -- already
+    // exactly what bestNSubjects=6/usesRawPercentage=true computes.
+    const rule: ApsRule = {
+      ...rawPercentRule,
+      bestNSubjects: 6,
+      extraCountedSubjects: ["MATH", "PHS"],
+      maxScore: 800,
+    };
+    const result = calculateAps(rule, engineeringMarks);
+    const best6Sum = 75 + 68 + 82 + 78 + 60 + 55; // all 6 non-LO subjects (only 6 exist)
+    expect(result.score).toBe(best6Sum + 82 + 78); // + Maths% + PhysSci% again
+  });
+
+  it("extraCountedSubjects still adds the subject's value even if it wasn't one of the naturally-selected best-N", () => {
+    // Enough OTHER high-scoring subjects that Mathematics (68%) would drop
+    // out of a natural best-3 selection -- the real formula still adds it.
+    const marks: SubjectMarkInput[] = [
+      { subjectCode: "ENG-HL", percentage: 90 },
+      { subjectCode: "AFR-FAL", percentage: 88 },
+      { subjectCode: "PHS", percentage: 85 },
+      { subjectCode: "MATH", percentage: 68 }, // lowest -- excluded from best-3
+    ];
+    const rule: ApsRule = { ...rawPercentRule, bestNSubjects: 3, extraCountedSubjects: ["MATH"] };
+    const result = calculateAps(rule, marks);
+    expect(result.countedSubjects.map((s) => s.subjectCode)).not.toContain("MATH");
+    expect(result.score).toBe(90 + 88 + 85 + 68); // best-3 sum, plus Maths% added separately
+  });
+
+  it("forcedSubjects removes a subject from the best-N ranking pool and counts it once, unconditionally", () => {
+    // Stellenbosch Science: "(Maths% x 2 + 5 other subjects%) / 7" -- Maths
+    // is forced OUT of the "5 other subjects" ranking pool (so it doesn't
+    // occupy one of those 5 slots) and counted via extraCountedSubjects.
+    const marks: SubjectMarkInput[] = [
+      { subjectCode: "ENG-HL", percentage: 80 },
+      { subjectCode: "AFR-FAL", percentage: 75 },
+      { subjectCode: "MATH", percentage: 70 },
+      { subjectCode: "PHS", percentage: 65 },
+      { subjectCode: "LFS", percentage: 60 },
+      { subjectCode: "HIS", percentage: 58 },
+      { subjectCode: "GEO", percentage: 55 }, // lowest of the "other" candidates (6 available, only 5 slots) -- dropped
+    ];
+    const rule: ApsRule = {
+      ...rawPercentRule,
+      bestNSubjects: 5,
+      forcedSubjects: ["MATH"],
+      extraCountedSubjects: ["MATH"],
+      divisor: 7,
+    };
+    const result = calculateAps(rule, marks);
+    expect(result.countedSubjects.map((s) => s.subjectCode)).toContain("MATH");
+    expect(result.droppedSubjects).toEqual(["GEO"]);
+    const fiveOthersSum = 80 + 75 + 65 + 60 + 58; // best 5 of the remaining (non-Math) pool
+    expect(result.score).toBeCloseTo((70 * 2 + fiveOthersSum) / 7, 10);
+  });
+
+  it("a language-family forcedSubjects entry (ENG-HL) matches the candidate's real English subject in either slot", () => {
+    // UCT's FPS/WPS always counts "English Home OR First Additional
+    // Language" -- the candidate below took English as a First Additional
+    // Language, not Home Language, and it must still be forced in.
+    const marks: SubjectMarkInput[] = [
+      { subjectCode: "AFR-HL", percentage: 90 },
+      { subjectCode: "ENG-FAL", percentage: 55 }, // lowest -- would drop out of a natural best-3
+      { subjectCode: "MATH", percentage: 85 },
+      { subjectCode: "PHS", percentage: 80 },
+      { subjectCode: "LFS", percentage: 78 },
+    ];
+    const rule: ApsRule = {
+      ...rawPercentRule,
+      bestNSubjects: 3,
+      forcedSubjects: ["ENG-HL", "MATH"],
+      maxScore: 600,
+    };
+    const result = calculateAps(rule, marks);
+    expect(result.countedSubjects.map((s) => s.subjectCode)).toEqual(
+      expect.arrayContaining(["ENG-FAL", "MATH"])
+    );
+    expect(result.droppedSubjects).not.toContain("ENG-FAL");
+    // forced: English (55) + Maths (85); best 3 of the remaining pool (Afr 90, PhysSci 80, LifeSci 78)
+    expect(result.score).toBe(55 + 85 + 90 + 80 + 78);
+  });
+
+  it("forcedSubjects, extraCountedSubjects, and divisor are all no-ops when unset, matching every institution seeded before these fields existed", () => {
+    const legacyStyleRule: ApsRule = {
+      ...rawPercentRule,
+      bestNSubjects: 6,
+      forcedSubjects: [],
+      extraCountedSubjects: [],
+      divisor: undefined,
+    };
+    const result = calculateAps(legacyStyleRule, engineeringMarks);
+    expect(result.score).toBe(75 + 68 + 82 + 78 + 60 + 55);
   });
 });
