@@ -458,6 +458,29 @@ describe("forcedSubjects, extraCountedSubjects, and divisor (weighted faculty-sc
     expect(result.score).toBe(55 + 85 + 90 + 80 + 78);
   });
 
+  it("matches UCT Science's own published worked example exactly (real-world validation, not just a synthetic fixture)", () => {
+    // UCT's own Admission Guidelines PDF worked example: English 85 +
+    // Afrikaans/isiXhosa FAL 89 + Maths 84x2 + Life Sciences 86 +
+    // Geography 79 + Physical Science 81x2 = FPS 669.
+    const marks: SubjectMarkInput[] = [
+      { subjectCode: "ENG-HL", percentage: 85 },
+      { subjectCode: "AFR-FAL", percentage: 89 },
+      { subjectCode: "MATH", percentage: 84 },
+      { subjectCode: "LFS", percentage: 86 },
+      { subjectCode: "GEO", percentage: 79 },
+      { subjectCode: "PHS", percentage: 81 },
+      { subjectCode: "LO", percentage: 80 },
+    ];
+    const rule: ApsRule = {
+      ...rawPercentRule,
+      bestNSubjects: 6,
+      extraCountedSubjects: ["MATH", "PHS"],
+      maxScore: 800,
+    };
+    const result = calculateAps(rule, marks);
+    expect(result.score).toBe(669);
+  });
+
   it("forcedSubjects, extraCountedSubjects, and divisor are all no-ops when unset, matching every institution seeded before these fields existed", () => {
     const legacyStyleRule: ApsRule = {
       ...rawPercentRule,
