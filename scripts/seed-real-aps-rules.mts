@@ -77,7 +77,7 @@ const NSC_7_POINT_BANDS = [
   { minPercent: 0, maxPercent: 29, points: 1 },
 ];
 
-const APS_RULES: Omit<ApsRule, "id">[] = [
+export const APS_RULES: Omit<ApsRule, "id">[] = [
   {
     institutionId: "ump",
     facultyId: null,

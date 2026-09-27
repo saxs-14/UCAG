@@ -70,7 +70,7 @@ const VERIFIED_ON = "2026-07-26";
 // treats a null closesOn as "not expired" by design
 // (lib/ingestion/bursarySafety.ts), so this shows as a real, open-ended
 // listing rather than a guessed date -- never the reverse.
-const BURSARIES: Omit<Bursary, "id">[] = [
+export const BURSARIES: Omit<Bursary, "id">[] = [
   {
     name: "NSFAS Bursary",
     provider: "National Student Financial Aid Scheme (NSFAS)",
@@ -838,7 +838,7 @@ const BURSARIES: Omit<Bursary, "id">[] = [
 // sabc-takes-note-of-a-website-advertising-non-existent-sabc-internships-
 // for-2020-2/ -- and its real internships page has no citable programme
 // content of its own, just a link to a rotating vacancy portal).
-const INTERNSHIPS: Omit<Internship, "id">[] = [
+export const INTERNSHIPS: Omit<Internship, "id">[] = [
   {
     title: "Youth Employment Service (YES) 12-Month Work Experience Programme",
     provider: "Youth Employment Service (YES)",
@@ -1199,7 +1199,7 @@ const PROVINCE_PASS_RATES: { province: string; passRate: number }[] = [
 const STAT_SOURCE_URL = "https://www.sanews.gov.za/south-africa/class-2025-sets-new-national-record-historic-88-pass-rate";
 const STAT_PUBLISHER = "Department of Basic Education (via SAnews.gov.za / GCIS)";
 
-const STATISTICS: Omit<Statistic, "id">[] = [
+export const STATISTICS: Omit<Statistic, "id">[] = [
   ...PROVINCE_PASS_RATES.map(({ province, passRate }) => ({
     dataset: "nsc-results-by-province",
     dimension: province,
