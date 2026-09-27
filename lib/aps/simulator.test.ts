@@ -7,6 +7,7 @@ import { STANDARD_NSC_SCALE } from "@/config/aps-scales";
 const testRule: ApsRule = {
   id: "rule-ump",
   institutionId: "ump",
+  facultyId: null,
   scaleName: "UMP Scale",
   formulaType: "pointBandSum",
   bands: STANDARD_NSC_SCALE,
@@ -14,6 +15,8 @@ const testRule: ApsRule = {
   loPolicy: "exclude",
   bestNSubjects: 6,
   excludedSubjects: [],
+  forcedSubjects: [],
+  extraCountedSubjects: [],
   mathLitPolicy: "equal",
   nbtPolicy: "none",
   bonusRules: [],

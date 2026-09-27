@@ -9,6 +9,7 @@ import type { SubjectMarkInput } from "@/lib/aps/types";
 const apsRule: ApsRule = {
   id: "test-rule",
   institutionId: "test-institution",
+  facultyId: null,
   scaleName: "Test 7-point scale",
   formulaType: "pointBandSum",
   bands: STANDARD_NSC_SCALE,
@@ -16,6 +17,8 @@ const apsRule: ApsRule = {
   loPolicy: "exclude",
   bestNSubjects: 6,
   excludedSubjects: [],
+  forcedSubjects: [],
+  extraCountedSubjects: [],
   mathLitPolicy: "equal",
   nbtPolicy: "none",
   bonusRules: [],

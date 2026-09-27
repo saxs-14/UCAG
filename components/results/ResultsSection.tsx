@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchProgramme } from "@/lib/matching/engine";
+import { resolveApsRule } from "@/lib/matching/resolveApsRule";
 import { ResultCard } from "./ResultCard";
 import { UnscoredProgrammeCard } from "./UnscoredProgrammeCard";
 import { ConfettiBurst } from "./ConfettiBurst";
@@ -127,7 +128,6 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
     const institutionsById = new Map(catalog.institutions.map((i) => [i.id, i]));
     const facultiesById = new Map(catalog.faculties.map((f) => [f.id, f]));
     const schoolsById = new Map(catalog.schools.map((s) => [s.id, s]));
-    const apsRuleByInstitution = new Map(catalog.apsRules.map((r) => [r.institutionId, r]));
 
     const scoredResults: ScoredEntry[] = [];
     const unscoredResults: UnscoredEntry[] = [];
@@ -142,7 +142,10 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       // rather than show a broken or misleading shell.
       if (!institution || !faculty || !school) continue;
 
-      const apsRule = apsRuleByInstitution.get(programme.institutionId);
+      // Faculty-specific rule (e.g. Stellenbosch Engineering's weighted
+      // formula) wins over the institution-wide default -- see
+      // ApsRule.facultyId in lib/firestore/types.ts.
+      const apsRule = resolveApsRule(catalog.apsRules, programme.institutionId, programme.facultyId);
       if (apsRule) {
         scoredResults.push({
           programme,

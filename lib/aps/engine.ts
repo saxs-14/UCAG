@@ -9,6 +9,23 @@ import type { ApsBonusRule, ApsRule } from "@/lib/firestore/types";
 
 const LIFE_ORIENTATION_CODE = "LO";
 const MATH_LIT_CODE = "MATHLIT";
+const LANGUAGE_CODE_PATTERN = /^([A-Z]+)-(HL|FAL)$/;
+
+/** Matches a forcedSubjects entry against a candidate's mark. An exact
+ * subjectCode match always counts. A "<LANG>-HL"/"<LANG>-FAL" forced code
+ * additionally matches that language in EITHER slot -- e.g. a forced
+ * "ENG-HL" entry (real institutions phrase this as "English Home OR
+ * First Additional Language") matches a candidate's real ENG-FAL mark
+ * too. Reimplemented locally (not imported from config/subjects.ts or
+ * lib/matching/engine.ts) so lib/aps/ stays free of every non-type
+ * dependency outside this directory, per this directory's own portability
+ * requirement (see file header of lib/aps/types.ts). */
+function isForcedMatch(forcedCode: string, mark: CountedSubject): boolean {
+  if (mark.subjectCode === forcedCode) return true;
+  const forcedLang = LANGUAGE_CODE_PATTERN.exec(forcedCode);
+  const markLang = LANGUAGE_CODE_PATTERN.exec(mark.subjectCode);
+  return Boolean(forcedLang && markLang && forcedLang[1] === markLang[1]);
+}
 
 function loTreatmentMessage(rule: ApsRule): string {
   switch (rule.loPolicy) {
@@ -118,13 +135,46 @@ export function calculateAps(
     };
   });
 
-  const sorted = [...valued].sort((a, b) => b.value - a.value);
-  const countedSubjects = sorted.slice(0, rule.bestNSubjects);
+  // Forced subjects (e.g. UCT's FPS always counting English + Mathematics,
+  // or Stellenbosch Science forcing Mathematics out of the "5 other
+  // subjects" ranking pool so it doesn't occupy one of those slots) are
+  // carved out of the ranking pool BEFORE best-N selection runs, one match
+  // per forcedSubjects entry, so they never compete for -- or get double-
+  // reserved into -- a best-N slot. Empty forcedSubjects (every rule
+  // seeded before this field existed) leaves the pool untouched, so this
+  // is a no-op for every existing institution.
+  const forced: CountedSubject[] = [];
+  const consumed = new Set<CountedSubject>();
+  for (const code of rule.forcedSubjects) {
+    const match = valued.find((v) => !consumed.has(v) && isForcedMatch(code, v));
+    if (match) {
+      forced.push(match);
+      consumed.add(match);
+    }
+  }
+  const remainingPool = valued.filter((v) => !consumed.has(v));
+
+  const sorted = [...remainingPool].sort((a, b) => b.value - a.value);
+  const bestOfRemaining = sorted.slice(0, rule.bestNSubjects);
   const droppedSubjects = sorted
     .slice(rule.bestNSubjects)
     .map((s) => s.subjectCode);
 
+  const countedSubjects = [...forced, ...bestOfRemaining];
   const baseScore = countedSubjects.reduce((sum, s) => sum + s.value, 0);
+
+  // Extra-counted subjects (e.g. "Mathematics% + Physical Sciences% + 6 x
+  // Matric average" -- Mathematics/Physical Sciences are ordinary members
+  // of that 6-subject average AND separately added again) look up their
+  // value from the FULL valued pool, not just countedSubjects: the real
+  // formula adds that subject's percentage regardless of whether it also
+  // happened to be selected into the best-N average. Empty
+  // extraCountedSubjects is a no-op.
+  const extraValue = rule.extraCountedSubjects.reduce((sum, code) => {
+    const match = valued.find((v) => v.subjectCode === code);
+    return sum + (match?.value ?? 0);
+  }, 0);
+
   const { total: bonusTotal, applied: appliedBonuses } = evaluateBonuses(
     rule,
     marks,
@@ -132,15 +182,19 @@ export function calculateAps(
   );
 
   const warnings: string[] = [];
-  if (candidates.length < rule.bestNSubjects) {
+  const totalConsidered = forced.length + remainingPool.length;
+  if (totalConsidered < rule.forcedSubjects.length + rule.bestNSubjects) {
     warnings.push(
-      `Only ${candidates.length} eligible subject(s) provided; this institution's formula expects the best ${rule.bestNSubjects}. The score below is based on what was provided.`
+      `Only ${totalConsidered} eligible subject(s) provided; this institution's formula expects ${rule.forcedSubjects.length > 0 ? `${rule.forcedSubjects.length} specific subject(s) plus ` : ""}the best ${rule.bestNSubjects}. The score below is based on what was provided.`
     );
   }
 
+  const rawTotal = baseScore + extraValue + bonusTotal;
+  const score = rule.divisor ? rawTotal / rule.divisor : rawTotal;
+
   return {
     formulaType: rule.formulaType,
-    score: baseScore + bonusTotal,
+    score,
     maxScore: rule.maxScore,
     countedSubjects,
     droppedSubjects,
