@@ -21,6 +21,7 @@
     "seed:up-data": "tsx --env-file=.env.local scripts/seed-up-data.mts",
     "seed:wits-data": "tsx --env-file=.env.local scripts/seed-wits-data.mts",
     "seed:nwu-data": "tsx --env-file=.env.local scripts/seed-nwu-data.mts",
+    "seed:nmu-data": "tsx --env-file=.env.local scripts/seed-nmu-data.mts",
     "train:bursary-scam-model": "tsx scripts/train-bursary-scam-model.mts",
     "emulators:demo": "firebase emulators:start --only firestore,auth --import=./demo-data-export --export-on-exit"
   },
