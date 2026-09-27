@@ -8,20 +8,12 @@
  * domain (never an aggregator) before being written here -- see each
  * entry's sourceUrl.
  *
- * Four institutions already in config/institutions.seed.ts are
+ * Three institutions already in config/institutions.seed.ts are
  * deliberately NOT here, on purpose, not because research stalled:
  *   - University of Cape Town: has no single university-wide formula --
  *     Science (doubles Maths/Physical Sciences, /800), Humanities
  *     (straight sum, /600), and Health Sciences (APS+NBT composite,
  *     /900) are three genuinely different, conflicting formulas.
- *   - Stellenbosch University: has a general NSC-aggregate admission
- *     gate, but Engineering, Science, and Law each layer a materially
- *     different competitive formula on top (e.g. Engineering doubles
- *     Mathematics and weights out of 800). ApsRule.notes is never
- *     surfaced to a learner anywhere in the UI, so publishing only the
- *     general formula here would silently misrepresent exactly the
- *     high-APS applicants most likely to be applying to those three
- *     faculties -- the same failure mode UCT was excluded for.
  *   - UNISA: is qualification-endorsement-based (Bachelor's/Diploma/
  *     Higher Certificate pass type + programme-specific subject
  *     minimums), not a points-score formula at all -- forcing it into
@@ -277,6 +269,25 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     notes:
       "TUT's own Prospectus Part 1 (Students' Rules and Regulations), verbatim: 'Life Orientation is not included in the calculation of an Admission Point Score (APS)' and 'An achievement level of 1 in a subject is not considered in the calculation of the APS' (a level-1 floor-exclusion with no field in this schema -- worth knowing for edge-case students, not encoded above). bestNSubjects=6 and maxScore=42 are inferred from 'LO excluded from a 7-subject NSC', not verbatim-stated the way UKZN's are. TUT's own text also notes some programmes apply additional programme-specific weighting on top of this general/base formula. NBT 'none' is an absence-of-mention inference.",
     sourceUrl: "https://www.tut.ac.za/media/tshwane-interim/site-content/images/prospectus/Part1_Students_Rules_and_Regulations.pdf",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    institutionId: "stellenbosch",
+    scaleName: "Stellenbosch University NSC Aggregate (%)",
+    formulaType: "percentageSum",
+    bands: [],
+    usesRawPercentage: true,
+    loPolicy: "exclude",
+    bestNSubjects: 6,
+    excludedSubjects: [],
+    mathLitPolicy: "equal",
+    nbtPolicy: "requiredForSomeFaculties",
+    bonusRules: [],
+    maxScore: 600,
+    notes:
+      "Stellenbosch's own official 2027 Undergraduate Prospectus: every programme states 'An NSC aggregate of at least X% (excluding Life Orientation)' plus flat per-subject percentage minimums -- a genuine average across the candidate's non-LO subjects (6, matching the standard NSC subject count), not a banded points sum. This rule only correctly describes Stellenbosch's Faculty of AgriSciences, Faculty of Arts and Social Sciences, Faculty of Economic and Management Sciences, Faculty of Education, Faculty of Medicine and Health Sciences, and Faculty of Theology -- config/stellenboschProgrammes.seed.ts's header explains why Faculty of Engineering, Faculty of Science, and Faculty of Law are deliberately NOT seeded under this rule: each layers an additional, materially different WEIGHTED 'selection mark' formula on top (e.g. Engineering: Mathematics% + Physical Sciences% + 6 x Matric average, out of 800) that this app's pure APS engine cannot yet compute. National Benchmark Tests (NBTs) are not required for 2027 admission generally, except for all Faculty of Law programmes, School of Tomorrow applicants, the South African-based American High School Diploma, and all online schools.",
+    sourceUrl: "https://files.su.ac.za/public/undergraduate-maties/documents/2026-01/su-admissions-booklet-2027.pdf",
     verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
   },

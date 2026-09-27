@@ -27,7 +27,9 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     type: "traditionalUniversity",
     province: "Mpumalanga",
     tier: 1,
-    campuses: ["Mbombela"],
+    // Real, per-programme-verified (config/umpProgrammes.seed.ts) --
+    // Mbombela is the main campus, Siyabuswa a dedicated Education campus.
+    campuses: ["Mbombela", "Siyabuswa"],
     websiteUrl: "https://www.ump.ac.za/",
     applicationPortalUrl:
       "https://www.ump.ac.za/Study-with-us/Application-Process/Online-Applications",
@@ -46,7 +48,10 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     type: "traditionalUniversity",
     province: "Gauteng",
     tier: 1,
-    campuses: ["Hatfield"],
+    // Real, per-programme-verified (config/upProgrammes.seed.ts) -- Hatfield
+    // (main), Groenkloof (Education), Prinshof (Medicine/Health Sciences),
+    // Onderstepoort (Veterinary Science).
+    campuses: ["Hatfield", "Groenkloof", "Prinshof", "Onderstepoort"],
     websiteUrl: "https://www.up.ac.za/",
     applicationPortalUrl: "https://www.up.ac.za/students/programme-calculator",
     appliesThroughThirdParty: null,
@@ -68,7 +73,9 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     type: "traditionalUniversity",
     province: "Gauteng",
     tier: 1,
-    campuses: ["Braamfontein"],
+    // Real, per-programme-verified (config/witsProgrammes.seed.ts) --
+    // Braamfontein (main), Parktown (Medicine).
+    campuses: ["Braamfontein", "Parktown"],
     websiteUrl: "https://www.wits.ac.za/",
     applicationPortalUrl: "https://www.wits.ac.za/undergraduate/apply-to-wits/",
     appliesThroughThirdParty: null,
@@ -86,7 +93,10 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     type: "traditionalUniversity",
     province: "Western Cape",
     tier: 1,
-    campuses: ["Stellenbosch"],
+    // Real, per-programme-verified (config/stellenboschProgrammes.seed.ts) --
+    // Stellenbosch (main), Tygerberg (Medicine and Health Sciences),
+    // Elsenburg (Agricultural Training Institute).
+    campuses: ["Stellenbosch", "Tygerberg", "Elsenburg"],
     websiteUrl: "https://www.su.ac.za/",
     applicationPortalUrl: "https://www.su.ac.za/english/maties/apply",
     appliesThroughThirdParty: null,
@@ -125,7 +135,9 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     type: "traditionalUniversity",
     province: "Eastern Cape",
     tier: 1,
-    campuses: ["Gqeberha"],
+    // Real, per-programme-verified (config/nmuProgrammes.seed.ts) -- North,
+    // South, and Missionvale (Health Sciences) campuses, all in Gqeberha.
+    campuses: ["North Campus", "South Campus", "Missionvale Campus"],
     websiteUrl: "https://www.mandela.ac.za/",
     applicationPortalUrl: null, // TODO(Phase 4): confirm exact application-portal URL
     appliesThroughThirdParty: null,
@@ -166,7 +178,9 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
     type: "traditionalUniversity",
     province: "North West",
     tier: 2,
-    campuses: [],
+    // Real, per-programme-verified (config/nwuProgrammes.seed.ts) --
+    // Potchefstroom, Mahikeng, and Vanderbijlpark campuses.
+    campuses: ["Potchefstroom", "Mahikeng", "Vanderbijlpark"],
     websiteUrl: "https://www.nwu.ac.za/",
     applicationPortalUrl: "https://applynow.nwu.ac.za/OnlineApplication/",
     appliesThroughThirdParty: null,
@@ -203,7 +217,10 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
     type: "traditionalUniversity",
     province: "KwaZulu-Natal",
     tier: 2,
-    campuses: [],
+    // Real, per-programme-verified (config/ukznProgrammes.seed.ts) --
+    // Howard College, Pietermaritzburg, Westville, and the Nelson R
+    // Mandela School of Medicine (Durban).
+    campuses: ["Howard College", "Pietermaritzburg", "Westville", "Medical School (Durban)"],
     websiteUrl: "https://www.ukzn.ac.za/",
     // First-time undergrad applications route through the shared Central
     // Applications Office, not a UKZN-specific portal -- confirmed live.
@@ -223,7 +240,19 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
     type: "universityOfTechnology",
     province: "Gauteng",
     tier: 2,
-    campuses: [],
+    // Real, per-programme-verified (config/tutProgrammes.seed.ts) -- TUT's
+    // 9 real campuses across Gauteng, Mpumalanga, and Limpopo.
+    campuses: [
+      "Pretoria Campus",
+      "Arts Campus",
+      "Arcadia Campus",
+      "Soshanguve North Campus",
+      "Soshanguve South Campus",
+      "Ga-Rankuwa Campus",
+      "eMalahleni Campus",
+      "Mbombela Campus",
+      "Polokwane Campus",
+    ],
     websiteUrl: "https://www.tut.ac.za/",
     applicationPortalUrl: "https://applications-prod.tut.ac.za/",
     appliesThroughThirdParty: null,

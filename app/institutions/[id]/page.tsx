@@ -4,6 +4,36 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
 import { getInstitutionBranding } from "@/lib/institutions/branding";
+import { fetchRealCatalog } from "@/lib/catalog/getRealCatalog";
+import type { Programme } from "@/lib/firestore/types";
+
+const NO_CAMPUS_LISTED = "Campus not specified";
+
+/** Groups an institution's real programmes by campus -- a programme
+ * offered at more than one campus (e.g. TUT's Diploma in Computer
+ * Science) appears under each of its own real campuses, not just the
+ * first. Programmes with no verified campus fall under one shared
+ * "Campus not specified" group rather than being silently dropped. */
+function groupProgrammesByCampus(programmes: Programme[]): Map<string, Programme[]> {
+  const byCampus = new Map<string, Programme[]>();
+
+  for (const programme of programmes) {
+    const campuses = programme.campuses.length > 0 ? programme.campuses : [NO_CAMPUS_LISTED];
+    for (const campus of campuses) {
+      const existing = byCampus.get(campus) ?? [];
+      existing.push(programme);
+      byCampus.set(campus, existing);
+    }
+  }
+
+  return new Map(
+    [...byCampus.entries()].sort(([a], [b]) => {
+      if (a === NO_CAMPUS_LISTED) return 1;
+      if (b === NO_CAMPUS_LISTED) return -1;
+      return a.localeCompare(b);
+    })
+  );
+}
 
 interface PageProps {
   params: Promise<{ id: string }>;
@@ -35,6 +65,10 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
 
   const branding = getInstitutionBranding(inst.id);
   const isUmp = inst.id === "ump";
+
+  const { programmes } = await fetchRealCatalog();
+  const institutionProgrammes = programmes.filter((p) => p.institutionId === inst.id);
+  const programmesByCampus = groupProgrammesByCampus(institutionProgrammes);
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
@@ -179,6 +213,45 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
             </a>
           )}
         </section>
+
+        {/* Programmes by Campus -- real, verified per-programme campus data,
+            not just the flat institution-level list above. A programme
+            offered at more than one campus is listed under each. */}
+        {programmesByCampus.size > 0 && (
+          <section aria-labelledby="programmes-by-campus-heading" className="card-learner rounded-2xl p-6 border border-line">
+            <h2 id="programmes-by-campus-heading" className="text-base font-bold text-ink mb-1">
+              🎓 Programmes by Campus
+            </h2>
+            <p className="text-xs text-ink-soft mb-4">
+              {institutionProgrammes.length} verified programme{institutionProgrammes.length === 1 ? "" : "s"} at {inst.shortName}, grouped by the campus each is actually offered at.
+            </p>
+
+            <div className="flex flex-col gap-5">
+              {[...programmesByCampus.entries()].map(([campus, campusProgrammes]) => (
+                <div key={campus}>
+                  <h3 className="text-sm font-bold text-ink mb-2">
+                    {campus}
+                    <span className="ml-2 font-normal text-ink-faint">
+                      ({campusProgrammes.length} programme{campusProgrammes.length === 1 ? "" : "s"})
+                    </span>
+                  </h3>
+                  <ul className="grid gap-1.5 sm:grid-cols-2">
+                    {campusProgrammes.map((programme) => (
+                      <li key={programme.id}>
+                        <Link
+                          href={`/programmes/${programme.id}`}
+                          className="text-sm text-ink hover:text-brand-teal hover:underline"
+                        >
+                          {programme.name}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
       </div>
     </main>
   );
