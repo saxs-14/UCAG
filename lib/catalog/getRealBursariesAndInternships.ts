@@ -20,18 +20,37 @@ export interface RealBursariesAndInternships {
 }
 
 export async function fetchRealBursariesAndInternships(): Promise<RealBursariesAndInternships> {
-  const db = getAdminDb();
-  const [bursariesSnap, internshipsSnap] = await Promise.all([
-    db.collection("bursaries").get(),
-    db.collection("internships").get(),
-  ]);
+  // Same resilience pattern as lib/catalog/getRealCatalog.ts's client-side
+  // fetch: a real, temporary failure (Admin credentials not configured
+  // for this environment, a transient Firestore outage) must degrade to
+  // an honest empty result, never crash the whole page. There's no
+  // fictional fallback dataset to fall back to here the way UMP's real
+  // seed data stands in for the calculator (config/sampleData.ts's
+  // SAMPLE_BURSARIES/SAMPLE_INTERNSHIPS were deliberately removed, see
+  // this file's own header) -- an empty list renders BursariesPage's own
+  // legitimate "nothing verified yet" state, which is the honest answer
+  // when the real data genuinely can't be reached, not a bug to paper
+  // over with invented listings.
+  try {
+    const db = getAdminDb();
+    const [bursariesSnap, internshipsSnap] = await Promise.all([
+      db.collection("bursaries").get(),
+      db.collection("internships").get(),
+    ]);
 
-  const bursaries = bursariesSnap.docs
-    .map((doc) => ({ ...(doc.data() as Omit<Bursary, "id">), id: doc.id }))
-    .filter(isFactVerified);
-  const internships = internshipsSnap.docs
-    .map((doc) => ({ ...(doc.data() as Omit<Internship, "id">), id: doc.id }))
-    .filter(isFactVerified);
+    const bursaries = bursariesSnap.docs
+      .map((doc) => ({ ...(doc.data() as Omit<Bursary, "id">), id: doc.id }))
+      .filter(isFactVerified);
+    const internships = internshipsSnap.docs
+      .map((doc) => ({ ...(doc.data() as Omit<Internship, "id">), id: doc.id }))
+      .filter(isFactVerified);
 
-  return { bursaries, internships };
+    return { bursaries, internships };
+  } catch (err) {
+    console.warn(
+      "fetchRealBursariesAndInternships: Firestore query failed (Admin credentials not configured for this environment, or a transient outage) -- rendering an empty result instead of crashing the page:",
+      err
+    );
+    return { bursaries: [], internships: [] };
+  }
 }
