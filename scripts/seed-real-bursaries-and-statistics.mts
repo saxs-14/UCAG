@@ -215,6 +215,30 @@ const BURSARIES: Omit<Bursary, "id">[] = [
     academicYear: ACADEMIC_YEAR,
   },
 
+  {
+    name: "Toyota South Africa Motors Bursary Fund",
+    provider: "Toyota South Africa Motors (administered by StudyTrust)",
+    fieldsOfStudy: ["Commerce", "Engineering", "Science", "ICT", "Law"],
+    levelRequired: "matricOnly",
+    opensOn: "2026-06-01",
+    closesOn: "2026-09-30",
+    value: "Financial support for tuition and related costs, plus vacation work and potential exposure to Toyota's graduate programme",
+    criteria: [
+      "South African citizen",
+      "Matric: at least 65% in both Mathematics and English",
+      "Tertiary: overall average of 65% or higher",
+      "Commerce fields: Accounting (non-CA), Analytics, Economics, Environmental Science, Financial Management, Human Resource Management, Law (LLB), Marketing Management",
+      "Engineering fields: Chemical, Electrical, Civil, Industrial, Mechanical, Mechatronics",
+      "Science fields: Business Science Analytics, Computer Science, Information Technology",
+      "Apply only via StudyTrust's own online platform",
+    ],
+    applyUrl: "https://studytrust.org.za/toyota",
+    riskFlags: [],
+    sourceUrl: "https://studytrust.org.za/toyota",
+    verifiedOn: "2026-09-27",
+    academicYear: ACADEMIC_YEAR,
+  },
+
   // --- ICT & Telecoms ---
   {
     name: "Vodacom External Bursary Programme",
