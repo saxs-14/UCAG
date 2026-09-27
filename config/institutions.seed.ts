@@ -116,7 +116,11 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     type: "traditionalUniversity",
     province: "Western Cape",
     tier: 1,
-    campuses: ["Rondebosch"],
+    // Real, confirmed via UCT's own 2027 Directions for Undergraduate
+    // Applicants campus maps -- Upper Campus (main, most faculties),
+    // Hiddingh Campus (Humanities/Fine Art, central Cape Town), Health
+    // Sciences Campus (Observatory), all within greater Rondebosch.
+    campuses: ["Upper Campus", "Hiddingh Campus", "Health Sciences Campus"],
     websiteUrl: "https://uct.ac.za/",
     applicationPortalUrl: "https://applyonline.uct.ac.za/",
     appliesThroughThirdParty: null,

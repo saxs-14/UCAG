@@ -8,31 +8,43 @@
  * Source: Stellenbosch's own official "2027 Undergraduate Prospectus"
  * PDF (files.su.ac.za), fetched directly and read in full.
  *
- * IMPORTANT SCOPE NOTE, matching the precedent already documented in
- * scripts/seed-real-aps-rules.mts for UCT: Stellenbosch's Faculty of
- * Engineering, Faculty of Science, and Faculty of Law each layer a
- * materially different, competitive, WEIGHTED "selection mark" formula
- * on top of the general NSC-aggregate admission gate (e.g. Engineering:
- * "Mathematics % + Physical Sciences % + 6 x Matric average", max 800;
- * Science: "(Mathematics % x 2 + 5 other subjects %) / 7"). The pure,
- * dependency-free lib/aps/engine.ts (a hard requirement per CLAUDE.md)
- * only implements a generic "sum of best-N raw subject values" model and
- * cannot correctly compute either of those weighted formulas. Rather
- * than silently misrepresent the most competitive applicants' real
- * eligibility, programmes from those 3 faculties are deliberately NOT
- * included here -- exactly the same reasoning UCT was excluded from
- * seed-real-aps-rules.mts for. This can be revisited once/if lib/aps/
- * gains real support for weighted faculty-score formulas.
+ * UPDATE: all 9 real faculties are now represented. Faculty of
+ * Engineering and Faculty of Science genuinely layer a materially
+ * different, competitive, WEIGHTED "selection mark" on top of the
+ * general NSC-aggregate gate (Engineering: "Mathematics% + Physical
+ * Sciences% + 6 x Matric average", max 800; Science: "(Mathematics% x 2
+ * + 5 other subjects%) / 7") -- lib/aps/engine.ts now supports this
+ * (ApsRule.forcedSubjects/extraCountedSubjects/divisor), so each has its
+ * own faculty-specific ApsRule (facultyId set) in
+ * scripts/seed-real-aps-rules.mts, resolved via
+ * lib/matching/resolveApsRule.ts. Faculty of Law does NOT need a new
+ * formula: its own admission text describes the same plain NSC-aggregate
+ * floor as every other faculty here, with a separate 80:20 (Grade
+ * 11/12 results : National Benchmark Test) RANKING on top for actual
+ * selection among applicants who clear that floor -- the NBT component
+ * can't be computed (this app doesn't collect NBT scores), so Law's
+ * programmes use the institution-wide general rule like AgriSciences/
+ * Arts/etc., with the real NBT-ranking mechanism described honestly in
+ * additionalRequirements instead of a fabricated combined score.
  *
- * The 6 faculties included below (AgriSciences, Arts and Social
- * Sciences, Economic and Management Sciences, Education, Medicine and
- * Health Sciences, Theology) genuinely only use the plain NSC-aggregate
- * gate with flat per-subject percentage minimums -- fully and correctly
- * computable by the existing engine via SubjectRequirement.minPercent
- * (raw percentage, not an NSC band) and a minAps expressed on the same
- * sum-scale the engine actually computes (aggregate% x bestNSubjects,
- * mathematically identical to "average >= threshold" since
- * bestNSubjects is a fixed constant here).
+ * The 6 non-weighted faculties (AgriSciences, Arts and Social Sciences,
+ * Economic and Management Sciences, Education, Medicine and Health
+ * Sciences, Theology) plus Law use the plain NSC-aggregate gate with
+ * flat per-subject percentage minimums -- fully and correctly
+ * computable via SubjectRequirement.minPercent (raw percentage, not an
+ * NSC band) and a minAps expressed on the same sum-scale the engine
+ * actually computes (aggregate% x bestNSubjects, mathematically
+ * identical to "average >= threshold" since bestNSubjects is a fixed
+ * constant here). Engineering's minAps uses the same real, documented
+ * lower bound the source itself states ("a selection mark of 600 or
+ * more gave students a good chance... in others, 620 or more were
+ * required") -- the honest floor, not the higher per-programme number
+ * the source doesn't actually give. Science's minAps stays null: its
+ * real formula IS now computed and shown to the learner, but the source
+ * states the real selection threshold is "higher than the minimum
+ * criteria" WITHOUT giving a number -- inventing one here would be
+ * exactly the "unverified displayed as fact" failure this project
+ * exists to prevent.
  *
  * Where a programme's real requirement offers multiple equally-valid
  * subject alternatives (e.g. "Mathematics 50% OR Mathematical Literacy
@@ -62,6 +74,9 @@ export const STELLENBOSCH_FACULTIES: Faculty[] = [
   { id: "su-faculty-education", institutionId: "stellenbosch", name: "Faculty of Education", code: "EDU", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
   { id: "su-faculty-medicine-health-sciences", institutionId: "stellenbosch", name: "Faculty of Medicine and Health Sciences", code: "MHS", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
   { id: "su-faculty-theology", institutionId: "stellenbosch", name: "Faculty of Theology", code: "THEO", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
+  { id: "su-faculty-engineering", institutionId: "stellenbosch", name: "Faculty of Engineering", code: "ENG", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
+  { id: "su-faculty-science", institutionId: "stellenbosch", name: "Faculty of Science", code: "SCI", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
+  { id: "su-faculty-law", institutionId: "stellenbosch", name: "Faculty of Law", code: "LAW", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
 ];
 
 // ---------------------------------------------------------------------------
@@ -77,6 +92,9 @@ export const STELLENBOSCH_SCHOOLS: School[] = [
   { id: "su-school-education", facultyId: "su-faculty-education", name: "Faculty of Education", code: "EDU", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
   { id: "su-school-medicine-health-sciences", facultyId: "su-faculty-medicine-health-sciences", name: "Faculty of Medicine and Health Sciences", code: "MHS", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
   { id: "su-school-theology", facultyId: "su-faculty-theology", name: "Faculty of Theology", code: "THEO", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
+  { id: "su-school-engineering", facultyId: "su-faculty-engineering", name: "Faculty of Engineering", code: "ENG", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
+  { id: "su-school-science", facultyId: "su-faculty-science", name: "Faculty of Science", code: "SCI", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
+  { id: "su-school-law", facultyId: "su-faculty-law", name: "Faculty of Law", code: "LAW", sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR },
 ];
 
 // ---------------------------------------------------------------------------
@@ -260,6 +278,142 @@ export const STELLENBOSCH_PROGRAMMES: Programme[] = [
     ],
     careerOutcomes: ["Minister", "Ministerial Trainee"],
     applyUrl: SU_APPLY_URL, fieldTags: ["people"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
+  },
+  // --- Faculty of Engineering (weighted "selection mark" formula --
+  // see su-faculty-engineering's own ApsRule in scripts/seed-real-aps-rules.mts) ---
+  {
+    id: "su-beng-civil", institutionId: "stellenbosch", facultyId: "su-faculty-engineering", schoolId: "su-school-engineering",
+    name: "BEng (Civil)", qualificationType: "bachelorsDegree", nqfLevel: 8, saqaId: null,
+    duration: "4 years", campuses: ["Stellenbosch Campus"], modeOfDelivery: "contact", minAps: 600,
+    subjectRequirements: [{ subjectCode: "MATH", minPercent: 70 }, { subjectCode: "PHS", minPercent: 60 }, { subjectCode: "ENG-HL", minPercent: 50 }],
+    additionalRequirements: [
+      "NSC aggregate of at least 70% (excluding Life Orientation) -- the minimum admission floor.",
+      "Real selection is competitive: 'a selection mark of 600 or more gave students a good chance of admission to certain programmes, but in others, 620 or more were required.' Selection mark = Mathematics% + Physical Sciences% + (6 x best-6 Matric average), out of 800.",
+      "A 5-year Extended Curriculum Programme is available for applicants close to but not meeting the minimum requirements.",
+      "Career: civil engineer -- irrigation systems, bridges, dams, harbours, roads, water supply, and heavy construction.",
+    ],
+    careerOutcomes: ["Civil Engineer"],
+    applyUrl: SU_APPLY_URL, fieldTags: ["technology"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
+  },
+  {
+    id: "su-beng-electrical-electronic", institutionId: "stellenbosch", facultyId: "su-faculty-engineering", schoolId: "su-school-engineering",
+    name: "BEng (Electrical and Electronic)", qualificationType: "bachelorsDegree", nqfLevel: 8, saqaId: null,
+    duration: "4 years", campuses: ["Stellenbosch Campus"], modeOfDelivery: "contact", minAps: 600,
+    subjectRequirements: [{ subjectCode: "MATH", minPercent: 70 }, { subjectCode: "PHS", minPercent: 60 }, { subjectCode: "ENG-HL", minPercent: 50 }],
+    additionalRequirements: [
+      "NSC aggregate of at least 70% (excluding Life Orientation) -- the minimum admission floor.",
+      "Real selection is competitive: 'a selection mark of 600 or more gave students a good chance of admission to certain programmes, but in others, 620 or more were required.' Selection mark = Mathematics% + Physical Sciences% + (6 x best-6 Matric average), out of 800.",
+      "Career: generation/transmission of electrical energy, robotic systems control, computer and communication networks, large software systems.",
+    ],
+    careerOutcomes: ["Electrical Engineer", "Electronic Engineer"],
+    applyUrl: SU_APPLY_URL, fieldTags: ["technology"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
+  },
+  {
+    id: "su-beng-mechanical", institutionId: "stellenbosch", facultyId: "su-faculty-engineering", schoolId: "su-school-engineering",
+    name: "BEng (Mechanical)", qualificationType: "bachelorsDegree", nqfLevel: 8, saqaId: null,
+    duration: "4 years", campuses: ["Stellenbosch Campus"], modeOfDelivery: "contact", minAps: 600,
+    subjectRequirements: [{ subjectCode: "MATH", minPercent: 70 }, { subjectCode: "PHS", minPercent: 60 }, { subjectCode: "ENG-HL", minPercent: 50 }],
+    additionalRequirements: [
+      "NSC aggregate of at least 70% (excluding Life Orientation) -- the minimum admission floor.",
+      "Real selection is competitive: 'a selection mark of 600 or more gave students a good chance of admission to certain programmes, but in others, 620 or more were required.' Selection mark = Mathematics% + Physical Sciences% + (6 x best-6 Matric average), out of 800.",
+      "Career: motion and energy transfer -- vehicles, aeroplanes, cooling systems, power stations, process plants, manufacturing.",
+    ],
+    careerOutcomes: ["Mechanical Engineer"],
+    applyUrl: SU_APPLY_URL, fieldTags: ["technology"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
+  },
+  // --- Faculty of Science (weighted "selection mark" formula -- see
+  // su-faculty-science's own ApsRule in scripts/seed-real-aps-rules.mts.
+  // minAps stays null: the real formula IS computed and shown, but the
+  // source states the actual selection threshold without giving a
+  // number -- see this file's header.) ---
+  {
+    id: "su-bsc-computer-science", institutionId: "stellenbosch", facultyId: "su-faculty-science", schoolId: "su-school-science",
+    name: "BSc Computer Science", qualificationType: "bachelorsDegree", nqfLevel: 7, saqaId: null,
+    duration: "3 years", campuses: ["Stellenbosch Campus"], modeOfDelivery: "contact", minAps: null,
+    subjectRequirements: [{ subjectCode: "MATH", minPercent: 70 }, { subjectCode: "ENG-HL", minPercent: 50 }],
+    additionalRequirements: [
+      "NSC aggregate of at least 65% (excluding Life Orientation) -- the minimum admission floor; the real selection threshold is stated to be higher, without a published number.",
+      "If taking Chemistry or Physics as a first-year university subject: Physical Sciences 50% is also required.",
+      "Selection mark = (Mathematics% x 2 + best 5 other subjects%, at least one of which must be English or Afrikaans) / 7.",
+      "Focal areas: General Computer Science, Computer Systems, Data Science.",
+    ],
+    careerOutcomes: ["Software Developer", "Data Scientist", "Systems Analyst"],
+    applyUrl: SU_APPLY_URL, fieldTags: ["technology", "science"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
+  },
+  {
+    id: "su-bsc-mathematical-sciences", institutionId: "stellenbosch", facultyId: "su-faculty-science", schoolId: "su-school-science",
+    name: "BSc Mathematical Sciences", qualificationType: "bachelorsDegree", nqfLevel: 7, saqaId: null,
+    duration: "3 years", campuses: ["Stellenbosch Campus"], modeOfDelivery: "contact", minAps: null,
+    subjectRequirements: [{ subjectCode: "MATH", minPercent: 70 }, { subjectCode: "ENG-HL", minPercent: 50 }],
+    additionalRequirements: [
+      "NSC aggregate of at least 65% (excluding Life Orientation) -- the minimum admission floor; the real selection threshold is stated to be higher, without a published number.",
+      "If taking Chemistry or Physics as a first-year university subject: Physical Sciences 50% is also required.",
+      "Selection mark = (Mathematics% x 2 + best 5 other subjects%, at least one of which must be English or Afrikaans) / 7.",
+      "Focal areas: Applied Mathematics, Mathematics, Operations Research.",
+    ],
+    careerOutcomes: ["Actuarial Analyst", "Data Analyst", "Operations Research Analyst"],
+    applyUrl: SU_APPLY_URL, fieldTags: ["science"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
+  },
+  {
+    id: "su-bsc-chemistry", institutionId: "stellenbosch", facultyId: "su-faculty-science", schoolId: "su-school-science",
+    name: "BSc Chemistry", qualificationType: "bachelorsDegree", nqfLevel: 7, saqaId: null,
+    duration: "3 years", campuses: ["Stellenbosch Campus"], modeOfDelivery: "contact", minAps: null,
+    subjectRequirements: [{ subjectCode: "MATH", minPercent: 70 }, { subjectCode: "PHS", minPercent: 50 }, { subjectCode: "ENG-HL", minPercent: 50 }],
+    additionalRequirements: [
+      "NSC aggregate of at least 65% (excluding Life Orientation) -- the minimum admission floor; the real selection threshold is stated to be higher, without a published number.",
+      "Selection mark = (Mathematics% x 2 + best 5 other subjects%, at least one of which must be English or Afrikaans) / 7.",
+      "Focal areas: Chemistry and Polymer Science, Chemical Biology, Applied and Sustainable Chemistry, Chemistry with Chemical Engineering.",
+    ],
+    careerOutcomes: ["Research Scientist", "Analytical Chemist", "Quality Assurance Manager"],
+    applyUrl: SU_APPLY_URL, fieldTags: ["science"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
+  },
+  {
+    id: "su-bsc-physics", institutionId: "stellenbosch", facultyId: "su-faculty-science", schoolId: "su-school-science",
+    name: "BSc Physics", qualificationType: "bachelorsDegree", nqfLevel: 7, saqaId: null,
+    duration: "3 years", campuses: ["Stellenbosch Campus"], modeOfDelivery: "contact", minAps: null,
+    subjectRequirements: [{ subjectCode: "MATH", minPercent: 70 }, { subjectCode: "PHS", minPercent: 50 }, { subjectCode: "ENG-HL", minPercent: 50 }],
+    additionalRequirements: [
+      "NSC aggregate of at least 65% (excluding Life Orientation) -- the minimum admission floor; the real selection threshold is stated to be higher, without a published number.",
+      "Selection mark = (Mathematics% x 2 + best 5 other subjects%, at least one of which must be English or Afrikaans) / 7.",
+      "Focal areas: Laser Physics (Physical), Laser Physics (Biological), Theoretical Physics.",
+    ],
+    careerOutcomes: ["Medical Physicist", "Geophysicist", "Research Scientist"],
+    applyUrl: SU_APPLY_URL, fieldTags: ["science"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
+  },
+  // --- Faculty of Law (plain NSC-aggregate gate like every non-weighted
+  // faculty above -- uses the institution-wide general ApsRule, no
+  // faculty-specific override needed; only the real 80:20 NBT-weighted
+  // RANKING on top of this floor can't be computed, since this app
+  // doesn't collect NBT scores) ---
+  {
+    id: "su-llb-four-year", institutionId: "stellenbosch", facultyId: "su-faculty-law", schoolId: "su-school-law",
+    name: "LLB (four-year)", qualificationType: "bachelorsDegree", nqfLevel: 8, saqaId: null,
+    duration: "4 years", campuses: ["Stellenbosch Campus"], modeOfDelivery: "contact", minAps: 420,
+    subjectRequirements: [{ subjectCode: "ENG-HL", minPercent: 60 }],
+    additionalRequirements: [
+      "NSC aggregate of at least 70% (excluding Life Orientation).",
+      "English or Afrikaans Home Language 60%, OR Afrikaans or English First Additional Language 70%.",
+      "120 places in the programme. Must write the National Benchmark Test (NBT) AQL paper before 31 July.",
+      "Real selection is based on final Grade 11 (or final Grade 12) results and NBT results in an 80:20 ratio -- meeting the aggregate/subject floor above does not by itself determine your selection mark.",
+      "If taking Economics as a university subject: Mathematics 60% is also required.",
+    ],
+    careerOutcomes: ["Legal Practitioner (Attorney or Advocate)", "Judge", "Public Prosecutor", "Legal Advisor"],
+    applyUrl: SU_APPLY_URL, fieldTags: ["people"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
+  },
+  {
+    id: "su-bcom-law", institutionId: "stellenbosch", facultyId: "su-faculty-law", schoolId: "su-school-law",
+    name: "BCom (Law)", qualificationType: "bachelorsDegree", nqfLevel: 7, saqaId: null,
+    duration: "3 years", campuses: ["Stellenbosch Campus"], modeOfDelivery: "contact", minAps: 420,
+    subjectRequirements: [{ subjectCode: "ENG-HL", minPercent: 60 }, { subjectCode: "MATH", minPercent: 60 }],
+    additionalRequirements: [
+      "NSC aggregate of at least 70% (excluding Life Orientation).",
+      "English or Afrikaans Home Language 60%, OR Afrikaans or English First Additional Language 70%.",
+      "80 places in the programme (interfaculty with Economic and Management Sciences). Must write NBTs AQL and MAT before 31 July.",
+      "Real selection is based on final Grade 11 (or final Grade 12) results and NBT results in an 80:20 ratio -- meeting the aggregate/subject floor above does not by itself determine your selection mark.",
+      "Also provides entry to the 2-year LLB degree required to become a legal practitioner.",
+    ],
+    careerOutcomes: ["Commercial Lawyer", "Legal Advisor"],
+    applyUrl: SU_APPLY_URL, fieldTags: ["business", "people"], sourceUrl: SU_PROSPECTUS_URL, verifiedOn: VERIFIED_ON, academicYear: ACADEMIC_YEAR,
   },
 ];
 

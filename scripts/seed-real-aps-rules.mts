@@ -8,12 +8,8 @@
  * domain (never an aggregator) before being written here -- see each
  * entry's sourceUrl.
  *
- * Three institutions already in config/institutions.seed.ts are
+ * Two institutions already in config/institutions.seed.ts are
  * deliberately NOT here, on purpose, not because research stalled:
- *   - University of Cape Town: has no single university-wide formula --
- *     Science (doubles Maths/Physical Sciences, /800), Humanities
- *     (straight sum, /600), and Health Sciences (APS+NBT composite,
- *     /900) are three genuinely different, conflicting formulas.
  *   - UNISA: is qualification-endorsement-based (Bachelor's/Diploma/
  *     Higher Certificate pass type + programme-specific subject
  *     minimums), not a points-score formula at all -- forcing it into
@@ -22,8 +18,18 @@
  *     Issuu.com flip-book with no extractable text layer -- no
  *     primary-source formula text could be independently confirmed.
  *
- * A missing institution here means "APS rules being verified for this
- * institution" (the honest, existing UI state) -- not a bug to chase.
+ * University of Cape Town has NO single university-wide formula (see
+ * config/uctProgrammes.seed.ts's header) -- it gets 2 separate
+ * faculty-specific rules below (facultyId set) instead of one
+ * institution-wide entry, now that lib/aps/engine.ts supports forced/
+ * extra-counted subjects (ApsRule.forcedSubjects/extraCountedSubjects).
+ * Faculty of Commerce also has its own real "cut off FPS" system, per
+ * UCT's own 2027 Directions for Undergraduate Applicants, but no source
+ * with its exact formula/cutoff numbers was found this session -- not
+ * guessed at, left unseeded.
+ *
+ * A missing institution or faculty here means "APS rules being verified"
+ * (the honest, existing UI state) -- not a bug to chase.
  *
  * Usage (against the local emulator):
  *   NEXT_PUBLIC_USE_FIREBASE_EMULATOR=true npx tsx scripts/seed-real-aps-rules.mts
@@ -313,8 +319,99 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
     bonusRules: [],
     maxScore: 600,
     notes:
-      "Stellenbosch's own official 2027 Undergraduate Prospectus: every programme states 'An NSC aggregate of at least X% (excluding Life Orientation)' plus flat per-subject percentage minimums -- a genuine average across the candidate's non-LO subjects (6, matching the standard NSC subject count), not a banded points sum. This rule only correctly describes Stellenbosch's Faculty of AgriSciences, Faculty of Arts and Social Sciences, Faculty of Economic and Management Sciences, Faculty of Education, Faculty of Medicine and Health Sciences, and Faculty of Theology -- config/stellenboschProgrammes.seed.ts's header explains why Faculty of Engineering, Faculty of Science, and Faculty of Law are deliberately NOT seeded under this rule: each layers an additional, materially different WEIGHTED 'selection mark' formula on top (e.g. Engineering: Mathematics% + Physical Sciences% + 6 x Matric average, out of 800) that this app's pure APS engine cannot yet compute. National Benchmark Tests (NBTs) are not required for 2027 admission generally, except for all Faculty of Law programmes, School of Tomorrow applicants, the South African-based American High School Diploma, and all online schools.",
+      "Stellenbosch's own official 2027 Undergraduate Prospectus: every programme states 'An NSC aggregate of at least X% (excluding Life Orientation)' plus flat per-subject percentage minimums -- a genuine average across the candidate's non-LO subjects (6, matching the standard NSC subject count), not a banded points sum. This is the institution-wide default (facultyId: null): it correctly describes Faculty of AgriSciences, Faculty of Arts and Social Sciences, Faculty of Economic and Management Sciences, Faculty of Education, Faculty of Law, Faculty of Medicine and Health Sciences, and Faculty of Theology. Faculty of Law's own text layers a separate 80:20 (Grade 11/12 results : National Benchmark Test) RANKING on top of this same aggregate floor for actual selection -- not a different subject-counting formula -- so it uses this general rule too, with the NBT component (uncomputable; this app doesn't collect NBT scores) described in each Law programme's own additionalRequirements instead. Faculty of Engineering and Faculty of Science have their own separate ApsRule entries below (facultyId set) since their real formulas force/double-count specific subjects. National Benchmark Tests (NBTs) are not required for 2027 admission generally, except for all Faculty of Law programmes, School of Tomorrow applicants, the South African-based American High School Diploma, and all online schools.",
     sourceUrl: "https://files.su.ac.za/public/undergraduate-maties/documents/2026-01/su-admissions-booklet-2027.pdf",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    institutionId: "stellenbosch",
+    facultyId: "su-faculty-engineering",
+    scaleName: "Stellenbosch Engineering Selection Mark",
+    formulaType: "facultyPointScore",
+    bands: [],
+    usesRawPercentage: true,
+    loPolicy: "exclude",
+    bestNSubjects: 6,
+    excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: ["MATH", "PHS"],
+    mathLitPolicy: "equal",
+    nbtPolicy: "none",
+    bonusRules: [],
+    maxScore: 800,
+    notes:
+      "Stellenbosch's own official 2027 Undergraduate Prospectus, Faculty of Engineering's own 'Admission and selection' section, verbatim: 'your selection mark is calculated by using the marks... of your Grade 11 subjects (for conditional selection) or Grade 12 subjects (for final selection) as follows: Selection mark = Mathematics percentage + Physical Sciences percentage + (6 x Matric average). The Matric average is calculated from the six best Matric subjects' percentages (excluding Life Orientation). The maximum score is 800.' '6 x Matric average' of the best 6 non-LO subjects is mathematically identical to the sum of those 6 subjects' raw percentages, already exactly what bestNSubjects=6/usesRawPercentage=true computes -- Mathematics and Physical Sciences are then added again via extraCountedSubjects, matching the formula's own '+ Mathematics percentage + Physical Sciences percentage' terms regardless of whether they also happened to fall within the natural best-6 average. Real, documented competitive guidance (not encoded numerically, described in each programme's additionalRequirements instead): 'a selection mark of 600 or more gave students a good chance of admission to certain programmes, but in others, 620 or more were required.'",
+    sourceUrl: "https://files.su.ac.za/public/undergraduate-maties/documents/2026-01/su-admissions-booklet-2027.pdf",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    institutionId: "stellenbosch",
+    facultyId: "su-faculty-science",
+    scaleName: "Stellenbosch Science Selection Mark",
+    formulaType: "facultyPointScore",
+    bands: [],
+    usesRawPercentage: true,
+    loPolicy: "exclude",
+    bestNSubjects: 5,
+    excludedSubjects: [],
+    forcedSubjects: ["MATH"],
+    extraCountedSubjects: ["MATH"],
+    divisor: 7,
+    mathLitPolicy: "equal",
+    nbtPolicy: "none",
+    bonusRules: [],
+    maxScore: 100,
+    notes:
+      "Stellenbosch's own official 2027 Undergraduate Prospectus, Faculty of Science's own 'Admission and selection' section, verbatim: 'A selection mark is calculated as follows: Selection mark (SM): [(Mathematics x 2) + 5 other subjects (of which at least one must be English or Afrikaans; excluding Life Orientation)] / 7.' Mathematics is forced out of the 5-other-subjects ranking pool (so it doesn't occupy one of those 5 slots) and counted twice via extraCountedSubjects, then the whole total is divided by 7. The source explicitly states 'the selection threshold is higher than the minimum criteria' (the flat per-programme aggregate/subject requirements already encoded on programmes) but never gives that higher number -- every Science programme's minAps is deliberately left null rather than guessing one; this rule still lets the real selection mark itself be computed and shown to the learner.",
+    sourceUrl: "https://files.su.ac.za/public/undergraduate-maties/documents/2026-01/su-admissions-booklet-2027.pdf",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    institutionId: "uct",
+    facultyId: "uct-faculty-ebe",
+    scaleName: "UCT EBE Faculty Points Score (FPS)",
+    formulaType: "facultyPointScore",
+    bands: [],
+    usesRawPercentage: true,
+    loPolicy: "exclude",
+    bestNSubjects: 3,
+    excludedSubjects: [],
+    forcedSubjects: ["ENG-HL", "MATH", "PHS"],
+    extraCountedSubjects: [],
+    mathLitPolicy: "excludedForSomeProgrammes",
+    nbtPolicy: "required",
+    bonusRules: [],
+    maxScore: 600,
+    notes:
+      "UCT Faculty of Engineering & the Built Environment's own '2026 NSC Entrance Requirements' PDF, verbatim: 'The EBE FPS is a score out of 600, and is calculated by adding the percentages for NSC English and NSC Mathematics, plus four other subjects... Engineering Programmes, Construction Studies and Geomatics Programmes: Score English, Mathematics and Physical Science and the three next best subjects excluding Life Orientation.' This rule covers only the Engineering-stream variant (English+Mathematics+Physical Science forced, +3 next best); Property Studies (English+Mathematics forced, +4 next best, no forced Physical Science) and Architectural Studies (same, plus a non-numeric portfolio score) use a genuinely different variant -- deliberately not seeded under this same rule (see config/uctProgrammes.seed.ts). 'Maths Literacy or Technical Maths cannot be substituted for Maths, and Technical Science cannot be substituted for Physical Sciences.' The real WPS (Weighted Points Score = FPS adjusted by a 0-10% redress/disadvantage factor) is NOT computed by this rule -- this app's calculator doesn't collect the school/family background data WPS depends on; every seeded programme's minAps uses the real, published Band A ('guaranteed admission') FPS threshold instead. NBTs must be written (Mathematics, Academic Literacy, Quantitative Literacy) but the EBE's own document states explicitly they 'are not taken into account for admission' -- nbtPolicy 'required' reflects the write requirement, not a scoring input.",
+    sourceUrl:
+      "https://ebe.uct.ac.za/sites/default/files/media/documents/ebe_uct_ac_za/53/2026-ebe-nsc-entry-requirements.pdf",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    institutionId: "uct",
+    facultyId: "uct-faculty-science",
+    scaleName: "UCT Science Faculty Points Score (FPS)",
+    formulaType: "facultyPointScore",
+    bands: [],
+    usesRawPercentage: true,
+    loPolicy: "exclude",
+    bestNSubjects: 6,
+    excludedSubjects: [],
+    forcedSubjects: [],
+    extraCountedSubjects: ["MATH", "PHS"],
+    mathLitPolicy: "excludedForSomeProgrammes",
+    nbtPolicy: "required",
+    bonusRules: [],
+    maxScore: 800,
+    notes:
+      "UCT Faculty of Science's own 'Admission Guidelines' PDF, verbatim: 'The FPS (a score out of 800) is calculated as the sum of the percentages achieved in the best six NSC subjects, including English but excluding Life Orientation, and doubling the percentages achieved in Mathematics and Physical Science.' Independently re-verified against the document's own full worked example (English 85 + Afrikaans/isiXhosa FAL 89 + Maths 84x2 + Life Sciences 86 + Geography 79 + Physical Science 81x2 = 669) -- 85+89+168+86+79+162 sums to exactly 669, confirming both the formula and this engine's computation of it. Admission requires FPS >= 550, Mathematics >= 70%, Physical Science >= 60% at minimum (Band C, targeted redress groups only); the real, published Band A ('guaranteed admission') threshold used for every seeded programme's minAps is FPS >= 660. The real WPS (Band B, FPS adjusted by up to 10% for school/home background) is NOT computed here -- this app's calculator doesn't collect that background data. NBTs must be written but 'are not used as part of the admission point score calculation' per the Faculty's own document -- nbtPolicy 'required' reflects the write requirement, not a scoring input.",
+    sourceUrl:
+      "https://science.uct.ac.za/sites/default/files/media/documents/2025%20Science%20UG%20Admissions%20Criteria.pdf",
     verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
   },
@@ -322,9 +419,18 @@ const APS_RULES: Omit<ApsRule, "id">[] = [
 
 let written = 0;
 for (const rule of APS_RULES) {
-  await db.collection("apsRules").doc(rule.institutionId).set(rule);
+  // Doc ID must be unique per (institutionId, facultyId) now that an
+  // institution can have more than one rule -- institutionId alone
+  // (the old scheme) silently overwrote earlier rules for the same
+  // institution once Stellenbosch/UCT each got multiple faculty-specific
+  // entries. The app never reads apsRules by doc ID (lib/matching/
+  // resolveApsRule.ts always matches on the institutionId/facultyId
+  // fields from a full collection fetch), so this is purely an internal
+  // write-key fix with no read-path impact.
+  const docId = rule.facultyId ? `${rule.institutionId}-${rule.facultyId}` : rule.institutionId;
+  await db.collection("apsRules").doc(docId).set(rule);
   written++;
-  console.log(`  apsRule: ${rule.institutionId} (${rule.scaleName})`);
+  console.log(`  apsRule: ${docId} (${rule.scaleName})`);
 }
 
 console.log(`Seeded ${written} real APS rules into ${useEmulator ? "the local emulator" : "the real Firestore project"}.`);
