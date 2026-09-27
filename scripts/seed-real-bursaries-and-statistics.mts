@@ -170,6 +170,51 @@ const BURSARIES: Omit<Bursary, "id">[] = [
     academicYear: ACADEMIC_YEAR,
   },
 
+  // --- General Merit / Entrepreneurship ---
+  {
+    name: "Allan Gray Orbis Foundation Fellowship Programme",
+    provider: "Allan Gray Orbis Foundation",
+    fieldsOfStudy: ["Commerce", "Science", "Engineering", "Law", "Humanities", "Health Sciences"],
+    levelRequired: "matricOnly",
+    opensOn: null, // not stated with day-level precision on the Foundation's own page
+    closesOn: "2026-04-30",
+    value: "Full funding (accommodation, meals, textbooks, tutoring allowance, and a monthly stipend) for households earning R1 million/year or less; needs-based funding for higher-income households, plus a business mentor, entrepreneurial curriculum, and possible venture funding via E Squared",
+    criteria: [
+      "South African citizen, under 21 in the application year",
+      "Currently in Grade 12 at time of application",
+      "Grade 11: at least 60% in Pure Mathematics (or 80% in Mathematical Literacy), and a 70% average overall (excluding Life Orientation)",
+      "Studying Commerce, Science, Engineering, Law, Humanities, Arts, or Health Science (excludes Medicine, Veterinary Science, and Dentistry) at one of 11 partner universities",
+      "Selection includes an interview stage and a residential selection camp",
+    ],
+    applyUrl: "https://allangrayorbis.org/programmes/fellowship/",
+    riskFlags: [],
+    sourceUrl: "https://allangrayorbis.org/programmes/fellowship/",
+    verifiedOn: VERIFIED_ON,
+    academicYear: ACADEMIC_YEAR,
+  },
+  {
+    name: "FirstRand Empowerment Foundation Undergraduate Bursary",
+    provider: "FirstRand Empowerment Foundation (administered by StudyTrust)",
+    fieldsOfStudy: ["Agriculture", "Commerce", "Engineering", "Science", "ICT", "Humanities", "Law", "Health Sciences"],
+    levelRequired: "matricOnly",
+    opensOn: "2026-06-01",
+    closesOn: "2026-09-30",
+    value: "Tuition fees, accommodation, meals, learning resources, a monthly stipend, and a computer for first-year students",
+    criteria: [
+      "Black South African citizen (as defined by the BBBEE Act)",
+      "Grade 12 Mathematics (Pure, not Mathematical Literacy) at level 5 (60%) or higher",
+      "Not older than 21 in first year of study",
+      "Combined family gross annual income up to R700,000",
+      "Provisional admission to a South African public traditional university, commencing a first degree in 2027",
+      "Apply only via StudyTrust's own online platform",
+    ],
+    applyUrl: "https://studytrust.org.za/fref-bursary/",
+    riskFlags: [],
+    sourceUrl: "https://studytrust.org.za/fref-bursary/",
+    verifiedOn: "2026-09-27",
+    academicYear: ACADEMIC_YEAR,
+  },
+
   // --- ICT & Telecoms ---
   {
     name: "Vodacom External Bursary Programme",
