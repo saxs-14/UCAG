@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { LightbulbIcon, TargetIcon } from "@/components/icons/Icon";
 
 export function ApsFormulaBanner() {
   const [expanded, setExpanded] = useState(false);
@@ -9,8 +10,8 @@ export function ApsFormulaBanner() {
     <div className="no-print w-full rounded-2xl border border-teal-500/30 bg-gradient-to-br from-slate-900 via-slate-900 to-teal-950 p-5 text-white shadow-md">
       <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3.5">
-          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/20 text-teal-300 font-bold text-lg border border-teal-500/30">
-            💡
+          <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/30">
+            <LightbulbIcon size={18} />
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -87,7 +88,7 @@ export function ApsFormulaBanner() {
           </div>
 
           <div className="mt-3.5 rounded-xl bg-teal-500/10 p-3 text-2xs text-teal-200 border border-teal-500/20 flex items-center gap-2">
-            <span>🎯</span>
+            <TargetIcon size={14} className="shrink-0" />
             <span>
               <strong>UCAG Engine Guarantee:</strong> We calculate your exact points per university using their official rules automatically!
             </span>

@@ -47,8 +47,11 @@ export function NavBar({ stats }: NavBarProps) {
         </div>
 
         <div className="ml-auto flex shrink-0 items-center gap-2">
+          {/* Fixed light-on-navy tint, not the page-adaptive mark-green token:
+              this badge always sits on the permanently-dark brand-navy header,
+              independent of the page's light/dark color scheme. */}
           {stats && stats.institutionCount > 0 && (
-            <span className="hidden rounded-full border border-emerald-400/20 bg-emerald-950/40 px-3 py-1 text-[10px] font-bold text-emerald-200 lg:inline">
+            <span className="hidden rounded-full border border-[#047857]/30 bg-[#047857]/20 px-3 py-1 text-[10px] font-bold text-[#6ee7b7] lg:inline">
               {stats.institutionCount} institutions
             </span>
           )}

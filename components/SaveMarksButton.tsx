@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "./auth/AuthProvider";
+import { CheckCircleIcon, GraduationCapIcon, SaveIcon, XIcon } from "@/components/icons/Icon";
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
 export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
@@ -39,14 +40,18 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
         type="button"
         onClick={handleSave}
         disabled={status === "saving"}
-        className="no-print inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-teal-600/30 bg-teal-500 px-5 text-xs font-extrabold text-white shadow transition-all hover:bg-teal-600 active:scale-95 disabled:opacity-50"
+        className="no-print inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-brand-teal/30 bg-brand-teal px-5 text-xs font-extrabold text-white shadow transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
       >
-        <span>💾</span>
-        <span>
+        <SaveIcon size={14} />
+        <span className="inline-flex items-center gap-1">
           {status === "saving"
             ? "Saving marks..."
             : status === "saved"
-              ? "Saved to Your Profile! ✅"
+              ? (
+                  <>
+                    Saved to Your Profile! <CheckCircleIcon size={13} />
+                  </>
+                )
               : status === "error"
                 ? "Couldn't save -- try again"
                 : "Save My Results"}
@@ -57,13 +62,15 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
           <div className="w-full max-w-md rounded-2xl border border-line bg-paper-raised p-6 shadow-xl animate-rise-in">
             <div className="flex justify-between items-start mb-3">
-              <span className="rounded-full bg-brand-teal/10 p-2 text-2xl">🎓</span>
+              <span className="rounded-full bg-brand-teal/10 p-2.5 text-brand-teal">
+                <GraduationCapIcon size={22} />
+              </span>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="text-xs text-ink-soft hover:text-ink font-bold p-1"
+                className="inline-flex items-center gap-1 text-xs text-ink-soft hover:text-ink font-bold p-1"
               >
-                ✕ Close
+                <XIcon size={12} /> Close
               </button>
             </div>
 
@@ -77,7 +84,7 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
             <div className="mt-6 flex flex-col gap-2.5">
               <Link
                 href="/register"
-                className="flex min-h-11 items-center justify-center rounded-xl bg-brand-teal text-xs font-bold text-white shadow hover:bg-teal-700 transition"
+                className="flex min-h-11 items-center justify-center rounded-xl bg-brand-teal text-xs font-bold text-white shadow hover:opacity-90 transition"
               >
                 Create Free UCAG Account
               </Link>

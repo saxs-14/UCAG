@@ -3,6 +3,7 @@
 @theme {
   --color-paper: #f6f8fb;
   --color-paper-raised: #ffffff;
+  --color-paper-overlay: #e9eef5;
   --color-ink: #102033;
   --color-ink-soft: #405268;
   --color-ink-faint: #6b7b8e;
@@ -102,11 +103,33 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
   :root {
     --color-paper: #0b1220;
     --color-paper-raised: #121c2b;
+    --color-paper-overlay: #1c2a3d;
     --color-ink: #f5f7fa;
     --color-ink-soft: #c7d2df;
     --color-ink-faint: #9aa9ba;
     --color-line: #263548;
     --color-slate-soft: #172435;
+    /* Desaturated/lightened tonal variants, not inverted colors -- the
+       light-mode values, tuned for dark text on a near-white soft fill,
+       read as blown-out and low-contrast on a dark paper background, so
+       every mark and brand pair gets a dark-appropriate counterpart
+       here. brand-navy and brand-navy-soft are already dark and used as
+       opaque backgrounds (.brand-band, .hero-atmosphere), so those are
+       intentionally left unchanged. */
+    --color-mark-green: #34d399;
+    --color-mark-green-soft: #0b2e22;
+    --color-mark-gold: #fbbf24;
+    --color-mark-gold-soft: #2e2308;
+    --color-mark-red: #f87171;
+    --color-mark-red-soft: #2e1212;
+    --color-brand-teal: #2dd4bf;
+    --color-brand-teal-soft: #0d2e2a;
+    --color-brand-coral: #fb923c;
+    --color-brand-coral-soft: #2e1c0d;
+    --color-brand-violet: #a78bfa;
+    --color-brand-violet-soft: #211a3d;
+    --color-brand-amber: #fbbf24;
+    --color-brand-amber-soft: #2e2308;
   }
 }
 

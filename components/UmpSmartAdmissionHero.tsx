@@ -3,6 +3,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
+import { BoltIcon, GraduationCapIcon, PhoneIcon } from "@/components/icons/Icon";
 
 export function UmpSmartAdmissionHero() {
   const graphicRef = useRef<HTMLDivElement>(null);
@@ -124,21 +125,21 @@ export function UmpSmartAdmissionHero() {
               title: "Seamless Recruitment",
               description:
                 "Advanced tools to engage prospective students and guide them through their application journey seamlessly across all devices.",
-              icon: "📱",
+              Icon: PhoneIcon,
             },
             {
               id: "f2",
               title: "Operational Efficiency",
               description:
                 "Configurable administrative dashboards that streamline institutional decision-making and admission processing.",
-              icon: "⚡",
+              Icon: BoltIcon,
             },
             {
               id: "f3",
               title: "Student Success",
               description:
                 "Post-admission resources, tracking, and guidance to ensure every learner thrives at the University of Mpumalanga.",
-              icon: "🎓",
+              Icon: GraduationCapIcon,
             },
           ].map((f) => {
             const isVisible = visibleCards[f.id];
@@ -150,7 +151,9 @@ export function UmpSmartAdmissionHero() {
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 }`}
               >
-                <span className="text-3xl">{f.icon}</span>
+                <span className="inline-flex self-center rounded-full bg-[#003b5c]/8 p-3 text-[#003b5c]">
+                  <f.Icon size={26} />
+                </span>
                 <h3 className="text-lg font-bold text-[#003b5c]">{f.title}</h3>
                 <p className="text-xs text-ink-soft leading-relaxed">{f.description}</p>
               </div>
