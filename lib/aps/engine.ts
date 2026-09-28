@@ -27,7 +27,11 @@ function isForcedMatch(forcedCode: string, mark: CountedSubject): boolean {
   return Boolean(forcedLang && markLang && forcedLang[1] === markLang[1]);
 }
 
-function loTreatmentMessage(rule: ApsRule): string {
+/** Pure function of the rule alone (no learner marks needed) -- also used
+ * standalone by components/aps/ApsFormulaBanner.tsx to describe a verified
+ * ApsRule's Life Orientation treatment before any marks have been entered,
+ * not just inside a computed ApsResult. */
+export function loTreatmentMessage(rule: ApsRule): string {
   switch (rule.loPolicy) {
     case "exclude":
       return "Life Orientation is excluded from this institution's APS total.";
