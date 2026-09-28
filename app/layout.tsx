@@ -105,7 +105,7 @@ const organizationJsonLd = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#0f2438",
+  themeColor: "#102a43", // brand-navy, matches the logomark's badge background
 };
 
 export default async function RootLayout({
