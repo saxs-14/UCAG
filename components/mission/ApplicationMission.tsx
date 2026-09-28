@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo } from "react";
+import { CheckIcon } from "@/components/icons/Icon";
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
 interface ApplicationMissionProps {
@@ -96,7 +97,7 @@ export function ApplicationMission({
             <div className="flex items-center justify-between">
               <span className="font-mono text-2xs font-bold text-ink-faint">STEP 0{i + 1}</span>
               {step.completed ? (
-                <span className="font-bold text-mark-green">✓</span>
+                <CheckIcon size={12} className="text-mark-green" />
               ) : (
                 <span className="h-2 w-2 rounded-full bg-line" />
               )}

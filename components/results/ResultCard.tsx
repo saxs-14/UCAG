@@ -4,6 +4,7 @@ import { calculateReadiness } from "@/lib/readiness";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
 import { CircledMark } from "@/components/CircledMark";
+import { CheckIcon, HourglassIcon, LightbulbIcon, MapPinIcon, RocketIcon, RulerIcon, StarIcon, XIcon } from "@/components/icons/Icon";
 import { ReadinessBar } from "./ReadinessBar";
 import { ReadinessScorecard } from "@/components/readiness/ReadinessScorecard";
 import { SmartBackupPlan } from "./SmartBackupPlan";
@@ -34,15 +35,15 @@ interface ResultCardProps {
 }
 
 const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
-  qualify: "border-l-4 border-emerald-500",
-  almostQualify: "border-l-4 border-amber-500",
-  notYet: "border-l-4 border-slate-400",
+  qualify: "border-l-4 border-mark-green",
+  almostQualify: "border-l-4 border-mark-gold",
+  notYet: "border-l-4 border-slate",
 };
 
 const BUCKET_LABEL_STYLE: Record<MatchResult["bucket"], string> = {
-  qualify: "bg-emerald-100 text-emerald-800 border-emerald-300",
-  almostQualify: "bg-amber-100 text-amber-900 border-amber-300",
-  notYet: "bg-slate-100 text-slate-700 border-slate-300",
+  qualify: "bg-mark-green-soft text-mark-green border-mark-green/30",
+  almostQualify: "bg-mark-gold-soft text-mark-gold border-mark-gold/30",
+  notYet: "bg-slate-soft text-ink-soft border-line",
 };
 
 const BUCKET_EXPLANATION: Record<MatchResult["bucket"], string> = {
@@ -154,28 +155,30 @@ export function ResultCard({
                 <button
                   type="button"
                   onClick={onToggleShortlist}
-                  className={`rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 shadow-2xs ${
+                  className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 shadow-2xs ${
                     isShortlisted
-                      ? "border-rose-500 bg-rose-600 text-white"
+                      ? "border-mark-red bg-mark-red text-white"
                       : "border-line bg-paper text-ink-soft hover:bg-slate-soft hover:text-ink"
                   }`}
                 >
-                  {isShortlisted ? "★ Shortlisted" : "☆ Shortlist"}
+                  <StarIcon size={13} filled={isShortlisted} />
+                  {isShortlisted ? "Shortlisted" : "Shortlist"}
                 </button>
               )}
             </div>
           </div>
 
-          <div className="rounded-xl bg-slate-50 p-3 text-sm text-ink-soft border border-line/60">
+          <div className="rounded-xl bg-slate-soft p-3 text-sm text-ink-soft border border-line/60">
             <p className="font-semibold text-ink">{BUCKET_EXPLANATION[matchResult.bucket]}</p>
             {matchResult.bucket === "almostQualify" && apsGap !== null && (
-              <p className="mt-1 font-bold text-amber-800">APS gap: {apsGap} point{apsGap === 1 ? "" : "s"}</p>
+              <p className="mt-1 font-bold text-mark-gold">APS gap: {apsGap} point{apsGap === 1 ? "" : "s"}</p>
             )}
           </div>
 
           {(programme.campuses?.length > 0 || programme.modeOfDelivery) && (
-            <p className="text-xs text-ink-faint font-medium">
-              📍 {[programme.campuses?.length > 0 ? programme.campuses.join(", ") : null, programme.modeOfDelivery]
+            <p className="flex items-center gap-1.5 text-xs text-ink-faint font-medium">
+              <MapPinIcon size={13} className="shrink-0" />
+              {[programme.campuses?.length > 0 ? programme.campuses.join(", ") : null, programme.modeOfDelivery]
                 .filter(Boolean)
                 .join(" · ")}
             </p>
@@ -187,8 +190,8 @@ export function ResultCard({
             const met = "met" in reason ? reason.met : false;
             return (
               <li key={i} className="flex items-start gap-2.5">
-                <span aria-hidden className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-2xs font-bold ${met ? "bg-emerald-600 text-white" : "bg-amber-600 text-white"}`}>
-                  {met ? "✓" : "✗"}
+                <span aria-hidden className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-white ${met ? "bg-mark-green" : "bg-mark-gold"}`}>
+                  {met ? <CheckIcon size={11} /> : <XIcon size={11} />}
                 </span>
                 <span className="text-ink font-medium leading-relaxed">{reasonText(reason)}</span>
               </li>
@@ -200,9 +203,9 @@ export function ResultCard({
         </ul>
 
         {matchResult.suggestedNextStep && (
-          <p className="rounded-xl bg-amber-50 p-3 text-xs text-amber-900 border border-amber-200/80 font-medium">
-            💡 <strong>Next step: </strong>
-            {matchResult.suggestedNextStep}
+          <p className="flex items-start gap-1.5 rounded-xl bg-mark-gold-soft p-3 text-xs text-mark-gold border border-mark-gold/30 font-medium">
+            <LightbulbIcon size={14} className="mt-0.5 shrink-0" />
+            <span><strong>Next step: </strong>{matchResult.suggestedNextStep}</span>
           </p>
         )}
 
@@ -212,29 +215,31 @@ export function ResultCard({
               href={cta.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-teal-600 sm:w-auto px-4 font-bold text-white transition-all hover:bg-teal-500 shadow-sm active:scale-95"
+              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-brand-teal sm:w-auto px-4 font-bold text-white transition-all hover:opacity-90 shadow-sm active:scale-95"
             >
-              🚀 {cta.label}
+              <RocketIcon size={14} />
+              {cta.label}
             </a>
           )}
           {cta.kind === "openingSoon" && (
             <>
-              <div className="w-full rounded-xl bg-emerald-50 p-3 text-xs text-emerald-900 border border-emerald-200">
+              <div className="w-full rounded-xl bg-mark-green-soft p-3 text-xs text-mark-green border border-mark-green/30">
                 <p className="font-bold">Prepare before applications open</p>
                 <p className="mt-1">Use this time to prepare your documents and check the official programme page.</p>
               </div>
-              <span className="inline-flex min-h-10 items-center rounded-xl bg-emerald-100 px-3.5 font-bold text-emerald-800 border border-emerald-300">
-                ⏳ {cta.label}
+              <span className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-mark-green-soft px-3.5 font-bold text-mark-green border border-mark-green/30">
+                <HourglassIcon size={13} />
+                {cta.label}
               </span>
             </>
           )}
           {cta.kind === "statusCheck" && (
             <>
-              <div className="w-full rounded-xl bg-slate-50 p-3 text-xs text-slate-800 border border-slate-200">
+              <div className="w-full rounded-xl bg-slate-soft p-3 text-xs text-ink-soft border border-line">
                 <p className="font-bold">This application window is closed</p>
                 <p className="mt-1">You can still review the programme and prepare for the next application cycle.</p>
               </div>
-              <span className="inline-flex min-h-10 items-center rounded-xl bg-slate-100 px-3.5 font-semibold text-slate-700">
+              <span className="inline-flex min-h-10 items-center rounded-xl bg-paper-overlay px-3.5 font-semibold text-ink-soft">
                 {LABELS.applicationStatus.closed}
               </span>
               {cta.url && (
@@ -242,7 +247,7 @@ export function ResultCard({
                   href={cta.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-10 items-center px-2 text-teal-700 font-bold hover:underline"
+                  className="inline-flex min-h-10 items-center px-2 text-brand-teal font-bold hover:underline"
                 >
                   {cta.label}
                 </a>
@@ -251,11 +256,11 @@ export function ResultCard({
           )}
           {cta.kind === "datesBeingVerified" && (
             <>
-              <div className="w-full rounded-xl bg-slate-50 p-3 text-xs text-slate-800 border border-slate-200">
+              <div className="w-full rounded-xl bg-slate-soft p-3 text-xs text-ink-soft border border-line">
                 <p className="font-bold">Dates need verification</p>
                 <p className="mt-1">UCAG has not verified this application window yet. Use the official institution site for the current deadline.</p>
               </div>
-              <span className="inline-flex min-h-10 items-center rounded-xl bg-slate-100 px-3.5 font-semibold text-slate-700">
+              <span className="inline-flex min-h-10 items-center rounded-xl bg-paper-overlay px-3.5 font-semibold text-ink-soft">
                 {cta.label}
               </span>
               {cta.url && (
@@ -263,7 +268,7 @@ export function ResultCard({
                   href={cta.url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex min-h-10 items-center px-2 text-teal-700 font-bold hover:underline"
+                  className="inline-flex min-h-10 items-center px-2 text-brand-teal font-bold hover:underline"
                 >
                   Visit institution site
                 </a>
@@ -279,24 +284,26 @@ export function ResultCard({
 
           <div className="mt-3 flex flex-col gap-3">
             <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1 rounded-lg bg-teal-950/80 px-2.5 py-1 font-semibold text-teal-200 border border-teal-500/30 text-2xs">
-                <span>📐 {institution.shortName || institution.name} Formula:</span>
+              <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-teal-soft px-2.5 py-1 font-semibold text-brand-teal border border-brand-teal/30 text-2xs">
+                <RulerIcon size={12} className="shrink-0" />
+                <span>{institution.shortName || institution.name} Formula:</span>
                 <span>{matchResult.apsResult.loTreatmentMessage}</span>
               </span>
               {matchResult.apsResult.appliedBonuses.length > 0 && (
-                <span className="inline-flex items-center gap-1 rounded-lg bg-purple-100 px-2.5 py-1 font-semibold text-purple-800 border border-purple-300 text-2xs">
-                  <span>★ Bonus:</span>
+                <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-violet-soft px-2.5 py-1 font-semibold text-brand-violet border border-brand-violet/30 text-2xs">
+                  <StarIcon size={12} filled className="shrink-0" />
+                  <span>Bonus:</span>
                   <span>{matchResult.apsResult.appliedBonuses.map((b) => b.description).join(", ")}</span>
                 </span>
               )}
             </div>
 
-            <div className="rounded-xl border border-teal-200 bg-teal-50/70 p-3 text-teal-950">
+            <div className="rounded-xl border border-brand-teal/30 bg-brand-teal-soft/70 p-3 text-ink">
               <p className="font-bold">Before you apply</p>
               <p className="mt-1 leading-relaxed">
                 General preparation: have your ID and latest results ready, then check the official programme page for any documents or steps this institution requires.
               </p>
-              <p className="mt-1 text-2xs font-medium text-teal-800">UCAG guidance only — this is not the institution&apos;s official document list.</p>
+              <p className="mt-1 text-2xs font-medium text-brand-teal">UCAG guidance only — this is not the institution&apos;s official document list.</p>
             </div>
 
             <ReadinessBar readiness={readiness} />
