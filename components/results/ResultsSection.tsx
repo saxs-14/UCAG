@@ -371,7 +371,9 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
             signedIn={!!user}
           />
 
-          {scored.length > 0 && <ApsFormulaBanner />}
+          {scored.length > 0 && (
+            <ApsFormulaBanner institutions={catalog.institutions} apsRules={catalog.apsRules} />
+          )}
 
           {scored.length > 0 && (
             <AdmissionPathwayGraph
