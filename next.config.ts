@@ -65,6 +65,9 @@ const CONTENT_SECURITY_POLICY = [
 ].join("; ");
 
 const nextConfig: NextConfig = {
+  // Drops the X-Powered-By: Next.js response header -- a free framework
+  // fingerprint for an attacker, with no functional purpose.
+  poweredByHeader: false,
   images: {
     // components/ump/UmpHeader.tsx renders UMP's own hardcoded logo via
     // next/image, which throws a hard server-side render error for any
@@ -81,6 +84,7 @@ const nextConfig: NextConfig = {
         headers: [
           { key: "Content-Security-Policy", value: CONTENT_SECURITY_POLICY },
           { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         ],

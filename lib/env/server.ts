@@ -14,6 +14,7 @@
  */
 
 import "server-only";
+import { timingSafeEqual } from "node:crypto";
 import { z } from "zod";
 
 const firebaseAdminEnvSchema = z.object({
@@ -74,7 +75,19 @@ export function getLlmEnv(): LlmEnv {
  * Firestore or an LLM must still be able to check its secret. */
 export function assertCronSecret(providedSecret: string | null): void {
   const cronSecret = process.env.CRON_SECRET;
-  if (!cronSecret || providedSecret !== cronSecret) {
+  if (!cronSecret || !providedSecret || !secretsMatch(providedSecret, cronSecret)) {
     throw new Error("Unauthorized: invalid or missing cron secret.");
   }
+}
+
+/** Constant-time comparison -- a plain `!==` on the raw secret lets an
+ * attacker recover it byte-by-byte from response-time differences
+ * (CWE-208). Different-length inputs are rejected before the
+ * constant-time check (timingSafeEqual throws on a length mismatch
+ * rather than comparing); that length check alone can't leak the secret's
+ * content, only its length, which is an acceptable, standard trade-off. */
+function secretsMatch(a: string, b: string): boolean {
+  const bufA = Buffer.from(a);
+  const bufB = Buffer.from(b);
+  return bufA.length === bufB.length && timingSafeEqual(bufA, bufB);
 }

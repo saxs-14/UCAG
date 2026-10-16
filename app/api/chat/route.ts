@@ -31,9 +31,15 @@ import { reportError } from "@/lib/errorReporting";
  * back to an `event: error` frame instead.
  */
 export async function POST(request: NextRequest) {
+  // x-real-ip is set by Vercel's edge from the actual TCP connection and
+  // can't be overridden by the client. x-forwarded-for's *first* entry,
+  // by contrast, is the client's own self-reported value per the header's
+  // append-only convention -- trusting it first would let a client spoof
+  // a fresh IP on every request to dodge checkChatRateLimit below, so it's
+  // only a fallback for an environment where x-real-ip isn't set.
   const clientId =
-    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     request.headers.get("x-real-ip") ??
+    request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ??
     "unknown";
 
   const rateLimit = checkChatRateLimit(clientId);
