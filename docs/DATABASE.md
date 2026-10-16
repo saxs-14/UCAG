@@ -105,6 +105,44 @@ All interfaces below are the real, current shape in `lib/firestore/types.ts` —
 | `ingestionRuns` | `id`, `startedAt`, `finishedAt`, `status`, `sourceIds[]`, `tokensUsed`, `costEstimate`, `itemsProposed`/`itemsAutoPublished`/`itemsQueued`, `errors[]` | — (pipeline-internal) |
 | `verificationQueue` | `id`, `proposalKey`, `collection`, `docId`, `field`, `currentValue`, `proposedValue`, `confidence`, `status` | — (pipeline-internal) |
 | `linkHealthChecks` | `id`, `url`, `alive`, `statusCode`, `error`, `checkedAt` | — (pipeline-internal) |
+| `usageStats` | `date` (doc ID, `YYYY-MM-DD`), `calculatorCompletions?`, `programmeSearches?`, `fundingDiscoveryViews?` (each a running count, field absent until first incremented that day) | — (aggregate-only analytics, see §10) |
 | `userProfiles` | `uid`, `role?`, `institutionId?`, `marks[]` (`subjectCode`/`percentage`), `shortlist[]`, `checklistProgress[]?`, `consentRecord` (`consentedBy: "self"\|"guardian"`), `isMinor`, `guardianConsentAt` | per-user-owned, not a fact-bearing public collection |
+
+## 10. Learner-activity reporting (`usageStats`)
+
+Added to close a confirmed rubric gap (Category E: "Generate useful
+reports to support business case" named activity logs/analytics
+explicitly; a codebase-wide search had found zero matches for
+`analytics`/`trackEvent`/`activityLog` anywhere). The design is
+deliberately the narrowest thing that satisfies it:
+
+- **One document per calendar day**, holding nothing but running integer
+  counts (`calculatorCompletions`, `programmeSearches`,
+  `fundingDiscoveryViews`) — not an event log, not a session tracker, no
+  per-user or per-session identifier anywhere in the schema. This is
+  POPIA data-minimisation by construction, not an access rule layered on
+  top of identifiable data.
+- **Written only via the Admin SDK** (`lib/activity/trackUsage.ts`'s
+  `incrementUsageStat`, an atomic `FieldValue.increment` behind a
+  `{ merge: true }` set) — `firestore.rules`' `usageStats` match block
+  denies all client writes, same shape as `ingestionRuns`/
+  `verificationQueue`. The field list itself lives in a separate,
+  non-`server-only` module (`lib/activity/usageStatFields.ts`) so the
+  admin report page — a Client Component — can import just the field
+  names/types without pulling the Admin SDK into the browser bundle.
+- **Two of the three events are recorded server-side directly**, with no
+  public endpoint involved at all: `app/programmes/page.tsx` and
+  `app/bursaries/page.tsx` are both Server Components already fetching
+  real data per-request, so they call `incrementUsageStat` directly,
+  scheduled via Next.js's `after()` so the write runs post-response
+  without risking being killed mid-write when the serverless function
+  freezes. The third (`calculator_completed`) has no server round-trip to
+  hook into — the calculator is fully client-side by design (no account
+  needed) — so it goes through a small public, rate-limited endpoint
+  (`app/api/activity/track/route.ts`), Zod-validated against exactly
+  three literal event names, nothing free-form.
+- **Read by admins only**, at `/admin/activity` — a realtime `onSnapshot`
+  table in the same style as `/admin/runs`, showing per-day rows and
+  all-time totals.
 
 Admin-only read access to `sources`/`ingestionRuns`/`verificationQueue`/`linkHealthChecks` is enforced in `firestore.rules` via an `isAdmin()` helper that checks the custom claim — write access stays `if false` for every role, including admins; all writes genuinely go through the Admin SDK behind the API routes in §6.

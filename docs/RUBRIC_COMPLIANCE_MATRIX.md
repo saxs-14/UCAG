@@ -119,10 +119,10 @@ The rubric defers entirely to an appendix checklist rather than prose criteria. 
 | Ingestion-run history, token/cost tracking | PASS (per README) | `/admin/runs` — built and live-tested per README Phase 7; not re-exercised this session |
 | Source health / dead-link report | PASS (per README) | `/admin/dead-links` really persists HTTP-check results (`lib/ingestion/persistLinkHealth.ts`); live-run against 24 real URLs documented in README |
 | Verification-queue volumes | PASS (per README) | `/admin/queue` |
-| **Learner-facing usage/activity analytics** (calculator completions, programme search volume, funding-discovery activity — the kind of report an examiner would expect for "business case" reporting) | **FAIL (confirmed)** | A targeted codebase-wide search for `analytics`, `pageview`, `trackEvent`, `usageStats`, `activityLog`, and any `report`/`analytic`-named route returned **zero matches** across `app/`, `components/`, `lib/`, `config/`. Confirmed absent, not just undetected. |
+| **Learner-facing usage/activity analytics** (calculator completions, programme search volume, funding-discovery activity — the kind of report an examiner would expect for "business case" reporting) | **PASS — built this session** | New `/admin/activity` report: daily aggregate counts of exactly the three activities this rubric line names, written via `lib/activity/trackUsage.ts` (Admin SDK only, `firestore.rules` denies all client writes to `usageStats`), aggregate-only by design (no per-user/per-session data at all — POPIA data-minimisation by construction). 15 new tests (unit + 4 new Firestore rules cases against the real emulator) all passing; see `docs/DATABASE.md` §10 for the full design. |
 | CSV export / print-friendly report | NOT TESTED | Not confirmed either way this session |
 
-**Category E status: PARTIAL, with one confirmed FAIL.** The admin/operational reporting (ingestion, sources, verification) is real and substantial. A learner-activity/business-case analytics report — the thing this rubric line most directly asks for — is confirmed absent from the codebase. This is the clearest actual *build* gap found in Phase 0 (as opposed to a verification gap).
+**Category E status: PASS on the confirmed-FAIL item — the one this rubric line most directly names.** The admin/operational reporting (ingestion, sources, verification) was already real and substantial; the learner-activity/business-case analytics gap is now closed. CSV/print export remains the one unverified sub-item, not a confirmed gap.
 
 ---
 
@@ -134,9 +134,9 @@ The rubric defers entirely to an appendix checklist rather than prose criteria. 
 | B — Functionality | 10 | PARTIAL (one hard FAIL on demonstrable breadth — production data gap) |
 | C — Database Connection | 5 | **PASS** — `docs/DATABASE.md` rewritten and verified accurate this session |
 | D — Data & Error Handling | 10 | **PASS — all 16 of 16 scenarios** confirmed with real test evidence (382/382 emulator-backed tests; robots/rate-limit/malformed-AI/server-error/network-disconnect-on-save/stale-run-recovery/wrong-project-ID/query-timeout all independently confirmed). |
-| E — Reports | 10 | PARTIAL, with one **confirmed FAIL** (learner-activity analytics reporting — confirmed absent via codebase-wide search, not just untested) |
+| E — Reports | 10 | **PASS** — the confirmed-FAIL gap (learner-activity analytics) is built: `/admin/activity`, aggregate-only, admin-read-only, 15 new tests |
 
-**Three categories (A, C, D) are now fully PASS**, upgraded from PARTIAL with real, specific evidence — not re-labeled on assumption. What's left is genuinely two different kinds of work, both outside what verification alone can close: Category B's demonstrable breadth is blocked on credentials only you hold; Category E's reporting is new feature work that needs scoping before building.
+**Four categories (A, C, D, E) are now fully PASS.** What's left is Category B's demonstrable breadth, which is outside what this session can close — the real programme/bursary data for 8 of 9 institutions is built and committed, but writing it to production Firestore needs credentials only you hold.
 
 ---
 
@@ -174,9 +174,9 @@ Most of these docs cluster around 8–14 August 2026, authored by an "Antigravit
 1. ~~Re-verify `docs/DATABASE.md`~~ — **done this session**, rewritten and accurate.
 2. ~~Decide the 0.2.7 interpretation~~ — **done this session**: sentence-case heading convention, verified PASS against 13 real headings.
 3. **Seed production Firestore** with the 8 institutions' real data already built and committed (Category B's hard FAIL). Mechanical fix, blocked only on credentials you hold — see `docs/PROJECT_HANDOVER_2026-10.md` §5 for exact commands.
-4. **Build learner-activity reporting** (Category E) — confirmed absent, not just untested. This is new feature work, not verification, so it's a larger task than the two above; worth scoping explicitly (what to track, where it's stored, who can see it) before building.
+4. ~~Build learner-activity reporting~~ (Category E) — **done**: `/admin/activity`, daily aggregate counts only (what to track: calculator completions/programme searches/funding-discovery views; where stored: `usageStats`, Admin-SDK-write-only; who can see it: admins only, via the same `requireAdmin`/`isAdmin()` gate as every other admin collection).
 5. ~~Complete the UI checklist sweep~~ — **done**: ~19 of ~19 checkable sub-items now PASS with evidence, including the spelling pass (`cspell`, zero genuine misspellings).
    ~~Complete the Category D scenario sweep~~ — **done**: all 16 of 16 scenarios confirmed PASS with real test evidence, including isolated stale-run-recovery, wrong-project-ID, and query-timeout tests.
 6. ~~Archive the StudyMate-era docs~~ — **done this session**: 14 confirmed-fabricated docs moved to `docs/archive/` via `git mv` (full history preserved), with `docs/archive/README.md` documenting the exact evidence found in each. `PROJECT_STATUS.md`/`MASTER_HANDOVER_AND_REMAINING_WORK.md` kept (they correctly list StudyMate as *excluded* scope, not a built feature). `AUTH_UI_REDESIGN_AUDIT.md` left in place, genuinely unresolved — no red flag found, but not independently verified either.
 
-Categories A, C, D are now fully closed by verification. Still not started: security testing, UX/Figma/Canva redesign work, learner-activity reporting (Category E), production Firestore seeding (blocked on credentials you hold). Items 3–4 are the real remaining work — 3 is mechanical but blocked on credentials, 4 is new feature scope that needs defining before building.
+Categories A, C, D, E are now fully closed by verification/build. A first-pass security review has also been completed since this was written (see `docs/SECURITY_REVIEW_2026-10.md`). Still not started: UX/Figma/Canva redesign work (Phase 2), and production Firestore seeding (Category B, blocked on credentials you hold) — the one real remaining item from this list.

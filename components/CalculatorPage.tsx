@@ -84,7 +84,20 @@ export function CalculatorPage() {
             </p>
           </div>
 
-          <SubjectForm key={formKey} onMarksChange={setMarks} initialState={initialState} />
+          <SubjectForm
+            key={formKey}
+            onMarksChange={(newMarks) => {
+              setMarks(newMarks);
+              // Fire-and-forget from the browser: a tracking failure must
+              // never block or error out the learner's actual results.
+              fetch("/api/activity/track", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ event: "calculator_completed" }),
+              }).catch(() => {});
+            }}
+            initialState={initialState}
+          />
 
           {marks.length > 0 && (
             <div className="no-print mt-4 flex flex-wrap items-center gap-2 rounded-2xl border border-brand-teal/20 bg-brand-teal-soft/50 p-4">

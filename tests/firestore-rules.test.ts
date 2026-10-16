@@ -344,6 +344,32 @@ describe("internal ingestion collections", () => {
     await assertFails(admin.firestore().doc("linkHealthChecks/some-url").set({ alive: true }));
   });
 
+  it("a non-admin cannot read the usageStats activity report", async () => {
+    const alice = testEnv.authenticatedContext("user-a");
+    await assertFails(alice.firestore().doc("usageStats/2026-10-16").get());
+  });
+
+  it("an unauthenticated user cannot read usageStats", async () => {
+    const unauth = testEnv.unauthenticatedContext();
+    await assertFails(unauth.firestore().doc("usageStats/2026-10-16").get());
+  });
+
+  it("an admin CAN read usageStats", async () => {
+    const admin = testEnv.authenticatedContext("admin-1", { role: "admin" });
+    await assertSucceeds(admin.firestore().doc("usageStats/2026-10-16").get());
+  });
+
+  it("no client -- not even an admin -- can write to usageStats directly; only the Admin SDK (lib/activity/trackUsage.ts) can", async () => {
+    const admin = testEnv.authenticatedContext("admin-1", { role: "admin" });
+    await assertFails(
+      admin.firestore().doc("usageStats/2026-10-16").set({ calculatorCompletions: 999999 })
+    );
+    const alice = testEnv.authenticatedContext("user-a");
+    await assertFails(
+      alice.firestore().doc("usageStats/2026-10-16").set({ calculatorCompletions: 999999 })
+    );
+  });
+
   it("an admin cannot write to public catalogue collections via the client SDK either", async () => {
     const admin = testEnv.authenticatedContext("admin-1", { role: "admin" });
     await assertFails(admin.firestore().doc("institutions/ump").set({ name: "hacked" }));
