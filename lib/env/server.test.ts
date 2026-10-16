@@ -21,6 +21,17 @@ describe("assertCronSecret", () => {
     expect(() => assertCronSecret("real-secret")).not.toThrow();
   });
 
+  it("throws (not crashes) when the provided secret is a different length -- constant-time compare rejects this before calling into timingSafeEqual", () => {
+    vi.stubEnv("CRON_SECRET", "real-secret");
+    expect(() => assertCronSecret("short")).toThrow(/Unauthorized/);
+    expect(() => assertCronSecret("real-secret-but-much-longer")).toThrow(/Unauthorized/);
+  });
+
+  it("throws when no secret is provided at all", () => {
+    vi.stubEnv("CRON_SECRET", "real-secret");
+    expect(() => assertCronSecret(null)).toThrow(/Unauthorized/);
+  });
+
   it("works with no Firebase Admin credentials configured at all -- CRON_SECRET is independent", () => {
     vi.stubEnv("CRON_SECRET", "real-secret");
     vi.stubEnv("FIREBASE_ADMIN_PROJECT_ID", "");
