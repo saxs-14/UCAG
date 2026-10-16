@@ -81,6 +81,19 @@ service cloud.firestore {
       allow write: if false;
     }
 
+    // Daily aggregate usage counters (lib/activity/trackUsage.ts), written
+    // only via the Admin SDK -- a public learner-facing event can trigger
+    // an increment (app/api/activity/track/route.ts), but never a direct
+    // client write, and the stored data is itself already aggregate-only
+    // (one counter per day, no per-user or per-session identifiers at
+    // all) -- POPIA data-minimisation by construction, not just an access
+    // rule on top of identifiable data. Same admin-read/no-client-write
+    // shape as the other operational collections above.
+    match /usageStats/{docId} {
+      allow read: if isAdmin();
+      allow write: if false;
+    }
+
     // A learner's own profile. Per-user ownership plus the POPIA-relevant
     // invariants a client write must satisfy -- these are the actual
     // enforcement mechanism for "a minor's data requires guardian

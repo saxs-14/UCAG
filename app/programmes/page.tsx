@@ -1,8 +1,10 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { after } from "next/server";
 import { LABELS } from "@/config/labels";
 import { fetchRealCatalog } from "@/lib/catalog/getRealCatalog";
 import type { FieldTag, QualificationType } from "@/lib/firestore/types";
+import { incrementUsageStat } from "@/lib/activity/trackUsage";
 
 export const metadata: Metadata = {
   title: `${LABELS.programmes.pageTitle} -- ${LABELS.app.name}`,
@@ -42,6 +44,12 @@ interface PageProps {
 
 export default async function ProgrammeExplorerPage({ searchParams }: PageProps) {
   const filters = await searchParams;
+  // Only counted as "a search" when a learner actually applied a filter
+  // or typed a query -- a bare /programmes page load isn't a search, and
+  // conflating the two would make the report meaningless.
+  if (filters.institution || filters.qualification || filters.field || filters.q) {
+    after(() => incrementUsageStat("programmeSearches"));
+  }
   const { institutions, programmes } = await fetchRealCatalog();
   const institutionById = new Map(institutions.map((inst) => [inst.id, inst]));
   const search = (filters.q ?? "").trim().toLowerCase();

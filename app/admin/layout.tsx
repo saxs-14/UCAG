@@ -20,6 +20,7 @@ const NAV = [
   { href: "/admin/runs", label: "Ingestion runs" },
   { href: "/admin/editor", label: "Content editor" },
   { href: "/admin/dead-links", label: "Dead link report" },
+  { href: "/admin/activity", label: "Learner activity" },
 ] as const;
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
