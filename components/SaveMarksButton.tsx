@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { useAuth } from "./auth/AuthProvider";
-import { CheckCircleIcon, GraduationCapIcon, SaveIcon, XIcon } from "@/components/icons/Icon";
+import { CheckCircleIcon, GraduationCapIcon, ICON_SIZE, SaveIcon, XIcon } from "@/components/icons/Icon";
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
 export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
@@ -42,14 +42,14 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
         disabled={status === "saving"}
         className="no-print inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-brand-teal/30 bg-brand-teal px-5 text-xs font-extrabold text-white shadow transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
       >
-        <SaveIcon size={14} />
+        <SaveIcon size={ICON_SIZE.sm} />
         <span className="inline-flex items-center gap-1">
           {status === "saving"
             ? "Saving marks..."
             : status === "saved"
               ? (
                   <>
-                    Saved to Your Profile! <CheckCircleIcon size={13} />
+                    Saved to Your Profile! <CheckCircleIcon size={ICON_SIZE.sm} />
                   </>
                 )
               : status === "error"
@@ -63,14 +63,14 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
           <div className="w-full max-w-md rounded-2xl border border-line bg-paper-raised p-6 shadow-xl animate-rise-in">
             <div className="flex justify-between items-start mb-3">
               <span className="rounded-full bg-brand-teal/10 p-2.5 text-brand-teal">
-                <GraduationCapIcon size={22} />
+                <GraduationCapIcon size={ICON_SIZE.md} />
               </span>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
                 className="inline-flex items-center gap-1 text-xs text-ink-soft hover:text-ink font-bold p-1"
               >
-                <XIcon size={12} /> Close
+                <XIcon size={ICON_SIZE.xs} /> Close
               </button>
             </div>
 

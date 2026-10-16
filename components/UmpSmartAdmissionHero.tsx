@@ -3,7 +3,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { BoltIcon, GraduationCapIcon, PhoneIcon } from "@/components/icons/Icon";
+import { BoltIcon, GraduationCapIcon, ICON_SIZE, PhoneIcon } from "@/components/icons/Icon";
 
 export function UmpSmartAdmissionHero() {
   const graphicRef = useRef<HTMLDivElement>(null);
@@ -152,7 +152,7 @@ export function UmpSmartAdmissionHero() {
                 }`}
               >
                 <span className="inline-flex self-center rounded-full bg-[#003b5c]/8 p-3 text-[#003b5c]">
-                  <f.Icon size={26} />
+                  <f.Icon size={ICON_SIZE.lg} />
                 </span>
                 <h3 className="text-lg font-bold text-[#003b5c]">{f.title}</h3>
                 <p className="text-xs text-ink-soft leading-relaxed">{f.description}</p>

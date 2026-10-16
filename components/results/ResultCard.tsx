@@ -4,7 +4,7 @@ import { calculateReadiness } from "@/lib/readiness";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
 import { CircledMark } from "@/components/CircledMark";
-import { CheckIcon, HourglassIcon, LightbulbIcon, MapPinIcon, RocketIcon, RulerIcon, StarIcon, XIcon } from "@/components/icons/Icon";
+import { CheckIcon, HourglassIcon, ICON_SIZE, LightbulbIcon, MapPinIcon, RocketIcon, RulerIcon, StarIcon, XIcon } from "@/components/icons/Icon";
 import { ReadinessBar } from "./ReadinessBar";
 import { ReadinessScorecard } from "@/components/readiness/ReadinessScorecard";
 import { SmartBackupPlan } from "./SmartBackupPlan";
@@ -161,7 +161,7 @@ export function ResultCard({
                       : "border-line bg-paper text-ink-soft hover:bg-slate-soft hover:text-ink"
                   }`}
                 >
-                  <StarIcon size={13} filled={isShortlisted} />
+                  <StarIcon size={ICON_SIZE.sm} filled={isShortlisted} />
                   {isShortlisted ? "Shortlisted" : "Shortlist"}
                 </button>
               )}
@@ -177,7 +177,7 @@ export function ResultCard({
 
           {(programme.campuses?.length > 0 || programme.modeOfDelivery) && (
             <p className="flex items-center gap-1.5 text-xs text-ink-faint font-medium">
-              <MapPinIcon size={13} className="shrink-0" />
+              <MapPinIcon size={ICON_SIZE.sm} className="shrink-0" />
               {[programme.campuses?.length > 0 ? programme.campuses.join(", ") : null, programme.modeOfDelivery]
                 .filter(Boolean)
                 .join(" · ")}
@@ -191,7 +191,7 @@ export function ResultCard({
             return (
               <li key={i} className="flex items-start gap-2.5">
                 <span aria-hidden className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-white ${met ? "bg-mark-green" : "bg-mark-gold"}`}>
-                  {met ? <CheckIcon size={11} /> : <XIcon size={11} />}
+                  {met ? <CheckIcon size={ICON_SIZE.xs} /> : <XIcon size={ICON_SIZE.xs} />}
                 </span>
                 <span className="text-ink font-medium leading-relaxed">{reasonText(reason)}</span>
               </li>
@@ -204,7 +204,7 @@ export function ResultCard({
 
         {matchResult.suggestedNextStep && (
           <p className="flex items-start gap-1.5 rounded-xl bg-mark-gold-soft p-3 text-xs text-mark-gold border border-mark-gold/30 font-medium">
-            <LightbulbIcon size={14} className="mt-0.5 shrink-0" />
+            <LightbulbIcon size={ICON_SIZE.sm} className="mt-0.5 shrink-0" />
             <span><strong>Next step: </strong>{matchResult.suggestedNextStep}</span>
           </p>
         )}
@@ -217,7 +217,7 @@ export function ResultCard({
               rel="noopener noreferrer"
               className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-brand-teal sm:w-auto px-4 font-bold text-white transition-all hover:opacity-90 shadow-sm active:scale-95"
             >
-              <RocketIcon size={14} />
+              <RocketIcon size={ICON_SIZE.sm} />
               {cta.label}
             </a>
           )}
@@ -228,7 +228,7 @@ export function ResultCard({
                 <p className="mt-1">Use this time to prepare your documents and check the official programme page.</p>
               </div>
               <span className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-mark-green-soft px-3.5 font-bold text-mark-green border border-mark-green/30">
-                <HourglassIcon size={13} />
+                <HourglassIcon size={ICON_SIZE.sm} />
                 {cta.label}
               </span>
             </>
@@ -285,13 +285,13 @@ export function ResultCard({
           <div className="mt-3 flex flex-col gap-3">
             <div className="flex flex-wrap items-center gap-2">
               <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-teal-soft px-2.5 py-1 font-semibold text-brand-teal border border-brand-teal/30 text-2xs">
-                <RulerIcon size={12} className="shrink-0" />
+                <RulerIcon size={ICON_SIZE.xs} className="shrink-0" />
                 <span>{institution.shortName || institution.name} Formula:</span>
                 <span>{matchResult.apsResult.loTreatmentMessage}</span>
               </span>
               {matchResult.apsResult.appliedBonuses.length > 0 && (
                 <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-violet-soft px-2.5 py-1 font-semibold text-brand-violet border border-brand-violet/30 text-2xs">
-                  <StarIcon size={12} filled className="shrink-0" />
+                  <StarIcon size={ICON_SIZE.xs} filled className="shrink-0" />
                   <span>Bonus:</span>
                   <span>{matchResult.apsResult.appliedBonuses.map((b) => b.description).join(", ")}</span>
                 </span>

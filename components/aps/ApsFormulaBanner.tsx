@@ -4,7 +4,7 @@ import { useState } from "react";
 import { loTreatmentMessage } from "@/lib/aps/engine";
 import { isFactVerified } from "@/lib/firestore/types";
 import type { ApsRule, Institution } from "@/lib/firestore/types";
-import { LightbulbIcon, TargetIcon } from "@/components/icons/Icon";
+import { ICON_SIZE, LightbulbIcon, TargetIcon } from "@/components/icons/Icon";
 
 interface ApsFormulaBannerProps {
   institutions: Institution[];
@@ -58,7 +58,7 @@ export function ApsFormulaBanner({ institutions, apsRules }: ApsFormulaBannerPro
       <div className="flex flex-col gap-3.5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-3.5">
           <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-teal-500/20 text-teal-300 border border-teal-500/30">
-            <LightbulbIcon size={18} />
+            <LightbulbIcon size={ICON_SIZE.md} />
           </div>
           <div className="flex flex-col gap-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -117,7 +117,7 @@ export function ApsFormulaBanner({ institutions, apsRules }: ApsFormulaBannerPro
           </div>
 
           <div className="mt-3.5 rounded-xl bg-teal-500/10 p-3 text-2xs text-teal-200 border border-teal-500/20 flex items-center gap-2">
-            <TargetIcon size={14} className="shrink-0" />
+            <TargetIcon size={ICON_SIZE.sm} className="shrink-0" />
             <span>
               <strong>UCAG Engine Guarantee:</strong> We calculate your exact points per university using their official, verified rules automatically!
             </span>
