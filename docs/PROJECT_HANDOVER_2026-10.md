@@ -158,6 +158,14 @@ Each script is idempotent (keyed by document ID) — confirmed in practice when 
 
 **Left alone, not cleaned up:** a small amount of orphaned data from an earlier, different, incomplete seeding attempt — 3 `faculties` and 4 `schools` documents with no `institutionId` field at all, plus one stray `apsRules` document for `uj` (not one of the 9 institutions this project has real committed data for). None of it is reachable by any real query the app makes (everything filters by `institutionId`), so it's inert rather than actively wrong — a low-priority future cleanup, not a correctness issue.
 
+**A second bug, found immediately after seeding:** `/programmes` still only showed UMP's 12 programmes, with all 9 institutions' real data freshly in Firestore. Live Vercel function logs showed the cause — every client-side Firestore read was failing with `permission-denied`. A direct check of the real project's active security rules (via the Firebase Rules REST API, not the repo) showed the live rule was Firebase's own default placeholder from project creation, **expired since 23 May 2026**:
+
+```
+allow read, write: if request.time < timestamp.date(2026, 5, 23);
+```
+
+This project's real `firestore.rules` — the file with 35+ passing emulator tests — had apparently never been deployed with `firebase deploy --only firestore:rules` against the real project at all. For almost five months, every client-SDK Firestore read (`/programmes`, `/institutions/[id]`, the entire `/admin/*` console, and every signed-in account feature per `lib/auth/profile.ts`'s own use of the same client SDK) was silently denied and falling back to local hardcoded data or an empty/broken state — while anything using the Admin SDK (`/bursaries`, `/ump`) kept working normally the whole time, masking the problem. Fixed with one command: `firebase deploy --only firestore:rules --project ucag-11adc`. Full writeup in `docs/SECURITY_REVIEW_2026-10.md` finding 7.
+
 **Everything else reported as "live" or "working" elsewhere in this document has been independently re-verified** (production route sweep, GitHub Actions status, live DOM content) as part of writing this document, not assumed from prior documentation.
 
 ---
