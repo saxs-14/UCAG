@@ -10,9 +10,11 @@ Firestore rules, auth, secret handling, HTTP headers) with live production
 verification of each finding, not static analysis alone.
 
 **Status:** PASS overall. No critical code-level issues found. Four
-low/medium code-level findings identified and fixed this session, plus 2
-of 4 dependency-vulnerability groups fixed (the other 2 need an explicit
-version-bump decision from you — see finding 5). None of the code fixes
+low/medium code-level findings identified and fixed, plus 3 of 4
+dependency-vulnerability groups fixed (`sharp`, `source-map-js`, and
+`next`/`postcss`'s moderate cache-poisoning CVE) — the remaining group
+(`eslint-config-next`'s dev-only `glob` CVE) needs a real major-version
+decision and is left for later, documented in finding 5. None of the fixes
 required a design change or new infrastructure.
 
 ---
@@ -154,22 +156,36 @@ benefit to the app.
 only `package-lock.json`'s resolved versions. Re-ran typecheck, lint, the
 full 384-test suite, and a production build afterward — all clean.
 
-**Left for your decision, not applied:** the `next`/`postcss` fix needs
-`next@15.5.28`, which `npm audit fix --force` would install. This project
-pins exact dependency versions deliberately (not `^`/`~` ranges), so *any*
-different version is "outside the stated range" by that project convention
-— in this case it's actually just a patch-version bump (`15.5.26` →
-`15.5.28`), not a major/breaking jump, but it's still a live production
-framework version change I didn't want to force without you seeing it
-first. Recommend taking it — it's a real, name-and-shame-worthy CVE
-(cache poisoning across users on a self-hosted Next.js deployment) and a
-patch bump is low-risk — but it needs a rebuild + redeploy + smoke-test
-cycle, which is your call to schedule. (A second group of vulnerabilities,
-in `eslint-config-next`'s own dependency chain, surfaced only when
-devDependencies are included in the audit — that one's dev-tooling-only,
-never shipped to users, and `npm audit fix --force` would downgrade
-`eslint-config-next` to `14.2.35` to fix it. Lower priority, same "ask
-first before forcing a version change" reasoning applies.)
+**Update — fixed, by hand rather than `--force`:** `npm audit fix --force`
+was tried and immediately reverted — in this run it resolved to installing
+`next@16.4.2` (a major version, not the `15.5.28` patch its own dry-run had
+promised moments earlier) and, far more alarmingly, **downgraded `firebase`
+from `^12.16.0` to `^9.14.0`** — a 3-major-version downgrade of the client
+SDK while "fixing" an unrelated transitive `protobufjs` CVE in
+`@firebase/rules-unit-testing`'s test-only dependency chain. That would
+almost certainly have broken the app. Caught before it was committed (the
+`firebase` version jump was visible in `git diff package.json` before
+anything was staged), reverted with `git checkout -- package.json
+package-lock.json`, and node_modules fully reinstalled from the reverted
+lockfile to confirm a clean baseline.
+
+The actual fix was applied by hand instead: `next` and `eslint-config-next`
+(which this project pins to match `next`'s version) bumped from exact
+`15.5.26` to exact `15.5.28` directly in `package.json`, then `npm install`
+(not `audit fix`) to resolve just those two entries — `firebase` untouched
+at `12.19.0`. Confirmed via `git diff package.json`: a clean 2-line diff,
+nothing else touched. Verified: typecheck, lint, full 384-test suite,
+production build, and a live dev-server route sweep (`/`, `/ump`,
+`/programmes`, `/bursaries`, all 200) — all clean. This resolves the
+moderate SSG/ISR cache-poisoning CVE and the 4 bundled-postcss CVEs that
+rode along with it.
+
+**Still left, deliberately not forced:** the `eslint-config-next`
+dependency chain's own separate `glob` CVE (command injection in its CLI,
+dev-tooling-only, never shipped to users) needs `eslint-config-next@16.4.2`
+— a real major-version jump this time, not a patch. Lower priority given
+it's dev-only with no production exposure; worth a deliberate look later
+rather than folding into this pass.
 
 ## Not yet covered by this pass
 
