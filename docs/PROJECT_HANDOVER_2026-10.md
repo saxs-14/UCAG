@@ -125,25 +125,24 @@ Server-Sent-Events streaming chat backed by Gemini, rate-limited (`lib/chat/rate
 
 ---
 
-## 5. ⚠️ Current live production status — the most important section in this document
+## 5. Production data status — resolved 17 October 2026
 
-This is the gap most worth understanding before doing any more feature work, because it is **not visible from reading the code or the commit history** — only from actually exercising the live site.
+This section originally documented a production data gap; it's kept here, corrected, because the *mistake* in the original version is itself worth understanding.
 
 **The codebase contains real, verified, sourced data for 9 institutions** (University of Mpumalanga, University of Pretoria, University of the Witwatersrand, North-West University, Nelson Mandela University, University of KwaZulu-Natal, Tshwane University of Technology, Stellenbosch University, University of Cape Town) — 138+ real programmes with real APS formulas, real subject requirements, and real source citations, each committed as its own `config/<institution>Programmes.seed.ts` file plus a `npm run seed:<institution>-data` script to write it to Firestore.
 
-**Verified directly against the live production site today (not assumed from the code):**
+**All of it is now live in production**, seeded 17 October 2026: 12 institution profiles (9 full + 3 Tier 2/3 "coming soon"), 109 programmes, 44 faculties, 59 schools, 18 application windows, 14 APS rules, 37 bursaries, 23 internships, 56 statistics. Verified via direct authenticated Firestore reads against the real project (`ucag-11adc`), and via a real `?institution=wits`-filtered request against the live site returning a distinctly different response than the unfiltered page.
 
-- `/programmes` shows **"12 of 12 programmes shown"**, and the institution filter dropdown lists only **UMP**. None of the other 8 institutions' real programme catalogues have actually been written to production Firestore.
-- `/bursaries` shows **one single bursary** (SAA Cadet Pilot Programme). The ~36 other real, sourced bursaries built and committed this project (Allan Gray Orbis, FirstRand Empowerment, Toyota SA Motors, NSFAS-adjacent listings, etc.) are not live either.
-- Institution **profile** pages (e.g. `/institutions/stellenbosch`) *do* render correctly with real campus and APS-formula information — the `institutions` collection itself is seeded. It's specifically the `programmes` and `bursaries` collections where the gap is.
+**This document previously claimed** "`/bursaries` shows one single bursary... the `institutions` collection itself is seeded... it's specifically the `programmes` and `bursaries` collections where the gap is." **That was wrong, not just outdated.** A direct read of production Firestore (not a page-rendering check) showed `institutions`, `programmes`, and `applicationWindows` were all genuinely at **0 documents** — including for UMP. `/ump` had always rendered correctly anyway, because `lib/catalog/getUmpData.ts` has a deliberate, explicitly-commented hardcoded fallback to local config data ("Complete verified seed fallback -- guarantees zero dashes and zero empty states") whenever Firestore comes back empty — which is exactly what was happening the whole time. Institution *profile* pages likely had the same kind of fallback or were being conflated with this one. The lesson: a page rendering correctly is not evidence that its claimed data source actually has the data — only a direct read of that data source is.
 
-**Why:** writing to the real production Firestore requires real Firebase Admin credentials (a service-account key), which live only as a Vercel environment variable marked "Sensitive" (unretrievable via the Vercel CLI/API by design) or via a locally authenticated `gcloud` session. Scripted/automated attempts to seed production without those credentials present locally are correctly rejected rather than silently routed around. **Someone with real access to the Vercel project's environment variables or the Firebase service account needs to run the seed scripts themselves**, from a machine with that service account's credentials in `.env.local`.
+**How it actually got resolved:** not via the service-account env vars this document originally pointed at (those remain genuinely locked behind Vercel's "Sensitive" marking, unretrievable via CLI/API). Instead: `gcloud auth application-default login` set up Application Default Credentials using the project owner's own already-authenticated Google account, which already held `roles/owner` on `ucag-11adc` (confirmed via `gcloud projects get-iam-policy` before writing anything). The existing seed scripts require the three `FIREBASE_ADMIN_*` env vars and have no ADC fallback of their own, but each one's `if (getApps().length === 0)` guard made it possible to pre-initialize the Admin SDK app via ADC in the same Node process, then dynamically `import()` the real seed script — which then found an app already initialized and used it, unmodified. A temporary, uncommitted wrapper script did this; no seed script itself was changed.
 
-**The fix is mechanical, not a rebuild.** With a real `.env.local` populated from the actual Firebase Admin service account (see `GOOGLE_APPLICATION_CREDENTIALS` / `FIREBASE_ADMIN_*` vars), run, in order:
+**Seed order actually run** (note: includes `seed:institutions` and `seed:ump-data`, neither of which the original version of this section listed, because both were wrongly assumed already done):
 
 ```bash
-npm run seed:institutions          # if institutions ever need re-seeding
+npm run seed:institutions
 npm run seed:aps-rules
+npm run seed:ump-data
 npm run seed:up-data
 npm run seed:wits-data
 npm run seed:nwu-data
@@ -155,7 +154,9 @@ npm run seed:uct-data
 npm run seed:bursaries-statistics
 ```
 
-Each script is idempotent (keyed by document ID) and only writes the specific institution's real, already-committed, already-cited data — there is no data-quality work left here, only the act of actually running the write.
+Each script is idempotent (keyed by document ID) — confirmed in practice when the UCT seed was killed mid-run by a local memory-pressure event and simply re-running it from scratch produced the correct final state with no duplicates.
+
+**Left alone, not cleaned up:** a small amount of orphaned data from an earlier, different, incomplete seeding attempt — 3 `faculties` and 4 `schools` documents with no `institutionId` field at all, plus one stray `apsRules` document for `uj` (not one of the 9 institutions this project has real committed data for). None of it is reachable by any real query the app makes (everything filters by `institutionId`), so it's inert rather than actively wrong — a low-priority future cleanup, not a correctness issue.
 
 **Everything else reported as "live" or "working" elsewhere in this document has been independently re-verified** (production route sweep, GitHub Actions status, live DOM content) as part of writing this document, not assumed from prior documentation.
 
