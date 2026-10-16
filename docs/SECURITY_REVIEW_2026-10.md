@@ -9,7 +9,11 @@ exhaustive — a focused read of the real attack surface (API routes,
 Firestore rules, auth, secret handling, HTTP headers) with live production
 verification of each finding, not static analysis alone.
 
-**Status:** PASS overall. No critical code-level issues found. Four
+**Status:** PASS overall, with one critical infrastructure finding
+(finding 7, added 17 October) now fixed: production Firestore's security
+rules were never actually deployed — the live project was running
+Firebase's own default placeholder rule, expired since 23 May 2026,
+silently denying every client-side read for nearly five months. Four
 low/medium code-level findings identified and fixed, plus 3 of 4
 dependency-vulnerability groups fixed (`sharp`, `source-map-js`, and
 `next`/`postcss`'s moderate cache-poisoning CVE) — the remaining group
@@ -206,6 +210,65 @@ signed-in-but-non-admin user, and a valid token with no role claim at all,
 both throw 403; and an explicit test documenting that `requireAdmin` has
 no client-suppliable input path to a role claim at all — the only route
 to "admin" is a real token Firebase itself signed.
+
+### 7. Production Firestore security rules were never actually deployed — CRITICAL, FIXED
+
+Discovered 17 October 2026 while investigating why `/programmes` only showed
+UMP's programmes despite all 9 institutions having just been seeded. The
+live Vercel function logs showed every client-side Firestore read failing
+with `FirebaseError: Missing or insufficient permissions` and silently
+falling back to local hardcoded data (`lib/catalog/getRealCatalog.ts`'s own
+seed fallback) — not a data problem, a rules problem.
+
+Checked the real project's active ruleset directly via the Firebase Rules
+REST API (`firebaserules.googleapis.com`), bypassing the repo entirely:
+the deployed rule, dated **23 April 2026**, was Firebase's own default
+"getting started" placeholder —
+
+```
+allow read, write: if request.time < timestamp.date(2026, 5, 23);
+```
+
+— which **expired on 23 May 2026**. From that date until this fix (nearly
+five months), production Firestore denied **every client-side read and
+write**, full stop, regardless of what `firestore.rules` in this repo
+said. The real rules file — the one this project's own 35+ emulator tests
+(`tests/firestore-rules.test.ts`) exercise and pass against — had
+apparently never once been run through `firebase deploy --only
+firestore:rules` against the real `ucag-11adc` project.
+
+**Impact, now understood precisely:** everything that reads Firestore via
+the Admin SDK (bursaries, internships, statistics, `/ump`'s fallback-safe
+path) was unaffected and worked throughout. Everything using the **client**
+SDK (`lib/firebase/firestoreClient.ts`'s `getFirebaseDb()`) was silently
+broken: `/programmes` (fell back to UMP-only local seed data),
+`/institutions/[id]`, the **entire admin console** (`/admin/sources`,
+`/admin/runs`, `/admin/dead-links`, `/admin/queue`, `/admin/activity`),
+and every signed-in account feature that depends on `userProfiles` rules
+(saving marks, shortlist, consent records) — confirmed via
+`lib/auth/profile.ts`, which also calls `getFirebaseDb()` (the client
+SDK) for every profile read and write, so it was bound by the same
+expired, deny-everything rule. Not separately exercised end-to-end with a
+real signed-in browser session this session (the browser extension was
+unresponsive under local memory pressure at the time), but the code path
+is unambiguous.
+
+**Fix:** `firebase deploy --only firestore:rules --project ucag-11adc`.
+Confirmed via the same Rules REST API that the live ruleset now matches
+this repo's `firestore.rules`, and via live Vercel logs that a fresh
+`/programmes` request after the deploy produces no permission error
+(`"logs":[]`, clean). The rendered page size for `/programmes` went from
+73KB (fallback data) to 361KB (real 9-institution data) on the same URL,
+same request shape, only the rules having changed in between.
+
+**Why this had gone undetected:** every earlier verification this
+session of `/programmes` and `/institutions` checked that pages *rendered
+without errors* and *showed plausible-looking data* — which they always
+did, because the fallback paths are specifically designed to make a rules
+or data failure invisible to a user (and, it turns out, to an agent
+checking page output rather than server logs). The lesson matches finding
+in the Category B writeup this session: a page rendering correctly is
+evidence the fallback works, never evidence the primary path does.
 
 ## Not yet covered by this pass
 
