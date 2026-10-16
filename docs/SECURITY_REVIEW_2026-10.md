@@ -187,12 +187,32 @@ dev-tooling-only, never shipped to users) needs `eslint-config-next@16.4.2`
 it's dev-only with no production exposure; worth a deliberate look later
 rather than folding into this pass.
 
+### 6. `requireAdmin` — the single enforcement mechanism for all 10 admin
+routes — had zero test coverage
+
+`lib/admin/auth.ts`'s `requireAdmin` is the actual security boundary every
+`/api/admin/*` route depends on (confirmed earlier in this review: all 10
+routes call it). `firestore.rules` deliberately denies all client writes
+and relies on this function, not the rules themselves, as the real gate.
+It had no dedicated test file at all before this session, despite
+`lib/admin/allowlist.ts` (a secondary defense-in-depth layer) already
+having one.
+
+**Fix:** added `lib/admin/auth.test.ts` — 8 tests against a mocked Admin
+SDK (no real Firebase project touched): a valid admin token succeeds;
+case/whitespace-tolerant Bearer-prefix parsing; missing header, empty
+token, and a rejected/expired token all throw 401; a valid token for a
+signed-in-but-non-admin user, and a valid token with no role claim at all,
+both throw 403; and an explicit test documenting that `requireAdmin` has
+no client-suppliable input path to a role claim at all — the only route
+to "admin" is a real token Firebase itself signed.
+
 ## Not yet covered by this pass
 
 This was a code-level review, not a dynamic/active penetration test. Not
-attempted this session: fuzzing the admin routes' Zod schemas for edge
-cases, testing actual rate-limit behavior under concurrent load against
-the live deployment, a dependency vulnerability scan (`npm audit`), or
-reviewing the Firebase project's own IAM/service-account scopes (which
-need Firebase Console access this session doesn't have). Worth a follow-up
-if a deeper pass is wanted.
+attempted this session: fuzzing each individual admin route's own Zod body
+schema for edge cases beyond the shared `requireAdmin` gate now tested
+above, testing actual rate-limit behavior under concurrent load against
+the live deployment, or reviewing the Firebase project's own IAM/
+service-account scopes (needs Firebase Console access this session doesn't
+have). Worth a follow-up if a deeper pass is wanted.
