@@ -4,6 +4,7 @@
 import { useMemo, useState } from "react";
 import { SubjectCombobox } from "./SubjectCombobox";
 import { MarkInput } from "./MarkInput";
+import { ICON_SIZE, TargetIcon } from "@/components/icons/Icon";
 import {
   ELECTIVE_SUBJECTS,
   FIRST_ADDITIONAL_LANGUAGE_OPTIONS,
@@ -166,7 +167,10 @@ export function SubjectForm({
 
       {validationError && <p role="alert" className="rounded-xl border border-mark-red/30 bg-mark-red-soft p-3 text-sm font-semibold text-mark-red">{validationError}</p>}
 
-      <button type="button" onClick={calculate} className="min-h-12 rounded-xl bg-brand-teal px-6 text-sm font-extrabold text-white shadow-sm hover:bg-teal-700">🎯 Calculate & find my options</button>
+      <button type="button" onClick={calculate} className="btn-bold flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-teal px-6 text-sm font-extrabold text-white hover:bg-teal-700">
+        <TargetIcon size={ICON_SIZE.sm} />
+        Calculate & find my options
+      </button>
     </form>
   );
 }

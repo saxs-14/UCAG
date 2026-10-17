@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SignInForm } from "@/components/auth/SignInForm";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { Logo } from "@/components/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -21,8 +22,10 @@ export default function LoginPage() {
     <main id="main-content" className="flex min-h-[80vh] flex-1 flex-col items-center justify-center bg-paper px-4 py-12">
       <div className="w-full max-w-md rounded-2xl border border-line bg-paper-raised p-6 sm:p-8 shadow-md">
         <div className="flex flex-col gap-2 text-center mb-6">
-          <span className="mx-auto rounded-full bg-brand-teal/10 p-3 text-2xl">🎓</span>
-          <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-brand-navy">
+          <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-teal/10">
+            <Logo size={26} showWordmark={false} />
+          </span>
+          <h1 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-brand-navy">
             Sign In to UCAG
           </h1>
           <p className="text-xs text-ink-soft">

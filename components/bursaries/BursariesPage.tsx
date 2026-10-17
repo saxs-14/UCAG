@@ -70,16 +70,16 @@ export function BursariesPage({ bursaries: allBursaries, internships: allInterns
             It does not decide whether a provider will award you funding.
           </p>
         </div>
-        <ol className="mt-5 grid gap-3 sm:grid-cols-3">
-          <li className="rounded-xl border border-line bg-paper-raised p-4"><span className="font-mono text-xs font-bold text-brand-teal">1</span><h3 className="mt-1 text-sm font-bold text-ink">Filter</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Choose your level or field.</p></li>
-          <li className="rounded-xl border border-line bg-paper-raised p-4"><span className="font-mono text-xs font-bold text-brand-teal">2</span><h3 className="mt-1 text-sm font-bold text-ink">Check</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Read the recorded criteria and dates.</p></li>
-          <li className="rounded-xl border border-line bg-paper-raised p-4"><span className="font-mono text-xs font-bold text-brand-teal">3</span><h3 className="mt-1 text-sm font-bold text-ink">Apply</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Open the provider&apos;s official application page.</p></li>
+        <ol className="mt-5 grid gap-4 sm:grid-cols-3">
+          <li className="card-bold p-4" style={{ "--card-bold-shadow": "var(--color-brand-teal)" } as React.CSSProperties}><span className="font-display text-xs font-extrabold text-brand-teal">1</span><h3 className="mt-1 font-display text-sm font-bold text-ink">Filter</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Choose your level or field.</p></li>
+          <li className="card-bold p-4" style={{ "--card-bold-shadow": "var(--color-brand-amber)" } as React.CSSProperties}><span className="font-display text-xs font-extrabold text-brand-teal">2</span><h3 className="mt-1 font-display text-sm font-bold text-ink">Check</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Read the recorded criteria and dates.</p></li>
+          <li className="card-bold p-4" style={{ "--card-bold-shadow": "var(--color-brand-coral)" } as React.CSSProperties}><span className="font-display text-xs font-extrabold text-brand-teal">3</span><h3 className="mt-1 font-display text-sm font-bold text-ink">Apply</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Open the provider&apos;s official application page.</p></li>
         </ol>
       </section>
 
       <section className="rounded-2xl border border-line bg-paper-raised p-5 sm:p-6" aria-labelledby="funding-filters">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div><h2 id="funding-filters" className="text-lg font-bold text-ink">Narrow the list</h2><p className="mt-1 text-xs text-ink-faint">Filters use recorded fields only. They are not an eligibility verdict.</p></div>
+          <div><h2 id="funding-filters" className="font-display text-lg font-bold text-ink">Narrow the list</h2><p className="mt-1 text-xs text-ink-faint">Filters use recorded fields only. They are not an eligibility verdict.</p></div>
           {hasFilters && <button type="button" onClick={clearFilters} className="min-h-11 rounded-full border border-line px-4 text-sm font-semibold text-ink transition-colors hover:border-brand-teal hover:text-brand-teal">Clear filters</button>}
         </div>
         <div className="mt-4 grid gap-4 sm:grid-cols-3">

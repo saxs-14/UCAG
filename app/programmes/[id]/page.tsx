@@ -66,7 +66,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
               {programme.nqfLevel !== null && <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">NQF {programme.nqfLevel}</span>}
               {programme.duration && <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">{programme.duration}</span>}
             </div>
-            <h1 className="mt-4 text-2xl font-extrabold tracking-tight sm:text-3xl">{programme.name}</h1>
+            <h1 className="mt-4 font-display text-2xl font-extrabold tracking-tight sm:text-3xl">{programme.name}</h1>
             <p className="mt-2 text-sm text-white/80">{institution.name} · {faculty.name} · {school.name}</p>
             {(campuses.length > 0 || programme.modeOfDelivery) && (
               <p className="mt-2 text-xs text-white/70">{[campuses.length ? campuses.join(", ") : null, programme.modeOfDelivery].filter(Boolean).join(" · ")}</p>

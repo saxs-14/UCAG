@@ -95,9 +95,9 @@ export default async function ProgrammeExplorerPage({ searchParams }: PageProps)
       <section className="hero-atmosphere w-full border-b border-white/10 py-10 shadow-md">
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-6 sm:px-8">
           <span className="w-fit rounded-full border border-teal-400/30 bg-teal-500/20 px-3 py-1 text-xs font-semibold text-teal-100">
-            📚 Programmes
+            Programmes
           </span>
-          <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
+          <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
             Find a programme
           </h1>
           <p className="max-w-2xl text-sm leading-relaxed text-teal-100/90 sm:text-base">

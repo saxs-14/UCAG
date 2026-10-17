@@ -76,7 +76,7 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
       <div className={`w-full border-b border-white/10 py-12 shadow-md ${branding.heroStyle}`}>
         <div className="mx-auto flex w-full max-w-5xl flex-col gap-4 px-6 sm:px-8">
           <div className="inline-flex items-center gap-2 rounded-full bg-white/20 px-3.5 py-1 text-xs font-semibold text-white border border-white/30 w-fit">
-            <span>🏛️ {inst.province} Province · Tier {inst.tier} Institution</span>
+            <span>{inst.province} Province · Tier {inst.tier} Institution</span>
           </div>
 
           <div className="flex items-center gap-4">
@@ -84,7 +84,7 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
               {inst.shortName.substring(0, 3)}
             </div>
             <div>
-              <h1 className="text-3xl font-extrabold tracking-tight text-white sm:text-4xl leading-tight">
+              <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl leading-tight">
                 {inst.name} ({inst.shortName})
               </h1>
               <p className="text-xs text-white/80 font-medium">
@@ -106,7 +106,7 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
               href="/"
               className="inline-flex items-center gap-1.5 rounded-xl bg-white text-xs font-extrabold text-brand-navy shadow hover:bg-slate-100 transition px-4 py-2.5"
             >
-              🎓 Calculate {inst.shortName} APS →
+              Calculate {inst.shortName} APS →
             </Link>
 
             {isUmp ? (
@@ -170,8 +170,8 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
 
         {/* Institution Specific APS Rules */}
         <section aria-labelledby="aps-rule-heading" className="card-learner rounded-2xl p-6 border border-line">
-          <h2 id="aps-rule-heading" className="text-base font-bold text-ink mb-2">
-            📐 {inst.shortName} Admission Point Score (APS) Formula Rules
+          <h2 id="aps-rule-heading" className="font-display text-base font-bold text-ink mb-2">
+            {inst.shortName} Admission Point Score (APS) Formula Rules
           </h2>
           <p className="text-xs text-ink-soft leading-relaxed mb-3">
             {inst.id === "uct"
@@ -195,8 +195,8 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
 
         {/* Campuses & Links */}
         <section aria-labelledby="campuses-heading" className="card-learner rounded-2xl p-6 border border-line">
-          <h2 id="campuses-heading" className="text-base font-bold text-ink mb-2">
-            📍 Primary Campuses & Location
+          <h2 id="campuses-heading" className="font-display text-base font-bold text-ink mb-2">
+            Primary Campuses & Location
           </h2>
           <p className="text-xs text-ink-soft mb-3">
             Primary campuses in {inst.province}: {inst.campuses.length > 0 ? inst.campuses.join(", ") : "Main Campus"}.
@@ -219,8 +219,8 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
             offered at more than one campus is listed under each. */}
         {programmesByCampus.size > 0 && (
           <section aria-labelledby="programmes-by-campus-heading" className="card-learner rounded-2xl p-6 border border-line">
-            <h2 id="programmes-by-campus-heading" className="text-base font-bold text-ink mb-1">
-              🎓 Programmes by Campus
+            <h2 id="programmes-by-campus-heading" className="font-display text-base font-bold text-ink mb-1">
+              Programmes by Campus
             </h2>
             <p className="text-xs text-ink-soft mb-4">
               {institutionProgrammes.length} verified programme{institutionProgrammes.length === 1 ? "" : "s"} at {inst.shortName}, grouped by the campus each is actually offered at.

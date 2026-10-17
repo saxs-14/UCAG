@@ -1,4 +1,5 @@
 import { LABELS } from "@/config/labels";
+import { ICON_SIZE, ShieldIcon } from "@/components/icons/Icon";
 
 /** "How to spot a bursary scam" -- explicitly required, not optional
  * (docs/MASTER_PROMPT_v2.md Phase 5) -- plus a trust callout for UCAG's
@@ -22,7 +23,7 @@ export function ScamExplainer() {
       </div>
       <div className="flex flex-col gap-1 rounded-xl border border-brand-teal bg-brand-teal-soft p-4 text-sm text-ink">
         <h2 className="flex items-center gap-2 font-semibold text-brand-teal">
-          <span aria-hidden>🛡️</span>
+          <ShieldIcon size={ICON_SIZE.sm} />
           {LABELS.bursaries.scamShieldTitle}
         </h2>
         <p>{LABELS.bursaries.scamShieldBody}</p>

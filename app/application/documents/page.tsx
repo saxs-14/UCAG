@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { validateDocumentFile, evaluateDocumentCompleteness } from "@/lib/ai/documentAssistant";
 import type { DocumentFileMeta } from "@/lib/ai/documentAssistant";
+import { DocumentIcon, ICON_SIZE, LockIcon } from "@/components/icons/Icon";
 
 export default function DocumentAssistantPage() {
   const [files, setFiles] = useState<DocumentFileMeta[]>([]);
@@ -50,7 +51,7 @@ export default function DocumentAssistantPage() {
 
         {/* POPIA Privacy Shield Callout */}
         <div className="rounded-2xl border border-mark-green/30 bg-mark-green-soft p-4 text-xs text-ink-soft flex items-center gap-3">
-          <span className="text-2xl" aria-hidden>🔒</span>
+          <span className="text-mark-green"><LockIcon size={ICON_SIZE.lg} /></span>
           <div>
             <p className="font-bold text-mark-green">POPIA Compliant Privacy Guarantee</p>
             <p className="text-[11px] leading-relaxed">
@@ -67,9 +68,9 @@ export default function DocumentAssistantPage() {
               {evalResult.totalUploaded} of {evalResult.totalRequired} Core Documents Ready
             </h2>
             {evalResult.isComplete ? (
-              <p className="text-xs font-bold text-mark-green mt-1">✅ All required application documents verified!</p>
+              <p className="text-xs font-bold text-mark-green mt-1">All required application documents verified!</p>
             ) : (
-              <p className="text-xs font-bold text-mark-red mt-1">⚠️ Missing: {evalResult.missingCategories.join(", ")}</p>
+              <p className="text-xs font-bold text-mark-red mt-1">Missing: {evalResult.missingCategories.join(", ")}</p>
             )}
           </div>
 
@@ -90,7 +91,7 @@ export default function DocumentAssistantPage() {
         <div className="card-learner rounded-2xl p-6 flex flex-col gap-4 text-xs">
           <h3 className="font-bold text-ink text-sm">Add Application Files to Check</h3>
           <label className="border-2 border-dashed border-line rounded-2xl p-8 text-center cursor-pointer hover:bg-slate-soft transition flex flex-col items-center gap-2">
-            <span className="text-3xl">📄</span>
+            <span className="text-brand-teal"><DocumentIcon size={ICON_SIZE.lg} /></span>
             <span className="font-bold text-brand-teal text-sm">Click to select files</span>
             <span className="text-[11px] text-ink-faint">Supports PDF, JPEG, PNG (Max 5MB per file)</span>
             <input type="file" multiple accept=".pdf,.jpeg,.jpg,.png" onChange={handleFileAdd} className="hidden" />
@@ -109,7 +110,7 @@ export default function DocumentAssistantPage() {
                   <div className="flex items-center gap-3">
                     {!f.isValidType && <span className="text-mark-red font-bold text-[10px]">Invalid Type</span>}
                     {!f.isValidSize && <span className="text-mark-red font-bold text-[10px]">Exceeds 5MB</span>}
-                    {f.isValidType && f.isValidSize && <span className="text-mark-green font-bold text-[10px]">✅ Verified</span>}
+                    {f.isValidType && f.isValidSize && <span className="text-mark-green font-bold text-[10px]">✓ Verified</span>}
                     <button type="button" onClick={() => removeFile(f.id)} className="text-ink-faint hover:text-mark-red text-sm font-bold">✕</button>
                   </div>
                 </div>
