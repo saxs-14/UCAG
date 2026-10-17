@@ -44,9 +44,9 @@ export default function ActivityReportPage() {
   );
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Learner activity</h1>
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+    <div className="flex w-full flex-col gap-5">
+      <header className="rounded-2xl bg-brand-navy p-5 text-white sm:p-7"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-teal-soft">Analytics &amp; reports</p><h1 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">Learner activity</h1><p className="mt-2 text-sm leading-6 text-white/80">Daily aggregate usage only. This report does not display per-user or per-session histories.</p></header>
+      <p className="rounded-xl border border-line bg-paper-raised p-4 text-sm leading-6 text-ink-soft">
         Daily aggregate counts of the three activities this report tracks: calculator
         completions, programme searches (applying a filter or search term on /programmes), and
         funding-discovery views (loading /bursaries). This is intentionally aggregate-only --
@@ -56,11 +56,11 @@ export default function ActivityReportPage() {
       </p>
 
       {error && (
-        <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
+        <p className="rounded-xl border border-mark-red bg-mark-red-soft p-3 text-sm text-mark-red">
           {error}
         </p>
       )}
-      {loading && <p className="text-sm text-gray-500">Loading...</p>}
+      {loading && <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">Loading...</p>}
       {!loading && rows.length === 0 && (
         <p className="text-sm text-gray-500">
           No activity recorded yet -- expected on a fresh deployment or local emulator with no
@@ -68,23 +68,23 @@ export default function ActivityReportPage() {
         </p>
       )}
 
-      <div className="rounded border p-3 text-sm dark:border-gray-700">
-        <p className="font-medium">All-time totals (from recorded days)</p>
-        <div className="mt-2 grid gap-2 sm:grid-cols-3">
+      <div className="rounded-2xl border border-line bg-paper-raised p-4 text-sm">
+        <p className="font-display font-bold text-ink">All-time totals (from recorded days)</p>
+        <div className="mt-3 grid gap-3 sm:grid-cols-3">
           {USAGE_STAT_FIELDS.map((field) => (
-            <div key={field} className="rounded bg-gray-50 p-2 dark:bg-gray-900">
-              <div className="text-xs text-gray-500">{FIELD_LABELS[field]}</div>
-              <div className="text-lg font-semibold">{totals[field].toLocaleString()}</div>
+            <div key={field} className="rounded-xl border border-line bg-paper p-3">
+              <div className="text-xs leading-5 text-ink-soft">{FIELD_LABELS[field]}</div>
+              <div className="mt-1 font-display text-2xl font-extrabold tabular-nums text-ink">{totals[field].toLocaleString()}</div>
             </div>
           ))}
         </div>
       </div>
 
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto rounded-2xl border border-line bg-paper-raised">
         <table className="w-full min-w-max text-left text-sm">
           <thead>
-            <tr className="border-b text-xs text-gray-500 dark:border-gray-700">
-              <th className="py-1 pr-3">Date</th>
+            <tr className="border-b border-line bg-paper px-3 text-xs font-bold uppercase tracking-wide text-ink-soft">
+              <th className="px-3 py-3 pr-4">Date</th>
               {USAGE_STAT_FIELDS.map((field) => (
                 <th key={field} className="py-1 pr-3">
                   {FIELD_LABELS[field]}
@@ -94,10 +94,10 @@ export default function ActivityReportPage() {
           </thead>
           <tbody>
             {rows.map((row) => (
-              <tr key={row.id} className="border-b last:border-0 dark:border-gray-800">
-                <td className="py-1.5 pr-3 text-xs font-medium">{row.date}</td>
+              <tr key={row.id} className="border-b border-line last:border-0">
+                <td className="px-3 py-3 pr-4 text-xs font-semibold tabular-nums text-ink">{row.date}</td>
                 {USAGE_STAT_FIELDS.map((field) => (
-                  <td key={field} className="py-1.5 pr-3 text-xs">
+                  <td key={field} className="px-3 py-3 pr-4 text-xs tabular-nums text-ink-soft">
                     {(row[field] ?? 0).toLocaleString()}
                   </td>
                 ))}
