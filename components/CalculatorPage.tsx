@@ -9,9 +9,9 @@ import { subjectMarksToFormState, type SubjectFormInitialState } from "@/config/
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
 const STEPS = [
-  { number: 1, title: "Your subjects", detail: "Choose subjects and enter marks." },
-  { number: 2, title: "Your APS", detail: "We apply the institution's rules." },
-  { number: 3, title: "Your options", detail: "See qualifying and backup pathways." },
+  { number: 1, title: "Your subjects", detail: "Choose subjects and enter marks.", shadow: "var(--color-brand-teal)" },
+  { number: 2, title: "Your APS", detail: "We apply the institution's rules.", shadow: "var(--color-brand-amber)" },
+  { number: 3, title: "Your options", detail: "See qualifying and backup pathways.", shadow: "var(--color-brand-coral)" },
 ];
 
 export function CalculatorPage() {
@@ -45,7 +45,7 @@ export function CalculatorPage() {
           <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
               <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-teal">Start here</p>
-              <h1 className="mt-1 text-2xl font-black tracking-tight text-ink sm:text-4xl">
+              <h1 className="mt-1 font-display text-2xl font-extrabold tracking-tight text-ink sm:text-4xl">
                 Find out what you can study.
               </h1>
               <p className="mt-2 max-w-2xl text-sm leading-6 text-ink-soft sm:text-base">
@@ -59,10 +59,14 @@ export function CalculatorPage() {
             </div>
           </div>
 
-          <ol className="mt-5 grid gap-2 sm:grid-cols-3" aria-label="Calculator steps">
+          <ol className="mt-6 grid gap-4 sm:grid-cols-3" aria-label="Calculator steps">
             {STEPS.map((step) => (
-              <li key={step.number} className="flex items-center gap-3 rounded-xl border border-line bg-paper p-3">
-                <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-navy text-xs font-black text-white">
+              <li
+                key={step.number}
+                className="card-bold flex items-center gap-3 p-4"
+                style={{ "--card-bold-shadow": step.shadow } as React.CSSProperties}
+              >
+                <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border-2 border-brand-navy bg-paper font-display text-sm font-extrabold text-ink">
                   {step.number}
                 </span>
                 <span>
@@ -78,7 +82,7 @@ export function CalculatorPage() {
       <div className="mx-auto grid w-full max-w-6xl gap-6 px-4 py-5 sm:px-6 sm:py-8 lg:grid-cols-[minmax(0,1fr)_280px] lg:items-start">
         <section aria-labelledby="calculator-form-title" className="min-w-0">
           <div className="mb-4">
-            <h2 id="calculator-form-title" className="text-lg font-black text-ink">Enter your NSC results</h2>
+            <h2 id="calculator-form-title" className="font-display text-lg font-extrabold text-ink">Enter your NSC results</h2>
             <p className="mt-1 text-xs leading-5 text-ink-soft">
               Use percentages from your latest results. You can change them before calculating.
             </p>
