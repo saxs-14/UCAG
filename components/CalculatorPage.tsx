@@ -119,7 +119,7 @@ export function CalculatorPage() {
                 ["→", "Not yet", "A realistic next pathway instead of a dead end."],
               ].map(([icon, title, detail]) => (
                 <div key={title} className="flex gap-3">
-                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-soft text-sm font-black text-brand-navy">{icon}</span>
+                  <span className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-slate-soft text-sm font-black text-ink">{icon}</span>
                   <div>
                     <p className="text-xs font-extrabold text-ink">{title}</p>
                     <p className="mt-0.5 text-[11px] leading-4 text-ink-soft">{detail}</p>
