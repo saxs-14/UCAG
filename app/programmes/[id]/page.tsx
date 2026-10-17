@@ -60,9 +60,10 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
         </Link>
 
         <article className="card-learner overflow-hidden rounded-2xl border border-line">
-          <header className="bg-brand-navy p-5 text-white sm:p-7">
+          <header className="relative isolate overflow-hidden bg-brand-navy p-5 text-white sm:p-7">
+            <div aria-hidden="true" className="pointer-events-none absolute -right-10 -top-12 -z-10 size-48 rounded-full bg-brand-teal opacity-25" />
             <div className="flex flex-wrap gap-2">
-              <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">{programme.qualificationType}</span>
+              <span className="rounded-full border border-white/20 bg-white/10 px-3 py-1 text-xs font-semibold">{programme.qualificationType}</span>
               {programme.nqfLevel !== null && <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">NQF {programme.nqfLevel}</span>}
               {programme.duration && <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">{programme.duration}</span>}
             </div>
@@ -105,7 +106,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
               )}
             </section>
 
-            <section aria-labelledby="apply-heading" className="rounded-2xl border border-teal-200 bg-teal-50/70 p-4 sm:p-5">
+            <section aria-labelledby="apply-heading" className="rounded-2xl border border-brand-teal/25 bg-brand-teal-soft/40 p-4 sm:p-5">
               <h2 id="apply-heading" className="text-lg font-bold text-teal-950">Application</h2>
               <p className="mt-1 text-sm leading-relaxed text-teal-950/80">
                 {cta.kind === "apply" ? "Applications can be started through the official application link below." :
