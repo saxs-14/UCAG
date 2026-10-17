@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageHero } from "@/components/PageHero";
 import { after } from "next/server";
 import { LABELS } from "@/config/labels";
 import { fetchRealCatalog } from "@/lib/catalog/getRealCatalog";
@@ -92,20 +93,10 @@ export default async function ProgrammeExplorerPage({ searchParams }: PageProps)
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
-      <section className="hero-atmosphere w-full border-b border-white/10 py-10 shadow-md">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-6 sm:px-8">
-          <span className="w-fit rounded-full border border-teal-400/30 bg-teal-500/20 px-3 py-1 text-xs font-semibold text-teal-100">
-            Programmes
-          </span>
-          <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            Find a programme
-          </h1>
-          <p className="max-w-2xl text-sm leading-relaxed text-teal-100/90 sm:text-base">
-            Browse verified programmes first. When you have your NSC marks, use the APS
-            calculator to check which options match your recorded results.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        title="Find a programme"
+        subtitle="Browse verified programmes first. When you have your NSC marks, use the APS calculator to check which options match your recorded results."
+      />
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-6 sm:p-8">
         <section className="card-learner rounded-2xl border border-line p-5 sm:p-6" aria-labelledby="programme-search-heading">
