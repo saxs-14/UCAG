@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
+import { PageHero } from "@/components/PageHero";
 import { TIER_1_INSTITUTIONS, TIER_2_INSTITUTIONS } from "@/config/institutions.seed";
 
 export const metadata: Metadata = {
@@ -45,20 +46,10 @@ export default async function InstitutionsDirectoryPage({ searchParams }: PagePr
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
-      <section className="hero-atmosphere w-full border-b border-white/10 py-10 shadow-md">
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3 px-6 sm:px-8">
-          <span className="w-fit rounded-full border border-teal-400/30 bg-teal-500/20 px-3 py-1 text-xs font-semibold text-teal-100">
-            Universities
-          </span>
-          <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl">
-            Find a university
-          </h1>
-          <p className="max-w-2xl text-sm leading-relaxed text-teal-100/90 sm:text-base">
-            Explore institutions first, then open a university profile or use the APS
-            calculator when you are ready to check a programme.
-          </p>
-        </div>
-      </section>
+      <PageHero
+        title="Find a university"
+        subtitle="Explore South African institutions, open a university profile, and use the APS calculator when you are ready to check a programme."
+      />
 
       <div className="mx-auto flex w-full max-w-5xl flex-col gap-6 p-6 sm:p-8">
         <section
