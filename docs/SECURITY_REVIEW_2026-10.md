@@ -248,10 +248,21 @@ and every signed-in account feature that depends on `userProfiles` rules
 (saving marks, shortlist, consent records) — confirmed via
 `lib/auth/profile.ts`, which also calls `getFirebaseDb()` (the client
 SDK) for every profile read and write, so it was bound by the same
-expired, deny-everything rule. Not separately exercised end-to-end with a
-real signed-in browser session this session (the browser extension was
-unresponsive under local memory pressure at the time), but the code path
-is unambiguous.
+expired, deny-everything rule.
+
+Not exercised with a real sign-up on the live production site — creating
+an account on a real, non-local deployment isn't something to do without
+the project owner directly, even to verify a fix. Instead, verified the
+safer way: refetched the live project's active ruleset directly via the
+Firebase Rules REST API after the deploy and diffed it character-for-
+-character against the committed `firestore.rules` (the same file
+`tests/firestore-rules.test.ts`'s 35+ cases, including the full
+`userProfiles` suite, already exercise against the real rules engine via
+the emulator). The two are identical but for one trailing newline. Given
+the rules' *logic* is already proven correct by the existing emulator
+tests, and the rules *deployed to production* are now proven identical to
+that tested file, the `userProfiles` fix is verified by construction
+without needing a live account.
 
 **Fix:** `firebase deploy --only firestore:rules --project ucag-11adc`.
 Confirmed via the same Rules REST API that the live ruleset now matches
