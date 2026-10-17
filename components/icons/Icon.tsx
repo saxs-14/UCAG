@@ -177,3 +177,30 @@ export function BoltIcon({ className, size = 16 }: IconProps) {
     </svg>
   );
 }
+
+export function LockIcon({ className, size = 16 }: IconProps) {
+  return (
+    <svg {...base} width={size} height={size} className={className}>
+      <rect x="4.5" y="9" width="11" height="8" rx="1.75" />
+      <path d="M6.5 9V6a3.5 3.5 0 0 1 7 0v3" />
+    </svg>
+  );
+}
+
+export function DocumentIcon({ className, size = 16 }: IconProps) {
+  return (
+    <svg {...base} width={size} height={size} className={className}>
+      <path d="M6 2.5h5.5L16 7v10a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 6 17V3a.5.5 0 0 1 0-.5Z" />
+      <path d="M11.5 2.5V7H16" />
+    </svg>
+  );
+}
+
+export function ShieldIcon({ className, size = 16 }: IconProps) {
+  return (
+    <svg {...base} width={size} height={size} className={className}>
+      <path d="M10 2.5 16 5v5c0 4-2.5 6.5-6 7.5-3.5-1-6-3.5-6-7.5V5l6-2.5Z" />
+      <path d="M7.25 10 9 11.75 12.75 8" />
+    </svg>
+  );
+}
