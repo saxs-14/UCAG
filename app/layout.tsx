@@ -6,7 +6,6 @@ import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/components/auth/AuthProvider";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { ChatWidgetLoader } from "@/components/chat/ChatWidgetLoader";
-import { getCatalogStats } from "@/lib/catalog/getCatalogStats";
 import { MobileNavBar } from "@/components/MobileNavBar";
 import { getBaseUrl } from "@/lib/env/client";
 import "./globals.css";
@@ -113,8 +112,6 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const stats = await getCatalogStats().catch(() => null);
-
   return (
     <html lang="en" suppressHydrationWarning>
       <body className="flex min-h-screen flex-col antialiased bg-paper text-ink">
@@ -132,7 +129,7 @@ export default async function RootLayout({
           Skip to content
         </a>
         <AuthProvider>
-          <NavBar stats={stats} />
+          <NavBar />
           <main id="main-content" className="flex-1 w-full pb-16 sm:pb-0">
             {children}
           </main>

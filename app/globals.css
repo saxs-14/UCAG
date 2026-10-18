@@ -34,6 +34,18 @@
   --color-brand-violet-soft: #f5f3ff;
   --color-brand-amber: #b45309;
   --color-brand-amber-soft: #fffbeb;
+  /* For text on a backdrop that is always brand-navy regardless of color
+     scheme (.hero-atmosphere) -- matches the "color/text-on-brand" token
+     already defined in the canonical Figma design system
+     (figma.com/design/ESMzjguGV5nlAK7fE1hlVD) but never wired into code.
+     text-brand-teal-soft looks right in light mode here, but that token's
+     own dark-mode override (#0d2e2a, tuned for its real job as a light
+     background chip) makes dark-teal text unreadable against the
+     permanently-dark hero once a learner's device prefers dark mode --
+     the same invisible-active-tab bug class just fixed in NavBar/
+     MobileNavBar. No dark-mode override is needed or wanted: this token's
+     only job is "stay legible on navy," in either color scheme. */
+  --color-text-on-brand: #fffdf8;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
   /* Was an alias for --font-sans (no distinct display face existed at all).
@@ -150,6 +162,21 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
 
 @media (max-width: 639px) {
   body { padding-bottom: 4.25rem; }
+}
+
+/* "App mode" -- public/manifest.json already declares display: "standalone"
+   (so installing UCAG strips the browser's own address bar/tabs), but
+   nothing in the UI used to notice the difference: the same "Sign in"
+   call-to-action rendered in the top header AND the bottom tab bar at once.
+   On a narrow installed app, MobileNavBar's own "Sign in"/"Profile" tab is
+   the primary entry point, so the header's copy becomes redundant chrome --
+   exactly the kind of thing a learner coming back to an already-installed
+   app shouldn't have to read past. Scoped to max-width: 639px (matches
+   MobileNavBar's own sm:hidden cutoff) so a desktop-installed PWA window,
+   which never shows the bottom tab bar, never loses its only sign-in entry
+   point. */
+@media (display-mode: standalone) and (max-width: 639px) {
+  .app-mode-hide-narrow { display: none !important; }
 }
 
 @media (prefers-color-scheme: dark) {
