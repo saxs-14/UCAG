@@ -213,8 +213,16 @@ export class GeminiChatClient {
     const contents: GeminiContent[] = messages.map((m) => ({ role: m.role, parts: [{ text: m.text }] }));
     let yieldedAny = false;
     let functionCall: { name: string; args: Record<string, unknown> } | null = null;
+    // Diagnostic only, surfaced in the thrown error below: this client was
+    // throwing a bare "no reply text" with no way to tell, from Vercel
+    // logs alone, whether Gemini returned an empty turn, a finishReason
+    // like SAFETY/RECITATION, or something else -- that ambiguity is what
+    // blocked a real fix the first time this went unreplied in production.
+    let lastChunk: GeminiStreamChunk | undefined;
+    let toolExecuteError: string | undefined;
 
     for await (const chunk of this.streamRaw(contents, systemPrompt, tool ? [tool.declaration] : undefined)) {
+      lastChunk = chunk;
       const call = extractFunctionCall(chunk);
       if (call) {
         functionCall = call;
@@ -239,14 +247,17 @@ export class GeminiChatClient {
           },
         ];
         for await (const chunk of this.streamRaw(followUpContents, systemPrompt)) {
+          lastChunk = chunk;
           const text = extractText(chunk);
           if (text) {
             yieldedAny = true;
             yield text;
           }
         }
-      } catch {
+      } catch (err) {
+        toolExecuteError = err instanceof Error ? err.message : String(err);
         for await (const chunk of this.streamRaw(contents, systemPrompt)) {
+          lastChunk = chunk;
           const text = extractText(chunk);
           if (text) {
             yieldedAny = true;
@@ -257,7 +268,16 @@ export class GeminiChatClient {
     }
 
     if (!yieldedAny) {
-      throw new Error("Gemini response contained no reply text.");
+      const finishReason = lastChunk?.candidates?.[0]?.finishReason;
+      const detail = [
+        functionCall ? `functionCall=${functionCall.name}` : "functionCall=none",
+        toolExecuteError ? `toolExecuteError=${toolExecuteError}` : null,
+        finishReason ? `finishReason=${finishReason}` : null,
+        lastChunk ? `lastChunk=${JSON.stringify(lastChunk)}` : "lastChunk=none",
+      ]
+        .filter(Boolean)
+        .join(" ");
+      throw new Error(`Gemini response contained no reply text. ${detail}`);
     }
   }
 }

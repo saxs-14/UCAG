@@ -127,7 +127,14 @@ export function ChatWidget() {
   }
 
   return (
-    <div className="no-print fixed bottom-4 right-4 z-40" onKeyDown={handleKeyDown}>
+    // bottom-20 (not bottom-4) below sm: MobileNavBar reserves 4.25rem at
+    // the viewport bottom (globals.css's body padding-bottom) and sits at
+    // z-50, above this widget's z-40 -- a fixed bottom-4 button landed
+    // entirely under the nav bar's "Sign in" tab, so every tap on it
+    // actually triggered a navigation to /login instead of opening the
+    // assistant (confirmed via elementFromPoint at the button's own
+    // center). sm:bottom-4 once MobileNavBar is hidden (sm:hidden).
+    <div className="no-print fixed bottom-20 right-4 z-40 sm:bottom-4" onKeyDown={handleKeyDown}>
       {isOpen && (
         <div
           role="dialog"
