@@ -5,20 +5,19 @@ import { usePathname } from "next/navigation";
 import { Logo } from "@/components/Logo";
 import { LABELS } from "@/config/labels";
 import { useAuth } from "@/components/auth/AuthProvider";
-import type { CatalogStats } from "@/lib/catalog/getCatalogStats";
 
+// Three top-level destinations only -- "UMP hub" was a leftover from the
+// v1 UMP-only app and is redundant now that University of Mpumalanga is
+// just one of the 12 seeded institutions, reachable from /institutions.
+// A learner opening this nav cold should see a short, obvious list, not a
+// menu that requires already knowing what "UMP" means.
 const PUBLIC_NAV_ITEMS = [
   { href: "/", label: LABELS.nav.calculator },
   { href: "/programmes", label: LABELS.nav.programmes },
   { href: "/bursaries", label: LABELS.nav.bursaries },
-  { href: "/ump", label: "UMP hub" },
 ];
 
-interface NavBarProps {
-  stats: CatalogStats | null;
-}
-
-export function NavBar({ stats }: NavBarProps) {
+export function NavBar() {
   const pathname = usePathname();
   const { user, loading } = useAuth();
   const isLoggedIn = !!user && !user.isAnonymous;
@@ -38,7 +37,7 @@ export function NavBar({ stats }: NavBarProps) {
                 key={href}
                 href={href}
                 aria-current={active ? "page" : undefined}
-                className={`min-h-10 rounded-xl px-3 py-2 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${active ? "bg-brand-teal-soft text-brand-navy" : "text-ink-soft hover:bg-paper-overlay hover:text-ink"}`}
+                className={`min-h-10 rounded-xl px-3 py-2 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus ${active ? "bg-brand-teal-soft text-brand-teal" : "text-ink-soft hover:bg-paper-overlay hover:text-ink"}`}
               >
                 {label}
               </Link>
@@ -46,12 +45,9 @@ export function NavBar({ stats }: NavBarProps) {
           })}
         </div>
 
+        {/* stats pill removed: a raw institution count was chrome, not
+            navigation -- it told a learner nothing actionable */}
         <div className="ml-auto flex shrink-0 items-center gap-2">
-          {stats && stats.institutionCount > 0 && (
-            <span className="hidden rounded-full border border-brand-teal/25 bg-brand-teal-soft px-3 py-1 text-[10px] font-bold text-brand-navy lg:inline">
-              {stats.institutionCount} institutions
-            </span>
-          )}
           {!loading && (isLoggedIn ? (
             <Link
               href="/account"
@@ -60,10 +56,12 @@ export function NavBar({ stats }: NavBarProps) {
               Profile
             </Link>
           ) : (
-            <>
-              <Link href="/login" className="inline-flex min-h-10 items-center rounded-xl px-3 py-2 text-xs font-bold text-ink-soft transition-colors hover:bg-paper-overlay hover:text-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">Sign in</Link>
-              <Link href="/register" className="hidden min-h-10 items-center rounded-xl bg-brand-teal px-3.5 py-2 text-xs font-black text-white transition-colors hover:bg-brand-navy sm:flex focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">Create account</Link>
-            </>
+            // One CTA, not two -- "Create account" duplicated "Sign in" (the
+            // login page itself offers to register). Hidden in installed
+            // app mode on narrow widths: MobileNavBar's own "Sign in" tab
+            // already covers that case there, so showing both is redundant
+            // screen space in a standalone app shell.
+            <Link href="/login" className="app-mode-hide-narrow inline-flex min-h-10 items-center rounded-xl bg-brand-teal px-3.5 py-2 text-xs font-black text-white transition-colors hover:bg-brand-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus">Sign in</Link>
           ))}
         </div>
       </nav>

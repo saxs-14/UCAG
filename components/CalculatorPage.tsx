@@ -43,10 +43,14 @@ export function CalculatorPage() {
     <div className="w-full bg-paper">
       <section className="hero-atmosphere relative isolate overflow-hidden">
         <div aria-hidden="true" className="pointer-events-none absolute -right-28 -top-32 -z-10 size-96 rounded-full bg-brand-teal opacity-25 blur-[1px]" />
-        <div aria-hidden="true" className="pointer-events-none absolute right-[8%] top-48 -z-10 size-28 rotate-12 rounded-[2rem] bg-brand-amber opacity-90" />
+        {/* hidden below sm: tuned for the two-column desktop layout's gap;
+            on a single-column mobile layout it has no gap to sit in and
+            instead sits solidly (opacity-90, unblurred) on top of body
+            copy -- found while testing the hero at a real mobile viewport. */}
+        <div aria-hidden="true" className="pointer-events-none absolute right-[8%] top-48 -z-10 hidden size-28 rotate-12 rounded-[2rem] bg-brand-amber opacity-90 sm:block" />
         <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14 lg:px-8 lg:py-16">
           <div className="max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-brand-teal-soft">Your future, with a clearer plan</p>
+            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-text-on-brand">Your future, with a clearer plan</p>
             <h1 className="mt-4 max-w-xl font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
               Find out what <span className="text-[#edc66e]">you can study.</span>
             </h1>
@@ -60,9 +64,9 @@ export function CalculatorPage() {
               <span className="text-xs font-semibold text-white/75">Free to start · No account needed</span>
             </div>
             <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-white/75">
-              <span><span className="mr-2 text-brand-teal-soft" aria-hidden="true">✓</span>Institution-specific rules</span>
-              <span><span className="mr-2 text-brand-teal-soft" aria-hidden="true">✓</span>Clear eligibility explanations</span>
-              <span><span className="mr-2 text-brand-teal-soft" aria-hidden="true">✓</span>Sources shown where available</span>
+              <span><span className="mr-2 text-text-on-brand" aria-hidden="true">✓</span>Institution-specific rules</span>
+              <span><span className="mr-2 text-text-on-brand" aria-hidden="true">✓</span>Clear eligibility explanations</span>
+              <span><span className="mr-2 text-text-on-brand" aria-hidden="true">✓</span>Sources shown where available</span>
             </div>
           </div>
 

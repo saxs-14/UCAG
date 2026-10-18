@@ -41,7 +41,7 @@ export function MobileNavBar() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[10px] font-extrabold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus ${active ? "bg-brand-teal-soft text-brand-navy" : "text-ink-faint hover:bg-paper-overlay hover:text-ink"}`}
+            className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-xl px-1 text-[10px] font-extrabold transition-colors focus-visible:outline-2 focus-visible:outline-offset-[-2px] focus-visible:outline-focus ${active ? "bg-brand-teal-soft text-brand-teal" : "text-ink-faint hover:bg-paper-overlay hover:text-ink"}`}
           >
             <span aria-hidden="true" className="text-lg leading-none">{icon}</span>
             <span>{label}</span>
