@@ -188,15 +188,28 @@ export class GeminiChatClient {
       const reader = response.body.getReader();
       const decoder = new TextDecoder();
       let buffer = "";
+      let anyFrameYielded = false;
+      // Bounded, diagnostic-only: if the body arrives but zero SSE frames
+      // ever get parsed out of it, this is the one place that still has
+      // the raw bytes -- by the time streamReply() notices nothing was
+      // yielded, they're gone. Capped at 500 chars so a surprising
+      // response shape can't blow up log size.
+      let rawPreview = "";
       for (;;) {
         const { done, value } = await reader.read();
         if (done) break;
-        buffer += decoder.decode(value, { stream: true });
+        const decoded = decoder.decode(value, { stream: true });
+        if (rawPreview.length < 500) rawPreview += decoded.slice(0, 500 - rawPreview.length);
+        buffer += decoded;
         const { frames, rest } = splitSseFrames(buffer);
         buffer = rest;
         for (const frame of frames) {
+          anyFrameYielded = true;
           yield JSON.parse(frame.data) as GeminiStreamChunk;
         }
+      }
+      if (!anyFrameYielded && rawPreview.length > 0) {
+        throw new Error(`Gemini stream produced zero parseable SSE frames. rawPreview=${JSON.stringify(rawPreview)}`);
       }
       return;
     }
