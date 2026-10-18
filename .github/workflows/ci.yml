@@ -71,3 +71,27 @@ jobs:
 
       - name: Calculator route bundle budget
         run: npm run check:bundle-budget -- build-output.log
+
+      # chromium only -- both projects in playwright.config.ts run on the
+      # chromium engine; "mobile-chrome-3g" is a Pixel 7 device/network
+      # emulation layered on top of it, not a separate browser.
+      - name: Install Playwright browser
+        run: npx playwright install --with-deps chromium
+
+      # tests/e2e/ existed with real coverage (the calculator-to-apply
+      # journey, the UMP platform) but was never run anywhere but a
+      # developer's own machine -- wired in here so a regression in
+      # either flow actually fails CI instead of shipping unnoticed.
+      # Reuses the same Firestore emulator already started above;
+      # playwright.config.ts's own webServer spins up `npm run dev`
+      # with NEXT_PUBLIC_USE_FIREBASE_EMULATOR already set.
+      - name: Run Playwright E2E Tests
+        run: npx playwright test
+
+      - name: Upload Playwright report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 14
