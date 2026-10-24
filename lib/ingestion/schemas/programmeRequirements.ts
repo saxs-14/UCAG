@@ -65,11 +65,13 @@ const programmeExtractionItemSchema = z.object({
   facultyName: z.string().nullable(),
   qualificationType: z.enum([
     "higherCertificate",
+    "advancedCertificate",
     "diploma",
     "advancedDiploma",
     "bachelorsDegree",
     "bachelorsDegreeExtended",
     "postgraduateDiploma",
+    "postgraduateCertificate",
     "honoursDegree",
   ]),
   nqfLevel: z.number().nullable(),
