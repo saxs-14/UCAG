@@ -136,11 +136,13 @@ export interface School extends FactProvenance {
 
 export type QualificationType =
   | "higherCertificate"
+  | "advancedCertificate"
   | "diploma"
   | "advancedDiploma"
   | "bachelorsDegree"
   | "bachelorsDegreeExtended"
   | "postgraduateDiploma"
+  | "postgraduateCertificate"
   | "honoursDegree";
 
 export type ModeOfDelivery = "contact" | "online" | "blended";

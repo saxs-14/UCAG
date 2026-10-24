@@ -17,11 +17,13 @@ export const dynamic = "force-dynamic";
 
 const QUALIFICATION_LABELS: Record<QualificationType, string> = {
   higherCertificate: "Higher Certificate",
+  advancedCertificate: "Advanced Certificate",
   diploma: "Diploma",
   advancedDiploma: "Advanced Diploma",
   bachelorsDegree: "Bachelor's Degree",
   bachelorsDegreeExtended: "Bachelor's Degree (Extended)",
   postgraduateDiploma: "Postgraduate Diploma",
+  postgraduateCertificate: "Postgraduate Certificate",
   honoursDegree: "Honours Degree",
 };
 
