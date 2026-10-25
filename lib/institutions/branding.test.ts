@@ -24,4 +24,16 @@ describe("Institution Branding & Domain Detection", () => {
     const branding = getInstitutionBranding("unknown_id");
     expect(branding.institutionId).toBe("ump");
   });
+
+  it("has CPUT branding using its real scraped colors, not a guess", () => {
+    const branding = getInstitutionBranding("cput");
+    expect(branding.institutionId).toBe("cput");
+    expect(branding.primaryColor).toBe("#0198cd");
+  });
+
+  it("UNISA's branding is its real maroon/navy/gold, not the old wrong green/amber guess", () => {
+    const branding = getInstitutionBranding("unisa");
+    expect(branding.primaryColor).toBe("#930010");
+    expect(branding.secondaryColor).toBe("#003366");
+  });
 });
