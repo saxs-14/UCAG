@@ -1,0 +1,80 @@
+{
+  "institutionId": "cput",
+  "scrapedAt": "2026-10-24T18:07:54Z",
+  "verifiedOn": null,
+  "faculties": [
+    {
+      "id": "cput-fas",
+      "institutionId": "cput",
+      "name": "Applied Sciences",
+      "code": "fas",
+      "sourceUrl": "https://web.archive.org/web/20261017143925/https://www.cput.ac.za/"
+    },
+    {
+      "id": "cput-fbms",
+      "institutionId": "cput",
+      "name": "Business & Management Sciences",
+      "code": "fbms",
+      "sourceUrl": "https://web.archive.org/web/20261017143925/https://www.cput.ac.za/"
+    },
+    {
+      "id": "cput-fed",
+      "institutionId": "cput",
+      "name": "Education",
+      "code": "fed",
+      "sourceUrl": "https://web.archive.org/web/20261017143925/https://www.cput.ac.za/"
+    },
+    {
+      "id": "cput-febe",
+      "institutionId": "cput",
+      "name": "Engineering & the Built Environment",
+      "code": "febe",
+      "sourceUrl": "https://web.archive.org/web/20261017143925/https://www.cput.ac.za/"
+    },
+    {
+      "id": "cput-fhws",
+      "institutionId": "cput",
+      "name": "Health & Wellness Sciences",
+      "code": "fhws",
+      "sourceUrl": "https://web.archive.org/web/20261017143925/https://www.cput.ac.za/"
+    },
+    {
+      "id": "cput-fid",
+      "institutionId": "cput",
+      "name": "Informatics & Design",
+      "code": "fid",
+      "sourceUrl": "https://web.archive.org/web/20261017143925/https://www.cput.ac.za/"
+    }
+  ],
+  "schools": [],
+  "programmes": [],
+  "unmappedQualifications": [],
+  "brandColors": [
+    {
+      "hex": "#0198cd",
+      "occurrences": 7
+    },
+    {
+      "hex": "#00508a",
+      "occurrences": 3
+    },
+    {
+      "hex": "#6f6ac3",
+      "occurrences": 1
+    },
+    {
+      "hex": "#46296e",
+      "occurrences": 1
+    },
+    {
+      "hex": "#0d99ff",
+      "occurrences": 1
+    }
+  ],
+  "brandColorSource": "https://web.archive.org/web/20261017143925/https://www.cput.ac.za/",
+  "notes": [
+    "cput.ac.za's live homepage was unreachable when this ran (see other note for the PHP fatal errors found on its prospectus pages) -- faculties and brand colors below are from a Wayback Machine snapshot instead (https://web.archive.org/web/20261017143925/https://www.cput.ac.za/), confirmed real/current (archived 2026-10-17, same day as this run, well before the site broke) rather than a stale archive. sourceUrl for these records is the web.archive.org URL, which encodes the original cput.ac.za URL and snapshot date in its own path.",
+    "Schools/departments and programmes/courses were NOT collected for CPUT, after a second, deeper attempt specifically to find and parse the PDF prospectus this scraper's first pass assumed existed behind /faculties/<code>/courses's 'Courses (Prospectus)' link. What was actually found: (1) /study-at-cput/undergraduate/prospectus, /study-at-cput/postgraduate/prospectus, and /faculties/prospectus all return HTTP 200 but with a genuine PHP fatal error as the entire page body (e.g. \"Parse error: syntax error, unexpected token '<', expecting end of file in /var/www/html/index.php on line 50\") -- confirmed on live fetch, this is CPUT's own site being broken right now, not a scraping obstacle. (2) /faculties/fid/resources (a faculty's own 'Documents & Resources' page, checked as an alternate path to a prospectus PDF) hits the same class of PHP error (/var/www/html/includes/framework.php). (3) /faculties/fid/courses itself (not just the prospectus link) returns a real 200 with no actual course listing in the body -- confirmed not a transient issue by checking Wayback Machine snapshots of that same URL from 2025-11-14 through 2026-06-09, all of which show the identical content-less stub, so this has been the page's real state for at least several months, not a one-off glitch during this scraping session. (4) Wayback Machine DOES have older (2013-2019) archived HTML course-detail pages from a previous version of CPUT's site (/academic/faculties/<name>/prospectus/course?i=<id>), not PDFs -- deliberately NOT used as a data source here: presenting programme names/requirements from up to 13 years ago as current 2026 data would be a worse violation of 'verified, not guessed' than collecting nothing, given how much a university's programme list and entry requirements can change over that span. Net result: no PDF was ever reachable to parse (live or recently archived), and the genuinely old archived alternative was judged too stale to present as current. Faculties and brand colors remain solid, current data (see the other note on this run: collected via a same-day Wayback snapshot once the live site itself went down mid-session, not fabricated or reused from an earlier successful fetch this session).",
+    "Rechecked cput.ac.za live site in a later pass: still returning the same PHP fatal error (confirmed again, not assumed stale). Per instruction, not spending further effort on CPUT -- the Wayback-sourced faculties/colors already collected stand as the final result."
+  ]
+}

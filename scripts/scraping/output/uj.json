@@ -1,0 +1,550 @@
+{
+  "institutionId": "uj",
+  "scrapedAt": "2026-10-24T18:00:57Z",
+  "verifiedOn": null,
+  "faculties": [
+    {
+      "id": "uj-college-of-business-and-economics",
+      "institutionId": "uj",
+      "name": "College of Business and Economics (CBE)",
+      "code": "college-of-business-and-economics",
+      "sourceUrl": "https://web.archive.org/web/20260605101826/https://www.uj.ac.za/faculties/college-of-business-and-economics/"
+    },
+    {
+      "id": "uj-art-design-and-architecture",
+      "institutionId": "uj",
+      "name": "Faculty of Art, Design And Architecture",
+      "code": "art-design-and-architecture",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-education",
+      "institutionId": "uj",
+      "name": "Faculty of Education",
+      "code": "education",
+      "sourceUrl": "https://web.archive.org/web/20260605091736/https://www.uj.ac.za/faculties/education/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment",
+      "institutionId": "uj",
+      "name": "Faculty of Engineering & the Built Environment",
+      "code": "engineering-the-built-environment",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-health-sciences",
+      "institutionId": "uj",
+      "name": "Faculty of Health Sciences",
+      "code": "health-sciences",
+      "sourceUrl": "https://web.archive.org/web/20261009172032/https://www.uj.ac.za/faculties/health-sciences/"
+    },
+    {
+      "id": "uj-humanities",
+      "institutionId": "uj",
+      "name": "Faculty of Humanities",
+      "code": "humanities",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-law",
+      "institutionId": "uj",
+      "name": "Faculty of Law",
+      "code": "law",
+      "sourceUrl": "https://web.archive.org/web/20260605094756/https://www.uj.ac.za/faculties/law/"
+    },
+    {
+      "id": "uj-science",
+      "institutionId": "uj",
+      "name": "Faculty of Science",
+      "code": "science",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    }
+  ],
+  "schools": [
+    {
+      "id": "uj-art-design-and-architecture-architecture",
+      "facultyId": "uj-art-design-and-architecture",
+      "name": "Architecture",
+      "code": "architecture",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-art-design-and-architecture-graphic-design",
+      "facultyId": "uj-art-design-and-architecture",
+      "name": "Graphic Design",
+      "code": "graphic-design",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-art-design-and-architecture-multimedia",
+      "facultyId": "uj-art-design-and-architecture",
+      "name": "Multimedia",
+      "code": "multimedia",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-art-design-and-architecture-industrial-design",
+      "facultyId": "uj-art-design-and-architecture",
+      "name": "Industrial Design",
+      "code": "industrial-design",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-art-design-and-architecture-jewellery-design-and-manufacture",
+      "facultyId": "uj-art-design-and-architecture",
+      "name": "Jewellery Design",
+      "code": "jewellery-design-and-manufacture",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-art-design-and-architecture-visual-art",
+      "facultyId": "uj-art-design-and-architecture",
+      "name": "Visual Art",
+      "code": "visual-art",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-art-design-and-architecture-fashion-design",
+      "facultyId": "uj-art-design-and-architecture",
+      "name": "Fashion Design",
+      "code": "fashion-design",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-art-design-and-architecture-interior-design",
+      "facultyId": "uj-art-design-and-architecture",
+      "name": "Interior Design",
+      "code": "interior-design",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-art-design-and-architecture-design-studies",
+      "facultyId": "uj-art-design-and-architecture",
+      "name": "Design Studies",
+      "code": "design-studies",
+      "sourceUrl": "https://web.archive.org/web/20261006083550/https://www.uj.ac.za/faculties/art-design-and-architecture/"
+    },
+    {
+      "id": "uj-education-academic-administration",
+      "facultyId": "uj-education",
+      "name": "Academic Administration",
+      "code": "academic-administration",
+      "sourceUrl": "https://web.archive.org/web/20260605091736/https://www.uj.ac.za/faculties/education/"
+    },
+    {
+      "id": "uj-education-childhood-education",
+      "facultyId": "uj-education",
+      "name": "Childhood Education",
+      "code": "childhood-education",
+      "sourceUrl": "https://web.archive.org/web/20260605091736/https://www.uj.ac.za/faculties/education/"
+    },
+    {
+      "id": "uj-education-education-and-curriculum-studies",
+      "facultyId": "uj-education",
+      "name": "Education and Curriculum Studies",
+      "code": "education-and-curriculum-studies",
+      "sourceUrl": "https://web.archive.org/web/20260605091736/https://www.uj.ac.za/faculties/education/"
+    },
+    {
+      "id": "uj-education-education-leadership-and-management",
+      "facultyId": "uj-education",
+      "name": "Education Leadership and Management",
+      "code": "education-leadership-and-management",
+      "sourceUrl": "https://web.archive.org/web/20260605091736/https://www.uj.ac.za/faculties/education/"
+    },
+    {
+      "id": "uj-education-educational-psychology",
+      "facultyId": "uj-education",
+      "name": "Educational Psychology",
+      "code": "educational-psychology",
+      "sourceUrl": "https://web.archive.org/web/20260605091736/https://www.uj.ac.za/faculties/education/"
+    },
+    {
+      "id": "uj-education-science-and-technology-education",
+      "facultyId": "uj-education",
+      "name": "Mathematics, Science and Technology Education",
+      "code": "science-and-technology-education",
+      "sourceUrl": "https://web.archive.org/web/20260605091736/https://www.uj.ac.za/faculties/education/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-civil-engineering-science",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Civil Engineering Science",
+      "code": "department-of-civil-engineering-science",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-civil-engineering-technology",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Civil Engineering Technology",
+      "code": "department-of-civil-engineering-technology",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-chemical-engineering-technology",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Chemical Engineering Technology",
+      "code": "department-of-chemical-engineering-technology",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-construction-and-management-quantity-surveying",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Construction Management & Quantity Surveying",
+      "code": "department-of-construction-and-management-quantity-surveying",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-electrical-and-electronic-engineering-science",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Electrical and Electronic Engineering Science",
+      "code": "department-of-electrical-and-electronic-engineering-science",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-electrical-and-electronic-engineering-technology",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Electrical and Electronic Engineering Technology",
+      "code": "department-of-electrical-and-electronic-engineering-technology",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-mechanical-engineering-science",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Mechanical Engineering Science",
+      "code": "department-of-mechanical-engineering-science",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-mechanical-and-industrial-engineering-technology",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Mechanical and Industrial Engineering Technology",
+      "code": "department-of-mechanical-and-industrial-engineering-technology",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-metallurgy",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Metallurgy",
+      "code": "department-of-metallurgy",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-mining-and-mine-surveying",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Mining Engineering and Mine Surveying",
+      "code": "department-of-mining-and-mine-surveying",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-urban-and-regional-planning",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Urban and Regional Planning",
+      "code": "department-of-urban-and-regional-planning",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-engineering-the-built-environment-department-of-quality-and-operations-management",
+      "facultyId": "uj-engineering-the-built-environment",
+      "name": "Quality and Operations Management",
+      "code": "department-of-quality-and-operations-management",
+      "sourceUrl": "https://web.archive.org/web/20260605091755/https://www.uj.ac.za/faculties/engineering-the-built-environment/"
+    },
+    {
+      "id": "uj-health-sciences-emergency-medical-care",
+      "facultyId": "uj-health-sciences",
+      "name": "Emergency Medical Care",
+      "code": "emergency-medical-care",
+      "sourceUrl": "https://web.archive.org/web/20261009172032/https://www.uj.ac.za/faculties/health-sciences/"
+    },
+    {
+      "id": "uj-health-sciences-nursing",
+      "facultyId": "uj-health-sciences",
+      "name": "Nursing",
+      "code": "nursing",
+      "sourceUrl": "https://web.archive.org/web/20261009172032/https://www.uj.ac.za/faculties/health-sciences/"
+    },
+    {
+      "id": "uj-health-sciences-optometry",
+      "facultyId": "uj-health-sciences",
+      "name": "Optometry",
+      "code": "optometry",
+      "sourceUrl": "https://web.archive.org/web/20261009172032/https://www.uj.ac.za/faculties/health-sciences/"
+    },
+    {
+      "id": "uj-health-sciences-podiatry",
+      "facultyId": "uj-health-sciences",
+      "name": "Podiatry",
+      "code": "podiatry",
+      "sourceUrl": "https://web.archive.org/web/20261009172032/https://www.uj.ac.za/faculties/health-sciences/"
+    },
+    {
+      "id": "uj-health-sciences-sport-and-movement-studies",
+      "facultyId": "uj-health-sciences",
+      "name": "Sport and Movement Studies",
+      "code": "sport-and-movement-studies",
+      "sourceUrl": "https://web.archive.org/web/20261009172032/https://www.uj.ac.za/faculties/health-sciences/"
+    },
+    {
+      "id": "uj-humanities-anthropology-and-development-studies",
+      "facultyId": "uj-humanities",
+      "name": "Anthropology and Developmental Studies",
+      "code": "anthropology-and-development-studies",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-humanities-english",
+      "facultyId": "uj-humanities",
+      "name": "English",
+      "code": "english",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-humanities-history",
+      "facultyId": "uj-humanities",
+      "name": "History",
+      "code": "history",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-humanities-philosophy",
+      "facultyId": "uj-humanities",
+      "name": "Philosophy",
+      "code": "philosophy",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-humanities-politics-and-international-relations",
+      "facultyId": "uj-humanities",
+      "name": "Politics and International Relations",
+      "code": "politics-and-international-relations",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-humanities-psychology",
+      "facultyId": "uj-humanities",
+      "name": "Psychology",
+      "code": "psychology",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-humanities-religion-studies",
+      "facultyId": "uj-humanities",
+      "name": "Religion Studies",
+      "code": "religion-studies",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-humanities-social-work-and-community-development",
+      "facultyId": "uj-humanities",
+      "name": "Social Work and Community Development",
+      "code": "social-work-and-community-development",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-humanities-sociology",
+      "facultyId": "uj-humanities",
+      "name": "Sociology",
+      "code": "sociology",
+      "sourceUrl": "https://web.archive.org/web/20261008095201/https://www.uj.ac.za/faculties/humanities/"
+    },
+    {
+      "id": "uj-law-procedural-law",
+      "facultyId": "uj-law",
+      "name": "Procedural Law",
+      "code": "procedural-law",
+      "sourceUrl": "https://web.archive.org/web/20260605094756/https://www.uj.ac.za/faculties/law/"
+    },
+    {
+      "id": "uj-law-mercantile",
+      "facultyId": "uj-law",
+      "name": "Mercantile Law",
+      "code": "mercantile",
+      "sourceUrl": "https://web.archive.org/web/20260605094756/https://www.uj.ac.za/faculties/law/"
+    },
+    {
+      "id": "uj-law-public-law",
+      "facultyId": "uj-law",
+      "name": "Public Law",
+      "code": "public-law",
+      "sourceUrl": "https://web.archive.org/web/20260605094756/https://www.uj.ac.za/faculties/law/"
+    },
+    {
+      "id": "uj-law-private-law",
+      "facultyId": "uj-law",
+      "name": "Private Law",
+      "code": "private-law",
+      "sourceUrl": "https://web.archive.org/web/20260605094756/https://www.uj.ac.za/faculties/law/"
+    },
+    {
+      "id": "uj-law-practical-business-law",
+      "facultyId": "uj-law",
+      "name": "Practical Business Law",
+      "code": "practical-business-law",
+      "sourceUrl": "https://web.archive.org/web/20260605094756/https://www.uj.ac.za/faculties/law/"
+    },
+    {
+      "id": "uj-science-academy-of-computer-science-and-software-engineering",
+      "facultyId": "uj-science",
+      "name": "Academy of Computer and Software Engineering",
+      "code": "academy-of-computer-science-and-software-engineering",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-biochemistry",
+      "facultyId": "uj-science",
+      "name": "Biochemistry",
+      "code": "biochemistry",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-biotechnology-and-food-technology",
+      "facultyId": "uj-science",
+      "name": "Biotechnology and Food Technology",
+      "code": "biotechnology-and-food-technology",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-botany-plant-biotechnology",
+      "facultyId": "uj-science",
+      "name": "Botany & Plant Biotechnology",
+      "code": "botany-plant-biotechnology",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-chemical-sciences",
+      "facultyId": "uj-science",
+      "name": "Chemical Sciences",
+      "code": "chemical-sciences",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-geography-environmental-management-energy-studies",
+      "facultyId": "uj-science",
+      "name": "Geography, Environmental Management & Energy Studies",
+      "code": "geography-environmental-management-energy-studies",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-geology",
+      "facultyId": "uj-science",
+      "name": "Geology",
+      "code": "geology",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-mathematics-and-applied-mathematics",
+      "facultyId": "uj-science",
+      "name": "Mathematics and Applied Mathematics",
+      "code": "mathematics-and-applied-mathematics",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-physics",
+      "facultyId": "uj-science",
+      "name": "Physics",
+      "code": "physics",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-statistics",
+      "facultyId": "uj-science",
+      "name": "Statistics",
+      "code": "statistics",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    },
+    {
+      "id": "uj-science-zoology",
+      "facultyId": "uj-science",
+      "name": "Zoology",
+      "code": "zoology",
+      "sourceUrl": "https://web.archive.org/web/20261015211125/https://www.uj.ac.za/faculties/science/"
+    }
+  ],
+  "programmes": [
+    {
+      "id": "uj-law-baccalaureus-artium-iurisprudentiae",
+      "institutionId": "uj",
+      "name": "Baccalaureus Artium (Iurisprudentiae) (BA (Law))",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": null,
+      "facultyId": "uj-law",
+      "schoolId": null,
+      "nqfLevel": null,
+      "totalCredits": null,
+      "saqaId": null,
+      "duration": null,
+      "minAps": null,
+      "additionalRequirements": [],
+      "sourceUrl": "https://web.archive.org/web/20251123150032/https://www.uj.ac.za/faculties/law/courses-and-programmes/undergraduate/",
+      "note": "Extracted from faculty programme-listing page prose (name + duration where stated); no qualification code, NQF level, or APS found on this page -- UJ's pages don't consistently publish these inline the way UNISA's per-qualification pages do."
+    },
+    {
+      "id": "uj-law-baccalaureus-commercii-iurisprudentiae",
+      "institutionId": "uj",
+      "name": "Baccalaureus Commercii (Iurisprudentiae) (BCom (Law))",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": null,
+      "facultyId": "uj-law",
+      "schoolId": null,
+      "nqfLevel": null,
+      "totalCredits": null,
+      "saqaId": null,
+      "duration": null,
+      "minAps": null,
+      "additionalRequirements": [],
+      "sourceUrl": "https://web.archive.org/web/20251123150032/https://www.uj.ac.za/faculties/law/courses-and-programmes/undergraduate/",
+      "note": "Extracted from faculty programme-listing page prose (name + duration where stated); no qualification code, NQF level, or APS found on this page -- UJ's pages don't consistently publish these inline the way UNISA's per-qualification pages do."
+    },
+    {
+      "id": "uj-law-baccalaureus-legum",
+      "institutionId": "uj",
+      "name": "Baccalaureus Legum (LLB)",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": null,
+      "facultyId": "uj-law",
+      "schoolId": null,
+      "nqfLevel": null,
+      "totalCredits": null,
+      "saqaId": null,
+      "duration": null,
+      "minAps": null,
+      "additionalRequirements": [],
+      "sourceUrl": "https://web.archive.org/web/20251123150032/https://www.uj.ac.za/faculties/law/courses-and-programmes/undergraduate/",
+      "note": "Extracted from faculty programme-listing page prose (name + duration where stated); no qualification code, NQF level, or APS found on this page -- UJ's pages don't consistently publish these inline the way UNISA's per-qualification pages do."
+    }
+  ],
+  "unmappedQualifications": [],
+  "brandColors": [
+    {
+      "hex": "#f26522",
+      "occurrences": 13
+    },
+    {
+      "hex": "#cdcdcd",
+      "occurrences": 5
+    },
+    {
+      "hex": "#e5e5e5",
+      "occurrences": 4
+    },
+    {
+      "hex": "#171717",
+      "occurrences": 3
+    },
+    {
+      "hex": "#313131",
+      "occurrences": 2
+    },
+    {
+      "hex": "#00d084",
+      "occurrences": 2
+    }
+  ],
+  "brandColorSource": "https://web.archive.org/web/20261017091219/https://www.uj.ac.za/",
+  "notes": [
+    "uj.ac.za itself is behind a Cloudflare managed challenge -- both https://www.uj.ac.za/robots.txt and https://www.uj.ac.za/ returned HTTP 403 with a 'Just a moment...' challenge page on direct request (confirmed, not assumed). Solving or bypassing that challenge is out of scope for this scraper by design -- see README.md. Per explicit instruction, checked the Wayback Machine instead: archive.org has clean, genuinely recent (homepage snapshot from 2026-10-17, the day before this run) 200-status archived copies of uj.ac.za that are NOT Cloudflare challenge pages (confirmed: no 'Just a moment' text, no cf_chl markers in the archived HTML) -- Wayback's own crawler evidently isn't subject to the same block this scraper's requests hit directly. Data below is sourced entirely from those archived copies. Every sourceUrl is a web.archive.org URL, which encodes both the snapshot date and the real original uj.ac.za URL in its own path -- this IS the note that it's an archived copy, not live data; the original URL is recoverable by reading the part after the timestamp.",
+    "57 departments collected from each faculty's own archived page (department pages are UJ's nearest equivalent to UCAG's 'School' level -- UJ calls them Departments, not Schools, except for the College of Business and Economics which does use 'School'). Programmes/courses were NOT collected in this pass: each faculty's undergraduate/postgraduate programme listing is itself another page needing its own Wayback resolution + fetch, and several observed programme pages link out to PDF brochures for the actual curriculum detail (same PDF-reliance pattern as CPUT) -- scoped out of this already-large UJ archive-recovery effort rather than rushed. facultyId/schoolId cross-referencing wasn't attempted for programmes since no programmes were collected to cross-reference. No brand-color note needed: colors were extracted from the same real, recent, non-challenge-page archived homepage.",
+    "Programme collection (second pass): 3 programmes extracted from 1 faculties whose own undergraduate programme-listing page (discovered from each faculty's own page, not a guessed URL pattern -- confirmed the path isn't uniform across faculties) had real prose text, not just a PDF link. Faculties with no programme listing link found on their main page: ['College of Business and Economics (CBE)', 'Faculty of Art, Design And Architecture', 'Faculty of Education', 'Faculty of Engineering & the Built Environment']. Faculties whose listing page routes to a PDF yearbook/brochure with no real content of its own (near-empty stub, same pattern as CPUT/UNISA-Science): ['Faculty of Humanities', 'Faculty of Science'] -- consistent with the instruction to only extract from a PDF if its text is cleanly machine-readable, these PDFs were not fetched/parsed in this pass (time/scope), so these faculties have zero programmes rather than a low-confidence PDF extraction; a genuine next step would be fetching and text-checking each one individually. Every extracted programme has qualificationCode, nqfLevel, minAps, saqaId, and schoolId as null -- UJ's programme-listing pages state a qualification name, sometimes a minimum-study-duration sentence, and general purpose/career-outcome prose, but not a clean labeled code/NQF/APS the way UNISA's per-qualification detail pages do. All programmes have facultyId (the faculty whose own page they were found on); schoolId was not attempted."
+  ]
+}
