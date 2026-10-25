@@ -42,7 +42,14 @@ export async function fetchRealBursariesAndInternships(): Promise<RealBursariesA
       .map((doc) => ({ ...(doc.data() as Omit<Bursary, "id">), id: doc.id }))
       .filter(isFactVerified);
     const internships = internshipsSnap.docs
-      .map((doc) => ({ ...(doc.data() as Omit<Internship, "id">), id: doc.id }))
+      // type is required on Internship but didn't exist as a field before
+      // this distinction did -- default any pre-existing document to
+      // "internship" rather than letting it fail isFactVerified or render
+      // with an undefined type.
+      .map((doc) => {
+        const data = doc.data() as Omit<Internship, "id">;
+        return { ...data, type: data.type ?? "internship", id: doc.id };
+      })
       .filter(isFactVerified);
 
     return { bursaries, internships };

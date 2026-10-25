@@ -370,8 +370,20 @@ export interface Bursary extends FactProvenance {
   riskFlags: BursaryRiskFlag[];
 }
 
+/** Real South African usage: a "learnership" is a SETA-registered,
+ * structured work-based training programme combining study with paid
+ * workplace experience (distinct from an internship, which is typically
+ * unpaid/short-term work exposure without a formal SETA qualification
+ * attached) -- genuinely different enough that learners look for them
+ * separately, but close enough in shape (provider, field, qualification
+ * level, open/close window, apply link) that they share one collection
+ * with a discriminator rather than a parallel schema. Defaults to
+ * "internship" for existing documents written before this field existed. */
+export type InternshipType = "internship" | "learnership";
+
 export interface Internship extends FactProvenance {
   id: string;
+  type: InternshipType;
   title: string;
   provider: string;
   fieldsOfStudy: string[];

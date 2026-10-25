@@ -19,7 +19,7 @@ export const metadata = {
 export const dynamic = "force-dynamic";
 
 export default async function Bursaries() {
-  const { bursaries, internships } = await fetchRealBursariesAndInternships();
+  const { bursaries } = await fetchRealBursariesAndInternships();
   // next/server's after() -- not a bare un-awaited call -- schedules this
   // once the response has been sent, with the platform's guarantee it
   // runs to completion rather than risking the serverless function
@@ -31,7 +31,7 @@ export default async function Bursaries() {
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
       <PageHero title={LABELS.bursaries.pageTitle} subtitle={LABELS.bursaries.pageSubtitle} />
       <div className="flex w-full flex-col items-center gap-6 p-6 sm:p-8">
-        <BursariesPage bursaries={bursaries} internships={internships} />
+        <BursariesPage bursaries={bursaries} />
       </div>
     </main>
   );

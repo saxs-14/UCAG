@@ -197,6 +197,7 @@ describe("formatChatContext", () => {
       internships: [
         {
           id: "yes",
+          type: "internship",
           title: "Youth Employment Service (YES) 12-Month Work Experience Programme",
           provider: "Youth Employment Service (YES)",
           fieldsOfStudy: [],

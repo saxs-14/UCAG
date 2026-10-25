@@ -31,6 +31,9 @@ export function Footer() {
           <Link href="/bursaries" className="text-white/80 hover:text-white hover:underline">
             {LABELS.nav.bursaries}
           </Link>
+          <Link href="/internships" className="text-white/80 hover:text-white hover:underline">
+            {LABELS.nav.internships}
+          </Link>
           <Link href="/programmes" className="text-white/80 hover:text-white hover:underline">
             {LABELS.nav.programmes}
           </Link>

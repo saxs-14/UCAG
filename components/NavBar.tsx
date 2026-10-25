@@ -15,6 +15,7 @@ const PUBLIC_NAV_ITEMS = [
   { href: "/", label: LABELS.nav.calculator },
   { href: "/programmes", label: LABELS.nav.programmes },
   { href: "/bursaries", label: LABELS.nav.bursaries },
+  { href: "/internships", label: LABELS.nav.internships },
 ];
 
 export function NavBar() {
