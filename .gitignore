@@ -51,3 +51,9 @@ firestore-debug.log
 .vercel
 .env*
 .devswarm-temp/
+
+# Python scraping tooling (scripts/scraping/) -- compiled bytecode and
+# one-off debug fetches, never source.
+__pycache__/
+*.pyc
+scripts/scraping/tmp_*
