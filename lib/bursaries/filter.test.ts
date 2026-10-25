@@ -27,6 +27,7 @@ function makeBursary(overrides: Partial<Bursary>): Bursary {
 function makeInternship(overrides: Partial<Internship>): Internship {
   return {
     id: "i1",
+    type: "internship",
     title: "Test Internship",
     provider: "Test Provider",
     fieldsOfStudy: ["Computer Science"],
@@ -92,17 +93,31 @@ describe("filterInternships", () => {
       makeInternship({ id: "matric", matricOnly: true }),
       makeInternship({ id: "grad", matricOnly: false }),
     ];
-    expect(filterInternships(internships, { fieldsOfStudy: [], matricOnly: true, now }).map((i) => i.id)).toEqual([
+    expect(filterInternships(internships, { fieldsOfStudy: [], matricOnly: true, typeFilter: "all", now }).map((i) => i.id)).toEqual([
       "matric",
     ]);
-    expect(filterInternships(internships, { fieldsOfStudy: [], matricOnly: false, now }).map((i) => i.id)).toEqual([
+    expect(filterInternships(internships, { fieldsOfStudy: [], matricOnly: false, typeFilter: "all", now }).map((i) => i.id)).toEqual([
       "grad",
     ]);
-    expect(filterInternships(internships, { fieldsOfStudy: [], matricOnly: "all", now })).toHaveLength(2);
+    expect(filterInternships(internships, { fieldsOfStudy: [], matricOnly: "all", typeFilter: "all", now })).toHaveLength(2);
   });
 
   it("hides internships past their closing date", () => {
     const internships = [makeInternship({ closesOn: "2026-01-01" })];
-    expect(filterInternships(internships, { fieldsOfStudy: [], matricOnly: "all", now })).toHaveLength(0);
+    expect(filterInternships(internships, { fieldsOfStudy: [], matricOnly: "all", typeFilter: "all", now })).toHaveLength(0);
+  });
+
+  it("typeFilter separates internships from learnerships", () => {
+    const internships = [
+      makeInternship({ id: "intern", type: "internship" }),
+      makeInternship({ id: "learn", type: "learnership" }),
+    ];
+    expect(
+      filterInternships(internships, { fieldsOfStudy: [], matricOnly: "all", typeFilter: "internship", now }).map((i) => i.id)
+    ).toEqual(["intern"]);
+    expect(
+      filterInternships(internships, { fieldsOfStudy: [], matricOnly: "all", typeFilter: "learnership", now }).map((i) => i.id)
+    ).toEqual(["learn"]);
+    expect(filterInternships(internships, { fieldsOfStudy: [], matricOnly: "all", typeFilter: "all", now })).toHaveLength(2);
   });
 });

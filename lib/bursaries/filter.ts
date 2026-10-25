@@ -1,5 +1,5 @@
 import { isPastClosingDate, isSafeToPublish } from "@/lib/ingestion/bursarySafety";
-import type { Bursary, BursaryLevelRequired, Internship } from "@/lib/firestore/types";
+import type { Bursary, BursaryLevelRequired, Internship, InternshipType } from "@/lib/firestore/types";
 
 /**
  * Pure filtering logic for the bursaries/internships page. Safety checks
@@ -35,6 +35,11 @@ export interface InternshipFilterOptions {
   /** The brief calls this out as a first-class filter, not a buried
    * checkbox -- "all" | true (matric-only) | false (post-qualification). */
   matricOnly: boolean | "all";
+  /** "all" | "internship" | "learnership" -- internships and learnerships
+   * share one collection (lib/firestore/types.ts's InternshipType) but a
+   * learner looking specifically for a SETA-registered learnership wants
+   * to filter the other kind out, same as the level filter on bursaries. */
+  typeFilter: InternshipType | "all";
   now: Date;
 }
 
@@ -45,6 +50,7 @@ export function filterInternships(
   return internships.filter((i) => {
     if (isPastClosingDate(i.closesOn, options.now)) return false;
     if (options.matricOnly !== "all" && i.matricOnly !== options.matricOnly) return false;
+    if (options.typeFilter !== "all" && i.type !== options.typeFilter) return false;
     if (
       options.fieldsOfStudy.length > 0 &&
       !i.fieldsOfStudy.some((f) => options.fieldsOfStudy.includes(f))

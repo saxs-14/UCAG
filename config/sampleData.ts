@@ -270,6 +270,7 @@ export const SAMPLE_BURSARIES: Bursary[] = [
 export const SAMPLE_INTERNSHIPS: Internship[] = [
   {
     id: "sample-internship-it-matric",
+    type: "learnership",
     title: "[Sample] IT Support Learnership",
     provider: "[Sample] TechForward (Pty) Ltd",
     fieldsOfStudy: ["Information Technology", "Computer Science"],
@@ -285,6 +286,7 @@ export const SAMPLE_INTERNSHIPS: Internship[] = [
   },
   {
     id: "sample-internship-graduate-commerce",
+    type: "internship",
     title: "[Sample] Graduate Finance Internship",
     provider: "[Sample] National Business Federation",
     fieldsOfStudy: ["Accounting", "Commerce"],

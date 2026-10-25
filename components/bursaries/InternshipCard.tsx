@@ -26,6 +26,11 @@ export function InternshipCard({
             </div>
             <DeadlineBadge closesOn={internship.closesOn} />
           </div>
+          <div className="mt-1.5 flex items-center gap-2">
+            <span className="rounded-full bg-brand-coral-soft px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-brand-coral">
+              {internship.type === "learnership" ? "Learnership" : "Internship"}
+            </span>
+          </div>
           <p className="mt-2 text-sm text-ink-soft">{internship.provider}</p>
           <p className="mt-1 font-mono text-xs tabular-nums text-ink-soft">
             {formatApplicationWindow(internship.opensOn, internship.closesOn)}
