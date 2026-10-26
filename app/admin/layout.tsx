@@ -47,16 +47,16 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
 
   if (!isAdmin) {
     return (
-      <main className="mx-auto max-w-md p-6">
-        <h1 className="text-xl font-semibold">Admin</h1>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
-          Signed in as <strong>{user.email}</strong>, but this account doesn&apos;t have admin
+      <main className="mx-auto my-8 max-w-md rounded-2xl border border-line bg-paper-raised p-6">
+        <h1 className="font-display text-xl font-extrabold text-ink">Admin</h1>
+        <p className="mt-2 text-sm leading-6 text-ink-soft">
+          Signed in as <strong className="text-ink">{user.email}</strong>, but this account doesn&apos;t have admin
           access. Grant it with:
         </p>
         <pre className="mt-3 overflow-x-auto rounded-xl border border-line bg-paper p-3 text-xs text-ink">
           npm run admin:grant -- {user.email}
         </pre>
-        <p className="mt-2 text-sm text-gray-600 dark:text-gray-400">
+        <p className="mt-2 text-sm leading-6 text-ink-soft">
           then sign out and back in on this device.
         </p>
       </main>

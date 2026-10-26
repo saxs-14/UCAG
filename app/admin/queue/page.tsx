@@ -71,20 +71,26 @@ export default function QueuePage() {
   }
 
   return (
-    <div className="flex flex-col gap-4">
-      <h1 className="text-xl font-semibold">Verification queue</h1>
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+    <div className="flex w-full flex-col gap-5">
+      <header className="rounded-2xl bg-brand-navy p-5 text-white sm:p-7">
+        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-teal-soft">Human review</p>
+        <h1 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">Verification queue</h1>
+        <p className="mt-2 text-sm leading-6 text-white/80">
+          Review queue for proposed data changes awaiting human approval, edit, or rejection.
+        </p>
+      </header>
+      <p className="rounded-xl border border-line bg-paper-raised p-4 text-sm leading-6 text-ink-soft">
         Every proposed change waits here until a human approves, edits, or rejects it -- nothing
         below has been auto-published. {items.length} pending.
       </p>
       {error && (
-        <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
+        <p className="rounded-xl border border-mark-red bg-mark-red-soft p-3 text-sm text-mark-red">
           {error}
         </p>
       )}
-      {loading && <p className="text-sm text-gray-500">Loading...</p>}
+      {loading && <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">Loading...</p>}
       {!loading && items.length === 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">
           Nothing pending. Queue items appear here once a live ingestion run proposes a change
           with confidence or corroboration below the auto-publish threshold (see
           lib/ingestion/route.ts routeProposal).
@@ -92,26 +98,29 @@ export default function QueuePage() {
       )}
       <ul className="flex flex-col gap-4">
         {items.map((item) => (
-          <li key={item.id} className="flex flex-col gap-2 rounded border p-3 text-sm dark:border-gray-700">
+          <li
+            key={item.id}
+            className="flex flex-col gap-2 rounded-xl border border-line bg-paper-raised p-3 text-sm"
+          >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <span className="font-mono text-xs text-gray-500">
+              <span className="font-mono text-xs text-ink-faint">
                 {item.collection}/{item.docId} · {item.field}
               </span>
-              <span className="text-xs text-gray-500">
+              <span className="font-mono text-xs text-ink-faint">
                 confidence {(item.confidence * 100).toFixed(0)}% · {item.corroboratingSources.length}{" "}
                 corroborating source{item.corroboratingSources.length === 1 ? "" : "s"}
               </span>
             </div>
             <div className="grid grid-cols-1 gap-2 sm:grid-cols-2">
               <div>
-                <div className="text-xs font-medium text-gray-500">Current</div>
-                <pre className="overflow-x-auto rounded bg-gray-50 p-2 text-xs dark:bg-gray-900">
+                <div className="text-xs font-bold text-ink-soft">Current</div>
+                <pre className="overflow-x-auto rounded-xl border border-line bg-paper p-2 text-xs text-ink">
                   {formatValue(item.currentValue)}
                 </pre>
               </div>
               <div>
-                <div className="text-xs font-medium text-gray-500">Proposed</div>
-                <pre className="overflow-x-auto rounded bg-mark-gold-soft p-2 text-xs">
+                <div className="text-xs font-bold text-ink-soft">Proposed</div>
+                <pre className="overflow-x-auto rounded-xl border border-mark-gold/30 bg-mark-gold-soft p-2 text-xs text-ink">
                   {formatValue(item.proposedValue)}
                 </pre>
               </div>
@@ -120,32 +129,36 @@ export default function QueuePage() {
               href={item.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs text-mark-green hover:underline"
+              className="text-xs text-mark-green hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
             >
               Source
             </a>
 
             {editingId === item.id ? (
               <div className="flex flex-col gap-2">
+                <label className="text-xs font-bold text-ink" htmlFor={`edit-draft-${item.id}`}>
+                  Edited value (JSON)
+                </label>
                 <textarea
+                  id={`edit-draft-${item.id}`}
                   value={editDraft}
                   onChange={(e) => setEditDraft(e.target.value)}
                   rows={3}
-                  className="rounded border p-2 font-mono text-xs dark:border-gray-700 dark:bg-gray-900"
+                  className="rounded-xl border border-line bg-paper px-3.5 py-2.5 text-base font-mono text-ink focus:border-brand-teal focus:outline-none"
                 />
                 <div className="flex gap-2">
                   <button
                     type="button"
                     disabled={busyId === item.id}
                     onClick={() => submitEdit(item.id)}
-                    className="rounded bg-mark-green px-3 py-1 text-xs font-medium text-white disabled:opacity-50"
+                    className="min-h-11 rounded-xl bg-mark-green px-4 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                   >
                     Save edited value
                   </button>
                   <button
                     type="button"
                     onClick={() => setEditingId(null)}
-                    className="rounded border px-3 py-1 text-xs dark:border-gray-700"
+                    className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-soft hover:bg-slate-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                   >
                     Cancel
                   </button>
@@ -157,7 +170,7 @@ export default function QueuePage() {
                   type="button"
                   disabled={busyId === item.id}
                   onClick={() => act(item.id, "approve")}
-                  className="rounded bg-mark-green px-3 py-1 text-xs font-medium text-white disabled:opacity-50"
+                  className="rounded-xl bg-mark-green px-2.5 py-1 text-xs font-bold text-white hover:opacity-90 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
                   Approve
                 </button>
@@ -168,7 +181,7 @@ export default function QueuePage() {
                     setEditingId(item.id);
                     setEditDraft(formatValue(item.proposedValue));
                   }}
-                  className="rounded border px-3 py-1 text-xs dark:border-gray-700"
+                  className="rounded-xl border border-line px-2.5 py-1 text-xs font-semibold text-ink-soft hover:bg-slate-soft focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
                   Edit
                 </button>
@@ -176,7 +189,7 @@ export default function QueuePage() {
                   type="button"
                   disabled={busyId === item.id}
                   onClick={() => act(item.id, "reject")}
-                  className="rounded border border-mark-red px-3 py-1 text-xs text-mark-red disabled:opacity-50"
+                  className="rounded-xl border border-mark-red px-2.5 py-1 text-xs font-semibold text-mark-red hover:bg-mark-red-soft disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
                 >
                   Reject
                 </button>

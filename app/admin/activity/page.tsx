@@ -62,7 +62,7 @@ export default function ActivityReportPage() {
       )}
       {loading && <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">Loading...</p>}
       {!loading && rows.length === 0 && (
-        <p className="text-sm text-gray-500">
+        <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">
           No activity recorded yet -- expected on a fresh deployment or local emulator with no
           real traffic.
         </p>
