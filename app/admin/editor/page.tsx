@@ -50,74 +50,76 @@ export default function ContentEditorPage() {
   }
 
   return (
-    <div className="flex max-w-xl flex-col gap-4">
-      <h1 className="text-xl font-semibold">Content editor</h1>
-      <p className="text-sm text-gray-600 dark:text-gray-400">
+    <div className="flex w-full flex-col gap-5">
+      <header className="rounded-2xl bg-brand-navy p-5 text-white sm:p-7"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-teal-soft">Manual override</p><h1 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">Content editor</h1><p className="mt-2 text-sm leading-6 text-white/80">Patch any fact directly, one JSON edit at a time.</p></header>
+      <p className="rounded-xl border border-line bg-paper-raised p-4 text-sm leading-6 text-ink-soft">
         Manual override for any fact, one JSON patch at a time (a bespoke form per entity type is
         future work, not built this phase). Source URL is required on every save -- this route
         stamps it and today&apos;s date onto the document itself; it never lets you skip or
         backdate either.
       </p>
       {error && (
-        <p className="rounded border border-mark-red bg-mark-red-soft p-2 text-sm text-mark-red">
+        <p className="rounded-xl border border-mark-red bg-mark-red-soft p-3 text-sm text-mark-red">
           {error}
         </p>
       )}
       {success && (
-        <p className="rounded border border-mark-green bg-mark-green-soft p-2 text-sm text-mark-green">
+        <p className="rounded-xl border border-mark-green bg-mark-green-soft p-3 text-sm text-mark-green">
           {success}
         </p>
       )}
 
-      <label className="flex flex-col gap-1 text-sm">
-        Collection
-        <select
-          value={collectionName}
-          onChange={(e) => setCollectionName(e.target.value)}
-          className="rounded border p-2 dark:border-gray-700 dark:bg-gray-900"
+      <div className="flex max-w-xl flex-col gap-4">
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="text-xs font-bold text-ink">Collection</span>
+          <select
+            value={collectionName}
+            onChange={(e) => setCollectionName(e.target.value)}
+            className="min-h-11 rounded-xl border border-line bg-paper px-3.5 text-base text-ink focus:border-brand-teal focus:outline-none"
+          >
+            {EDITABLE_FACT_COLLECTIONS.map((c) => (
+              <option key={c} value={c}>
+                {c}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="text-xs font-bold text-ink">Document ID</span>
+          <input
+            value={docId}
+            onChange={(e) => setDocId(e.target.value)}
+            placeholder="e.g. ump-bsc-computer-science"
+            className="min-h-11 rounded-xl border border-line bg-paper px-3.5 text-base text-ink focus:border-brand-teal focus:outline-none"
+          />
+        </label>
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="text-xs font-bold text-ink">Patch (JSON -- only the fields you&apos;re changing)</span>
+          <textarea
+            value={patchDraft}
+            onChange={(e) => setPatchDraft(e.target.value)}
+            rows={8}
+            className="rounded-xl border border-line bg-paper px-3.5 py-2.5 font-mono text-base text-ink focus:border-brand-teal focus:outline-none"
+          />
+        </label>
+        <label className="flex flex-col gap-1.5 text-sm">
+          <span className="text-xs font-bold text-ink">Source URL (required)</span>
+          <input
+            value={sourceUrl}
+            onChange={(e) => setSourceUrl(e.target.value)}
+            placeholder="https://..."
+            className="min-h-11 rounded-xl border border-line bg-paper px-3.5 text-base text-ink focus:border-brand-teal focus:outline-none"
+          />
+        </label>
+        <button
+          type="button"
+          disabled={submitting}
+          onClick={submit}
+          className="self-start min-h-11 rounded-xl bg-mark-green px-4 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
         >
-          {EDITABLE_FACT_COLLECTIONS.map((c) => (
-            <option key={c} value={c}>
-              {c}
-            </option>
-          ))}
-        </select>
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        Document ID
-        <input
-          value={docId}
-          onChange={(e) => setDocId(e.target.value)}
-          placeholder="e.g. ump-bsc-computer-science"
-          className="rounded border p-2 dark:border-gray-700 dark:bg-gray-900"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        Patch (JSON -- only the fields you&apos;re changing)
-        <textarea
-          value={patchDraft}
-          onChange={(e) => setPatchDraft(e.target.value)}
-          rows={8}
-          className="rounded border p-2 font-mono text-xs dark:border-gray-700 dark:bg-gray-900"
-        />
-      </label>
-      <label className="flex flex-col gap-1 text-sm">
-        Source URL (required)
-        <input
-          value={sourceUrl}
-          onChange={(e) => setSourceUrl(e.target.value)}
-          placeholder="https://..."
-          className="rounded border p-2 dark:border-gray-700 dark:bg-gray-900"
-        />
-      </label>
-      <button
-        type="button"
-        disabled={submitting}
-        onClick={submit}
-        className="self-start rounded bg-mark-green px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
-      >
-        Save
-      </button>
+          Save
+        </button>
+      </div>
     </div>
   );
 }
