@@ -17,12 +17,27 @@ export const INSTITUTION_BRANDINGS: Record<string, InstitutionBranding> = {
     institutionId: "ump",
     name: "University of Mpumalanga",
     shortName: "UMP",
-    primaryColor: "#003b5c",
-    secondaryColor: "#00a896",
-    accentColor: "#d4af37",
+    // Real colors, cross-validated via two independent scrapes of
+    // ump.ac.za's own homepage/CSS (2026-10-26): #242753 is the live
+    // .navbar background-color, matching the crest's navy outline;
+    // #f7a600 is the active/hover nav accent (not Bootstrap's stock
+    // alert-warning, which is #fff3cd/#856404 -- a deliberate override),
+    // matching the crest's gold quadrant; #613098 is a heavily-used
+    // (14x in both passes) hover-text accent, not visible in the crest
+    // itself but a genuine, consistent site-wide UI color. The old navy/
+    // teal/gold values below in git history were never verified and
+    // were wrong (real site has no teal at all). This DOES deliberately
+    // diverge from app/ump/page.tsx's own UMP_NAVY/UMP_GOLD/UMP_TEAL,
+    // which docs/FIGMA_IMPLEMENTATION_PLAN.md documents as an
+    // intentionally preserved identity for that dedicated subsite --
+    // that page was left untouched; this is only the generic
+    // cross-institution banner/card branding used elsewhere.
+    primaryColor: "#242753",
+    secondaryColor: "#f7a600",
+    accentColor: "#613098",
     logoUrl: "https://www.ump.ac.za/images/logo.png",
-    heroStyle: "bg-gradient-to-br from-[#003b5c] via-[#004f7c] to-[#00a896]",
-    gradient: "from-[#003b5c] to-[#d4af37]",
+    heroStyle: "bg-gradient-to-br from-[#242753] via-[#1a1d3f] to-[#613098]",
+    gradient: "from-[#242753] to-[#f7a600]",
     textColor: "text-white",
     officialDomains: ["ump.ac.za", "student.ump.ac.za"],
   },
@@ -30,12 +45,22 @@ export const INSTITUTION_BRANDINGS: Record<string, InstitutionBranding> = {
     institutionId: "up",
     name: "University of Pretoria",
     shortName: "UP",
-    primaryColor: "#8b0000",
-    secondaryColor: "#d4af37",
-    accentColor: "#111827",
-    logoUrl: null, // was a guessed URL that 404s -- never verified
-    heroStyle: "bg-gradient-to-br from-[#700000] via-[#8b0000] to-[#b30000]",
-    gradient: "from-[#8b0000] to-[#d4af37]",
+    // Real colors, cross-validated via two independent scrapes of
+    // up.ac.za (direct site blocked by a Cloudflare challenge both
+    // times; fell back to a clean, 6-day-old Wayback snapshot, same
+    // technique as uj.ac.za). Primary/secondary/accent are the up2024
+    // theme's own named CSS custom properties (--color--primary--up-blue,
+    // --up-red, --color--secondary--up-ochre), each used hundreds of
+    // times and independently corroborated by the matching fill colors
+    // baked into two official logo SVGs (crest blue/red/gold). The old
+    // dark-red/gold/near-black guess below in git history was missing
+    // UP's actual dominant color (blue) entirely.
+    primaryColor: "#0c6fb8",
+    secondaryColor: "#d71c33",
+    accentColor: "#c48b3b",
+    logoUrl: "https://www.up.ac.za/themes/custom/up2024/images/Footer-logo.svg",
+    heroStyle: "bg-gradient-to-br from-[#003087] via-[#0c6fb8] to-[#d71c33]",
+    gradient: "from-[#0c6fb8] to-[#c48b3b]",
     textColor: "text-white",
     officialDomains: ["up.ac.za", "tuks.co.za"],
   },
@@ -43,12 +68,21 @@ export const INSTITUTION_BRANDINGS: Record<string, InstitutionBranding> = {
     institutionId: "wits",
     name: "University of the Witwatersrand",
     shortName: "Wits",
-    primaryColor: "#002147",
-    secondaryColor: "#c5a059",
-    accentColor: "#0056b3",
-    logoUrl: null, // was a guessed URL that doesn't resolve -- never verified
-    heroStyle: "bg-gradient-to-br from-[#001733] via-[#002147] to-[#003366]",
-    gradient: "from-[#002147] to-[#c5a059]",
+    // Real colors, cross-validated via two independent scrapes of
+    // wits.ac.za (reachable directly, robots.txt permits it). #003b5c
+    // and #85714d are not inferred -- Wits' own CSS literally names
+    // utility classes after them (.bg-wits-blue, .bg-wits-brown),
+    // confirmed in both passes with 60-100+ occurrences each across
+    // header/nav backgrounds and link/heading colors. #002f6c is the
+    // navy's own hover/active shade. The old navy/gold-ish guess below
+    // in git history was in the right color family but not an exact
+    // match to the real, self-named site colors.
+    primaryColor: "#003b5c",
+    secondaryColor: "#85714d",
+    accentColor: "#002f4a",
+    logoUrl: "https://www.wits.ac.za/media/wits-university-style-assets/images/wits-logo.svg",
+    heroStyle: "bg-gradient-to-br from-[#002f4a] via-[#003b5c] to-[#85714d]",
+    gradient: "from-[#003b5c] to-[#85714d]",
     textColor: "text-white",
     officialDomains: ["wits.ac.za", "students.wits.ac.za"],
   },
@@ -73,12 +107,21 @@ export const INSTITUTION_BRANDINGS: Record<string, InstitutionBranding> = {
     institutionId: "tut",
     name: "Tshwane University of Technology",
     shortName: "TUT",
-    primaryColor: "#004d40",
-    secondaryColor: "#d84315",
-    accentColor: "#00897b",
-    logoUrl: null, // was a guessed URL that doesn't resolve -- never verified
-    heroStyle: "bg-gradient-to-br from-[#00332c] via-[#004d40] to-[#00796b]",
-    gradient: "from-[#004d40] to-[#d84315]",
+    // Real colors, cross-validated via two independent scrapes of
+    // tut.ac.za (reachable directly, no robots.txt exists at all).
+    // #005596 and #e31837 are the live theme CSS's .text-primary /
+    // .btn-t4-secondary values (185 and 72 occurrences), independently
+    // corroborated by near-identical fill colors (#0a5796, #e01e38)
+    // baked into the official navbar logo SVG. #fab416 (gold) appears
+    // only twice, exclusively inside the logo artwork -- genuine but a
+    // minor accent, not a core color. The old dark-teal/burnt-orange
+    // guess below in git history matched nothing on the real site at all.
+    primaryColor: "#005596",
+    secondaryColor: "#e31837",
+    accentColor: "#fab416",
+    logoUrl: "https://www.tut.ac.za/media/tshwane-interim/site-assets/images/tut-logo.svg",
+    heroStyle: "bg-gradient-to-br from-[#003a66] via-[#005596] to-[#e31837]",
+    gradient: "from-[#005596] to-[#e31837]",
     textColor: "text-white",
     officialDomains: ["tut.ac.za", "tut4life.ac.za"],
   },
@@ -86,12 +129,27 @@ export const INSTITUTION_BRANDINGS: Record<string, InstitutionBranding> = {
     institutionId: "uct",
     name: "University of Cape Town",
     shortName: "UCT",
-    primaryColor: "#0f2027",
-    secondaryColor: "#203a43",
-    accentColor: "#2c5364",
-    logoUrl: null, // was a guessed URL that doesn't resolve -- never verified
-    heroStyle: "bg-gradient-to-br from-[#0f2027] via-[#203a43] to-[#2c5364]",
-    gradient: "from-[#0f2027] to-[#2c5364]",
+    // Real colors, cross-validated via two independent scrapes of
+    // uct.ac.za (reachable directly, robots.txt permits the homepage and
+    // /themes/ path). #00243a and #0098db are the theme's own named CSS
+    // custom properties (--uct-color--primary, --uct-color--highlight),
+    // with no :root override found anywhere -- i.e. their fallback
+    // values are the actual rendered colors. #0098db is independently
+    // corroborated by the near-identical fill color (#009ada) baked into
+    // the official crest logo SVG. #0076d1 is the site's --uct-color--link
+    // token, a real but more generic link-blue. Both passes explicitly
+    // caught and excluded Bootstrap's stock alert-warning colors
+    // (#fcf8e3/#8a6d3b) sitting in a dead, commented-out HTML block --
+    // exactly what fooled the prior pass that originally flagged this
+    // entry as needing re-verification. The old "Midnight City" CSS
+    // gradient below in git history was a generic design-asset-site
+    // gradient, not anything from the real site.
+    primaryColor: "#00243a",
+    secondaryColor: "#0098db",
+    accentColor: "#0076d1",
+    logoUrl: "https://www.uct.ac.za/themes/custom/blip_uct/logo.svg",
+    heroStyle: "bg-gradient-to-br from-[#00243a] via-[#003c69] to-[#0098db]",
+    gradient: "from-[#00243a] to-[#0098db]",
     textColor: "text-white",
     officialDomains: ["uct.ac.za", "myuct.ac.za"],
   },
@@ -134,12 +192,23 @@ export const INSTITUTION_BRANDINGS: Record<string, InstitutionBranding> = {
     institutionId: "nmu",
     name: "Nelson Mandela University",
     shortName: "NMU",
-    primaryColor: "#002f6c",
-    secondaryColor: "#ffc72c",
-    accentColor: "#0066b2",
-    logoUrl: null, // was a guessed URL that doesn't resolve -- never verified
-    heroStyle: "bg-gradient-to-br from-[#001e47] via-[#002f6c] to-[#004b93]",
-    gradient: "from-[#002f6c] to-[#ffc72c]",
+    // Real colors, cross-validated via two independent scrapes of
+    // mandela.ac.za (reachable directly, robots.txt permits the
+    // homepage -- a prior pass's "unreachable" result was a transient
+    // tooling failure, not a real site outage). #061c2c is the live
+    // navbar background (class literally named "navNMU"), also the
+    // explicit .color-bg-dark-blue utility; #fdc939 is the consistent
+    // nav/menu hover-state gold accent (9 occurrences, both passes).
+    // #07395d is a lighter secondary navy (.color-bg-blue utility,
+    // secondary nav row). The old navy/gold guess below in git history
+    // was in the right family but not an exact hex match to the real,
+    // self-named site colors.
+    primaryColor: "#061c2c",
+    secondaryColor: "#fdc939",
+    accentColor: "#07395d",
+    logoUrl: "https://www.mandela.ac.za/App_Themes/global/images/logo-white.png",
+    heroStyle: "bg-gradient-to-br from-[#061c2c] via-[#07395d] to-[#fdc939]",
+    gradient: "from-[#061c2c] to-[#fdc939]",
     textColor: "text-white",
     officialDomains: ["mandela.ac.za", "mandela.ac.za"],
   },
