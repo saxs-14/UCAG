@@ -10,7 +10,7 @@ import { subjectMarksToFormState, type SubjectFormInitialState } from "@/config/
 import type { SubjectMarkInput } from "@/lib/aps/types";
 
 const STEPS = [
-  { number: "01", title: "Explore programmes", detail: "Compare courses, qualifications and institutions.", href: "/programmes", accent: "bg-[#e3f0fa] text-[#2e639c]" },
+  { number: "01", title: "Explore programmes", detail: "Compare courses, qualifications and institutions.", href: "/programmes", accent: "bg-brand-violet-soft text-brand-violet" },
   { number: "02", title: "Find funding", detail: "Discover bursaries and internships from trusted sources.", href: "/bursaries", accent: "bg-brand-amber-soft text-brand-amber" },
   { number: "03", title: "Plan your next step", detail: "Save your options and prepare to apply.", href: "/account", accent: "bg-brand-coral-soft text-brand-coral" },
 ];
@@ -41,52 +41,56 @@ export function CalculatorPage() {
 
   return (
     <div className="w-full bg-paper">
-      <section className="hero-atmosphere relative isolate overflow-hidden">
-        <div aria-hidden="true" className="pointer-events-none absolute -right-28 -top-32 -z-10 size-96 rounded-full bg-brand-teal opacity-25 blur-[1px]" />
-        {/* hidden below sm: tuned for the two-column desktop layout's gap;
-            on a single-column mobile layout it has no gap to sit in and
-            instead sits solidly (opacity-90, unblurred) on top of body
-            copy -- found while testing the hero at a real mobile viewport. */}
-        <div aria-hidden="true" className="pointer-events-none absolute right-[8%] top-48 -z-10 hidden size-28 rotate-12 rounded-[2rem] bg-brand-amber opacity-90 sm:block" />
+      <section className="relative isolate overflow-hidden">
+        {/* Signal's flat color blocking -- no blur, no gradient wash, just
+            solid shapes. Both hidden below sm: at full opacity (unlike the
+            old blurred/faded glow they replace) they'd sit solidly on top
+            of body copy on a single-column mobile layout that has no gap
+            for them to sit in -- the same real-mobile-viewport finding
+            that scoped the second shape this way originally. */}
+        <div aria-hidden="true" className="pointer-events-none absolute -right-20 -top-24 -z-10 hidden size-80 rounded-full bg-signal-yellow sm:block" />
+        <div aria-hidden="true" className="pointer-events-none absolute right-[6%] top-44 -z-10 hidden size-24 rotate-12 rounded-[1.75rem] bg-signal-indigo sm:block" />
         <div className="mx-auto grid w-full max-w-7xl items-center gap-10 px-4 py-12 sm:px-6 sm:py-16 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] lg:gap-14 lg:px-8 lg:py-16">
           <div className="max-w-2xl">
-            <p className="text-xs font-extrabold uppercase tracking-[0.18em] text-text-on-brand">Your future, with a clearer plan</p>
-            <h1 className="mt-4 max-w-xl font-display text-4xl font-extrabold leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Find out what <span className="text-[#edc66e]">you can study.</span>
+            <p className="inline-flex items-center gap-2 rounded-full bg-brand-navy px-3.5 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.12em] text-signal-yellow">
+              Verified, not guessed
+            </p>
+            <h1 className="mt-4 max-w-xl font-display text-4xl font-bold leading-[1.05] tracking-tight text-ink sm:text-5xl lg:text-6xl">
+              Find out what you can <span className="inline-block rounded-lg bg-signal-indigo px-2.5 text-text-on-brand">study.</span>
             </h1>
-            <p className="mt-5 max-w-xl text-sm leading-7 text-white/80 sm:text-base">
+            <p className="mt-5 max-w-xl text-sm leading-7 text-ink-soft sm:text-base">
               Enter your National Senior Certificate subjects and marks. Get a clearer view of the programmes you may qualify for, the ones within reach, and the next steps that make sense for you.
             </p>
             <div className="mt-7 flex flex-wrap items-center gap-4">
-              <a href="#calculator-form-title" className="inline-flex min-h-12 items-center justify-center rounded-xl bg-brand-amber px-5 py-3 text-sm font-extrabold text-brand-navy shadow-sm transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-white">
+              <a href="#calculator-form-title" className="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-navy px-5 py-3 text-sm font-extrabold text-text-on-brand shadow-sm transition-transform hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus">
                 Calculate my options <span aria-hidden="true" className="ml-2">→</span>
               </a>
-              <span className="text-xs font-semibold text-white/75">Free to start · No account needed</span>
+              <span className="text-xs font-semibold text-ink-faint">Free to start · No account needed</span>
             </div>
-            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-white/75">
-              <span><span className="mr-2 text-text-on-brand" aria-hidden="true">✓</span>Institution-specific rules</span>
-              <span><span className="mr-2 text-text-on-brand" aria-hidden="true">✓</span>Clear eligibility explanations</span>
-              <span><span className="mr-2 text-text-on-brand" aria-hidden="true">✓</span>Sources shown where available</span>
+            <div className="mt-8 flex flex-wrap gap-x-5 gap-y-2 text-xs font-semibold text-ink-soft">
+              <span><span className="mr-2 text-brand-teal" aria-hidden="true">✓</span>Institution-specific rules</span>
+              <span><span className="mr-2 text-brand-teal" aria-hidden="true">✓</span>Clear eligibility explanations</span>
+              <span><span className="mr-2 text-brand-teal" aria-hidden="true">✓</span>Sources shown where available</span>
             </div>
           </div>
 
-          <div className="card-learner rounded-3xl p-5 text-ink sm:p-7">
+          <div className="rounded-3xl border-2 border-brand-navy bg-paper-raised p-5 text-ink sm:p-7">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-extrabold uppercase tracking-[0.14em] text-brand-teal">Start here</p>
-                <h2 className="mt-2 font-display text-2xl font-extrabold tracking-tight sm:text-3xl">Start with your marks</h2>
+                <h2 className="mt-2 font-display text-2xl font-bold tracking-tight sm:text-3xl">Start with your marks</h2>
                 <p className="mt-2 max-w-lg text-sm leading-6 text-ink-soft">A guided path from your NSC results to realistic study options.</p>
               </div>
               <span className="hidden size-12 shrink-0 items-center justify-center rounded-2xl bg-brand-teal-soft text-xl font-black text-brand-teal sm:flex" aria-hidden="true">↗</span>
             </div>
             <ol className="mt-6 space-y-3">
               {[
-                ["1", "Add your subjects", "Include your language, Maths, Life Orientation and electives."],
-                ["2", "Calculate your APS", "UCAG applies available institution-specific rules."],
-                ["3", "Understand your options", "Review matched programmes and the requirements behind each result."],
-              ].map(([number, title, detail]) => (
+                ["1", "Add your subjects", "Include your language, Maths, Life Orientation and electives.", "bg-brand-teal-soft text-brand-teal"],
+                ["2", "Calculate your APS", "UCAG applies available institution-specific rules.", "bg-brand-coral-soft text-brand-coral"],
+                ["3", "Understand your options", "Review matched programmes and the requirements behind each result.", "bg-brand-navy text-signal-yellow"],
+              ].map(([number, title, detail, accent]) => (
                 <li key={number} className="flex gap-3 rounded-2xl border border-line bg-paper p-3.5">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-brand-navy font-display text-sm font-extrabold text-white">{number}</span>
+                  <span className={`flex size-9 shrink-0 items-center justify-center rounded-xl font-display text-sm font-bold ${accent}`}>{number}</span>
                   <span>
                     <span className="block text-sm font-extrabold text-ink">{title}</span>
                     <span className="mt-1 block text-xs leading-5 text-ink-soft">{detail}</span>
@@ -101,16 +105,23 @@ export function CalculatorPage() {
         </div>
       </section>
 
-      <section className="border-b border-line bg-brand-teal-soft/70">
+      <section className="border-b border-line bg-signal-yellow">
+        {/* text-brand-navy, not text-ink, on purpose: --color-ink flips to
+            near-white in dark mode (tuned for the dark --color-paper it
+            normally sits on), but this banner's bg-signal-yellow has no
+            dark-mode override -- it's a deliberately scheme-invariant
+            bright fill, same idea as .hero-atmosphere. brand-navy is
+            likewise left scheme-invariant (always near-black) for exactly
+            this pairing, so this text stays readable in both modes. */}
         <div className="mx-auto flex w-full max-w-7xl flex-col gap-2 px-4 py-5 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
           <div className="flex items-center gap-3">
-            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-paper-raised text-xl font-black text-brand-teal" aria-hidden="true">✓</span>
+            <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-brand-navy text-xl font-black text-signal-yellow" aria-hidden="true">✓</span>
             <div>
-              <h2 className="text-sm font-extrabold text-ink">Verified where it matters.</h2>
-              <p className="mt-1 text-xs leading-5 text-ink-soft">Admissions facts should show their source, verification date and academic year.</p>
+              <h2 className="text-sm font-extrabold text-brand-navy">Verified where it matters.</h2>
+              <p className="mt-1 text-xs leading-5 text-brand-navy">Admissions facts should show their source, verification date and academic year.</p>
             </div>
           </div>
-          <Link href="/institutions" className="text-sm font-extrabold text-brand-teal underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus">
+          <Link href="/institutions" className="text-sm font-extrabold text-brand-navy underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-focus">
             Explore institutions <span aria-hidden="true">→</span>
           </Link>
         </div>

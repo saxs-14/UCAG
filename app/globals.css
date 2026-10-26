@@ -1,67 +1,84 @@
 @import "tailwindcss";
 
 @theme {
-  /* "Warm Paper" direction (2026-10-17, replacing the prior cool blue-gray
-     palette) -- the brief was explicit: the cool-gray/white version read as
-     a generic enterprise admin panel, not a product built for a school-
-     leaver about to make a real decision about their future. Cream paper +
-     a serif display face is the fix; brand-navy/brand-teal are unchanged
-     below because they already tested correctly warm against cream in the
-     approved mockup -- only the neutral/paper scale needed to move. */
-  --color-paper: #fbf6ec;
-  --color-paper-raised: #fffdf8;
-  --color-paper-overlay: #f3ead3;
-  --color-ink: #102033;
-  --color-ink-soft: #4a4030;
-  --color-ink-faint: #7a6a4d;
-  --color-line: #e3d8bf;
+  /* "Signal" direction (2026-10-26, replacing "Warm Paper") -- user
+     feedback on the previous admin-dashboard/learner UI was "I hate it, I
+     don't like it." Three concept directions were mocked up (Night Shift,
+     Field Notebook, Signal); Signal -- bold flat color blocking on a
+     bright near-white base, no gradients, no offset-shadow cards -- is
+     the one picked to ship. brand-navy becomes a true near-black ink
+     (not navy-blue) and brand-teal becomes the new primary accent, a
+     saturated indigo -- both tokens keep their names (45+ files already
+     consume them) so this is a value-only swap, not a rename. mark-*
+     (qualify/almost/not-yet) and brand-coral/violet/amber are untouched:
+     they're semantic/categorical colors used across results, bursary and
+     career-roadmap UI that have nothing to do with the hero's visual
+     identity, and changing them would be pure risk with no payoff here. */
+  --color-paper: #fafaf8;
+  --color-paper-raised: #ffffff;
+  --color-paper-overlay: #f1effb;
+  --color-ink: #14121f;
+  --color-ink-soft: #45425a;
+  --color-ink-faint: #6b6880;
+  --color-line: #e3e1ee;
   --color-mark-green: #047857;
   --color-mark-green-soft: #ecfdf5;
   --color-mark-gold: #b45309;
   --color-mark-gold-soft: #fffbeb;
   --color-mark-red: #b91c1c;
   --color-mark-red-soft: #fef2f2;
-  --color-slate: #6b5b3f;
-  --color-slate-soft: #f3ead3;
-  --color-focus: #0f766e;
-  --color-brand-navy: #102a43;
-  --color-brand-navy-soft: #243b53;
-  --color-brand-teal: #0f766e;
-  --color-brand-teal-soft: #ccfbf1;
+  --color-slate: #6b6880;
+  --color-slate-soft: #f1effb;
+  --color-focus: #4c3df0;
+  --color-brand-navy: #14121f;
+  --color-brand-navy-soft: #211f2e;
+  --color-brand-teal: #4c3df0;
+  --color-brand-teal-soft: #ecebfc;
   --color-brand-coral: #c2410c;
   --color-brand-coral-soft: #ffedd5;
   --color-brand-violet: #6d28d9;
   --color-brand-violet-soft: #f5f3ff;
   --color-brand-amber: #b45309;
   --color-brand-amber-soft: #fffbeb;
+  /* Signal's decorative flat yellow -- background/fill only (hero blobs,
+     the "Verified where it matters" banner, the eyebrow pill's backing
+     chip behind dark text). #ffd93d is far too light to pass WCAG
+     contrast as a text color on --color-paper, so unlike every other
+     --color-brand-* token this one is never used as a `text-*` class --
+     grep before adding a new consumer. */
+  --color-signal-yellow: #ffd93d;
+  /* Same reasoning, for a solid indigo fill with light text/shapes on
+     top (the hero's "study." chip, its decorative square): brand-teal's
+     dark-mode value is deliberately lighter (it doubles as a text/icon
+     color on dark paper, see NavBar/MobileNavBar active states), which
+     would read as light-on-light under a literal white/text-on-brand
+     foreground once dark mode swaps it in. Scheme-invariant, like
+     signal-yellow, so it's never used as a `text-*` class on --color-paper
+     either (the light-mode value is already a bit dark for AA on dark
+     paper). */
+  --color-signal-indigo: #4c3df0;
   /* For text on a backdrop that is always brand-navy regardless of color
      scheme (.hero-atmosphere) -- matches the "color/text-on-brand" token
      already defined in the canonical Figma design system
      (figma.com/design/ESMzjguGV5nlAK7fE1hlVD) but never wired into code.
-     text-brand-teal-soft looks right in light mode here, but that token's
-     own dark-mode override (#0d2e2a, tuned for its real job as a light
-     background chip) makes dark-teal text unreadable against the
-     permanently-dark hero once a learner's device prefers dark mode --
-     the same invisible-active-tab bug class just fixed in NavBar/
-     MobileNavBar. No dark-mode override is needed or wanted: this token's
-     only job is "stay legible on navy," in either color scheme. */
-  --color-text-on-brand: #fffdf8;
+     No dark-mode override is needed or wanted: this token's only job is
+     "stay legible on a permanently-dark ink background," in either color
+     scheme. */
+  --color-text-on-brand: #fafaf8;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
-  /* Was an alias for --font-sans (no distinct display face existed at all).
-     Fraunces gives every heading using font-display real character instead
-     of just being bolded body text -- the single highest-leverage change
-     in this pass, since font-display is already wired through
-     ApplicationMission/ResultsSection/AdmissionPathwayGraph/ChatWidget/
-     CircledMark. Loaded by the same data-saver-aware script as Inter, see
-     app/layout.tsx's RICH_FONTS_SCRIPT -- falls back to the serif stack
-     below (not a sans fallback) so a save-data visitor still gets some
-     typographic character, not an invisible request for a font that never
-     arrives. */
-  --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
-  /* Weights 600/700/800 (+ italic 600) loaded to match every existing
-     font-display consumer across the app -- grep before changing this
-     file further. */
+  /* Was Fraunces (a serif, for the "Warm Paper" direction). Signal's
+     headlines want a bold, geometric, confident display face instead of
+     a literary one -- Space Grotesk gives every heading using
+     font-display that character. Loaded by the same data-saver-aware
+     script as Inter, see app/layout.tsx's RICH_FONTS_SCRIPT -- falls back
+     to a geometric sans stack below (not a serif) so a save-data visitor
+     still gets a display face in the right register, not an invisible
+     request for a font that never arrives. */
+  --font-display: "Space Grotesk", ui-sans-serif, "Helvetica Neue", Arial, sans-serif;
+  /* Weights 600/700 loaded to match every existing font-display consumer
+     across the app -- grep before changing this file further. No italic:
+     nothing uses font-display italic (Fraunces' only reason to load one). */
 }
 
 body {
@@ -95,31 +112,30 @@ h1, h2, h3 { overflow-wrap: break-word; }
   color: white;
 }
 
-/* "Warm Paper" direction's signature card treatment -- confident 2px ink
-   border + a solid offset shadow in a rotating accent color, deliberately
-   NOT used everywhere (.card-learner stays the quieter default for dense
-   lists like programme/bursary results, where a bold shadow on every item
-   would be visual noise). Scoped to genuinely hero-level content: the
-   calculator's 3-step cards and primary CTA, matching the approved mockup
-   exactly. --card-bold-shadow is set per-instance (teal/gold/coral) to
-   get the mockup's alternating accent without three near-duplicate classes. */
+/* Signal's card treatment -- flat, confident, no offset "sticker" shadow
+   (that was "Warm Paper"'s signature trope, deliberately dropped). A 2px
+   ink border and a colored top accent instead; .card-learner stays the
+   quieter default for dense lists like programme/bursary results, where
+   even a top accent on every item would be visual noise. Scoped to
+   genuinely hero-level content: the calculator's 3-step cards and
+   bursary's numbered steps. --card-bold-shadow is set per-instance
+   (teal/gold/coral) to get an alternating accent without three
+   near-duplicate classes -- the variable name is kept as-is (it now
+   colors a border, not a shadow) so call sites didn't need to change. */
 .card-bold {
   background: var(--color-paper-raised);
   border: 2px solid var(--color-brand-navy);
-  border-radius: 0.875rem;
-  box-shadow: 5px 5px 0 var(--card-bold-shadow, var(--color-brand-teal));
+  border-top: 4px solid var(--card-bold-shadow, var(--color-brand-teal));
+  border-radius: 1.25rem;
 }
 
 .btn-bold {
-  border: 2px solid var(--color-brand-navy);
-  border-radius: 0.75rem;
-  box-shadow: 4px 4px 0 var(--color-brand-navy);
-  transition: transform 120ms ease, box-shadow 120ms ease;
+  border-radius: 999px;
+  transition: transform 120ms ease, opacity 120ms ease;
 }
 
 .btn-bold:active {
-  transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0 var(--color-brand-navy);
+  transform: scale(0.97);
 }
 
 button, a, select, input { -webkit-tap-highlight-color: transparent; }
@@ -181,23 +197,22 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --color-paper: #0b1220;
-    --color-paper-raised: #121c2b;
-    --color-paper-overlay: #1c2a3d;
-    --color-ink: #f5f7fa;
-    --color-ink-soft: #c7d2df;
-    --color-ink-faint: #9aa9ba;
-    --color-line: #263548;
-    /* --color-slate (not just -soft) needs its own override here too --
-       the light-mode value above was just warmed from a cool blue-gray to
-       a warm brown (#6b5b3f), which would otherwise leak into dark mode
-       unchanged as a dark-on-dark pairing against --color-slate-soft's own
-       dark override 3 lines down (the exact bug class fixed in the
-       calculator's status-icon contrast issue earlier this session --
-       UnscoredProgrammeCard.tsx's "Verified programme" badge and
-       CircledMark.tsx's "neutral" variant both use bare text-slate). */
-    --color-slate: #c9b896;
-    --color-slate-soft: #172435;
+    --color-paper: #0b0a12;
+    --color-paper-raised: #15131f;
+    --color-paper-overlay: #201e2e;
+    --color-ink: #f5f4fa;
+    --color-ink-soft: #c7c4d6;
+    --color-ink-faint: #9b96ad;
+    --color-line: #2b2838;
+    /* --color-slate (not just -soft) needs its own override here too, so
+       it doesn't leak into dark mode unchanged as a dark-on-dark pairing
+       against --color-slate-soft's own dark override 2 lines down (the
+       exact bug class fixed in the calculator's status-icon contrast
+       issue previously -- UnscoredProgrammeCard.tsx's "Verified
+       programme" badge and CircledMark.tsx's "neutral" variant both use
+       bare text-slate). */
+    --color-slate: #b6b2c9;
+    --color-slate-soft: #201e2e;
     /* Desaturated/lightened tonal variants, not inverted colors -- the
        light-mode values, tuned for dark text on a near-white soft fill,
        read as blown-out and low-contrast on a dark paper background, so
@@ -211,8 +226,12 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
     --color-mark-gold-soft: #2e2308;
     --color-mark-red: #f87171;
     --color-mark-red-soft: #2e1212;
-    --color-brand-teal: #2dd4bf;
-    --color-brand-teal-soft: #0d2e2a;
+    /* A lighter periwinkle, not the light-mode indigo unchanged -- #4c3df0
+       text on a near-black --color-paper falls well short of 4.5:1.
+       Picked distinct enough in hue from brand-violet's own dark variant
+       (#a78bfa, pinker/lighter) that the two stay tellable apart. */
+    --color-brand-teal: #8b83fb;
+    --color-brand-teal-soft: #221f3d;
     --color-brand-coral: #fb923c;
     --color-brand-coral-soft: #2e1c0d;
     --color-brand-violet: #a78bfa;
