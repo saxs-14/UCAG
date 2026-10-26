@@ -4,6 +4,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
 import { getInstitutionBranding } from "@/lib/institutions/branding";
+import { InstitutionLogo } from "@/components/institutions/InstitutionLogo";
 import { fetchRealCatalog } from "@/lib/catalog/getRealCatalog";
 import type { Programme } from "@/lib/firestore/types";
 
@@ -80,9 +81,7 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
           </div>
 
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-white/15 text-2xl font-extrabold text-white border border-white/30 shadow-inner">
-              {inst.shortName.substring(0, 3)}
-            </div>
+            <InstitutionLogo logoUrl={branding.logoUrl} shortName={inst.shortName} />
             <div>
               <h1 className="font-display text-3xl font-extrabold tracking-tight text-white sm:text-4xl leading-tight">
                 {inst.name} ({inst.shortName})

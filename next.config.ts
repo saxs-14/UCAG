@@ -51,7 +51,16 @@ const CONTENT_SECURITY_POLICY = [
   "script-src 'self' 'unsafe-inline' https://apis.google.com",
   "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com",
   "font-src 'self' https://fonts.gstatic.com",
-  "img-src 'self' data:",
+  // The institution detail page renders each university's own real,
+  // verified logo (lib/institutions/branding.ts, components/institutions/
+  // InstitutionLogo.tsx) as a plain <img> from that institution's own
+  // domain -- deliberately NOT proxied through next/image, so this is
+  // the only place that needs updating, not images.remotePatterns below.
+  // Each hostname here was independently fetched and confirmed to serve
+  // a real image (not a guessed path) before being added; institutions
+  // without a verified logo (uj, cput) have logoUrl: null and fall back
+  // to the text-initial badge instead of needing an entry here.
+  "img-src 'self' data: https://www.ump.ac.za https://www.up.ac.za https://www.wits.ac.za https://www.tut.ac.za https://www.uct.ac.za https://www.mandela.ac.za",
   [
     "connect-src 'self' https://*.googleapis.com",
     isFirebaseEmulatorMode ? "http://127.0.0.1:9099 http://127.0.0.1:8080" : "",
