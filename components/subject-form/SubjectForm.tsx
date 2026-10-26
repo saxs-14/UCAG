@@ -207,7 +207,7 @@ export function SubjectForm({
         onClick={calculate}
         disabled={calcStage !== null}
         aria-live="polite"
-        className="btn-bold flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-teal px-6 text-sm font-extrabold text-white transition-colors hover:bg-teal-700 disabled:cursor-wait disabled:opacity-90"
+        className="btn-bold flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-teal px-6 text-sm font-extrabold text-white transition-colors hover:bg-[#352ab8] disabled:cursor-wait disabled:opacity-90"
       >
         {calcStage !== null ? (
           <>

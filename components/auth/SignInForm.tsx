@@ -50,7 +50,7 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
         <input
           type="email"
           required
-          className="rounded border border-line bg-paper-raised px-2 py-1 text-ink focus:border-mark-green focus:outline-none"
+          className="min-h-11 rounded-xl border border-line bg-paper-raised px-3.5 text-base text-ink focus:border-mark-green focus:outline-none"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
         />
@@ -60,7 +60,7 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
         <input
           type="password"
           required
-          className="rounded border border-line bg-paper-raised px-2 py-1 text-ink focus:border-mark-green focus:outline-none"
+          className="min-h-11 rounded-xl border border-line bg-paper-raised px-3.5 text-base text-ink focus:border-mark-green focus:outline-none"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
         />
@@ -69,7 +69,7 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
       <button
         type="submit"
         disabled={submitting}
-        className="rounded bg-mark-green px-3 py-1.5 text-sm font-medium text-white hover:opacity-90 disabled:opacity-50"
+        className="min-h-11 rounded-xl bg-mark-green px-3 py-1.5 text-sm font-bold text-white hover:opacity-90 disabled:opacity-50"
       >
         {LABELS.account.signInButton}
       </button>
@@ -77,11 +77,11 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
         type="button"
         disabled={submitting}
         onClick={handleGoogleSignIn}
-        className="rounded border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
+        className="min-h-11 rounded-xl border border-line px-3 py-1.5 text-sm font-medium text-ink-soft hover:bg-slate-soft"
       >
         {LABELS.account.googleButton}
       </button>
-      <button type="button" className="text-left text-sm font-medium text-mark-green hover:underline" onClick={onSwitchToSignUp}>
+      <button type="button" className="text-left text-sm font-bold text-mark-green hover:underline" onClick={onSwitchToSignUp}>
         {LABELS.account.switchToSignUp}
       </button>
     </form>
