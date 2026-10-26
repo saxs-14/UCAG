@@ -1,0 +1,141 @@
+[
+  {
+    "institutionId": "ump",
+    "sourceUrl": "https://www.ump.ac.za/",
+    "status": "ok",
+    "realColors": [
+      {
+        "hex": "#613098",
+        "occurrences": 14
+      },
+      {
+        "hex": "#d4d7d9",
+        "occurrences": 12
+      },
+      {
+        "hex": "#f7a600",
+        "occurrences": 12
+      },
+      {
+        "hex": "#03062b",
+        "occurrences": 7
+      },
+      {
+        "hex": "#242753",
+        "occurrences": 3
+      },
+      {
+        "hex": "#003064",
+        "occurrences": 2
+      }
+    ],
+    "logoCandidate": {
+      "url": "https://www.ump.ac.za/images/logo.png",
+      "contentType": "image/png",
+      "bytes": 59333
+    },
+    "hardcodedValue": {
+      "primary": "#003b5c",
+      "secondary": "#00a896",
+      "accent": "#d4af37"
+    },
+    "verdict": "wrong-or-unconfirmed"
+  },
+  {
+    "institutionId": "up",
+    "sourceUrl": "https://www.up.ac.za/",
+    "status": "unreachable",
+    "note": "homepage request failed or returned non-200 (status=None)"
+  },
+  {
+    "institutionId": "wits",
+    "sourceUrl": "https://www.wits.ac.za/",
+    "status": "ok",
+    "realColors": [
+      {
+        "hex": "#003b5c",
+        "occurrences": 2
+      },
+      {
+        "hex": "#f2f2f2",
+        "occurrences": 1
+      }
+    ],
+    "logoCandidate": {
+      "url": "https://www.wits.ac.za/media/wits-university-style-assets/images/wits-logo.svg",
+      "contentType": "image/svg+xml",
+      "bytes": 59433
+    },
+    "hardcodedValue": {
+      "primary": "#002147",
+      "secondary": "#c5a059",
+      "accent": "#0056b3"
+    },
+    "verdict": "wrong-or-unconfirmed"
+  },
+  {
+    "institutionId": "tut",
+    "sourceUrl": "https://www.tut.ac.za/",
+    "status": "ok",
+    "realColors": [],
+    "logoCandidate": {
+      "url": "https://www.tut.ac.za/media/tshwane-interim/site-assets/images/tut-logo.svg",
+      "contentType": "image/svg+xml",
+      "bytes": 26508
+    },
+    "hardcodedValue": {
+      "primary": "#004d40",
+      "secondary": "#d84315",
+      "accent": "#00897b"
+    },
+    "verdict": "wrong-or-unconfirmed"
+  },
+  {
+    "institutionId": "uct",
+    "sourceUrl": "https://www.uct.ac.za/",
+    "status": "ok",
+    "realColors": [
+      {
+        "hex": "#fcf8e3",
+        "occurrences": 1
+      },
+      {
+        "hex": "#8a6d3b",
+        "occurrences": 1
+      },
+      {
+        "hex": "#bce8f1",
+        "occurrences": 1
+      },
+      {
+        "hex": "#c9b882",
+        "occurrences": 1
+      },
+      {
+        "hex": "#0098db",
+        "occurrences": 1
+      },
+      {
+        "hex": "#e5233b",
+        "occurrences": 1
+      }
+    ],
+    "logoCandidate": {
+      "url": "https://www.uct.ac.za/themes/custom/blip_uct/logo.svg",
+      "contentType": "image/svg+xml",
+      "bytes": 30430
+    },
+    "hardcodedValue": {
+      "primary": "#0f2027",
+      "secondary": "#203a43",
+      "accent": "#2c5364"
+    },
+    "verdict": "wrong-or-unconfirmed"
+  },
+  {
+    "institutionId": "nmu",
+    "sourceUrl": "https://www.mandela.ac.za/",
+    "status": "unreachable",
+    "note": "homepage request failed or returned non-200 (status=None)"
+  }
+]
