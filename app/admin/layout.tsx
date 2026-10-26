@@ -24,10 +24,14 @@ const NAV = [
 ] as const;
 
 export default function AdminLayout({ children }: { children: ReactNode }) {
-  const { user, loading, isAdmin } = useAuth();
+  const { user, loading, isAdmin, adminClaimsReady } = useAuth();
   const pathname = usePathname();
 
-  if (loading) {
+  // Wait for adminClaimsReady too, not just loading -- otherwise a real
+  // admin who just signed in and got redirected straight here (see
+  // app/login/page.tsx) sees a flash of "doesn't have admin access"
+  // before isAdmin has actually resolved from false to true.
+  if (loading || (user && !adminClaimsReady)) {
     return <main className="p-6 text-sm text-ink-soft">Checking access...</main>;
   }
 
@@ -38,7 +42,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
         <p className="mt-2 text-sm leading-6 text-ink-soft">
           Sign in with an admin account to continue.
         </p>
-        <Link href="/account" className="mt-4 inline-flex min-h-11 items-center rounded-full bg-brand-teal px-5 font-bold text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2">
+        <Link href="/login" className="mt-4 inline-flex min-h-11 items-center rounded-full bg-brand-teal px-5 font-bold text-white hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-teal focus-visible:ring-offset-2">
           Go to sign in
         </Link>
       </main>

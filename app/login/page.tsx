@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { SignInForm } from "@/components/auth/SignInForm";
@@ -9,12 +8,17 @@ import { Logo } from "@/components/Logo";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState<"learner" | "admin">("learner");
+  const { user, isAdmin, adminClaimsReady } = useAuth();
 
-  // Redirect if already logged in
+  // Redirect if already logged in -- wait for adminClaimsReady so an admin
+  // account doesn't get sent to /account first (isAdmin defaults false
+  // until the role claim on their fresh ID token has actually resolved,
+  // see AuthProvider.tsx). This is the only sign-in page in the app now --
+  // there's no separate admin portal to route into first.
   if (user && !user.isAnonymous) {
-    router.push("/account");
+    if (adminClaimsReady) {
+      router.push(isAdmin ? "/admin" : "/account");
+    }
     return null;
   }
 
@@ -31,27 +35,6 @@ export default function LoginPage() {
           <p className="text-xs text-ink-soft">
             Access your saved APS results, shortlisted university programmes, and application checklist.
           </p>
-        </div>
-
-        {/* Portal selector tabs */}
-        <div className="flex rounded-xl bg-paper p-1 border border-line mb-6 text-xs font-bold">
-          <button
-            type="button"
-            onClick={() => setActiveTab("learner")}
-            className={`flex-1 py-2 rounded-lg text-center transition ${
-              activeTab === "learner"
-                ? "bg-brand-teal text-white shadow-xs"
-                : "text-ink-soft hover:text-ink"
-            }`}
-          >
-            Learner
-          </button>
-          <Link
-            href="/admin/login"
-            className="flex-1 py-2 rounded-lg text-center text-ink-soft hover:text-ink transition"
-          >
-            Admin
-          </Link>
         </div>
 
         <SignInForm onSwitchToSignUp={() => router.push("/register")} />
