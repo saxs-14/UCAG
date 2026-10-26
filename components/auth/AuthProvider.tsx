@@ -13,6 +13,13 @@ interface AuthContextValue {
    * a fresh ID token. False -- never undefined -- while that check is
    * still in flight, so admin-only UI defaults closed. */
   isAdmin: boolean;
+  /** True once isAdmin reflects the CURRENT user (or there is no user).
+   * `loading` flips false as soon as onAuthStateChanged fires, which is
+   * before the separate async getIdTokenResult() call below resolves --
+   * a consumer that redirects based on isAdmin right after `loading`
+   * goes false would always see the stale default (false) and send a
+   * real admin to the wrong place. Wait for this instead. */
+  adminClaimsReady: boolean;
   /** True when Firebase Auth couldn't initialize at all -- e.g. this
    * deployment has no real Firebase project's credentials configured
    * (NEXT_PUBLIC_FIREBASE_* env vars). The calculator, bursaries, and
@@ -27,6 +34,7 @@ const AuthContext = createContext<AuthContextValue>({
   user: null,
   loading: true,
   isAdmin: false,
+  adminClaimsReady: false,
   authUnavailable: false,
 });
 
@@ -39,6 +47,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const [isAdmin, setIsAdmin] = useState(false);
+  const [adminClaimsReady, setAdminClaimsReady] = useState(false);
   const [authUnavailable, setAuthUnavailable] = useState(false);
 
   useEffect(() => {
@@ -59,9 +68,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
       setLoading(false);
+      setAdminClaimsReady(false); // a new user's claims (incl. "no user") aren't checked yet
 
       if (!u) {
         setIsAdmin(false);
+        setAdminClaimsReady(true); // nothing to check -- settled immediately
         return;
       }
 
@@ -70,13 +81,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       // up without requiring a manual sign-out/sign-in.
       getIdTokenResult(u, true)
         .then((result) => setIsAdmin(result.claims.role === "admin"))
-        .catch(() => setIsAdmin(false));
+        .catch(() => setIsAdmin(false))
+        .finally(() => setAdminClaimsReady(true));
     });
     return unsubscribe;
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, authUnavailable }}>
+    <AuthContext.Provider value={{ user, loading, isAdmin, adminClaimsReady, authUnavailable }}>
       {children}
     </AuthContext.Provider>
   );
