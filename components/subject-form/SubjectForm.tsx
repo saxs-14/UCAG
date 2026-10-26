@@ -22,6 +22,20 @@ const LIFE_ORIENTATION_CODE = "LO";
 const MIN_ELECTIVES = 3;
 const MAX_ELECTIVES = 4;
 
+/** Each stage names a real step the calculation actually does (lib/aps/
+ * engine.ts + lib/matching/engine.ts), not decorative filler -- the
+ * brief asked for the calculator to feel like it's genuinely working for
+ * the learner, and a staged sequence only earns that if it's honest
+ * about what's happening, matching the same "institution-specific
+ * rules, not one generic score" message the rest of the app leads with. */
+const CALC_STAGES = [
+  "Reading your subjects and marks...",
+  "Applying the institution's APS rules...",
+  "Matching against verified programmes...",
+  "Done.",
+] as const;
+const CALC_STAGE_MS = 320;
+
 interface ElectiveSlot {
   code: string | null;
   percentage: number | null;
@@ -49,6 +63,7 @@ export function SubjectForm({
   const [removingIndex, setRemovingIndex] = useState<number | null>(null);
   const [targetInstitution, setTargetInstitution] = useState("ump");
   const [validationError, setValidationError] = useState<string | null>(null);
+  const [calcStage, setCalcStage] = useState<number | null>(null);
 
   const firstAdditionalLanguageOptions = FIRST_ADDITIONAL_LANGUAGE_OPTIONS.filter((lang) => lang !== homeLanguage);
   const selectedElectiveCodes = electives.map((e) => e.code).filter(Boolean);
@@ -79,7 +94,27 @@ export function SubjectForm({
       return;
     }
     setValidationError(null);
-    onMarksChange?.(marks);
+
+    const prefersReducedMotion =
+      typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    if (prefersReducedMotion) {
+      onMarksChange?.(marks);
+      return;
+    }
+
+    setCalcStage(0);
+    let stage = 0;
+    const advance = () => {
+      stage += 1;
+      if (stage >= CALC_STAGES.length) {
+        setCalcStage(null);
+        onMarksChange?.(marks);
+        return;
+      }
+      setCalcStage(stage);
+      window.setTimeout(advance, CALC_STAGE_MS);
+    };
+    window.setTimeout(advance, CALC_STAGE_MS);
   }
 
   function updateElective(index: number, patch: Partial<ElectiveSlot>) {
@@ -167,9 +202,24 @@ export function SubjectForm({
 
       {validationError && <p role="alert" className="rounded-xl border border-mark-red/30 bg-mark-red-soft p-3 text-sm font-semibold text-mark-red">{validationError}</p>}
 
-      <button type="button" onClick={calculate} className="btn-bold flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-teal px-6 text-sm font-extrabold text-white hover:bg-teal-700">
-        <TargetIcon size={ICON_SIZE.sm} />
-        Calculate & find my options
+      <button
+        type="button"
+        onClick={calculate}
+        disabled={calcStage !== null}
+        aria-live="polite"
+        className="btn-bold flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-teal px-6 text-sm font-extrabold text-white transition-colors hover:bg-teal-700 disabled:cursor-wait disabled:opacity-90"
+      >
+        {calcStage !== null ? (
+          <>
+            <span className="size-4 shrink-0 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+            {CALC_STAGES[calcStage]}
+          </>
+        ) : (
+          <>
+            <TargetIcon size={ICON_SIZE.sm} />
+            Calculate & find my options
+          </>
+        )}
       </button>
     </form>
   );
