@@ -184,7 +184,7 @@ export function AccountPage() {
         ) : <p className="mt-4 rounded-xl bg-paper p-4 text-sm text-ink-faint">{LABELS.account.savedMarksEmpty}</p>}
       </section>
 
-      <LearnerApplicationJourney profile={profile!} />
+      {profile && <LearnerApplicationJourney profile={profile} />}
 
       <section className="rounded-2xl border border-line bg-paper-raised p-5 shadow-sm">
         <h2 className="text-sm font-extrabold uppercase tracking-wide text-brand-coral">{LABELS.account.shortlistHeading}</h2>
