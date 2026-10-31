@@ -1,0 +1,127 @@
+{
+  "institutionId": "ukzn",
+  "scrapedAt": "2026-10-31T09:40:00Z",
+  "verifiedOn": null,
+  "faculties": [
+    {
+      "id": "ukzn-caes",
+      "institutionId": "ukzn",
+      "name": "College of Agriculture, Engineering and Science (CAES)",
+      "code": "caes",
+      "sourceUrl": "https://caes.ukzn.ac.za/about_us/"
+    },
+    {
+      "id": "ukzn-chs",
+      "institutionId": "ukzn",
+      "name": "College of Health Sciences (CHS)",
+      "code": "chs",
+      "sourceUrl": "https://chs.ukzn.ac.za/introduction/"
+    },
+    {
+      "id": "ukzn-clms",
+      "institutionId": "ukzn",
+      "name": "College of Law and Management Studies (CLMS)",
+      "code": "clms",
+      "sourceUrl": "https://clms.ukzn.ac.za/about-us/the-college/"
+    },
+    {
+      "id": "ukzn-coh",
+      "institutionId": "ukzn",
+      "name": "College of Humanities (COH)",
+      "code": "coh",
+      "sourceUrl": "https://coh.ukzn.ac.za/about-us/the-college"
+    }
+  ],
+  "schools": [
+    {
+      "id": "ukzn-caes-agriculture-and-science",
+      "facultyId": "ukzn-caes",
+      "name": "School of Agricultural, Earth and Environmental Sciences",
+      "code": "agriculture-and-science",
+      "sourceUrl": "https://caes.ukzn.ac.za/about_us/",
+      "note": "CAES's own nav menu labels this school simply 'Agriculture and Science' (links to agriculture-science.ukzn.ac.za); the fuller name here is that subdomain's own homepage title. Kept the shorter nav label out of the record's `name` was considered but the subdomain's own self-description is more precise -- see schoolHomepageUrl."
+    },
+    {
+      "id": "ukzn-caes-engineering",
+      "facultyId": "ukzn-caes",
+      "name": "School of Engineering",
+      "code": "engineering",
+      "sourceUrl": "https://caes.ukzn.ac.za/about_us/"
+    },
+    {
+      "id": "ukzn-chs-medicine",
+      "facultyId": "ukzn-chs",
+      "name": "School of Medicine",
+      "code": "medicine",
+      "sourceUrl": "https://chs.ukzn.ac.za/"
+    },
+    {
+      "id": "ukzn-chs-health-sciences",
+      "facultyId": "ukzn-chs",
+      "name": "School of Health Sciences",
+      "code": "health-sciences",
+      "sourceUrl": "https://chs.ukzn.ac.za/"
+    },
+    {
+      "id": "ukzn-clms-gsbl",
+      "facultyId": "ukzn-clms",
+      "name": "Graduate School of Business and Leadership",
+      "code": "gsbl",
+      "sourceUrl": "https://clms.ukzn.ac.za/about-us/the-college/"
+    },
+    {
+      "id": "ukzn-clms-commerce",
+      "facultyId": "ukzn-clms",
+      "name": "School of Commerce",
+      "code": "commerce",
+      "sourceUrl": "https://clms.ukzn.ac.za/about-us/the-college/"
+    },
+    {
+      "id": "ukzn-clms-law",
+      "facultyId": "ukzn-clms",
+      "name": "School of Law",
+      "code": "law",
+      "sourceUrl": "https://clms.ukzn.ac.za/about-us/the-college/"
+    },
+    {
+      "id": "ukzn-coh-arts",
+      "facultyId": "ukzn-coh",
+      "name": "School of Arts",
+      "code": "arts",
+      "sourceUrl": "https://coh.ukzn.ac.za/about-us/the-college"
+    },
+    {
+      "id": "ukzn-coh-education",
+      "facultyId": "ukzn-coh",
+      "name": "School of Education",
+      "code": "education",
+      "sourceUrl": "https://coh.ukzn.ac.za/about-us/the-college"
+    },
+    {
+      "id": "ukzn-coh-social-sciences",
+      "facultyId": "ukzn-coh",
+      "name": "School of Social Sciences",
+      "code": "social-sciences",
+      "sourceUrl": "https://coh.ukzn.ac.za/about-us/the-college"
+    }
+  ],
+  "programmes": [],
+  "unmappedQualifications": [],
+  "brandColors": [
+    { "hex": "#ed1c24", "occurrences": 27636 },
+    { "hex": "#ffde00", "occurrences": 2439 },
+    { "hex": "#f99d1b", "occurrences": 2430 },
+    { "hex": "#00a651", "occurrences": 2386 },
+    { "hex": "#00aeef", "occurrences": 2367 }
+  ],
+  "brandColorSource": "https://ukzn.ac.za/wp-content/uploads/2020/03/Transp_bg.png",
+  "notes": [
+    "Site is fully reachable (no Cloudflare/WAF challenge on the public pages used) -- WordPress-based, each College runs on its own subdomain (caes./chs./clms./coh.ukzn.ac.za), each School mostly on its own further subdomain again.",
+    "robots_check.py's shared RobotsChecker gave a false 'disallowed' for clms.ukzn.ac.za and coh.ukzn.ac.za's homepages -- their robots.txt is only reachable with an identifying User-Agent (the bare urllib default UA that RobotsChecker's own fetch uses gets HTTP 403 from the host's WAF, which urllib.robotparser then treats as 'disallow all', per its documented convention for a 401/403 on the robots.txt fetch itself). Re-fetched each host's robots.txt directly with this project's own honest UA (same one used for every other request here) and parsed it with urllib.robotparser.parse() on the real content instead of letting RobotsChecker re-fetch it blind. The real, honestly-fetched robots.txt for every subdomain checked (clms, coh, caes, chs, law, gsbl) only disallows /wp-admin/ -- a standard WordPress default -- and explicitly allows everything else. This is a shared-tooling fix worth making in robots_check.py itself (send the same honest UA on its own robots.txt fetch), not a site-specific workaround; flagging it rather than quietly patching the shared file from inside a single-institution scrape.",
+    "Brand colors came directly from reading actual pixel values out of the real logo artwork at the sourceUrl above (not CSS, which was mostly generic WordPress/Gutenberg block-editor palette noise and plugin defaults -- e.g. #cf2e2e/#ff6900/#fcb900/#7bdcb5/#00d084/#abb8c3 all appeared on the homepage but are the Gutenberg default 10-color palette, not UKZN's own; excluded). This is a crest-style multi-color logo (red dominant, with gold/orange/green/blue accents), not a two-tone brand -- all 5 distinct non-grayscale colors found with meaningful pixel counts are listed; a human reviewing this should pick which (if any) map to the app's primary/secondary accent fields, since this scraper doesn't guess that mapping.",
+    "Faculties: all 4 are UKZN's own 'College' terminology, kept in the `name` field as the institution itself labels them (matching uj.json's precedent of carrying the institution's own terminology, e.g. 'College of Business and Economics (CBE)') -- UCAG's schema elsewhere uses 'faculty' for this role, so stored under the `faculties` array as the top-level academic grouping despite the different name.",
+    "Schools: each College's own site navigation was read directly (not inferred or assumed) -- CAES's 'Schools' nav submenu lists exactly 2 schools, CHS's homepage nav links to exactly 2 school subdomains, CLMS's 'Schools' nav submenu lists exactly 3, COH's mega-menu lists exactly 3. These are what each College's own site currently publishes as its 'Schools' navigation -- if a College genuinely has more schools than its own public nav currently lists (not verified either way), that's a real possible gap in UKZN's own site, not something this scraper chose to omit.",
+    "Programmes: not attempted in this pass -- each School runs on its own further subdomain (10 of them) with no single central qualification/programme catalogue found at the College or university level the way UNISA's 'All qualifications' page provided one. A real programme-level pass would need a per-school crawl (10 separate sites, each with its own structure) and likely hits the same PDF-only prospectus pattern already documented for CPUT -- left for a dedicated follow-up pass rather than guessed at or rushed.",
+    "No qualification type, NQF level, duration, SAQA ID, or APS data collected -- none of it was looked for in this pass since no programme-level pages were crawled."
+  ]
+}

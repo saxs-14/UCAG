@@ -1,0 +1,433 @@
+{
+  "institutionId": "nwu",
+  "scrapedAt": "2026-10-31T07:52:26Z",
+  "verifiedOn": null,
+  "faculties": [
+    {
+      "id": "nwu-economic-and-management-sciences",
+      "institutionId": "nwu",
+      "name": "Economic and Management Sciences",
+      "code": "economic-and-management-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-education",
+      "institutionId": "nwu",
+      "name": "Education",
+      "code": "education",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-engineering",
+      "institutionId": "nwu",
+      "name": "Engineering",
+      "code": "engineering",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences",
+      "institutionId": "nwu",
+      "name": "Health Sciences",
+      "code": "health-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-humanities",
+      "institutionId": "nwu",
+      "name": "Humanities",
+      "code": "humanities",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-law",
+      "institutionId": "nwu",
+      "name": "Law",
+      "code": "law",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-natural-and-agricultural-sciences",
+      "institutionId": "nwu",
+      "name": "Natural and Agricultural Sciences",
+      "code": "natural-and-agricultural-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-theology",
+      "institutionId": "nwu",
+      "name": "Theology",
+      "code": "theology",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    }
+  ],
+  "schools": [
+    {
+      "id": "nwu-economic-and-management-sciences-accounting-sciences",
+      "facultyId": "nwu-economic-and-management-sciences",
+      "name": "Accounting Sciences",
+      "code": "accounting-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-economic-and-management-sciences-nwu-business-school",
+      "facultyId": "nwu-economic-and-management-sciences",
+      "name": "NWU Business School",
+      "code": "nwu-business-school",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-economic-and-management-sciences-economic-sciences",
+      "facultyId": "nwu-economic-and-management-sciences",
+      "name": "Economic Sciences",
+      "code": "economic-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-economic-and-management-sciences-industrial-psychology-and-human-resource-management",
+      "facultyId": "nwu-economic-and-management-sciences",
+      "name": "Industrial Psychology and Human Resource Management",
+      "code": "industrial-psychology-and-human-resource-management",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-economic-and-management-sciences-management-sciences",
+      "facultyId": "nwu-economic-and-management-sciences",
+      "name": "Management Sciences",
+      "code": "management-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-economic-and-management-sciences-tourism",
+      "facultyId": "nwu-economic-and-management-sciences",
+      "name": "Tourism",
+      "code": "tourism",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-education-commerce-and-social-studies-in-education",
+      "facultyId": "nwu-education",
+      "name": "Commerce and Social Studies in Education",
+      "code": "commerce-and-social-studies-in-education",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-education-language-education",
+      "facultyId": "nwu-education",
+      "name": "Language Education",
+      "code": "language-education",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-education-mathematics-science-and-technology-education",
+      "facultyId": "nwu-education",
+      "name": "Mathematics, Science and Technology Education",
+      "code": "mathematics-science-and-technology-education",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-education-professional-studies-in-education",
+      "facultyId": "nwu-education",
+      "name": "Professional Studies in Education",
+      "code": "professional-studies-in-education",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-education-psycho-social-education",
+      "facultyId": "nwu-education",
+      "name": "Psycho-Social Education",
+      "code": "psycho-social-education",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-engineering-chemical-and-minerals-engineering",
+      "facultyId": "nwu-engineering",
+      "name": "Chemical and Minerals Engineering",
+      "code": "chemical-and-minerals-engineering",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-engineering-electrical-electronic-and-computer-engineering",
+      "facultyId": "nwu-engineering",
+      "name": "Electrical, Electronic and Computer Engineering",
+      "code": "electrical-electronic-and-computer-engineering",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-engineering-industrial-engineering",
+      "facultyId": "nwu-engineering",
+      "name": "Industrial Engineering",
+      "code": "industrial-engineering",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-engineering-mechanical-and-nuclear-engineering",
+      "facultyId": "nwu-engineering",
+      "name": "Mechanical and Nuclear Engineering",
+      "code": "mechanical-and-nuclear-engineering",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences-consumer-sciences",
+      "facultyId": "nwu-health-sciences",
+      "name": "Consumer Sciences",
+      "code": "consumer-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences-human-movement-sciences",
+      "facultyId": "nwu-health-sciences",
+      "name": "Human Movement Sciences",
+      "code": "human-movement-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences-kinderkinetics",
+      "facultyId": "nwu-health-sciences",
+      "name": "Kinderkinetics",
+      "code": "kinderkinetics",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences-nursing",
+      "facultyId": "nwu-health-sciences",
+      "name": "Nursing",
+      "code": "nursing",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences-nutrition",
+      "facultyId": "nwu-health-sciences",
+      "name": "Nutrition",
+      "code": "nutrition",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences-occupational-hygiene",
+      "facultyId": "nwu-health-sciences",
+      "name": "Occupational Hygiene",
+      "code": "occupational-hygiene",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences-pharmacy",
+      "facultyId": "nwu-health-sciences",
+      "name": "Pharmacy",
+      "code": "pharmacy",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences-physiology",
+      "facultyId": "nwu-health-sciences",
+      "name": "Physiology",
+      "code": "physiology",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-health-sciences-psychosocial-health",
+      "facultyId": "nwu-health-sciences",
+      "name": "Psychosocial Health",
+      "code": "psychosocial-health",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-humanities-communication-studies",
+      "facultyId": "nwu-humanities",
+      "name": "Communication Studies",
+      "code": "communication-studies",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-humanities-government-studies",
+      "facultyId": "nwu-humanities",
+      "name": "Government Studies",
+      "code": "government-studies",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-humanities-languages",
+      "facultyId": "nwu-humanities",
+      "name": "Languages",
+      "code": "languages",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-humanities-music",
+      "facultyId": "nwu-humanities",
+      "name": "Music",
+      "code": "music",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-humanities-philosophy",
+      "facultyId": "nwu-humanities",
+      "name": "Philosophy",
+      "code": "philosophy",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-humanities-social-sciences",
+      "facultyId": "nwu-humanities",
+      "name": "Social Sciences",
+      "code": "social-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-natural-and-agricultural-sciences-agricultural-sciences",
+      "facultyId": "nwu-natural-and-agricultural-sciences",
+      "name": "Agricultural Sciences",
+      "code": "agricultural-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-natural-and-agricultural-sciences-biological-sciences",
+      "facultyId": "nwu-natural-and-agricultural-sciences",
+      "name": "Biological Sciences",
+      "code": "biological-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-natural-and-agricultural-sciences-business-mathematics-and-informatics",
+      "facultyId": "nwu-natural-and-agricultural-sciences",
+      "name": "Business Mathematics and Informatics",
+      "code": "business-mathematics-and-informatics",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-natural-and-agricultural-sciences-computer-science-and-information-systems",
+      "facultyId": "nwu-natural-and-agricultural-sciences",
+      "name": "Computer Science and Information Systems",
+      "code": "computer-science-and-information-systems",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-natural-and-agricultural-sciences-mathematical-and-statistical-sciences",
+      "facultyId": "nwu-natural-and-agricultural-sciences",
+      "name": "Mathematical and Statistical Sciences",
+      "code": "mathematical-and-statistical-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-natural-and-agricultural-sciences-physical-and-chemical-sciences",
+      "facultyId": "nwu-natural-and-agricultural-sciences",
+      "name": "Physical and Chemical Sciences",
+      "code": "physical-and-chemical-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-natural-and-agricultural-sciences-geo--and-spatial-sciences",
+      "facultyId": "nwu-natural-and-agricultural-sciences",
+      "name": "Geo- and Spatial Sciences",
+      "code": "geo--and-spatial-sciences",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-theology-ancient-language-and-text-studies",
+      "facultyId": "nwu-theology",
+      "name": "Ancient Language and Text Studies",
+      "code": "ancient-language-and-text-studies",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    },
+    {
+      "id": "nwu-theology-christian-ministry-and-leadership",
+      "facultyId": "nwu-theology",
+      "name": "Christian Ministry and Leadership",
+      "code": "christian-ministry-and-leadership",
+      "sourceUrl": "https://www.nwu.ac.za/faculties"
+    }
+  ],
+  "programmes": [
+    {
+      "id": "nwu-law-ba-law",
+      "institutionId": "nwu",
+      "name": "BA in Law",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": null,
+      "facultyId": "nwu-law",
+      "schoolId": null,
+      "nqfLevel": null,
+      "totalCredits": null,
+      "saqaId": null,
+      "duration": "3 years",
+      "minAps": 28,
+      "additionalRequirements": [],
+      "sourceUrl": "https://law.nwu.ac.za/undergraduate-studies/ba-law",
+      "note": null
+    },
+    {
+      "id": "nwu-law-bcom-law",
+      "institutionId": "nwu",
+      "name": "BCom in Law",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": null,
+      "facultyId": "nwu-law",
+      "schoolId": null,
+      "nqfLevel": null,
+      "totalCredits": null,
+      "saqaId": null,
+      "duration": "3 years",
+      "minAps": 30,
+      "additionalRequirements": [],
+      "sourceUrl": "https://law.nwu.ac.za/undergraduate-studies/bcom-law",
+      "note": null
+    },
+    {
+      "id": "nwu-law-llb",
+      "institutionId": "nwu",
+      "name": "LLB",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "6DE H01",
+      "facultyId": "nwu-law",
+      "schoolId": null,
+      "nqfLevel": null,
+      "totalCredits": null,
+      "saqaId": null,
+      "duration": "4 years",
+      "minAps": 30,
+      "additionalRequirements": [
+        "Mathematics strongly recommended at level 3 (40-49%)",
+        "Home Language at level 5 (60-69%) AND First Additional Language at level 5 (60-69%)"
+      ],
+      "sourceUrl": "https://law.nwu.ac.za/undergraduate-studies/llb",
+      "note": "Also offered as a 2-year second degree for holders of a BA/BCom in Law, or 3 years for another 3-year degree with fewer law modules -- same qualification, advanced standing, not a separate qualification code, so not recorded as its own programme entry."
+    },
+    {
+      "id": "nwu-law-llb-extended",
+      "institutionId": "nwu",
+      "name": "LLB Extended",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "6XA H01",
+      "facultyId": "nwu-law",
+      "schoolId": null,
+      "nqfLevel": null,
+      "totalCredits": null,
+      "saqaId": null,
+      "duration": "5 years",
+      "minAps": 28,
+      "additionalRequirements": [
+        "Home Language at level 4 (50-59%) and First Additional Language at level 4 (50-59%)",
+        "Mathematics at level 3 (40-49%) or Mathematical Literacy at level 5 (60-69%)"
+      ],
+      "sourceUrl": "https://law.nwu.ac.za/undergraduate-studies/llb",
+      "note": "Mahikeng Campus only. Same career outcomes as the 4-year LLB; first year split over two years with foundational modules per DHET's 2012 model 2."
+    }
+  ],
+  "unmappedQualifications": [],
+  "brandColors": [
+    {
+      "hex": "#6c3d91",
+      "occurrences": 25
+    },
+    {
+      "hex": "#00889c",
+      "occurrences": 13
+    }
+  ],
+  "brandColorSource": "https://www.nwu.ac.za/ (compiled theme CSS, theme name 'nwu_theme')",
+  "notes": [
+    "nwu.ac.za is a standard Drupal site with a permissive robots.txt (only admin/search/user-account paths disallowed) -- no Cloudflare or similar block encountered, unlike uj.ac.za. All data below is live (fetched directly, not via Wayback Machine).",
+    "8 faculties and their real subject-area 'schools' collected from https://www.nwu.ac.za/faculties, which lists every faculty with its departments/schools as real links out to each faculty's own subdomain (e.g. commerce.nwu.ac.za, engineering.nwu.ac.za). Law has 0 schools recorded: its own section on that page lists navigation items (Research Unit, Postgraduate Studies, Undergraduate Studies), not subject-area schools -- nothing was fabricated to fill that gap.",
+    "Programme collection: NWU's central 'Undergraduate qualifications' hub (studies.nwu.ac.za/undergraduate-studies/fields-study) lists all 8 faculty names but renders its actual qualification listings client-side (confirmed: 0 <table> elements and no accordion/tab markup in the static HTML) -- a JS-rendering requirement this scraper does not attempt per its own scope. Each faculty's own subdomain was checked individually instead. Only Law (law.nwu.ac.za) has a clean, static, per-qualification page structure with explicit Duration + APS + qualification code (4 real programmes collected: BA in Law, BCom in Law, LLB, LLB Extended). Engineering (engineering.nwu.ac.za) was also checked: its 'Applications' page has real HTML tables, but they list subject-combination BSc qualification codes under campus headings (e.g. 'BSc CHEMISTRY AND PHYSICS') that read as Natural and Agricultural Sciences qualifications reached via a shared admissions page, not Engineering degrees themselves -- given the risk of misattributing them to the wrong faculty, none were recorded rather than guessing. Education, Health Sciences, Humanities, Natural and Agricultural Sciences, and Theology faculty subdomains were checked and found to link back to the same JS-rendered central hub for their undergraduate qualification listings, or to Yearbook PDFs, rather than having their own static per-qualification pages like Law's -- zero programmes recorded for these five faculties rather than extracting a wrong or incomplete field from a PDF or JS-rendered page.",
+    "Brand colors: NWU's compiled theme CSS (3 aggregated files, Drupal theme name 'nwu_theme' visible in the stylesheet URLs, confirming institutional authorship) is built on a stock Bootstrap 3 base -- #337ab7, #5cb85c, #5bc0de, #f0ad4e, #d9534f and their tint backgrounds (#fcf8e3, #dff0d8, #f2dede, #d9edf7) are Bootstrap 3's own default palette, not NWU's, and were excluded. #6c3d91 (a purple) appears 25 times across more than a dozen distinct selectors as both background-color and text/border-color, paired with a matching soft tint (#e2d8e9 background + #6c3d91 text, the same 'soft chip' pattern this project's own design tokens use) -- confirmed as the real primary brand color, not a coincidental library default. #00889c (a teal) appears 13 times with the same cross-file consistency and is recorded as a secondary accent with lower confidence than the primary purple. #78848e (a slate gray, 16 occurrences) was excluded as more likely generic UI chrome than a brand color -- it never appears in the same soft-tint-pairing pattern the other two show.",
+    "Logo: https://www.nwu.ac.za/sites/www.nwu.ac.za/files/NWU-logo-pers_1.png -- confirmed working directly (HTTP 200, Content-Type: image/png, 10021 bytes), found via the homepage's own logo <img alt=\"Home\"> element, not guessed."
+  ]
+}
