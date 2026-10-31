@@ -223,7 +223,7 @@ export default async function ProgrammeExplorerPage({ searchParams }: PageProps)
                         {QUALIFICATION_LABELS[programme.qualificationType]}
                       </span>
                       {programme.minAps !== null && (
-                        <span className="rounded-full bg-brand-navy-soft px-2.5 py-1 text-xs font-bold text-brand-navy">
+                        <span className="rounded-full bg-slate-soft px-2.5 py-1 text-xs font-bold text-ink-soft">
                           APS {programme.minAps}+
                         </span>
                       )}
