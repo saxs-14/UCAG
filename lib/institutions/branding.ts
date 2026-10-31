@@ -262,6 +262,37 @@ export const INSTITUTION_BRANDINGS: Record<string, InstitutionBranding> = {
     textColor: "text-white",
     officialDomains: ["ukzn.ac.za"],
   },
+  stellenbosch: {
+    institutionId: "stellenbosch",
+    name: "Stellenbosch University",
+    shortName: "Stellenbosch",
+    // Real colors, read from sun.ac.za's own theme CSS (Style Library/SUN/
+    // CSS/SU.css). The live site sits behind a Cloudflare JS challenge
+    // (never bypassed -- see scripts/scraping/README.md), so this uses a
+    // Wayback Machine snapshot instead (2025-09-29, the closest available;
+    // www.sun.ac.za's root without /english redirects to a dead legacy
+    // hosting placeholder in Wayback, not the real homepage, so /english
+    // was fetched specifically). #5a1a34 is the dominant color (40+
+    // occurrences) and is self-named in their own CSS (.maroon { background:
+    // #60223b; }, a near-identical shade of the same color family) --
+    // Stellenbosch's maroon-and-gold identity is also independently
+    // well-known, corroborating this. #25293f is a real, consistently used
+    // dark navy/charcoal background-color (16 occurrences, e.g.
+    // .SUN_home3items). #b79962 (gold) appears specifically paired with the
+    // maroon blocks (.maroonBlock h4, border/background), matching the real
+    // "maroon-together" and "gold-together" themed homepage sections. No
+    // logo URL -- the live asset returns 403 under the Cloudflare challenge
+    // and only the Wayback copy was reachable, same reason uj/unisa/cput
+    // have logoUrl: null.
+    primaryColor: "#5a1a34",
+    secondaryColor: "#25293f",
+    accentColor: "#b79962",
+    logoUrl: null,
+    heroStyle: "bg-gradient-to-br from-[#25293f] via-[#5a1a34] to-[#b79962]",
+    gradient: "from-[#5a1a34] to-[#b79962]",
+    textColor: "text-white",
+    officialDomains: ["sun.ac.za"],
+  },
 };
 
 export function getInstitutionBranding(institutionId: string): InstitutionBranding {
