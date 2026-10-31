@@ -105,14 +105,383 @@
       "sourceUrl": "https://coh.ukzn.ac.za/about-us/the-college"
     }
   ],
-  "programmes": [],
+  "programmes": [
+    {
+      "id": "ukzn-caes-bsc-general",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-agriculture-and-science",
+      "name": "Bachelor of Science (BSc)",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "BSC-GE",
+      "nqfLevel": 7,
+      "totalCredits": 384,
+      "saqaId": "84728",
+      "duration": "3 years (6 semesters)",
+      "minAps": null,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass (university-wide entrance requirement)",
+        "Students choose a major (or two); each major carries its own specific APS/subject requirements set at the major level, e.g. Applied Mathematics requires APS >= 28 with Mathematics Level 4 and Physical/Life/Agricultural Science Level 4 -- not a single blanket APS for the whole BSc",
+        "Majors on offer: Applied Mathematics, Astronomy, Biochemistry, Biology, Cellular Biology, Organismal Biology, Chemistry, Computer Science, Ecology, Genetics, Geography, Hydrology, Mathematics, Microbiology, Physics, Statistics"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bscagric-agribusiness",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-agriculture-and-science",
+      "name": "Bachelor of Science in Agriculture in Agribusiness",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "BSA-AB",
+      "nqfLevel": 8,
+      "totalCredits": 512,
+      "saqaId": "81130",
+      "duration": "4 years (8 semesters)",
+      "minAps": 28,
+      "additionalRequirements": [
+        "NSC Bachelor's pass",
+        "Mathematics at Level 4",
+        "Physical Science, Life Science or Agricultural Science at Level 4",
+        "Offered from the Pietermaritzburg Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bscagric-agricultural-economics",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-agriculture-and-science",
+      "name": "Bachelor of Science in Agriculture in Agricultural Economics",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "BSA-AE",
+      "nqfLevel": 8,
+      "totalCredits": 512,
+      "saqaId": "81131",
+      "duration": "4 years (8 semesters)",
+      "minAps": 28,
+      "additionalRequirements": [
+        "NSC Bachelor's pass",
+        "Mathematics at Level 4",
+        "Physical Science, Life Science or Agricultural Science at Level 4"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bscagric-plant-sciences",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-agriculture-and-science",
+      "name": "Bachelor of Science in Agriculture in Agricultural Plant Sciences",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "BSA-PS",
+      "nqfLevel": 8,
+      "totalCredits": 512,
+      "saqaId": "115761",
+      "duration": "4 years (8 semesters)",
+      "minAps": 28,
+      "additionalRequirements": [
+        "NSC Bachelor's pass",
+        "Mathematics at Level 4",
+        "Physical Science, Life Science or Agricultural Science at Level 4"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bscagric-animal-poultry-science",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-agriculture-and-science",
+      "name": "Bachelor of Science in Agriculture in Animal and Poultry Science",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "BSA-AP",
+      "nqfLevel": 8,
+      "totalCredits": 512,
+      "saqaId": "81134",
+      "duration": "4 years (8 semesters)",
+      "minAps": 28,
+      "additionalRequirements": [
+        "NSC Bachelor's pass",
+        "Mathematics at Level 4",
+        "Physical Science, Life Science or Agricultural Science at Level 4"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bscagric-plant-pathology",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-agriculture-and-science",
+      "name": "Bachelor of Science in Agriculture in Plant Pathology",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "BSA-PP",
+      "nqfLevel": 8,
+      "totalCredits": 512,
+      "saqaId": "81146",
+      "duration": "4 years (8 semesters)",
+      "minAps": 28,
+      "additionalRequirements": [
+        "NSC Bachelor's pass",
+        "Mathematics at Level 4",
+        "Physical Science, Life Science or Agricultural Science at Level 4"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bscagric-soil-science",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-agriculture-and-science",
+      "name": "Bachelor of Science in Agriculture in Soil Science",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "BSA-SS",
+      "nqfLevel": 8,
+      "totalCredits": 512,
+      "saqaId": "81147",
+      "duration": "4 years (8 semesters)",
+      "minAps": 28,
+      "additionalRequirements": [
+        "NSC Bachelor's pass",
+        "Mathematics at Level 4",
+        "Physical Science, Life Science or Agricultural Science at Level 4"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-barchs",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-engineering",
+      "name": "Bachelor of Architectural Studies",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "BARCHS",
+      "nqfLevel": 7,
+      "totalCredits": 384,
+      "saqaId": "73010",
+      "duration": "3 years (6 semesters)",
+      "minAps": 30,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass",
+        "Mathematics at Level 5",
+        "Portfolio of creative work required",
+        "Questionnaire required",
+        "Offered from the Howard College Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bsceng-agricultural",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-engineering",
+      "name": "Bachelor of Science in Engineering (Agricultural Engineering)",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "ENG-AG",
+      "nqfLevel": 8,
+      "totalCredits": 576,
+      "saqaId": "73017",
+      "duration": "4 years (8 semesters)",
+      "minAps": 33,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass or equivalent",
+        "65% for Mathematics",
+        "65% for Physical Science",
+        "50% for English (Home Language or First Additional Language)",
+        "Mathematical Literacy not accepted as a substitute for Mathematics",
+        "Life Orientation excluded from APS calculation",
+        "Years 1, 3 and 4 offered from the Pietermaritzburg Campus; year 2 from Howard College Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bsceng-chemical",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-engineering",
+      "name": "Bachelor of Science in Engineering (Chemical Engineering)",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "ENG-CH",
+      "nqfLevel": 8,
+      "totalCredits": 576,
+      "saqaId": "73017",
+      "duration": "4 years (8 semesters)",
+      "minAps": 33,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass or equivalent",
+        "65% for Mathematics",
+        "65% for Physical Science",
+        "50% for English (Home Language or First Additional Language)",
+        "Mathematical Literacy not accepted as a substitute for Mathematics",
+        "Life Orientation excluded from APS calculation",
+        "Offered from the Howard College Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bsceng-civil",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-engineering",
+      "name": "Bachelor of Science in Engineering (Civil Engineering)",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "ENG-CV",
+      "nqfLevel": 8,
+      "totalCredits": 576,
+      "saqaId": "73017",
+      "duration": "4 years (8 semesters)",
+      "minAps": 33,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass or equivalent",
+        "65% for Mathematics",
+        "65% for Physical Science",
+        "50% for English (Home Language or First Additional Language)",
+        "Mathematical Literacy not accepted as a substitute for Mathematics",
+        "Life Orientation excluded from APS calculation",
+        "Offered from the Howard College Campus; first year also available at Pietermaritzburg Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bsceng-computer",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-engineering",
+      "name": "Bachelor of Science in Engineering (Computer Engineering)",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "ENG-CE",
+      "nqfLevel": 8,
+      "totalCredits": 576,
+      "saqaId": "73017",
+      "duration": "4 years (8 semesters)",
+      "minAps": 33,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass or equivalent",
+        "65% for Mathematics",
+        "65% for Physical Science",
+        "50% for English (Home Language or First Additional Language)",
+        "Mathematical Literacy not accepted as a substitute for Mathematics",
+        "Life Orientation excluded from APS calculation",
+        "Offered from the Howard College Campus; first year also available at Pietermaritzburg Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bsceng-electrical",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-engineering",
+      "name": "Bachelor of Science in Engineering (Electrical Engineering)",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "ENG-EL",
+      "nqfLevel": 8,
+      "totalCredits": 576,
+      "saqaId": "73017",
+      "duration": "4 years (8 semesters)",
+      "minAps": 33,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass or equivalent",
+        "65% for Mathematics",
+        "65% for Physical Science",
+        "50% for English (Home Language or First Additional Language)",
+        "Mathematical Literacy not accepted as a substitute for Mathematics",
+        "Life Orientation excluded from APS calculation",
+        "Offered from the Howard College Campus; first year also available at Pietermaritzburg Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bsceng-electronic",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-engineering",
+      "name": "Bachelor of Science in Engineering (Electronic Engineering)",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "ENG-EC",
+      "nqfLevel": 8,
+      "totalCredits": 576,
+      "saqaId": "73017",
+      "duration": "4 years (8 semesters)",
+      "minAps": 33,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass or equivalent",
+        "65% for Mathematics",
+        "65% for Physical Science",
+        "50% for English (Home Language or First Additional Language)",
+        "Mathematical Literacy not accepted as a substitute for Mathematics",
+        "Life Orientation excluded from APS calculation",
+        "Offered from the Howard College Campus; first year also available at Pietermaritzburg Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bsceng-mechanical",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-engineering",
+      "name": "Bachelor of Science in Engineering (Mechanical Engineering)",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "ENG-ME",
+      "nqfLevel": 8,
+      "totalCredits": 576,
+      "saqaId": "73017",
+      "duration": "4 years (8 semesters)",
+      "minAps": 33,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass or equivalent",
+        "65% for Mathematics",
+        "65% for Physical Science",
+        "50% for English (Home Language or First Additional Language)",
+        "Mathematical Literacy not accepted as a substitute for Mathematics",
+        "Life Orientation excluded from APS calculation",
+        "Offered from the Howard College Campus; first year also available at Pietermaritzburg Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    },
+    {
+      "id": "ukzn-caes-bsc-land-surveying",
+      "institutionId": "ukzn",
+      "facultyId": "ukzn-caes",
+      "schoolId": "ukzn-caes-engineering",
+      "name": "Bachelor of Science in Land Surveying",
+      "qualificationType": "bachelorsDegree",
+      "qualificationCode": "ENG-LS",
+      "nqfLevel": 8,
+      "totalCredits": 576,
+      "saqaId": "72853",
+      "duration": "4 years (8 semesters)",
+      "minAps": 33,
+      "additionalRequirements": [
+        "NSC Bachelor's Degree pass or equivalent",
+        "65% for Mathematics",
+        "65% for Physical Science",
+        "Life Orientation excluded from APS calculation",
+        "Offered from the Howard College Campus"
+      ],
+      "sourceUrl": "https://caes.ukzn.ac.za/wp-content/uploads/2026/01/CAES-2026-Handbook.pdf"
+    }
+  ],
   "unmappedQualifications": [],
   "brandColors": [
-    { "hex": "#ed1c24", "occurrences": 27636 },
-    { "hex": "#ffde00", "occurrences": 2439 },
-    { "hex": "#f99d1b", "occurrences": 2430 },
-    { "hex": "#00a651", "occurrences": 2386 },
-    { "hex": "#00aeef", "occurrences": 2367 }
+    {
+      "hex": "#ed1c24",
+      "occurrences": 27636
+    },
+    {
+      "hex": "#ffde00",
+      "occurrences": 2439
+    },
+    {
+      "hex": "#f99d1b",
+      "occurrences": 2430
+    },
+    {
+      "hex": "#00a651",
+      "occurrences": 2386
+    },
+    {
+      "hex": "#00aeef",
+      "occurrences": 2367
+    }
   ],
   "brandColorSource": "https://ukzn.ac.za/wp-content/uploads/2020/03/Transp_bg.png",
   "notes": [
