@@ -60,7 +60,7 @@ const CONTENT_SECURITY_POLICY = [
   // a real image (not a guessed path) before being added; institutions
   // without a verified logo (uj, cput) have logoUrl: null and fall back
   // to the text-initial badge instead of needing an entry here.
-  "img-src 'self' data: https://www.ump.ac.za https://www.up.ac.za https://www.wits.ac.za https://www.tut.ac.za https://www.uct.ac.za https://www.mandela.ac.za",
+  "img-src 'self' data: https://www.ump.ac.za https://www.up.ac.za https://www.wits.ac.za https://www.tut.ac.za https://www.uct.ac.za https://www.mandela.ac.za https://www.nwu.ac.za https://ukzn.ac.za",
   [
     "connect-src 'self' https://*.googleapis.com",
     isFirebaseEmulatorMode ? "http://127.0.0.1:9099 http://127.0.0.1:8080" : "",
