@@ -1,4 +1,10 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
+import { adminFetchJson } from "@/lib/admin/apiClient";
+import type { AdminStats } from "@/lib/admin/getAdminStats";
+import type { IngestionRunStatus } from "@/lib/firestore/types";
 
 const ADMIN_LINKS = [
   { href: "/admin/queue", title: "Verification queue", detail: "Review proposed changes before they can become public facts.", number: "01" },
@@ -9,7 +15,51 @@ const ADMIN_LINKS = [
   { href: "/admin/activity", title: "Learner activity", detail: "Review daily aggregate usage counts without per-user tracking.", number: "06" },
 ];
 
+const CATALOGUE_TILES: { key: keyof Pick<AdminStats, "institutions" | "faculties" | "schools" | "programmes" | "bursaries" | "internships">; label: string }[] = [
+  { key: "institutions", label: "Institutions" },
+  { key: "faculties", label: "Faculties" },
+  { key: "schools", label: "Schools" },
+  { key: "programmes", label: "Programmes" },
+  { key: "bursaries", label: "Bursaries" },
+  { key: "internships", label: "Internships" },
+];
+
+function RunStatusBadge({ status }: { status: IngestionRunStatus | undefined }) {
+  const style =
+    status === "completed"
+      ? "bg-mark-green-soft text-mark-green"
+      : status === "failed"
+        ? "bg-mark-red-soft text-mark-red"
+        : "bg-brand-amber-soft text-brand-amber";
+  return (
+    <span className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-bold ${style}`}>
+      {status ?? "unknown"}
+    </span>
+  );
+}
+
 export default function AdminOverviewPage() {
+  const [stats, setStats] = useState<AdminStats | null>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let cancelled = false;
+    adminFetchJson<AdminStats>("/api/admin/stats")
+      .then((data) => {
+        if (!cancelled) setStats(data);
+      })
+      .catch((err) => {
+        if (!cancelled) setError(err instanceof Error ? err.message : String(err));
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   return (
     <div className="flex w-full max-w-5xl flex-col gap-6">
       <header className="relative isolate overflow-hidden rounded-3xl bg-brand-navy p-6 text-white sm:p-8">
@@ -26,6 +76,87 @@ export default function AdminOverviewPage() {
         <p className="mt-1 text-sm leading-6 text-ink-soft">
           Unverified information must remain labelled as unverified. Public facts require a source URL and verification date; never backdate a verification or silently turn a suggestion into a confirmed fact.
         </p>
+      </section>
+
+      <section aria-labelledby="admin-stats-heading">
+        <div className="mb-3 flex items-baseline justify-between gap-3">
+          <div>
+            <h2 id="admin-stats-heading" className="font-display text-xl font-bold text-ink">Catalogue coverage</h2>
+            <p className="mt-1 text-sm text-ink-soft">
+              Verified counts (publicly visible) against total records in Firestore, right now.
+            </p>
+          </div>
+        </div>
+
+        {error && (
+          <p className="rounded-xl border border-mark-red bg-mark-red-soft p-3 text-sm text-mark-red">{error}</p>
+        )}
+        {loading && !error && (
+          <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">Loading real-time counts...</p>
+        )}
+
+        {stats && (
+          <>
+            <div className="grid gap-3 sm:grid-cols-3 xl:grid-cols-6">
+              {CATALOGUE_TILES.map(({ key, label }) => {
+                const { total, verified } = stats[key];
+                const unverified = total - verified;
+                return (
+                  <div key={key} className="rounded-xl border border-line bg-paper-raised p-3">
+                    <div className="text-xs leading-5 text-ink-soft">{label}</div>
+                    <div className="mt-1 font-display text-2xl font-extrabold tabular-nums text-ink">
+                      {verified.toLocaleString()}
+                      <span className="ml-1 text-sm font-semibold text-ink-soft">/ {total.toLocaleString()}</span>
+                    </div>
+                    <div className="mt-1 text-xs text-ink-soft">
+                      {unverified > 0 ? `${unverified.toLocaleString()} awaiting verification` : "fully verified"}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <p className="mt-3 text-xs text-ink-soft">
+              {stats.lastVerifiedOn
+                ? `Most recent verification on record: ${stats.lastVerifiedOn}.`
+                : "Nothing has been verified yet."}
+            </p>
+
+            <div className="mt-5 grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+              <Link href="/admin/queue" className="rounded-xl border border-line bg-paper-raised p-3 transition hover:border-brand-teal">
+                <div className="text-xs leading-5 text-ink-soft">Pending review</div>
+                <div className="mt-1 font-display text-2xl font-extrabold tabular-nums text-ink">
+                  {stats.verificationQueue.pending.toLocaleString()}
+                </div>
+              </Link>
+              <Link href="/admin/sources" className="rounded-xl border border-line bg-paper-raised p-3 transition hover:border-brand-teal">
+                <div className="text-xs leading-5 text-ink-soft">Sources enabled</div>
+                <div className="mt-1 font-display text-2xl font-extrabold tabular-nums text-ink">
+                  {stats.sources.enabled.toLocaleString()}
+                  <span className="ml-1 text-sm font-semibold text-ink-soft">/ {stats.sources.total.toLocaleString()}</span>
+                </div>
+              </Link>
+              <Link href="/admin/dead-links" className="rounded-xl border border-line bg-paper-raised p-3 transition hover:border-brand-teal">
+                <div className="text-xs leading-5 text-ink-soft">Dead links</div>
+                <div className="mt-1 font-display text-2xl font-extrabold tabular-nums text-ink">
+                  {stats.linkHealth.dead.toLocaleString()}
+                  <span className="ml-1 text-sm font-semibold text-ink-soft">/ {stats.linkHealth.total.toLocaleString()} checked</span>
+                </div>
+              </Link>
+              <Link href="/admin/runs" className="rounded-xl border border-line bg-paper-raised p-3 transition hover:border-brand-teal">
+                <div className="text-xs leading-5 text-ink-soft">Latest ingestion run</div>
+                {stats.latestRun ? (
+                  <div className="mt-1 flex items-center gap-2">
+                    <RunStatusBadge status={stats.latestRun.status} />
+                    <span className="text-xs text-ink-soft">{stats.latestRun.startedAt.slice(0, 10)}</span>
+                  </div>
+                ) : (
+                  <div className="mt-1 text-sm text-ink-soft">No runs yet</div>
+                )}
+              </Link>
+            </div>
+          </>
+        )}
       </section>
 
       <section aria-labelledby="admin-tools-heading">
