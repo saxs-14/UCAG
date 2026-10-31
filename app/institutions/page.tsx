@@ -151,7 +151,7 @@ export default async function InstitutionsDirectoryPage({ searchParams }: PagePr
                 <li key={inst.id}>
                   <article className="card-learner flex h-full flex-col gap-4 rounded-2xl border border-line p-5 transition hover:-translate-y-0.5 hover:border-brand-teal/40">
                     <div className="flex items-start justify-between gap-3">
-                      <span className="rounded-full border border-brand-navy/20 bg-brand-navy-soft px-3 py-1 text-xs font-bold text-brand-navy">
+                      <span className="rounded-full border border-line bg-slate-soft px-3 py-1 text-xs font-bold text-ink-soft">
                         {inst.province}
                       </span>
                       {isUmp && (
