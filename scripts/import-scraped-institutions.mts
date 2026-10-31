@@ -104,15 +104,53 @@ const MODE_OF_DELIVERY_BY_INSTITUTION: Record<string, "contact" | "online" | "bl
   unisa: "online",
   uj: "contact",
   cput: "contact",
+  nwu: "contact",
+  ukzn: "contact",
+};
+
+// NWU and UKZN, unlike uj/unisa/cput, already had real human-verified
+// faculties/schools/programmes (config/nwuProgrammes.seed.ts,
+// config/ukznProgrammes.seed.ts, verifiedOn 2026-09-26, live in
+// production) BEFORE this scrape -- discovered mid-scrape, not before.
+// Those verified faculties cover only a subset of each institution's
+// real ones (NWU: 3 of 8; UKZN: 2 of 4), so the scrape still adds real,
+// non-overlapping coverage -- but importing the scraped versions of the
+// *same* already-verified faculties too would create a second,
+// unverified, less-detailed duplicate record for the same real academic
+// unit sitting alongside the verified one. Skip exactly those faculty
+// ids (and any school whose facultyId points at one) on import; nothing
+// else is filtered.
+const SKIP_FACULTY_IDS: Record<string, Set<string>> = {
+  nwu: new Set([
+    "nwu-economic-and-management-sciences", // verified: nwu-faculty-ems
+    "nwu-engineering", // verified: nwu-faculty-engineering
+    "nwu-health-sciences", // verified: nwu-faculty-health
+  ]),
+  ukzn: new Set([
+    "ukzn-clms", // verified: ukzn-college-law-management
+    "ukzn-chs", // verified: ukzn-college-health-sciences
+  ]),
 };
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
-const INSTITUTIONS = ["uj", "unisa", "cput"];
+const INSTITUTIONS = ["uj", "unisa", "cput", "nwu", "ukzn"];
 
 async function importOne(id: string) {
   const path = join(__dirname, "scraping", "output", `${id}.json`);
-  const data: ScrapedInstitutionData = JSON.parse(readFileSync(path, "utf8"));
+  const raw: ScrapedInstitutionData = JSON.parse(readFileSync(path, "utf8"));
   const modeOfDelivery = MODE_OF_DELIVERY_BY_INSTITUTION[id] ?? "contact";
+  const skipFaculties = SKIP_FACULTY_IDS[id] ?? new Set<string>();
+
+  const data: ScrapedInstitutionData = {
+    ...raw,
+    faculties: raw.faculties.filter((f) => !skipFaculties.has(f.id)),
+    schools: raw.schools.filter((s) => !skipFaculties.has(s.facultyId)),
+    programmes: raw.programmes.filter((p) => !p.facultyId || !skipFaculties.has(p.facultyId)),
+  };
+  if (skipFaculties.size > 0) {
+    const skippedCount = raw.faculties.length - data.faculties.length;
+    console.log(`\n${id.toUpperCase()} -- skipping ${skippedCount} faculty(ies) that already have a verified record: ${[...skipFaculties].join(", ")}`);
+  }
 
   console.log(`\n${id.toUpperCase()}`);
 
