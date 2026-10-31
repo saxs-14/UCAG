@@ -212,6 +212,56 @@ export const INSTITUTION_BRANDINGS: Record<string, InstitutionBranding> = {
     textColor: "text-white",
     officialDomains: ["mandela.ac.za", "mandela.ac.za"],
   },
+  nwu: {
+    institutionId: "nwu",
+    name: "North-West University",
+    shortName: "NWU",
+    // Real colors, read from nwu.ac.za's own compiled theme CSS
+    // (Drupal theme "nwu_theme", scripts/scraping/output/nwu.json,
+    // 2026-10-31). #6c3d91 (purple) appears 25 times across more than a
+    // dozen distinct selectors as background/text/border, paired with a
+    // matching soft tint (#e2d8e9) the same way this app's own
+    // "-soft" tokens work -- confirmed as the real primary, not a
+    // library default. #00889c (teal) appears 13 times with the same
+    // cross-file consistency; recorded as secondary with lower
+    // confidence than the primary. The site's compiled CSS is built on
+    // stock Bootstrap 3 (#337ab7/#5cb85c/#5bc0de/#f0ad4e/#d9534f and
+    // their tints) -- excluded, not NWU's own colors.
+    primaryColor: "#6c3d91",
+    secondaryColor: "#00889c",
+    accentColor: "#4a2a63",
+    logoUrl: "https://www.nwu.ac.za/sites/www.nwu.ac.za/files/NWU-logo-pers_1.png",
+    heroStyle: "bg-gradient-to-br from-[#4a2a63] via-[#6c3d91] to-[#00889c]",
+    gradient: "from-[#6c3d91] to-[#00889c]",
+    textColor: "text-white",
+    officialDomains: ["nwu.ac.za", "mynwu.ac.za"],
+  },
+  ukzn: {
+    institutionId: "ukzn",
+    name: "University of KwaZulu-Natal",
+    shortName: "UKZN",
+    // Real colors, read directly from pixel values in UKZN's own crest
+    // logo artwork (scripts/scraping/output/ukzn.json, 2026-10-31) --
+    // the site's CSS was mostly generic WordPress/Gutenberg
+    // block-editor default-palette noise (#cf2e2e/#ff6900/#fcb900/
+    // #7bdcb5/#00d084/#abb8c3, excluded), not UKZN's own. This is a
+    // crest-style multi-color mark (red dominant, 27636px vs ~2400px
+    // for each accent), not a two-tone brand -- #ed1c24 is the
+    // overwhelming majority color so it's primary; #ffde00 (gold) is
+    // picked as secondary over the other two accents (#f99d1b orange,
+    // #00a651 green -- both real, both present in the crest, just not
+    // used here) as the single most visually distinctive complement to
+    // the red. That role assignment is a judgment call on an otherwise
+    // real, pixel-verified palette, not itself independently confirmed.
+    primaryColor: "#ed1c24",
+    secondaryColor: "#ffde00",
+    accentColor: "#00aeef",
+    logoUrl: "https://ukzn.ac.za/wp-content/uploads/2020/03/Transp_bg.png",
+    heroStyle: "bg-gradient-to-br from-[#8e1115] via-[#ed1c24] to-[#ffde00]",
+    gradient: "from-[#ed1c24] to-[#ffde00]",
+    textColor: "text-white",
+    officialDomains: ["ukzn.ac.za"],
+  },
 };
 
 export function getInstitutionBranding(institutionId: string): InstitutionBranding {
