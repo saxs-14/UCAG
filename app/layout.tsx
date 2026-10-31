@@ -21,6 +21,44 @@ const RICH_FONTS_SCRIPT = `try {
   }
 } catch (e) {}`;
 
+/** A deployed build's static chunks are content-hashed and effectively
+ * immutable -- when one fails mid-fetch (seen directly in production:
+ * "Failed to load chunk ... from module ..." in the console, the same
+ * file reliably returning 200 with correct bytes a moment later on a
+ * plain retry, so this is a transient dropped/stalled network request,
+ * not a missing or broken build artifact), the failure isn't scoped to
+ * whichever component happened to trigger that import -- it can crash
+ * hydration for the whole page, since the failing chunk may be a shared
+ * one any number of components depend on, not just the one that
+ * triggered the fetch. ChatWidgetLoader.tsx's own retry only covers its
+ * own lazy import; this is the equivalent backstop for every other
+ * chunk Next.js loads, including ones already present in the initial
+ * HTML. A plain reload re-fetches the current (already-deployed, still
+ * valid) build fresh rather than a stale cached one, which is usually
+ * enough to recover. Runs once per tab session (sessionStorage guard) so
+ * a persistent, non-transient failure doesn't reload-loop the visitor. */
+const CHUNK_ERROR_RECOVERY_SCRIPT = `try {
+  var RELOAD_KEY = 'ucagChunkReloadOnce';
+  function isChunkError(message) {
+    return typeof message === 'string' && (
+      message.indexOf('Loading chunk') !== -1 ||
+      message.indexOf('Failed to load chunk') !== -1 ||
+      message.indexOf('ChunkLoadError') !== -1
+    );
+  }
+  function recoverOnce() {
+    if (sessionStorage.getItem(RELOAD_KEY)) return;
+    sessionStorage.setItem(RELOAD_KEY, '1');
+    location.reload();
+  }
+  window.addEventListener('error', function (e) { if (isChunkError(e && e.message)) recoverOnce(); });
+  window.addEventListener('unhandledrejection', function (e) {
+    var reason = e && e.reason;
+    var msg = reason && typeof reason === 'object' ? reason.message : reason;
+    if (isChunkError(msg)) recoverOnce();
+  });
+} catch (e) {}`;
+
 /** Without this, Next.js can't resolve the relative openGraph/twitter image
  * URLs below (or any page's `alternates.canonical`) into absolute ones --
  * they'd silently fall back to http://localhost:3000/... in production,
@@ -121,6 +159,9 @@ export default async function RootLayout({
         />
         <Script id="rich-fonts-detect" strategy="beforeInteractive">
           {RICH_FONTS_SCRIPT}
+        </Script>
+        <Script id="chunk-error-recovery" strategy="beforeInteractive">
+          {CHUNK_ERROR_RECOVERY_SCRIPT}
         </Script>
         <a
           href="#main-content"
