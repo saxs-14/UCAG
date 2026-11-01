@@ -16,6 +16,7 @@ import "server-only";
 import type { NextRequest } from "next/server";
 import type { DecodedIdToken } from "firebase-admin/auth";
 import { getAdminAuth } from "@/lib/firebase/admin";
+import { reportError } from "@/lib/errorReporting";
 
 export class AdminAuthError extends Error {
   constructor(message: string, readonly status: 401 | 403 = 401) {
@@ -36,7 +37,13 @@ export async function requireAdmin(request: NextRequest): Promise<DecodedIdToken
   try {
     const auth = await getAdminAuth();
     decoded = await auth.verifyIdToken(token);
-  } catch {
+  } catch (err) {
+    // A rejected-but-well-formed token here is indistinguishable from a
+    // genuinely expired/garbage one without server-side detail -- this
+    // response to the caller stays generic (never leak verification
+    // internals to an API consumer), but the real cause goes to the logs
+    // so a real, otherwise-silent auth outage is actually diagnosable.
+    reportError(err, { scope: "admin-auth-verify-failure" });
     throw new AdminAuthError("Invalid or expired sign-in token.");
   }
 
