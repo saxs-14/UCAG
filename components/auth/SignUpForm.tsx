@@ -6,12 +6,14 @@ import {
   browserPopupRedirectResolver,
   createUserWithEmailAndPassword,
   signInWithPopup,
+  updateProfile,
 } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
 import { createUserProfile } from "@/lib/auth/profile";
 import { formatAuthError } from "@/lib/auth/formatAuthError";
 import { LABELS } from "@/config/labels";
 import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
+import { useAuth } from "./AuthProvider";
 import type { ConsentRecord } from "@/lib/firestore/types";
 
 type Step = "ageGate" | "guardianConsent" | "details";
@@ -19,12 +21,14 @@ type Step = "ageGate" | "guardianConsent" | "details";
 const institutions = SEED_INSTITUTIONS.filter((institution) => institution.tier <= 2);
 
 export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
+  const { setDisplayName } = useAuth();
   const [step, setStep] = useState<Step>("ageGate");
   const [isMinor, setIsMinor] = useState<boolean | null>(null);
   const [guardianName, setGuardianName] = useState("");
   const [guardianEmail, setGuardianEmail] = useState("");
   const [guardianConfirmed, setGuardianConfirmed] = useState(false);
   const [institutionId, setInstitutionId] = useState("");
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -65,6 +69,13 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
     setSubmitting(true);
     try {
       const credential = await createUserWithEmailAndPassword(getFirebaseAuth(), email, password);
+      // Email/password sign-up carries no name at all otherwise -- unlike
+      // Google sign-up, which already supplies a real one on credential.user.
+      const trimmedName = fullName.trim();
+      if (trimmedName) {
+        await updateProfile(credential.user, { displayName: trimmedName });
+      }
+      setDisplayName(trimmedName || null);
       await handleCreateAccount(credential.user.uid);
     } catch (err) {
       setError(formatAuthError(err));
@@ -86,6 +97,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
         new GoogleAuthProvider(),
         browserPopupRedirectResolver
       );
+      setDisplayName(credential.user.displayName ?? null);
       await handleCreateAccount(credential.user.uid);
     } catch (err) {
       setError(formatAuthError(err));
@@ -145,6 +157,11 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
         <h2 className="text-lg font-bold tracking-tight text-ink">{LABELS.account.detailsHeading}</h2>
         <p className="mt-1 text-sm text-ink-soft">{LABELS.account.detailsIntro}</p>
       </div>
+      <label className="flex flex-col gap-1 text-sm text-ink-soft">
+        {LABELS.account.fullNameLabel}
+        <input type="text" required autoComplete="name" className="min-h-11 rounded-xl border border-line bg-paper-raised px-3 text-ink focus:border-mark-green focus:outline-none" value={fullName} onChange={(e) => setFullName(e.target.value)} />
+      </label>
+      <p className="-mt-2 text-xs text-ink-faint">{LABELS.account.fullNameNote}</p>
       <label className="flex flex-col gap-1 text-sm text-ink-soft">
         {LABELS.account.institutionLabel}
         <select required value={institutionId} onChange={(e) => setInstitutionId(e.target.value)} className="min-h-11 rounded-xl border border-line bg-paper-raised px-3 text-ink focus:border-mark-green focus:outline-none">

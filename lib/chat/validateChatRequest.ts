@@ -8,6 +8,14 @@ import { z } from "zod";
  * disappear into one oversized call. */
 export const MAX_MESSAGES = 20;
 export const MAX_MESSAGE_LENGTH = 1000;
+/** A real human name, not free text -- kept short both to fit the use
+ * case and to limit how much room a spoofed (this endpoint is
+ * unauthenticated, so userName is client-asserted, not verified against
+ * the caller's actual Firebase session) value has to act as a prompt
+ * injection vector once it's embedded in the system prompt. See
+ * buildChatSystemPrompt's own framing of this field as data, never an
+ * instruction, for the other half of that defence. */
+export const MAX_USER_NAME_LENGTH = 80;
 
 const chatMessageSchema = z.object({
   role: z.enum(["user", "model"]),
@@ -16,6 +24,11 @@ const chatMessageSchema = z.object({
 
 const chatRequestSchema = z.object({
   messages: z.array(chatMessageSchema).min(1).max(MAX_MESSAGES),
+  /** The signed-in learner's display name, so the assistant can address
+   * them by name -- omitted/null when signed out. Client-asserted, see
+   * MAX_USER_NAME_LENGTH's comment on why that's an acceptable/bounded
+   * risk here rather than something requiring full authentication. */
+  userName: z.string().trim().min(1).max(MAX_USER_NAME_LENGTH).nullish(),
 });
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;

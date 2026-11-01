@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { MAX_MESSAGES, MAX_MESSAGE_LENGTH, validateChatRequest } from "./validateChatRequest";
+import { MAX_MESSAGES, MAX_MESSAGE_LENGTH, MAX_USER_NAME_LENGTH, validateChatRequest } from "./validateChatRequest";
 
 describe("validateChatRequest", () => {
   it("accepts a single user message", () => {
@@ -59,6 +59,36 @@ describe("validateChatRequest", () => {
 
   it("rejects an empty message string", () => {
     const result = validateChatRequest({ messages: [{ role: "user", text: "" }] });
+    expect(result.valid).toBe(false);
+  });
+
+  it("accepts a request with no userName at all (signed-out learner)", () => {
+    const result = validateChatRequest({ messages: [{ role: "user", text: "hi" }] });
+    expect(result.valid).toBe(true);
+    if (result.valid) expect(result.data.userName).toBeUndefined();
+  });
+
+  it("accepts a null userName explicitly", () => {
+    const result = validateChatRequest({ messages: [{ role: "user", text: "hi" }], userName: null });
+    expect(result.valid).toBe(true);
+  });
+
+  it("accepts and trims a real userName", () => {
+    const result = validateChatRequest({ messages: [{ role: "user", text: "hi" }], userName: "  Thando  " });
+    expect(result.valid).toBe(true);
+    if (result.valid) expect(result.data.userName).toBe("Thando");
+  });
+
+  it("rejects a userName over MAX_USER_NAME_LENGTH", () => {
+    const result = validateChatRequest({
+      messages: [{ role: "user", text: "hi" }],
+      userName: "x".repeat(MAX_USER_NAME_LENGTH + 1),
+    });
+    expect(result.valid).toBe(false);
+  });
+
+  it("rejects an empty-string userName (use null/omit instead)", () => {
+    const result = validateChatRequest({ messages: [{ role: "user", text: "hi" }], userName: "" });
     expect(result.valid).toBe(false);
   });
 });

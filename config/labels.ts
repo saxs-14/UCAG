@@ -146,6 +146,8 @@ export const LABELS = {
     guardianConsentCheckbox:
       "I am this learner's parent or guardian and I agree to their account being created.",
     guardianConsentSubmit: "Continue",
+    fullNameLabel: "Your name",
+    fullNameNote: "Used to personalise your account and the UCAG assistant -- e.g. \"Hi Thando, here's what I found\". Not shown to anyone else.",
     emailLabel: "Email",
     passwordLabel: "Password",
     createAccountButton: "Create account",
@@ -166,7 +168,7 @@ export const LABELS = {
     cancelEditButton: "Cancel",
     profileSaved: "Profile updated.",
     detailsHeading: "Create your account",
-    detailsIntro: "Choose your institution, then set an email and password. This is the only extra detail UCAG needs to save your marks and shortlist.",
+    detailsIntro: "Tell us your name, choose your institution, then set an email and password.",
     institutionLabel: "Institution",
     institutionPlaceholder: "Choose your institution",
     institutionRequired: "Choose an institution before creating your account.",

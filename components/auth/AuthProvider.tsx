@@ -28,6 +28,20 @@ interface AuthContextValue {
    * by SignInForm/SignUpForm/AccountPage to show a plain explanation
    * instead of a form that would fail confusingly on submit. */
   authUnavailable: boolean;
+  /** The signed-in user's display name, or null if signed out or no name
+   * is on record yet (e.g. an email/password account that hasn't set
+   * one). Tracked as its own piece of state rather than read live off
+   * `user.displayName` -- Firebase's updateProfile() mutates the
+   * existing User object's fields in place without handing back a new
+   * object reference, so a plain `setUser(auth.currentUser)` after
+   * calling it wouldn't trigger a re-render (React's setState bails on
+   * an identical reference), and consumers (e.g. the chat widget, which
+   * needs this to address the learner by name) would keep showing a
+   * stale value until the next full page load. SignUpForm/AccountPage
+   * call setDisplayName right after a successful updateProfile() so this
+   * stays in sync immediately. */
+  displayName: string | null;
+  setDisplayName: (name: string | null) => void;
 }
 
 const AuthContext = createContext<AuthContextValue>({
@@ -36,6 +50,8 @@ const AuthContext = createContext<AuthContextValue>({
   isAdmin: false,
   adminClaimsReady: false,
   authUnavailable: false,
+  displayName: null,
+  setDisplayName: () => {},
 });
 
 /** Wraps the app so any component can ask "who's signed in?" without
@@ -49,6 +65,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [isAdmin, setIsAdmin] = useState(false);
   const [adminClaimsReady, setAdminClaimsReady] = useState(false);
   const [authUnavailable, setAuthUnavailable] = useState(false);
+  const [displayName, setDisplayName] = useState<string | null>(null);
 
   useEffect(() => {
     let auth;
@@ -67,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const unsubscribe = onAuthStateChanged(auth, (u) => {
       setUser(u);
+      setDisplayName(u?.displayName ?? null);
       setLoading(false);
       setAdminClaimsReady(false); // a new user's claims (incl. "no user") aren't checked yet
 
@@ -88,7 +106,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, isAdmin, adminClaimsReady, authUnavailable }}>
+    <AuthContext.Provider
+      value={{ user, loading, isAdmin, adminClaimsReady, authUnavailable, displayName, setDisplayName }}
+    >
       {children}
     </AuthContext.Provider>
   );
