@@ -77,6 +77,22 @@ const nextConfig: NextConfig = {
   // Drops the X-Powered-By: Next.js response header -- a free framework
   // fingerprint for an attacker, with no functional purpose.
   poweredByHeader: false,
+  // firebase-admin/auth (requireAdmin() -> verifyIdToken(), every
+  // /api/admin/* route's actual security gate) depends transitively on
+  // jwks-rsa -> jose, whose package exports resolve to an ESM-only
+  // "webapi" build. Turbopack's own bundling of that chain -- found live
+  // in production, 2026-11 -- picks that ESM entry and feeds it through
+  // a require() call, throwing ERR_REQUIRE_ESM at the exact moment any
+  // admin API route calls verifyIdToken(), rejecting every real admin
+  // token with a generic "invalid token" response and no indication
+  // anything was actually broken (the catch-all in lib/admin/auth.ts
+  // swallowed it silently until reportError() was added there). Listing
+  // firebase-admin here tells Next.js's server bundler to leave it fully
+  // external/unbundled so Node's own module resolution (which correctly
+  // honours jose's CJS/ESM exports conditions) loads it at runtime
+  // instead -- the standard fix for this exact firebase-admin + Next.js
+  // bundler incompatibility.
+  serverExternalPackages: ["firebase-admin"],
   images: {
     // components/ump/UmpHeader.tsx renders UMP's own hardcoded logo via
     // next/image, which throws a hard server-side render error for any
