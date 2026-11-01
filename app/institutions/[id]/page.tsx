@@ -6,6 +6,7 @@ import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
 import { getInstitutionBranding } from "@/lib/institutions/branding";
 import { InstitutionLogo } from "@/components/institutions/InstitutionLogo";
 import { fetchRealCatalog } from "@/lib/catalog/getRealCatalog";
+import { isFactVerified } from "@/lib/firestore/types";
 import type { Programme } from "@/lib/firestore/types";
 
 const NO_CAMPUS_LISTED = "Campus not specified";
@@ -66,6 +67,25 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
 
   const branding = getInstitutionBranding(inst.id);
   const isUmp = inst.id === "ump";
+  // Found 2026-11-02: this page always rendered "Verified" and stated
+  // APS/NBT facts unconditionally, regardless of inst.tier or whether the
+  // record actually passes isFactVerified() -- e.g. UJ (Tier 2, zero
+  // programmes) still showed a green "Verified" badge. Same class of bug
+  // as the application-window status fix: a value that's merely present
+  // on the record was being treated as confirmed, instead of checking
+  // whether it's actually verified.
+  //
+  // Explicit `: boolean` here, not inferred -- isFactVerified is a type
+  // predicate, and since Institution's own interface already requires
+  // sourceUrl/verifiedOn/academicYear as non-optional, TypeScript's
+  // control-flow analysis "proves" the false branch is structurally
+  // unreachable for anything already typed as Institution and narrows
+  // `inst` to `never` wherever this value is later used in a ternary --
+  // even though the real runtime check (non-empty string, finite number)
+  // is exactly the kind of value-level validity TS's type system can't
+  // see. Widening the declared type here is what stops that incorrect
+  // narrowing from propagating.
+  const verified: boolean = isFactVerified(inst);
 
   const { programmes } = await fetchRealCatalog();
   const institutionProgrammes = programmes.filter((p) => p.institutionId === inst.id);
@@ -97,7 +117,9 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
           </div>
 
           <p className="max-w-2xl text-sm sm:text-base text-white/90 leading-relaxed">
-            Official South African higher education institution profile, verified APS scoring rules, degree entry requirements, and application portals.
+            {verified
+              ? "Official South African higher education institution profile, verified APS scoring rules, degree entry requirements, and application portals."
+              : "Official South African higher education institution profile. This institution's APS scoring rules and entry requirements are still being verified against official sources -- see the status below."}
           </p>
 
           <div className="flex flex-wrap items-center gap-3 pt-2">
@@ -155,15 +177,25 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
           <div className="card-learner rounded-2xl p-5 border border-line flex flex-col gap-1">
             <span className="text-xs font-semibold text-ink-soft">NBT Requirements</span>
             <p className="font-bold text-sm text-ink">
-              {inst.nbtRequired ? "Required for select faculties" : "Not required"}
+              {verified
+                ? inst.nbtRequired
+                  ? "Required for select faculties"
+                  : "Not required"
+                : "Not yet confirmed"}
             </p>
           </div>
 
           <div className="card-learner rounded-2xl p-5 border border-line flex flex-col gap-1">
             <span className="text-xs font-semibold text-ink-soft">Verified Status</span>
-            <p className="font-bold text-sm text-emerald-700">
-              Verified for Academic Year {inst.academicYear}
-            </p>
+            {verified ? (
+              <p className="font-bold text-sm text-emerald-700">
+                Verified for Academic Year {inst.academicYear}
+              </p>
+            ) : (
+              <p className="font-bold text-sm text-amber-700">
+                Under verification (Tier {inst.tier})
+              </p>
+            )}
           </div>
         </section>
 
@@ -181,7 +213,9 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
               ? "UP computes APS using your 6 best NSC subjects, completely excluding Life Orientation."
               : inst.id === "wits"
               ? "Wits calculates APS using your best 7 subjects including LO, with additional bonus points awarded for scoring 60%+ in English and Mathematics."
-              : `Calculated using verified ${inst.shortName} admission subject level conversion tables for Academic Year ${inst.academicYear}.`}
+              : verified
+              ? `Calculated using verified ${inst.shortName} admission subject level conversion tables for Academic Year ${inst.academicYear}.`
+              : `${inst.shortName}'s specific APS formula is still being verified against official sources -- use the calculator for the best available estimate, but confirm with ${inst.shortName} directly before applying.`}
           </p>
 
           <Link

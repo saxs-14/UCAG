@@ -76,7 +76,7 @@ export async function POST(request: NextRequest) {
   let firstChunk: IteratorResult<string>;
   try {
     const context = await getRealChatContext();
-    const systemPrompt = buildChatSystemPrompt(context);
+    const systemPrompt = buildChatSystemPrompt(context, validation.data.userName);
     iterator = client.streamReply(validation.data.messages, systemPrompt, LOOKUP_VERIFIED_FACT_CHAT_TOOL);
     firstChunk = await iterator.next();
   } catch (err) {

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { LABELS } from "@/config/labels";
 import { splitSseFrames } from "@/lib/chat/sse";
+import { useAuth } from "@/components/auth/AuthProvider";
 
 /**
  * A floating help assistant, mounted once in app/layout.tsx via a
@@ -31,6 +32,7 @@ interface DisplayMessage {
 }
 
 export function ChatWidget() {
+  const { displayName } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [messages, setMessages] = useState<DisplayMessage[]>([]);
   const [draft, setDraft] = useState("");
@@ -75,7 +77,7 @@ export function ChatWidget() {
       const res = await fetch("/api/chat", {
         method: "POST",
         headers: { "content-type": "application/json" },
-        body: JSON.stringify({ messages: nextMessages }),
+        body: JSON.stringify({ messages: nextMessages, userName: displayName }),
       });
 
       if (!res.ok || !res.body) {
@@ -166,7 +168,8 @@ export function ChatWidget() {
 
           <div ref={scrollRef} className="flex flex-1 flex-col gap-2 overflow-y-auto px-3 py-3">
             <div className="animate-pop-in max-w-[85%] rounded-2xl rounded-bl-sm bg-slate-soft px-3 py-2 text-sm text-ink">
-              {LABELS.chat.greeting}
+              {displayName ? `Hi ${displayName}! ` : "Hi! "}
+              {LABELS.chat.greeting.replace(/^Hi! /, "")}
             </div>
             {messages.map((message, i) => (
               <div

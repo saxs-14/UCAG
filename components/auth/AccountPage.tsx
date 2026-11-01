@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { deleteUser, signOut } from "firebase/auth";
+import { deleteUser, signOut, updateProfile } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
 import { deleteUserProfile, getUserProfile, updateProfilePreferences } from "@/lib/auth/profile";
 import { profileToExportJson } from "@/lib/auth/export";
@@ -28,10 +28,11 @@ function downloadJson(filename: string, json: string) {
 
 export function AccountPage() {
   const router = useRouter();
-  const { user, loading, authUnavailable, isAdmin } = useAuth();
+  const { user, loading, authUnavailable, isAdmin, displayName, setDisplayName } = useAuth();
   const [mode, setMode] = useState<"signUp" | "signIn">("signUp");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [institutionId, setInstitutionId] = useState("");
+  const [fullName, setFullName] = useState("");
   const [editing, setEditing] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -83,6 +84,11 @@ export function AccountPage() {
     setError(null);
     setNotice(null);
     try {
+      const trimmedName = fullName.trim();
+      if (trimmedName !== (displayName ?? "")) {
+        await updateProfile(user, { displayName: trimmedName || null });
+        setDisplayName(trimmedName || null);
+      }
       await updateProfilePreferences(user.uid, { institutionId });
       setProfile((current) => current ? { ...current, institutionId } : current);
       setEditing(false);
@@ -142,11 +148,21 @@ export function AccountPage() {
         <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <p className="text-xs font-extrabold uppercase tracking-wide text-brand-teal">{LABELS.account.profileHeading}</p>
-            <h2 className="mt-1 text-lg font-black text-ink">{user.email ?? user.uid}</h2>
+            <h2 className="mt-1 text-lg font-black text-ink">{displayName ?? user.email ?? user.uid}</h2>
+            {displayName && <p className="text-xs text-ink-faint">{user.email}</p>}
             <p className="mt-1 text-xs leading-5 text-ink-soft">{LABELS.account.profileIntro}</p>
           </div>
-          {!editing && <button type="button" onClick={() => setEditing(true)} className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink hover:bg-slate-soft">{LABELS.account.editProfileButton}</button>}
+          {!editing && <button type="button" onClick={() => { setFullName(displayName ?? ""); setEditing(true); }} className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink hover:bg-slate-soft">{LABELS.account.editProfileButton}</button>}
         </div>
+
+        {editing && (
+          <div className="mt-4 rounded-xl border border-line/70 bg-paper p-4">
+            <label className="flex flex-col gap-1 text-xs font-bold text-ink-soft">
+              {LABELS.account.fullNameLabel}
+              <input type="text" autoComplete="name" value={fullName} onChange={(e) => setFullName(e.target.value)} className="min-h-11 rounded-xl border border-line bg-paper-raised px-3 text-sm font-semibold text-ink focus:border-mark-green focus:outline-none" />
+            </label>
+          </div>
+        )}
 
         <div className="mt-4 rounded-xl border border-line/70 bg-paper p-4">
           <p className="text-xs font-bold text-ink-soft">{LABELS.account.institutionLabel}</p>
@@ -160,7 +176,7 @@ export function AccountPage() {
               </select>
               <div className="flex flex-wrap gap-2">
                 <button type="button" disabled={!institutionId || savingProfile} onClick={handleSaveProfile} className="min-h-11 rounded-xl bg-brand-teal px-4 text-sm font-bold text-white disabled:opacity-50">{savingProfile ? LABELS.account.savingProfileButton : LABELS.account.saveProfileButton}</button>
-                <button type="button" onClick={() => { setInstitutionId(profile?.institutionId ?? ""); setEditing(false); }} className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-soft">{LABELS.account.cancelEditButton}</button>
+                <button type="button" onClick={() => { setInstitutionId(profile?.institutionId ?? ""); setFullName(displayName ?? ""); setEditing(false); }} className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-soft">{LABELS.account.cancelEditButton}</button>
               </div>
             </div>
           ) : (
