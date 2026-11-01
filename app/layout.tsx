@@ -175,10 +175,16 @@ export default async function RootLayout({
             {children}
           </main>
           <MobileNavBar />
+          {/* Inside AuthProvider, not a sibling of it -- found 2026-11-02:
+              it previously sat after </AuthProvider>, so useAuth() inside
+              the chat widget always read the context's default value
+              (displayName: null) no matter who was actually signed in.
+              The assistant greeting/addressing a signed-in learner by name
+              depends on this being a real descendant. */}
+          <ChatWidgetLoader />
         </AuthProvider>
         <Footer />
         <ServiceWorkerRegistration />
-        <ChatWidgetLoader />
       </body>
     </html>
   );
