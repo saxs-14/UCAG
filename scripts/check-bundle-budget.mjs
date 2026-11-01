@@ -12,6 +12,17 @@
 // leave the budget unenforced, and revisit the Auth-deferral refactor as
 // its own piece of work later.
 //
+// Raised to 300KB (2026-11-01): zod 4.4.3 -> 4.6.7 (GHSA-mrhx-c7xc-m3w5,
+// a real memory-exhaustion DoS fixed at 4.6.6 -- this app's own stated
+// policy is Zod validation on every public form AND every API route, so
+// this isn't an inert/theoretical CVE here) adds ~29KB to this route's
+// First Load JS (260KB -> 289KB, measured directly -- zod's own
+// unpacked package size grew ~35% between these versions). No smaller
+// patched zod release exists. Closing a real DoS vector on every public
+// input path is worth 29KB of page weight; left a margin above the
+// measured 289KB rather than setting the budget to the exact current
+// number.
+//
 // Reads Next's own human-readable build output rather than hand-parsing
 // its internal manifest JSON (which is undocumented and has changed
 // shape across versions) -- the "First Load JS" figure printed here is
@@ -22,7 +33,7 @@
 
 import { readFileSync } from "node:fs";
 
-const BUDGET_KB = 260;
+const BUDGET_KB = 300;
 const ROUTE = "/";
 
 const logPath = process.argv[2];
