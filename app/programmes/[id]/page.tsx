@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
-import { resolveApplicationCta, deriveApplicationWindowStatus } from "@/lib/applicationStatus";
+import { resolveApplicationCta, resolveEffectiveApplicationWindowStatus } from "@/lib/applicationStatus";
 import { LABELS } from "@/config/labels";
 import { getRealProgrammeDetail } from "@/lib/catalog/getRealProgrammeDetail";
 
@@ -28,10 +28,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
   const { programme, institution, faculty, school, applicationWindow } = detail;
   const campuses = programme.campuses ?? [];
   const careerOutcomes = programme.careerOutcomes ?? [];
-  const status = applicationWindow?.status ?? deriveApplicationWindowStatus(
-    { opensOn: applicationWindow?.opensOn ?? null, closesOn: applicationWindow?.closesOn ?? null, lateClosesOn: applicationWindow?.lateClosesOn ?? null },
-    new Date()
-  );
+  const status = resolveEffectiveApplicationWindowStatus(applicationWindow, new Date());
   const cta = resolveApplicationCta(
     status,
     { applyUrl: programme.applyUrl, statusCheckUrl: institution.statusCheckUrl, websiteUrl: institution.websiteUrl },

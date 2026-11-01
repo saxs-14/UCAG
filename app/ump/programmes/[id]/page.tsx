@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { LABELS } from "@/config/labels";
 import { getRealProgrammeDetail } from "@/lib/catalog/getRealProgrammeDetail";
-import { deriveApplicationWindowStatus, resolveApplicationCta } from "@/lib/applicationStatus";
+import { resolveEffectiveApplicationWindowStatus, resolveApplicationCta } from "@/lib/applicationStatus";
 
 /**
  * UMP-specific programme detail page (app/ump/programmes/[id]/page.tsx).
@@ -67,16 +67,7 @@ export default async function UmpProgrammeDetailPage({
   const careerOutcomes = programme.careerOutcomes ?? [];
   const additionalRequirements = programme.additionalRequirements ?? [];
 
-  const status =
-    applicationWindow?.status ??
-    deriveApplicationWindowStatus(
-      {
-        opensOn: applicationWindow?.opensOn ?? null,
-        closesOn: applicationWindow?.closesOn ?? null,
-        lateClosesOn: applicationWindow?.lateClosesOn ?? null,
-      },
-      new Date()
-    );
+  const status = resolveEffectiveApplicationWindowStatus(applicationWindow, new Date());
 
   const cta = resolveApplicationCta(
     status,

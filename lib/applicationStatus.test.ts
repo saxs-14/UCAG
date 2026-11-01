@@ -1,5 +1,9 @@
 import { describe, expect, it } from "vitest";
-import { deriveApplicationWindowStatus, resolveApplicationCta } from "./applicationStatus";
+import {
+  deriveApplicationWindowStatus,
+  resolveApplicationCta,
+  resolveEffectiveApplicationWindowStatus,
+} from "./applicationStatus";
 
 describe("deriveApplicationWindowStatus", () => {
   const now = new Date("2026-07-23T00:00:00Z");
@@ -44,6 +48,52 @@ describe("deriveApplicationWindowStatus", () => {
         now
       )
     ).toBe("open");
+  });
+});
+
+describe("resolveEffectiveApplicationWindowStatus", () => {
+  const now = new Date("2026-11-01T00:00:00Z");
+
+  it("real bug, found live 2026-11-01: a stored status of 'open' past the real closesOn date must resolve to closed, not stay open", () => {
+    // This is exactly UP's seeded window: status hand-set to "open" months
+    // ago, closesOn long since passed, never revisited.
+    expect(
+      resolveEffectiveApplicationWindowStatus(
+        { status: "open", opensOn: "2026-04-01", closesOn: "2026-06-30", lateClosesOn: null },
+        now
+      )
+    ).toBe("closed");
+  });
+
+  it("a stored 'closed' can override dates that haven't passed yet (a legitimate early closure)", () => {
+    expect(
+      resolveEffectiveApplicationWindowStatus(
+        { status: "closed", opensOn: "2026-04-01", closesOn: "2026-12-31", lateClosesOn: null },
+        now
+      )
+    ).toBe("closed");
+  });
+
+  it("falls back to the stored status only when no dates exist at all", () => {
+    expect(
+      resolveEffectiveApplicationWindowStatus(
+        { status: "open", opensOn: null, closesOn: null, lateClosesOn: null },
+        now
+      )
+    ).toBe("open");
+  });
+
+  it("null window resolves to unknown, never guesses", () => {
+    expect(resolveEffectiveApplicationWindowStatus(null, now)).toBe("unknown");
+  });
+
+  it("dates still correctly derive openingSoon even with a stale stored 'open'", () => {
+    expect(
+      resolveEffectiveApplicationWindowStatus(
+        { status: "open", opensOn: "2027-01-01", closesOn: "2027-03-01", lateClosesOn: null },
+        now
+      )
+    ).toBe("openingSoon");
   });
 });
 

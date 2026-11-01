@@ -35,6 +35,32 @@ export function deriveApplicationWindowStatus(
   return "unknown";
 }
 
+/**
+ * The real entry point every caller should use instead of reaching for
+ * `window.status` directly. Found 2026-11-01: every seed file sets
+ * `status: "open"` unconditionally (including on windows whose own
+ * closesOn date has long since passed), and three call sites each did
+ * `window?.status ?? deriveApplicationWindowStatus(...)` -- since
+ * status was always a defined string, the date-derived fallback never
+ * ran, so a programme could show "Apply now" months after its own
+ * recorded deadline. "Closed" is the one status that must never lose
+ * to the other signal: a stored "closed" can legitimately override
+ * dates (an announced early closure, per this file's original
+ * doc comment), and a date-derived "closed" must always override a
+ * stale/stored "open" -- showing an apply link past a real deadline is
+ * the harmful direction; failing to show one a day early is not.
+ */
+export function resolveEffectiveApplicationWindowStatus(
+  window: Pick<ApplicationWindow, "status" | "opensOn" | "closesOn" | "lateClosesOn"> | null | undefined,
+  now: Date
+): ApplicationWindowStatus {
+  if (!window) return "unknown";
+  const derived = deriveApplicationWindowStatus(window, now);
+  if (window.status === "closed" || derived === "closed") return "closed";
+  if (window.opensOn || window.closesOn) return derived;
+  return window.status ?? "unknown";
+}
+
 export type ApplicationCta =
   | { kind: "apply"; label: string; url: string }
   | { kind: "openingSoon"; label: string; opensOn: string }

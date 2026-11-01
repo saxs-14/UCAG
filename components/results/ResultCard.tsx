@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { deriveApplicationWindowStatus, resolveApplicationCta } from "@/lib/applicationStatus";
+import { resolveEffectiveApplicationWindowStatus, resolveApplicationCta } from "@/lib/applicationStatus";
 import { calculateReadiness } from "@/lib/readiness";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
@@ -74,14 +74,7 @@ export function ResultCard({
   staggerIndex = 0,
   allProgrammes = [],
 }: ResultCardProps) {
-  const status = applicationWindow?.status ?? deriveApplicationWindowStatus(
-    {
-      opensOn: applicationWindow?.opensOn ?? null,
-      closesOn: applicationWindow?.closesOn ?? null,
-      lateClosesOn: applicationWindow?.lateClosesOn ?? null,
-    },
-    new Date()
-  );
+  const status = resolveEffectiveApplicationWindowStatus(applicationWindow, new Date());
   const readiness = calculateReadiness(matchResult, checkedChecklistIds);
   const cta = resolveApplicationCta(
     status,
