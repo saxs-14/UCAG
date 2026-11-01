@@ -1,3 +1,5 @@
+<p align="center"><img src=".github/assets/banner.svg" width="100%" alt="UCAG banner"/></p>
+
 # UCAG — University Course Application Guide
 
 South African school-leavers enter their NSC subjects and marks and get, on one
