@@ -1,41 +1,7 @@
-/**
- * Minimal, hand-authored inline SVG icon set -- deliberately not a
- * dependency (no lucide-react/heroicons): this app already has a
- * precedent for bespoke inline SVG (components/CircledMark.tsx's
- * hand-drawn circle paths) rather than pulling in an icon library for a
- * dozen shapes, and the project enforces a strict calculator-route
- * bundle budget (scripts/check-bundle-budget.mjs) that a full icon
- * package would eat into for no real benefit at this scale.
- *
- * Replaces emoji used as functional/structural icons across the
- * highest-traffic components -- emoji render inconsistently across
- * platforms/fonts and can't be styled via currentColor or the design
- * token system the way these can. A genuine flag glyph (South African
- * flag in PageHero) is left alone; that's not a structural icon.
- *
- * Every icon: 20x20 viewBox, 1.75px stroke, round caps/joins -- one
- * consistent visual language. `size` defaults to 16px; pass a
- * className for color (currentColor) and any size override.
- *
- * Sizing is a defined 4-step scale (ICON_SIZE below), not a free number
- * per call site -- every real usage across the app previously picked its
- * own ad hoc pixel value (11, 12, 13, 14, 18, 22 were all in use for
- * contexts that only needed 2-3 genuinely distinct sizes). Pass one of
- * these named constants rather than a raw number for any new usage.
- */
-
 export const ICON_SIZE = {
-  /** Tight inline glyphs: checkmarks inside small (~16px) circular
-   * badges, close-button icons next to text. */
   xs: 12,
-  /** Default size for most inline UI icons -- buttons, chips, result-card
-   * badges. Use this unless a specific layout constraint says otherwise. */
   sm: 14,
-  /** Icon centered inside a larger (~40px) circular badge, e.g. a modal
-   * header icon or a callout's leading icon. */
   md: 20,
-  /** Standalone feature icons, not inside a small badge -- e.g. a
-   * feature-card's own icon. */
   lg: 26,
 } as const;
 

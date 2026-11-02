@@ -27,45 +27,46 @@ export function MarkInput({ label, percentage, onChange, disabled }: MarkInputPr
   }
 
   return (
-    <div className="flex items-center gap-3">
-      <label className="w-44 shrink-0 text-sm font-semibold text-ink" htmlFor={`mark-${label}`}>
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-line/60 bg-white p-4 shadow-sm transition-all hover:border-brand-teal/40">
+      <label className="text-sm font-bold text-ink" htmlFor={`mark-${label}`}>
         {label}
       </label>
-      <div className="relative flex items-center">
-        <input
-          id={`mark-${label}`}
-          type="number"
-          min={0}
-          max={100}
-          inputMode="numeric"
-          disabled={disabled}
-          placeholder="%"
-          className="h-11 w-22 rounded-xl border-2 border-line bg-paper-raised px-3 text-sm font-mono font-bold tabular-nums text-ink transition-all focus:border-brand-teal focus:ring-2 focus:ring-brand-teal/20 focus:outline-none disabled:bg-slate-soft"
-          value={percentage ?? ""}
-          onChange={(e) => {
-            const raw = e.target.value;
-            if (raw === "") {
-              onChange(null);
-              return;
-            }
-            const parsed = Number(raw);
-            if (Number.isFinite(parsed)) {
-              onChange(Math.max(0, Math.min(100, parsed)));
-            }
-          }}
-        />
+      <div className="flex items-center gap-3">
+        <div className="relative flex items-center">
+          <input
+            id={`mark-${label}`}
+            type="number"
+            min={0}
+            max={100}
+            inputMode="numeric"
+            disabled={disabled}
+            placeholder="0-100"
+            className="h-12 w-28 rounded-xl border-2 border-line bg-slate-50 px-4 text-base font-mono font-bold tabular-nums text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20 disabled:bg-slate-100"
+            value={percentage ?? ""}
+            onChange={(e) => {
+              const raw = e.target.value;
+              if (raw === "") {
+                onChange(null);
+                return;
+              }
+              const parsed = Number(raw);
+              if (Number.isFinite(parsed)) {
+                onChange(Math.max(0, Math.min(100, parsed)));
+              }
+            }}
+          />
+          <span className="absolute right-3 text-xs font-bold text-ink-faint">%</span>
+        </div>
+        {level !== null && (
+          <span
+            className={`rounded-xl border px-3 py-1.5 text-xs font-mono font-bold shadow-sm transition-all animate-pop-in ${
+              LEVEL_STYLE[level] ?? "bg-slate-100 text-slate-700"
+            }`}
+          >
+            Level {level}
+          </span>
+        )}
       </div>
-      <span className="text-xs font-bold text-ink-faint">%</span>
-      {level !== null && (
-        <span
-          className={`rounded-full border px-3 py-1 text-xs font-mono font-bold shadow-2xs transition-all animate-pop-in ${
-            LEVEL_STYLE[level] ?? "bg-slate-100 text-slate-700"
-          }`}
-          title="Standard NSC Matric Level (1-7). Note: Each university converts percentages to points using its own verified formula."
-        >
-          NSC Level {level}
-        </span>
-      )}
     </div>
   );
 }

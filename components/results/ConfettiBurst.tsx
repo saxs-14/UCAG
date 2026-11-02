@@ -12,7 +12,7 @@ const COLORS = [
   "var(--color-mark-gold)",
 ];
 
-const PIECE_COUNT = 28;
+const PIECE_COUNT = 36;
 
 interface Piece {
   left: number;
@@ -45,8 +45,8 @@ export function ConfettiBurst() {
         driftPx: (Math.random() - 0.5) * 160,
         spinDeg: 360 + Math.random() * 360,
         color: COLORS[i % COLORS.length]!,
-        width: 6 + Math.random() * 6,
-        height: 4 + Math.random() * 6,
+        width: 6 + Math.random() * 8,
+        height: 4 + Math.random() * 8,
       })),
     []
   );
@@ -56,7 +56,7 @@ export function ConfettiBurst() {
       {pieces.map((p, i) => (
         <span
           key={i}
-          className="animate-confetti absolute top-0 rounded-sm"
+          className="animate-confetti absolute top-0 rounded-sm shadow-sm"
           style={
             {
               left: `${p.left}vw`,

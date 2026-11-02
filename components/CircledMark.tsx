@@ -1,19 +1,7 @@
-/**
- * The signature element from Phase 8's "The Marked Script" design proposal:
- * a number circled the way a teacher circles a total on a marked script --
- * two slightly offset hand-drawn ellipses, not a clean CSS border-radius.
- * Used wherever a number is THE number on screen: the calculator's running
- * APS, a result card's score or gap. Not decorative -- it's how the eye is
- * told which figure decides things.
- *
- * Pure presentational, no client-side interactivity -- safe as a server
- * component wherever it's used.
- */
-
 const VARIANT_COLOR: Record<"qualify" | "almost" | "neutral", string> = {
-  qualify: "text-mark-green",
-  almost: "text-mark-gold",
-  neutral: "text-slate",
+  qualify: "text-emerald-600",
+  almost: "text-amber-500",
+  neutral: "text-slate-500",
 };
 
 const SIZE_TEXT: Record<"sm" | "lg", string> = {
@@ -29,20 +17,17 @@ interface CircledMarkProps {
 }
 
 const VARIANT_GLOW: Record<"qualify" | "almost" | "neutral", string> = {
-  qualify: "var(--color-mark-green)",
-  almost: "var(--color-mark-gold)",
-  neutral: "var(--color-slate)",
+  qualify: "#10b981",
+  almost: "#f59e0b",
+  neutral: "#64748b",
 };
 
-/** Both ellipse paths are ~220 SVG units long -- close enough for a
- * shared draw-on length that a css var can drive without measuring each
- * path at runtime (getTotalLength() would need a client component). */
 const APPROX_PATH_LENGTH = 220;
 
 export function CircledMark({ value, variant = "qualify", size = "lg", label }: CircledMarkProps) {
   return (
     <span
-      className={`relative inline-flex items-center justify-center px-3 py-1 ${VARIANT_COLOR[variant]} ${
+      className={`relative inline-flex items-center justify-center px-4 py-2 ${VARIANT_COLOR[variant]} ${
         variant === "qualify" ? "animate-soft-glow rounded-full" : ""
       }`}
       style={{ "--glow-color": VARIANT_GLOW[variant] } as React.CSSProperties}
@@ -61,7 +46,8 @@ export function CircledMark({ value, variant = "qualify", size = "lg", label }: 
           d="M10,32 C8,14 30,4 52,5 C78,6 94,16 92,32 C90,50 66,57 46,56 C22,55 6,46 10,32 Z"
           fill="none"
           stroke="currentColor"
-          strokeWidth="2.5"
+          strokeWidth="3"
+          strokeLinecap="round"
           strokeDasharray={APPROX_PATH_LENGTH}
         />
         <path
@@ -71,11 +57,12 @@ export function CircledMark({ value, variant = "qualify", size = "lg", label }: 
           fill="none"
           stroke="currentColor"
           strokeWidth="2"
+          strokeLinecap="round"
           strokeDasharray={APPROX_PATH_LENGTH}
           opacity="0.6"
         />
       </svg>
-      <span className={`relative font-display font-bold tabular-nums ${SIZE_TEXT[size]}`}>{value}</span>
+      <span className={`relative font-display font-black tabular-nums ${SIZE_TEXT[size]}`}>{value}</span>
     </span>
   );
 }

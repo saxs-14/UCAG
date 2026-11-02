@@ -14,51 +14,62 @@ const LEVEL_LABELS: Record<Bursary["levelRequired"], string> = {
 export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; staggerIndex?: number }) {
   const stagger = Math.min(staggerIndex + 1, 6);
   return (
-    // Entrance animation and the 3D tilt/hover-lift both animate
-    // `transform`, so they're split across separate elements: an
-    // animation's held end-state (fill-mode both) outranks a plain
-    // :hover rule (or a JS-set inline transform) on the same property
-    // in the cascade otherwise.
-    <div className={`stagger-${stagger} animate-rise-in`}>
+    <div className={`stagger-${stagger} animate-rise-in h-full`}>
       <TiltCard>
-        <article className="elevate rounded-xl border border-line bg-paper-raised p-4">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-start gap-2">
+        <article className="flex h-full flex-col rounded-3xl border border-line bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
               <StampBadge variant="teal" />
-              <h3 className="text-base font-semibold text-ink">{bursary.name}</h3>
+              <h3 className="font-display text-lg font-bold text-ink leading-tight">{bursary.name}</h3>
             </div>
             <DeadlineBadge closesOn={bursary.closesOn} />
           </div>
-          <p className="mt-2 text-sm font-semibold text-ink">{bursary.provider}</p>
-          <p className="mt-1 text-xs text-ink-faint">Funding amount recorded: <span className="font-medium text-ink-soft">{bursary.value}</span></p>
-          <p className="mt-1 font-mono text-xs tabular-nums text-ink-soft">
-            {formatApplicationWindow(bursary.opensOn, bursary.closesOn)}
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
-            <span className="text-xs text-ink-faint">{LEVEL_LABELS[bursary.levelRequired]}</span>
-            {bursary.fieldsOfStudy.map((field) => (
-              <FieldTag key={field} field={field} />
-            ))}
-          </div>
-          {bursary.criteria.length > 0 && (
-            <ul className="mt-2 list-inside list-disc text-xs text-ink-soft">
-              {bursary.criteria.map((c, i) => (
-                <li key={i}>{c}</li>
+          
+          <div className="mt-4 flex-grow">
+            <p className="text-sm font-bold text-brand-teal">{bursary.provider}</p>
+            <p className="mt-1.5 text-xs font-medium text-ink-soft">
+              Recorded value: <span className="rounded bg-slate-100 px-1.5 py-0.5 font-bold text-ink">{bursary.value}</span>
+            </p>
+            <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-ink-soft">
+              <span>📅</span> {formatApplicationWindow(bursary.opensOn, bursary.closesOn)}
+            </p>
+            
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="inline-flex rounded-md bg-brand-teal/10 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-brand-teal">
+                {LEVEL_LABELS[bursary.levelRequired]}
+              </span>
+              {bursary.fieldsOfStudy.map((field) => (
+                <FieldTag key={field} field={field} />
               ))}
-            </ul>
-          )}
-          <p className="mt-3 rounded-lg bg-slate-soft px-3 py-2 text-xs leading-5 text-ink-soft">Check the criteria and dates on the provider&apos;s page before submitting. UCAG does not guarantee funding.</p>
-          <div className="mt-3 flex flex-wrap items-center justify-between gap-2 border-t border-line pt-2 text-xs">
+            </div>
+            
+            {bursary.criteria.length > 0 && (
+              <ul className="mt-4 flex flex-col gap-1.5 text-xs font-medium text-ink-soft">
+                {bursary.criteria.map((c, i) => (
+                  <li key={i} className="flex items-start gap-2">
+                    <span className="text-brand-teal mt-0.5">•</span>
+                    <span className="leading-relaxed">{c}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+
+          <div className="mt-5 rounded-xl bg-slate-50 p-3 text-xs font-medium leading-relaxed text-ink-soft border border-line/40">
+            Always double-check criteria on the official site before applying.
+          </div>
+          
+          <div className="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-line/60 pt-4">
             <a
               href={bursary.applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-11 rounded-full bg-mark-green px-4 py-1.5 font-medium text-white transition-transform hover-fine:scale-[1.03] active:scale-[0.97]"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-mark-green px-6 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-mark-green/30"
             >
-              Apply
+              Apply Officially
             </a>
-            <a href={bursary.sourceUrl} target="_blank" rel="noopener noreferrer" className="font-mono text-ink-faint underline">
-              Verified {bursary.verifiedOn} · Source
+            <a href={bursary.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-ink-soft transition-colors hover:text-brand-teal hover:underline">
+              Source verified {bursary.verifiedOn} ↗
             </a>
           </div>
         </article>

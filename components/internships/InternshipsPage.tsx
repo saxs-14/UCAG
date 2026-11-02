@@ -52,50 +52,72 @@ export function InternshipsPage({ internships: allInternships }: InternshipsPage
   };
 
   return (
-    <div className="flex w-full max-w-4xl flex-col gap-6">
-      <section className="card-learner rounded-2xl p-5 sm:p-6" aria-labelledby="internships-start">
-        <div className="max-w-2xl">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-teal">Start with your work experience need</p>
-          <h2 id="internships-start" className="mt-1 text-2xl font-bold tracking-tight text-ink">Internships and learnerships, verified before you apply.</h2>
-          <p className="mt-2 text-sm leading-6 text-ink-soft">
-            UCAG helps you discover internships and SETA-registered learnerships from the records we have verified.
-            It does not decide whether a provider will award you a place.
-          </p>
+    <div className="flex w-full max-w-5xl flex-col gap-8">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-coral to-rose-900 shadow-lg" aria-labelledby="internships-start">
+        <div className="p-6 sm:p-10">
+          <div className="max-w-2xl text-white">
+            <p className="text-xs font-extrabold uppercase tracking-widest text-rose-200">Start with your work experience need</p>
+            <h2 id="internships-start" className="mt-2 font-display text-3xl font-black tracking-tight sm:text-4xl">Find verified internships and learnerships.</h2>
+            <p className="mt-3 text-sm font-medium leading-relaxed text-rose-50 sm:text-base">
+              UCAG helps you discover opportunities based on official, verified records to jumpstart your career journey safely.
+            </p>
+          </div>
         </div>
       </section>
 
-      <section className="rounded-2xl border border-line bg-paper-raised p-5 sm:p-6" aria-labelledby="internships-filters">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div><h2 id="internships-filters" className="font-display text-lg font-bold text-ink">Narrow the list</h2><p className="mt-1 text-xs text-ink-faint">Filters use recorded fields only. They are not an eligibility verdict.</p></div>
-          {hasFilters && <button type="button" onClick={clearFilters} className="min-h-11 rounded-full border border-line px-4 text-sm font-semibold text-ink transition-colors hover:border-brand-teal hover:text-brand-teal">Clear filters</button>}
+      <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm sm:p-8" aria-labelledby="internships-filters">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 id="internships-filters" className="font-display text-xl font-black text-ink">Narrow your search</h2>
+            <p className="mt-1 text-sm font-medium text-ink-soft">Filters use recorded fields only. Always check the official provider for final eligibility.</p>
+          </div>
+          {hasFilters && (
+            <button type="button" onClick={clearFilters} className="min-h-12 rounded-xl border-2 border-line px-5 text-sm font-bold text-ink transition-colors hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-brand-coral/20">
+              Clear filters
+            </button>
+          )}
         </div>
-        <div className="mt-4 grid gap-4 sm:grid-cols-3">
-          <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+        <div className="mt-6 grid gap-5 sm:grid-cols-3">
+          <label className="flex flex-col gap-2 text-sm font-bold text-ink-soft">
             {LABELS.internships.typeFilterLabel}
-            <select id="internships-type-filter" name="typeFilter" className="min-h-11 rounded-xl border border-line bg-paper px-3 text-ink transition-colors hover:border-brand-teal focus:border-brand-teal" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as InternshipType | "all")}>
+            <select id="internships-type-filter" name="typeFilter" className="min-h-12 w-full cursor-pointer rounded-xl border border-line bg-paper px-4 text-base font-medium text-ink transition-all focus:border-brand-coral focus:outline-none focus:ring-4 focus:ring-brand-coral/20" value={typeFilter} onChange={(e) => setTypeFilter(e.target.value as InternshipType | "all")}>
               {TYPE_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
           </label>
-          <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+          <label className="flex flex-col gap-2 text-sm font-bold text-ink-soft">
             {LABELS.internships.fieldOfStudyFilterLabel}
-            <select id="internships-field-of-study-filter" name="fieldOfStudy" className="min-h-11 rounded-xl border border-line bg-paper px-3 text-ink transition-colors hover:border-brand-teal focus:border-brand-teal" value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)}>
+            <select id="internships-field-of-study-filter" name="fieldOfStudy" className="min-h-12 w-full cursor-pointer rounded-xl border border-line bg-paper px-4 text-base font-medium text-ink transition-all focus:border-brand-coral focus:outline-none focus:ring-4 focus:ring-brand-coral/20" value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)}>
               <option value="">{LABELS.internships.allFields}</option>
               {fieldOptions.map((field) => <option key={field} value={field}>{field}</option>)}
             </select>
           </label>
-          <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+          <label className="flex flex-col gap-2 text-sm font-bold text-ink-soft">
             {LABELS.internships.matricOnlyFilterLabel}
-            <select id="internships-matric-only-filter" name="matricOnly" className="min-h-11 rounded-xl border border-line bg-paper px-3 text-ink transition-colors hover:border-brand-teal focus:border-brand-teal" value={String(matricOnly)} onChange={(e) => setMatricOnly(e.target.value === "all" ? "all" : e.target.value === "true")}>
+            <select id="internships-matric-only-filter" name="matricOnly" className="min-h-12 w-full cursor-pointer rounded-xl border border-line bg-paper px-4 text-base font-medium text-ink transition-all focus:border-brand-coral focus:outline-none focus:ring-4 focus:ring-brand-coral/20" value={String(matricOnly)} onChange={(e) => setMatricOnly(e.target.value === "all" ? "all" : e.target.value === "true")}>
               {MATRIC_ONLY_OPTIONS.map((opt) => <option key={String(opt.value)} value={String(opt.value)}>{opt.label}</option>)}
             </select>
           </label>
         </div>
       </section>
 
-      <section className="flex flex-col gap-3" aria-labelledby="internships-heading">
-        <div><h2 id="internships-heading" className="flex items-baseline gap-2 text-xl font-bold tracking-tight text-ink">{LABELS.internships.heading} <span className="rounded-full bg-brand-coral-soft px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-brand-coral"><CountUp value={internships.length} /></span></h2><p className="mt-1 text-xs text-ink-faint">Work opportunities with a recorded closing date and provider source where available.</p></div>
-        {internships.length === 0 && <p className="rounded-xl border border-line p-4 text-sm text-ink-faint">{LABELS.internships.noResults}</p>}
-        <div key={`${fieldOfStudy}-${typeFilter}-${matricOnly}`} className="grid gap-4 lg:grid-cols-2">{internships.map((i, idx) => <InternshipCard key={i.id} internship={i} staggerIndex={idx} />)}</div>
+      <section className="flex flex-col gap-5" aria-labelledby="internships-heading">
+        <div className="flex items-center gap-3">
+          <h2 id="internships-heading" className="font-display text-2xl font-black text-ink">{LABELS.internships.heading}</h2>
+          <span className="inline-flex items-center justify-center rounded-full bg-brand-coral/10 px-3 py-1 text-sm font-bold text-brand-coral">
+            <CountUp value={internships.length} /> Results
+          </span>
+        </div>
+        
+        {internships.length === 0 && (
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-line bg-paper-raised p-10 text-center">
+            <span className="text-4xl mb-3">🔍</span>
+            <p className="text-base font-bold text-ink">No exact matches found</p>
+            <p className="mt-1 text-sm font-medium text-ink-soft">{LABELS.internships.noResults}</p>
+          </div>
+        )}
+        <div key={`${fieldOfStudy}-${typeFilter}-${matricOnly}`} className="grid gap-5 lg:grid-cols-2">
+          {internships.map((i, idx) => <InternshipCard key={i.id} internship={i} staggerIndex={idx} />)}
+        </div>
       </section>
 
       <ScamExplainer />

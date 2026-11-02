@@ -21,22 +21,6 @@ const RICH_FONTS_SCRIPT = `try {
   }
 } catch (e) {}`;
 
-/** A deployed build's static chunks are content-hashed and effectively
- * immutable -- when one fails mid-fetch (seen directly in production:
- * "Failed to load chunk ... from module ..." in the console, the same
- * file reliably returning 200 with correct bytes a moment later on a
- * plain retry, so this is a transient dropped/stalled network request,
- * not a missing or broken build artifact), the failure isn't scoped to
- * whichever component happened to trigger that import -- it can crash
- * hydration for the whole page, since the failing chunk may be a shared
- * one any number of components depend on, not just the one that
- * triggered the fetch. ChatWidgetLoader.tsx's own retry only covers its
- * own lazy import; this is the equivalent backstop for every other
- * chunk Next.js loads, including ones already present in the initial
- * HTML. A plain reload re-fetches the current (already-deployed, still
- * valid) build fresh rather than a stale cached one, which is usually
- * enough to recover. Runs once per tab session (sessionStorage guard) so
- * a persistent, non-transient failure doesn't reload-loop the visitor. */
 const CHUNK_ERROR_RECOVERY_SCRIPT = `try {
   var RELOAD_KEY = 'ucagChunkReloadOnce';
   function isChunkError(message) {
@@ -59,20 +43,10 @@ const CHUNK_ERROR_RECOVERY_SCRIPT = `try {
   });
 } catch (e) {}`;
 
-/** Without this, Next.js can't resolve the relative openGraph/twitter image
- * URLs below (or any page's `alternates.canonical`) into absolute ones --
- * they'd silently fall back to http://localhost:3000/... in production,
- * which is exactly the kind of broken-looking-but-not-erroring bug a
- * social-share preview or a canonical tag audit would catch and this
- * build step wouldn't. Same getBaseUrl() sitemap.ts/robots.ts already use. */
 const baseUrl = getBaseUrl();
 
 export const metadata: Metadata = {
   metadataBase: new URL(baseUrl),
-  // A plain string, not { default, template }: every page in this app
-  // already manually suffixes its own title with " -- UCAG" (see
-  // app/bursaries/page.tsx and friends) -- a template here would double
-  // that suffix on every one of them instead of only filling in a gap.
   title: `${LABELS.app.name} -- ${LABELS.app.fullName}`,
   description: LABELS.app.tagline,
   manifest: "/manifest.json",
@@ -82,18 +56,8 @@ export const metadata: Metadata = {
       { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
       { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
     ],
-    // iOS ignores manifest.json icons entirely for "Add to Home Screen" --
-    // this is the only way it picks up a real icon rather than a screenshot.
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
-  // Google Search Console's HTML-tag verification method -- the actual
-  // ownership check still has to happen in Search Console itself (needs
-  // whoever owns the Google account/property to add the site there),
-  // this just makes the resulting <meta name="google-site-verification">
-  // tag show up automatically once GOOGLE_SITE_VERIFICATION is set,
-  // without needing a code change at that point. Omitted entirely (not
-  // an empty string) when unset, since Metadata.verification.google
-  // being present at all is what tells Next.js to render the tag.
   ...(process.env.GOOGLE_SITE_VERIFICATION
     ? { verification: { google: process.env.GOOGLE_SITE_VERIFICATION } }
     : {}),
@@ -113,11 +77,6 @@ export const metadata: Metadata = {
   },
 };
 
-/** Organization + WebSite JSON-LD -- describes the site itself, not any
- * fact this app has or hasn't verified, so it carries none of the
- * sourceUrl/verifiedOn/academicYear provenance risk CLAUDE.md's core rule
- * is about. Site-wide (every page inherits it via the root layout)
- * rather than duplicated per page. */
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@graph": [
@@ -142,7 +101,7 @@ const organizationJsonLd = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#14121f", // brand-navy, matches the logomark's badge background
+  themeColor: "#14121f",
 };
 
 export default async function RootLayout({
@@ -175,12 +134,6 @@ export default async function RootLayout({
             {children}
           </main>
           <MobileNavBar />
-          {/* Inside AuthProvider, not a sibling of it -- found 2026-11-02:
-              it previously sat after </AuthProvider>, so useAuth() inside
-              the chat widget always read the context's default value
-              (displayName: null) no matter who was actually signed in.
-              The assistant greeting/addressing a signed-in learner by name
-              depends on this being a real descendant. */}
           <ChatWidgetLoader />
         </AuthProvider>
         <Footer />

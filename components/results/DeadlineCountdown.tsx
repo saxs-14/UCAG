@@ -14,19 +14,9 @@ function daysUntil(dateIso: string, now: Date): number {
   return Math.ceil((target - now.getTime()) / (1000 * 60 * 60 * 24));
 }
 
-/**
- * Live "N days left to apply" / "opens in N days" strip. Pure client-side
- * date math over data ResultCard already receives -- no new data flow.
- * Only ever renders a number when a real ISO date is present; an unknown
- * or missing date renders an explicit "dates being verified" state
- * instead of a blank space, per CLAUDE.md's overriding rule.
- */
 export function DeadlineCountdown({ applicationWindow, status }: DeadlineCountdownProps) {
   const [now, setNow] = useState<Date | null>(null);
 
-  // Computed on the client only, after mount -- avoids a server/client
-  // render mismatch from "today" differing between server render time and
-  // hydration time.
   useEffect(() => {
     setNow(new Date());
   }, []);
@@ -41,12 +31,14 @@ export function DeadlineCountdown({ applicationWindow, status }: DeadlineCountdo
         const urgent = days <= 7;
         return (
           <span
-            className={`no-print inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-2xs font-bold uppercase tracking-wide ${
-              urgent ? "bg-mark-red-soft text-mark-red border border-mark-red/30" : "bg-paper-overlay text-ink-soft border border-line"
+            className={`no-print inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold tracking-wide shadow-sm transition-colors ${
+              urgent 
+                ? "bg-mark-red/10 text-mark-red border border-mark-red/20 animate-pulse" 
+                : "bg-white text-ink border border-line"
             }`}
           >
-            <Hourglass className="h-3 w-3 shrink-0" aria-hidden="true" />
-            {days === 0 ? "Closes today" : `${days} day${days === 1 ? "" : "s"} left to apply`}
+            <Hourglass className="h-4 w-4 shrink-0" aria-hidden="true" />
+            {days === 0 ? "Closes today" : `${days} day${days === 1 ? "" : "s"} left`}
           </span>
         );
       }
@@ -57,9 +49,9 @@ export function DeadlineCountdown({ applicationWindow, status }: DeadlineCountdo
     const days = daysUntil(applicationWindow.opensOn, now);
     if (days >= 0) {
       return (
-        <span className="no-print inline-flex items-center gap-1.5 rounded-full bg-mark-green-soft px-2.5 py-1 text-2xs font-bold uppercase tracking-wide text-mark-green border border-mark-green/30">
-          <Clock className="h-3 w-3 shrink-0" aria-hidden="true" />
-          Opens in {days} day{days === 1 ? "" : "s"}
+        <span className="no-print inline-flex shrink-0 items-center gap-2 rounded-xl bg-mark-green/10 px-3 py-1.5 text-xs font-bold tracking-wide text-mark-green border border-mark-green/20 shadow-sm">
+          <Clock className="h-4 w-4 shrink-0" aria-hidden="true" />
+          Opens in {days}d
         </span>
       );
     }
@@ -67,9 +59,9 @@ export function DeadlineCountdown({ applicationWindow, status }: DeadlineCountdo
 
   if (status === "unknown") {
     return (
-      <span className="no-print inline-flex items-center gap-1.5 rounded-full bg-paper-overlay px-2.5 py-1 text-2xs font-semibold uppercase tracking-wide text-ink-soft border border-line">
-        <Clock className="h-3 w-3 shrink-0" aria-hidden="true" />
-        Dates being verified
+      <span className="no-print inline-flex shrink-0 items-center gap-2 rounded-xl bg-slate-50 px-3 py-1.5 text-xs font-bold tracking-wide text-ink-soft border border-line shadow-sm">
+        <Clock className="h-4 w-4 shrink-0" aria-hidden="true" />
+        Verifying Dates
       </span>
     );
   }

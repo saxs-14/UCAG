@@ -8,38 +8,9 @@ import { reportError } from "@/lib/errorReporting";
 interface AuthContextValue {
   user: User | null;
   loading: boolean;
-  /** True only once the `role: "admin"` custom claim (see
-   * lib/admin/auth.ts, scripts/set-admin-claim.mjs) has been confirmed on
-   * a fresh ID token. False -- never undefined -- while that check is
-   * still in flight, so admin-only UI defaults closed. */
   isAdmin: boolean;
-  /** True once isAdmin reflects the CURRENT user (or there is no user).
-   * `loading` flips false as soon as onAuthStateChanged fires, which is
-   * before the separate async getIdTokenResult() call below resolves --
-   * a consumer that redirects based on isAdmin right after `loading`
-   * goes false would always see the stale default (false) and send a
-   * real admin to the wrong place. Wait for this instead. */
   adminClaimsReady: boolean;
-  /** True when Firebase Auth couldn't initialize at all -- e.g. this
-   * deployment has no real Firebase project's credentials configured
-   * (NEXT_PUBLIC_FIREBASE_* env vars). The calculator, bursaries, and
-   * statistics pages don't depend on auth at all and work fully either
-   * way; only sign-in/account/shortlist features are affected. Consumed
-   * by SignInForm/SignUpForm/AccountPage to show a plain explanation
-   * instead of a form that would fail confusingly on submit. */
   authUnavailable: boolean;
-  /** The signed-in user's display name, or null if signed out or no name
-   * is on record yet (e.g. an email/password account that hasn't set
-   * one). Tracked as its own piece of state rather than read live off
-   * `user.displayName` -- Firebase's updateProfile() mutates the
-   * existing User object's fields in place without handing back a new
-   * object reference, so a plain `setUser(auth.currentUser)` after
-   * calling it wouldn't trigger a re-render (React's setState bails on
-   * an identical reference), and consumers (e.g. the chat widget, which
-   * needs this to address the learner by name) would keep showing a
-   * stale value until the next full page load. SignUpForm/AccountPage
-   * call setDisplayName right after a successful updateProfile() so this
-   * stays in sync immediately. */
   displayName: string | null;
   setDisplayName: (name: string | null) => void;
 }
@@ -54,11 +25,6 @@ const AuthContext = createContext<AuthContextValue>({
   setDisplayName: () => {},
 });
 
-/** Wraps the app so any component can ask "who's signed in?" without
- * prop-drilling. Accounts are optional (docs/MASTER_PROMPT_v2.md Phase
- * 6) -- most of the app never reads this context, and getFirebaseAuth()
- * is lazy, so this provider costs nothing on routes that don't touch it
- * until a component actually calls useAuth(). */
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
@@ -72,10 +38,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     try {
       auth = getFirebaseAuth();
     } catch (err) {
-      // Missing/invalid Firebase client config -- degrade gracefully
-      // rather than taking down every route (AuthProvider wraps the
-      // whole app). Real per docs/MASTER_PROMPT_v2.md sect. 0.3: the
-      // rest of the product must keep working without an account.
       reportError(err, { scope: "auth-provider-init" });
       setLoading(false);
       setAuthUnavailable(true);
@@ -86,22 +48,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setUser(u);
       setDisplayName(u?.displayName ?? null);
       setLoading(false);
-      setAdminClaimsReady(false); // a new user's claims (incl. "no user") aren't checked yet
+      setAdminClaimsReady(false); 
 
       if (!u) {
         setIsAdmin(false);
-        setAdminClaimsReady(true); // nothing to check -- settled immediately
+        setAdminClaimsReady(true);
         return;
       }
 
-      // Force-refresh: an admin claim granted by scripts/set-admin-claim.mjs
-      // while this tab already has a cached (claim-less) token should show
-      // up without requiring a manual sign-out/sign-in.
       getIdTokenResult(u, true)
         .then((result) => setIsAdmin(result.claims.role === "admin"))
         .catch(() => setIsAdmin(false))
         .finally(() => setAdminClaimsReady(true));
     });
+    
     return unsubscribe;
   }, []);
 

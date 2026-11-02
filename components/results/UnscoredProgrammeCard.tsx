@@ -10,19 +10,6 @@ interface UnscoredProgrammeCardProps {
   staggerIndex?: number;
 }
 
-/**
- * A real, verified, sourced programme -- name, minAps, subject
- * requirements, all confirmed against the institution's own page -- shown
- * WITHOUT a computed qualify/almost/not-yet verdict, because no verified
- * ApsRule (lib/firestore/types.ts) exists yet for this institution. See
- * components/results/ResultsSection.tsx for why that's a hard line, not a
- * shortcut: matchProgramme() converts a learner's raw percentages into
- * APS points using the institution's own formula (how many subjects
- * count, how Life Orientation is treated, etc.) -- without a verified
- * formula there is no honest number to compute, only a guess wearing the
- * same UI as a fact. This card is the deliberate alternative to that
- * guess: show everything that IS verified, say plainly what isn't yet.
- */
 export function UnscoredProgrammeCard({
   programme,
   institution,
@@ -31,54 +18,70 @@ export function UnscoredProgrammeCard({
   staggerIndex = 0,
 }: UnscoredProgrammeCardProps) {
   const stagger = Math.min(staggerIndex + 1, 6);
+  
   return (
-    <article className={`card-learner stagger-${stagger} animate-pop-in flex flex-col gap-4 rounded-2xl p-5`}>
-      <header className="flex flex-col gap-2">
+    <article className={`stagger-${stagger} animate-pop-in flex flex-col gap-5 rounded-3xl border border-line/60 bg-white p-6 shadow-sm transition-all hover:shadow-md sm:p-8`}>
+      <header className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-full bg-brand-coral-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-coral">
+          <span className="rounded-lg bg-slate-100 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 shadow-sm border border-slate-200">
             {LABELS.verification.apsRulesBeingVerified}
           </span>
-          <span className="rounded-full bg-slate-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-slate">
-            Verified programme
+          <span className="rounded-lg bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-ink-soft shadow-sm border border-line">
+            Verified Programme
           </span>
         </div>
-        <h3 className="text-lg font-semibold text-ink">
-          <Link href={`/programmes/${programme.id}`} className="hover:underline">
-            {programme.name}
-          </Link>
-        </h3>
-        <p className="text-sm text-ink-soft">
-          {institution.name} · {faculty.name} · {school.name}
-        </p>
+        <div>
+          <h3 className="font-display text-xl font-black leading-tight text-ink">
+            <Link href={`/programmes/${programme.id}`} className="transition-colors hover:text-brand-teal hover:underline">
+              {programme.name}
+            </Link>
+          </h3>
+          <p className="mt-2 text-sm font-medium text-ink-soft">
+            {institution.name} · {faculty.name} · {school.name}
+          </p>
+        </div>
       </header>
 
-      <ul className="flex flex-col gap-1 text-sm text-ink">
-        {programme.minAps !== null && <li>Minimum APS: {programme.minAps}</li>}
-        {programme.subjectRequirements.map((req, i) => (
-          <li key={i}>
-            {req.subjectCode}
-            {req.minLevel !== undefined ? ` -- level ${req.minLevel}` : ""}
-            {req.minPercent !== undefined ? ` -- ${req.minPercent}%` : ""}
-          </li>
-        ))}
-        {programme.additionalRequirements.map((req, i) => (
-          <li key={`extra-${i}`} className="text-ink-soft">
-            {req}
-          </li>
-        ))}
-      </ul>
+      <div className="flex flex-col gap-3 rounded-2xl border border-line/50 bg-slate-50 p-5 shadow-inner text-sm">
+        {programme.minAps !== null && (
+          <p className="font-bold text-ink">
+            Minimum APS: <span className="font-mono text-brand-teal bg-brand-teal/10 px-2 py-0.5 rounded">{programme.minAps}</span>
+          </p>
+        )}
+        <ul className="flex flex-col gap-1.5 text-ink-soft font-medium">
+          {programme.subjectRequirements.map((req, i) => (
+            <li key={i} className="flex items-start gap-2">
+              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300" />
+              <span>
+                {req.subjectCode}
+                {req.minLevel !== undefined ? ` (Level ${req.minLevel})` : ""}
+                {req.minPercent !== undefined ? ` (${req.minPercent}%)` : ""}
+              </span>
+            </li>
+          ))}
+          {programme.additionalRequirements.map((req, i) => (
+            <li key={`extra-${i}`} className="flex items-start gap-2 text-ink-faint">
+              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300" />
+              <span>{req}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
 
-      <p className="rounded bg-slate-soft p-2 text-sm text-ink-soft">
-        We can&apos;t yet calculate your personal APS score for {institution.shortName} -- their exact APS
-        formula (how many subjects count, how Life Orientation is weighted) hasn&apos;t been confirmed
-        against an official source yet. The requirements above are real and verified; the score comparison
-        is what&apos;s still pending.
-      </p>
+      <div className="rounded-2xl border border-brand-teal/20 bg-brand-teal/5 p-4 text-sm font-medium leading-relaxed text-ink-soft">
+        <div className="flex items-start gap-3">
+          <span className="text-xl">⏳</span>
+          <p>
+            We cannot calculate your personal APS score for {institution.shortName} just yet. Their exact APS
+            formula hasn&apos;t been confirmed against our official sources. The requirements listed above are verified; the score comparison is pending.
+          </p>
+        </div>
+      </div>
 
-      <p className="text-xs font-mono tabular-nums text-ink-faint">
+      <p className="mt-2 border-t border-line/40 pt-4 text-xs font-bold text-ink-faint text-center">
         Verified {programme.verifiedOn} ·{" "}
-        <a href={programme.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline">
-          Source
+        <a href={programme.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline transition-colors">
+          Official Source ↗
         </a>
       </p>
     </article>

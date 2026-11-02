@@ -1,11 +1,9 @@
-// cSpell:words Mpumalanga Siyabuswa NSFAS UCAG learnerships
 "use client";
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import Image from "next/image";
 
-/** UMP official brand colors */
 const UMP_NAVY = "#003b5c";
 const UMP_GOLD = "#d4af37";
 const UMP_TEAL = "#00a896";
@@ -23,8 +21,7 @@ export function UmpHeader() {
   const pathname = usePathname();
 
   return (
-    <div className="w-full">
-      {/* ── Main brand header ── */}
+    <div className="w-full shadow-md">
       <div
         className="w-full py-6 px-6 sm:px-10"
         style={{
@@ -32,13 +29,11 @@ export function UmpHeader() {
         }}
       >
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-6">
-          {/* Logo + wordmark */}
           <Link href="/ump" className="flex items-center gap-4 group">
             <div
               className="flex size-14 items-center justify-center rounded-2xl shadow-lg flex-shrink-0"
               style={{ background: UMP_GOLD }}
             >
-              {/* Try remote logo; fall back to stylised shield text */}
               <Image
                 src="https://www.ump.ac.za/images/logo.png"
                 alt="UMP Logo"
@@ -57,14 +52,14 @@ export function UmpHeader() {
               />
             </div>
             <div className="text-white">
-              <p className="text-[10px] font-bold uppercase tracking-widest opacity-75">
+              <p className="text-[10px] font-extrabold uppercase tracking-widest opacity-75">
                 University of
               </p>
-              <p className="text-lg font-extrabold tracking-tight leading-tight group-hover:opacity-90 transition">
+              <p className="text-xl font-black tracking-tight leading-tight group-hover:opacity-90 transition">
                 Mpumalanga
               </p>
               <p
-                className="text-[10px] font-bold uppercase tracking-widest"
+                className="text-[10px] font-black uppercase tracking-widest"
                 style={{ color: UMP_GOLD }}
               >
                 Smart Admission Platform
@@ -72,12 +67,11 @@ export function UmpHeader() {
             </div>
           </Link>
 
-          {/* Apply CTA */}
           <a
             href="https://www.ump.ac.za/Admissions"
             target="_blank"
             rel="noopener noreferrer"
-            className="hidden sm:inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-extrabold shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 flex-shrink-0"
+            className="hidden sm:inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-xs font-black shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 flex-shrink-0"
             style={{
               background: UMP_GOLD,
               color: UMP_NAVY,
@@ -88,9 +82,8 @@ export function UmpHeader() {
         </div>
       </div>
 
-      {/* ── Sub-navigation ── */}
       <div
-        className="w-full border-b overflow-x-auto"
+        className="w-full border-b overflow-x-auto shadow-inner"
         style={{
           background: `linear-gradient(90deg, #002e47 0%, ${UMP_NAVY} 100%)`,
           borderColor: `${UMP_GOLD}33`,
@@ -98,7 +91,7 @@ export function UmpHeader() {
       >
         <nav
           aria-label="UMP section navigation"
-          className="mx-auto flex max-w-5xl items-center gap-0.5 px-4 py-1 text-xs font-semibold scrollbar-none"
+          className="mx-auto flex max-w-5xl items-center gap-2 px-6 py-2.5 text-xs font-bold scrollbar-none"
         >
           {UMP_NAV.map(({ href, label }) => {
             const isActive = pathname === href;
@@ -107,21 +100,22 @@ export function UmpHeader() {
                 key={href}
                 href={href}
                 aria-current={isActive ? "page" : undefined}
-                className="flex-none whitespace-nowrap rounded-lg px-3 py-2 transition-all duration-150"
+                className="flex-none whitespace-nowrap rounded-xl px-4 py-2 transition-all duration-200"
                 style={
                   isActive
                     ? {
                         background: UMP_GOLD,
                         color: UMP_NAVY,
-                        fontWeight: 800,
+                        fontWeight: 900,
+                        boxShadow: "0 2px 8px rgba(0,0,0,0.15)",
                       }
                     : {
-                        color: "rgba(255,255,255,0.8)",
+                        color: "rgba(255,255,255,0.85)",
                       }
                 }
                 onMouseEnter={(e) => {
                   if (!isActive)
-                    (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.1)";
+                    (e.currentTarget as HTMLAnchorElement).style.background = "rgba(255,255,255,0.12)";
                 }}
                 onMouseLeave={(e) => {
                   if (!isActive)
@@ -131,10 +125,10 @@ export function UmpHeader() {
                 {label}
                 {href === "/ump/learnerships" && (
                   <span
-                    className="ml-1 rounded-full px-1.5 py-0.5 text-[9px] font-extrabold"
+                    className="ml-1.5 rounded-full px-2 py-0.5 text-[9px] font-black uppercase tracking-wider"
                     style={{ background: UMP_TEAL, color: "white" }}
                   >
-                    NEW
+                    New
                   </span>
                 )}
               </Link>

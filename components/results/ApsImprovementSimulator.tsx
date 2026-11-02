@@ -5,37 +5,18 @@ import { calculateAps } from "@/lib/aps/engine";
 import { matchProgramme } from "@/lib/matching/engine";
 import { resolveApsRule } from "@/lib/matching/resolveApsRule";
 import { resolveSubjectLabel } from "@/config/subjects";
-import { CircledMark } from "@/components/CircledMark";
 import type { SubjectMarkInput } from "@/lib/aps/types";
 import type { ApsRule, Institution, Programme } from "@/lib/firestore/types";
 import type { MatchResult } from "@/lib/matching/types";
 
 interface ApsImprovementSimulatorProps {
   marks: SubjectMarkInput[];
-  /** Real, already-scored entries (components/results/ResultsSection.tsx)
-   * -- which institution(s) this simulator can even offer is entirely
-   * determined by which institutions have a verified ApsRule on record,
-   * same as the main results. */
   scored: { programme: Programme; matchResult: MatchResult }[];
   apsRules: ApsRule[];
   programmes: Programme[];
   institutions: Institution[];
 }
 
-/**
- * "What if I improve one subject?" -- a pure what-if recalculation, not a
- * saved/persisted change: reuses lib/aps/engine and lib/matching/engine
- * exactly as ResultsSection does, just against a temporarily-modified
- * copy of the marks array. config/sampleData.ts's fictional
- * SAMPLE_APS_RULE/SAMPLE_PROGRAMMES are gone from this component
- * entirely -- it was the one piece of fake data left wired into the real
- * results page, invisible only because no institution had a verified
- * ApsRule yet to make it render at all. It now uses the SAME real,
- * verified ApsRule and programmes as the scored results above it, and
- * (since APS is calculated per institution, never as one universal
- * number -- docs/MASTER_PROMPT_v2.md sect. 2) is explicitly labelled
- * with that institution's real name, never left generic.
- */
 export function ApsImprovementSimulator({
   marks,
   scored,
@@ -43,46 +24,20 @@ export function ApsImprovementSimulator({
   programmes,
   institutions,
 }: ApsImprovementSimulatorProps) {
-  // Every scored entry belongs to an institution with a verified ApsRule
-  // (that's what "scored" means) -- these are the only institutions this
-  // simulator can ever offer a formula for.
-  const scoredInstitutionIds = useMemo(
-    () => Array.from(new Set(scored.map((e) => e.programme.institutionId))),
-    [scored]
-  );
-
-  const [selectedInstitutionId, setSelectedInstitutionId] = useState<string>(
-    scoredInstitutionIds[0] ?? ""
-  );
+  const scoredInstitutionIds = useMemo(() => Array.from(new Set(scored.map((e) => e.programme.institutionId))), [scored]);
+  const [selectedInstitutionId, setSelectedInstitutionId] = useState<string>(scoredInstitutionIds[0] ?? "");
+  const [expanded, setExpanded] = useState(false);
 
   useEffect(() => {
-    if (!scoredInstitutionIds.includes(selectedInstitutionId)) {
-      setSelectedInstitutionId(scoredInstitutionIds[0] ?? "");
-    }
+    if (!scoredInstitutionIds.includes(selectedInstitutionId)) setSelectedInstitutionId(scoredInstitutionIds[0] ?? "");
   }, [scoredInstitutionIds, selectedInstitutionId]);
 
-  // The headline "APS: X -> Y" display represents this institution's
-  // general/default formula (facultyId: null) -- an institution can now
-  // have faculty-specific overrides too (see ApsRule.facultyId in
-  // lib/firestore/types.ts), but a single-institution-wide summary number
-  // wouldn't make sense scoped to one faculty here. Per-programme
-  // qualify/almost-qualify deltas below correctly resolve each
-  // programme's own faculty-specific rule instead.
   const apsRule = apsRules.find((r) => r.institutionId === selectedInstitutionId && r.facultyId === null);
   const institution = institutions.find((i) => i.id === selectedInstitutionId);
-  const institutionProgrammes = useMemo(
-    () => programmes.filter((p) => p.institutionId === selectedInstitutionId),
-    [programmes, selectedInstitutionId]
-  );
+  const institutionProgrammes = useMemo(() => programmes.filter((p) => p.institutionId === selectedInstitutionId), [programmes, selectedInstitutionId]);
 
   const [selectedSubject, setSelectedSubject] = useState<string>(marks[0]?.subjectCode ?? "");
   const [targetMark, setTargetMark] = useState<number>(marks[0]?.percentage ?? 0);
-  // Tracks the live entered mark for the selected subject until the
-  // learner actually types their own "what if" value -- without this, a
-  // lazy useState initializer captures whatever the mark happened to be
-  // at the exact render this component first mounted (which can be a
-  // mid-keystroke intermediate value, e.g. "8" on the way to "80" while
-  // still typing) and never updates again, even as the real form changes.
   const [userEditedTarget, setUserEditedTarget] = useState(false);
 
   const liveMarkForSelected = marks.find((m) => m.subjectCode === selectedSubject)?.percentage ?? 0;
@@ -95,9 +50,7 @@ export function ApsImprovementSimulator({
       setUserEditedTarget(false);
       return;
     }
-    if (!userEditedTarget) {
-      setTargetMark(liveMarkForSelected);
-    }
+    if (!userEditedTarget) setTargetMark(liveMarkForSelected);
   }, [marks, selectedSubject, liveMarkForSelected, userEditedTarget]);
 
   const simulatedMarks = useMemo<SubjectMarkInput[]>(() => {
@@ -105,57 +58,22 @@ export function ApsImprovementSimulator({
     return marks.map((m) => (m.subjectCode === selectedSubject ? { ...m, percentage: targetMark } : m));
   }, [marks, selectedSubject, targetMark]);
 
-  const currentApsResult = useMemo(
-    () => (apsRule ? calculateAps(apsRule, marks) : null),
-    [apsRule, marks]
-  );
-  const simulatedApsResult = useMemo(
-    () => (apsRule ? calculateAps(apsRule, simulatedMarks) : null),
-    [apsRule, simulatedMarks]
-  );
+  const currentApsResult = useMemo(() => (apsRule ? calculateAps(apsRule, marks) : null), [apsRule, marks]);
+  const simulatedApsResult = useMemo(() => (apsRule ? calculateAps(apsRule, simulatedMarks) : null), [apsRule, simulatedMarks]);
 
   const newlyUnlocked = useMemo(() => {
     return institutionProgrammes.filter((programme) => {
-      // Each programme is matched against ITS OWN correct rule (a
-      // faculty-specific override if one exists, otherwise the
-      // institution-wide default) -- not necessarily the same `apsRule`
-      // shown in the headline above, which is always the institution-wide
-      // default only.
       const programmeRule = resolveApsRule(apsRules, programme.institutionId, programme.facultyId);
       if (!programmeRule) return false;
       const before = matchProgramme(programme, programmeRule, marks, { catalog: institutionProgrammes }).bucket;
-      const after = matchProgramme(programme, programmeRule, simulatedMarks, {
-        catalog: institutionProgrammes,
-      }).bucket;
+      const after = matchProgramme(programme, programmeRule, simulatedMarks, { catalog: institutionProgrammes }).bucket;
       return before !== "qualify" && after === "qualify";
     });
   }, [apsRules, institutionProgrammes, marks, simulatedMarks]);
 
-  // Computed ahead of the early-return guard below so the showDeltaMark
-  // state/effect (hooks) stay unconditional -- Rules of Hooks forbids
-  // calling them after a conditional `return null`.
-  const delta =
-    currentApsResult && simulatedApsResult ? simulatedApsResult.score - currentApsResult.score : 0;
-  const [showDeltaMark, setShowDeltaMark] = useState(delta !== 0);
+  if (marks.length === 0 || !apsRule || !institution || !currentApsResult || !simulatedApsResult) return null;
 
-  useEffect(() => {
-    if (delta !== 0) {
-      setShowDeltaMark(true);
-      return;
-    }
-    const timeout = window.setTimeout(() => setShowDeltaMark(false), 250);
-    return () => window.clearTimeout(timeout);
-  }, [delta]);
-
-  if (marks.length === 0 || !apsRule || !institution || !currentApsResult || !simulatedApsResult) {
-    return null;
-  }
-
-  function handleSubjectChange(code: string) {
-    setSelectedSubject(code);
-    setTargetMark(marks.find((m) => m.subjectCode === code)?.percentage ?? 0);
-    setUserEditedTarget(false);
-  }
+  const delta = simulatedApsResult.score - currentApsResult.score;
 
   function handleTargetMarkChange(rawValue: string) {
     setUserEditedTarget(true);
@@ -163,96 +81,107 @@ export function ApsImprovementSimulator({
   }
 
   return (
-    <details className="no-print rounded border border-line bg-paper-raised p-3 text-sm">
-      <summary className="cursor-pointer font-semibold text-ink">
-        What if I improve a subject?
-      </summary>
-      <p className="mt-2 text-xs text-ink-faint">
-        Scoped to {institution.name}&apos;s formula -- APS is calculated per institution, not as
-        one universal number.
-      </p>
-
-      {scoredInstitutionIds.length > 1 && (
-        <label className="mt-2 flex flex-col gap-1 text-sm text-ink-soft">
-          Institution
-          <select
-            id="aps-simulator-institution"
-            name="aps-simulator-institution"
-            value={selectedInstitutionId}
-            onChange={(e) => setSelectedInstitutionId(e.target.value)}
-            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
-          >
-            {scoredInstitutionIds.map((id) => (
-              <option key={id} value={id}>
-                {institutions.find((i) => i.id === id)?.name ?? id}
-              </option>
-            ))}
-          </select>
-        </label>
-      )}
-
-      <div className="mt-3 flex flex-wrap items-end gap-3">
-        <label className="flex flex-col gap-1 text-sm text-ink-soft">
-          Subject
-          <select
-            id="aps-simulator-subject"
-            name="aps-simulator-subject"
-            value={selectedSubject}
-            onChange={(e) => handleSubjectChange(e.target.value)}
-            className="rounded border border-line bg-paper-raised px-2 py-1 text-ink"
-          >
-            {marks.map((m) => (
-              <option key={m.subjectCode} value={m.subjectCode}>
-                {resolveSubjectLabel(m.subjectCode)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1 text-sm text-ink-soft">
-          New mark
-          <input
-            type="number"
-            id="aps-simulator-target-mark"
-            name="aps-simulator-target-mark"
-            min={0}
-            max={100}
-            value={targetMark}
-            onChange={(e) => handleTargetMarkChange(e.target.value)}
-            className="w-20 rounded border border-line bg-paper-raised px-2 py-1 font-mono tabular-nums text-ink"
-          />
-        </label>
-        <span className="text-xs text-ink-faint">(currently {liveMarkForSelected}%)</span>
-      </div>
-
-      <div className="mt-3 flex items-center gap-4">
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-xs text-ink-faint">Current</span>
-          <span className="font-mono text-xl font-bold tabular-nums text-ink">
-            {currentApsResult.score}
-          </span>
+    <div className="no-print overflow-hidden rounded-3xl border border-brand-teal/20 bg-gradient-to-b from-brand-teal/5 to-white shadow-sm transition-all hover:shadow-md">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="flex w-full items-center justify-between p-6 focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+      >
+        <div className="flex items-center gap-4 text-left">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-teal text-2xl shadow-lg shadow-brand-teal/30">
+            📈
+          </div>
+          <div>
+            <h3 className="font-display text-lg font-black text-ink">What if I improve a subject?</h3>
+            <p className="text-sm font-medium text-ink-soft">Test how boosting a mark impacts your APS.</p>
+          </div>
         </div>
-        <span className="text-ink-faint">&rarr;</span>
-        <div className="flex flex-col items-center gap-1">
-          <span className="text-xs text-ink-faint">Simulated</span>
-          <span className="font-mono text-xl font-bold tabular-nums text-ink">
-            {simulatedApsResult.score}
-          </span>
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-ink shadow-sm transition-transform duration-300 border border-line/50 ${expanded ? "rotate-180 bg-brand-teal/10 text-brand-teal" : ""}`}>
+          ▼
         </div>
-        {showDeltaMark && delta !== 0 && (
-          <CircledMark
-            value={`${delta > 0 ? "+" : ""}${delta}`}
-            variant={delta > 0 ? "qualify" : "almost"}
-            size="sm"
-            label={`${delta > 0 ? "Gains" : "Loses"} ${Math.abs(delta)} APS points`}
-          />
-        )}
-      </div>
+      </button>
 
-      {newlyUnlocked.length > 0 && (
-        <p className="mt-3 rounded bg-mark-green-soft p-2 text-sm text-ink">
-          This would unlock: {newlyUnlocked.map((p) => p.name).join(", ")}
-        </p>
+      {expanded && (
+        <div className="border-t border-line/50 p-6">
+          <div className="mb-6 flex flex-col gap-4 rounded-2xl border border-line/60 bg-paper p-5 sm:flex-row sm:items-end">
+            {scoredInstitutionIds.length > 1 && (
+              <label className="flex flex-1 flex-col gap-2 text-sm font-bold text-ink-soft">
+                University Formula
+                <select
+                  value={selectedInstitutionId}
+                  onChange={(e) => setSelectedInstitutionId(e.target.value)}
+                  className="h-12 w-full rounded-xl border border-line/60 bg-white px-3 font-semibold text-ink focus:border-brand-teal focus:ring-brand-teal"
+                >
+                  {scoredInstitutionIds.map((id) => (
+                    <option key={id} value={id}>{institutions.find((i) => i.id === id)?.name ?? id}</option>
+                  ))}
+                </select>
+              </label>
+            )}
+            
+            <label className="flex flex-1 flex-col gap-2 text-sm font-bold text-ink-soft">
+              Target Subject
+              <select
+                value={selectedSubject}
+                onChange={(e) => { setSelectedSubject(e.target.value); setTargetMark(marks.find((m) => m.subjectCode === e.target.value)?.percentage ?? 0); setUserEditedTarget(false); }}
+                className="h-12 w-full rounded-xl border border-line/60 bg-white px-3 font-semibold text-ink focus:border-brand-teal focus:ring-brand-teal"
+              >
+                {marks.map((m) => (
+                  <option key={m.subjectCode} value={m.subjectCode}>{resolveSubjectLabel(m.subjectCode)} (Now: {m.percentage}%)</option>
+                ))}
+              </select>
+            </label>
+
+            <label className="flex w-full sm:w-32 flex-col gap-2 text-sm font-bold text-ink-soft">
+              New Mark %
+              <input
+                type="number"
+                min={0}
+                max={100}
+                value={targetMark}
+                onChange={(e) => handleTargetMarkChange(e.target.value)}
+                className="h-12 w-full rounded-xl border-2 border-brand-teal/50 bg-white px-3 text-center font-mono text-lg font-bold text-brand-teal focus:border-brand-teal focus:ring-brand-teal"
+              />
+            </label>
+          </div>
+
+          <div className="flex flex-col items-center justify-center gap-6 rounded-2xl border-2 border-brand-teal/20 bg-white py-8 sm:flex-row sm:gap-12">
+            <div className="flex flex-col items-center">
+              <span className="mb-2 text-xs font-black uppercase tracking-widest text-ink-soft">Current APS</span>
+              <span className="font-mono text-4xl font-black text-slate-400">{currentApsResult.score}</span>
+            </div>
+            
+            <div className="flex flex-col items-center gap-2">
+              <span className="text-2xl text-slate-300">→</span>
+              {delta !== 0 && (
+                <span className={`rounded-full px-3 py-1 font-mono text-xs font-bold ${delta > 0 ? "bg-emerald-100 text-emerald-700" : "bg-rose-100 text-rose-700"}`}>
+                  {delta > 0 ? "+" : ""}{delta}
+                </span>
+              )}
+            </div>
+
+            <div className="flex flex-col items-center">
+              <span className="mb-2 text-xs font-black uppercase tracking-widest text-brand-teal">Simulated APS</span>
+              <span className="font-mono text-5xl font-black text-brand-teal">{simulatedApsResult.score}</span>
+            </div>
+          </div>
+
+          {newlyUnlocked.length > 0 && (
+            <div className="mt-6 animate-rise-in rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+              <div className="flex items-center gap-2 font-display text-lg font-bold text-emerald-800">
+                <span>🔓</span> This score unlocks {newlyUnlocked.length} new programmes!
+              </div>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {newlyUnlocked.map((p) => (
+                  <span key={p.id} className="rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-emerald-700 shadow-sm border border-emerald-100">
+                    {p.name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
       )}
-    </details>
+    </div>
   );
 }
