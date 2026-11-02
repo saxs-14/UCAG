@@ -10,14 +10,10 @@ interface InterestQuizProps {
   entries: { programme: Programme; matchResult: MatchResult }[];
 }
 
-/**
- * "Not sure what to study?" -- re-ranks programmes the learner already
- * qualifies or almost-qualifies for by interest overlap (lib/recommendations.ts).
- * Never suggests something outside real eligibility.
- */
 export function InterestQuiz({ entries }: InterestQuizProps) {
   const [answers, setAnswers] = useState<Record<string, number>>({});
   const [submitted, setSubmitted] = useState(false);
+  const [expanded, setExpanded] = useState(false);
 
   const allAnswered = INTEREST_QUIZ.every((q) => answers[q.id] !== undefined);
 
@@ -33,66 +29,95 @@ export function InterestQuiz({ entries }: InterestQuizProps) {
   const recommendations = submitted ? recommendProgrammes(entries, interestTags) : [];
 
   return (
-    <details className="no-print rounded border border-line bg-paper-raised p-3 text-sm">
-      <summary className="cursor-pointer font-semibold text-ink">
-        Not sure what to study? Take the 1-minute interest quiz
-      </summary>
-
-      {!submitted ? (
-        <div className="mt-3 flex flex-col gap-4">
-          {INTEREST_QUIZ.map((q) => (
-            <fieldset key={q.id} className="flex flex-col gap-1.5">
-              <legend className="mb-1 font-medium text-ink">{q.question}</legend>
-              {q.options.map((opt, i) => (
-                <label key={i} className="flex items-center gap-2 text-ink-soft">
-                  <input
-                    type="radio"
-                    name={q.id}
-                    checked={answers[q.id] === i}
-                    onChange={() => handleAnswer(q.id, i)}
-                  />
-                  {opt.label}
-                </label>
-              ))}
-            </fieldset>
-          ))}
-          <button
-            type="button"
-            disabled={!allAnswered}
-            onClick={() => setSubmitted(true)}
-            className="self-start rounded bg-mark-green px-3 py-1.5 text-sm font-medium text-white disabled:opacity-50"
-          >
-            See suggestions
-          </button>
+    <div className="no-print overflow-hidden rounded-3xl border border-brand-teal/20 bg-gradient-to-br from-brand-teal/5 to-white shadow-sm transition-all">
+      <button
+        type="button"
+        onClick={() => setExpanded(!expanded)}
+        className="flex w-full items-center justify-between p-6 focus:outline-none"
+      >
+        <div className="flex items-center gap-4">
+          <div className="flex h-12 w-12 items-center justify-center rounded-full bg-brand-teal/10 text-2xl">
+            🎯
+          </div>
+          <div className="text-left">
+            <h3 className="font-display text-lg font-black text-ink">Not sure what to study?</h3>
+            <p className="text-sm font-medium text-ink-soft">Take the 1-minute interest quiz</p>
+          </div>
         </div>
-      ) : (
-        <div className="mt-3 flex flex-col gap-2">
-          {recommendations.length === 0 ? (
-            <p className="text-ink-faint">
-              None of the programmes you currently qualify or almost-qualify for match these
-              interests closely -- see the full results below instead.
-            </p>
+        <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink shadow-sm transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}>
+          ▼
+        </div>
+      </button>
+
+      {expanded && (
+        <div className="border-t border-line/50 p-6 pt-2">
+          {!submitted ? (
+            <div className="mt-4 flex flex-col gap-6">
+              {INTEREST_QUIZ.map((q) => (
+                <fieldset key={q.id} className="flex flex-col gap-3 rounded-2xl bg-white p-5 border border-line/60 shadow-sm">
+                  <legend className="font-bold text-ink text-base">{q.question}</legend>
+                  <div className="mt-2 flex flex-col gap-2">
+                    {q.options.map((opt, i) => (
+                      <label key={i} className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm font-medium transition-colors ${answers[q.id] === i ? "border-brand-teal bg-brand-teal/5 text-brand-teal" : "border-line/60 hover:border-brand-teal/30"}`}>
+                        <input
+                          type="radio"
+                          name={q.id}
+                          checked={answers[q.id] === i}
+                          onChange={() => handleAnswer(q.id, i)}
+                          className="h-4 w-4 text-brand-teal focus:ring-brand-teal"
+                        />
+                        {opt.label}
+                      </label>
+                    ))}
+                  </div>
+                </fieldset>
+              ))}
+              <button
+                type="button"
+                disabled={!allAnswered}
+                onClick={() => setSubmitted(true)}
+                className="mt-2 inline-flex h-14 items-center justify-center rounded-xl bg-brand-teal px-8 text-base font-bold text-white shadow-md transition-transform hover:-translate-y-0.5 disabled:opacity-50 disabled:hover:translate-y-0"
+              >
+                See My Suggestions ✨
+              </button>
+            </div>
           ) : (
-            recommendations.map(({ programme, overlapScore }) => (
-              <div key={programme.id} className="rounded border border-line p-2">
-                <p className="font-medium text-ink">{programme.name}</p>
-                <p className="text-xs text-ink-faint">
-                  {overlapScore > 0
-                    ? `Matches ${overlapScore} of your interests`
-                    : "Also eligible, though it didn't match your interests closely"}
-                </p>
+            <div className="mt-4 flex flex-col gap-4">
+              <div className="flex items-center justify-between">
+                <h4 className="font-display text-lg font-bold text-ink">Your Top Matches</h4>
+                <button
+                  type="button"
+                  onClick={() => { setSubmitted(false); setAnswers({}); }}
+                  className="text-xs font-bold text-brand-teal transition-colors hover:text-teal-600 hover:underline"
+                >
+                  Retake Quiz
+                </button>
               </div>
-            ))
+
+              {recommendations.length === 0 ? (
+                <div className="rounded-2xl border border-line/60 bg-white p-6 text-center shadow-sm">
+                  <span className="text-3xl mb-2">🤔</span>
+                  <p className="font-medium text-ink-soft">
+                    None of the programmes you qualify for perfectly match these specific interests. Check the full list below instead!
+                  </p>
+                </div>
+              ) : (
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {recommendations.map(({ programme, overlapScore }) => (
+                    <div key={programme.id} className="rounded-2xl border border-brand-teal/30 bg-white p-4 shadow-sm transition-transform hover:-translate-y-0.5">
+                      <p className="font-bold text-ink">{programme.name}</p>
+                      <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-brand-teal/10 px-3 py-1 text-xs font-bold text-brand-teal">
+                        <span>⭐</span>
+                        {overlapScore > 0 ? `${overlapScore} matching interests` : "Eligible alternative"}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
           )}
-          <button
-            type="button"
-            onClick={() => setSubmitted(false)}
-            className="self-start text-xs font-medium text-mark-green hover:underline"
-          >
-            Retake the quiz
-          </button>
         </div>
       )}
-    </details>
+    </div>
   );
 }

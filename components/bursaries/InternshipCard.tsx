@@ -14,52 +14,55 @@ export function InternshipCard({
 }) {
   const stagger = Math.min(staggerIndex + 1, 6);
   return (
-    // See BursaryCard for why entrance animation and the 3D tilt/
-    // hover-lift are split across separate elements.
-    <div className={`stagger-${stagger} animate-rise-in`}>
+    <div className={`stagger-${stagger} animate-rise-in h-full`}>
       <TiltCard>
-        <article className="elevate rounded-xl border border-line bg-paper-raised p-4">
-          <div className="flex items-start justify-between gap-2">
-            <div className="flex items-start gap-2">
+        <article className="flex h-full flex-col rounded-3xl border border-line bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6">
+          <div className="flex items-start justify-between gap-3">
+            <div className="flex items-start gap-3">
               <StampBadge variant="coral" />
-              <h3 className="text-base font-semibold text-ink">{internship.title}</h3>
+              <h3 className="font-display text-lg font-bold text-ink leading-tight">{internship.title}</h3>
             </div>
             <DeadlineBadge closesOn={internship.closesOn} />
           </div>
-          <div className="mt-1.5 flex items-center gap-2">
-            <span className="rounded-full bg-brand-coral-soft px-2 py-0.5 font-mono text-[10px] font-semibold uppercase tracking-wide text-brand-coral">
-              {internship.type === "learnership" ? "Learnership" : "Internship"}
-            </span>
+          
+          <div className="mt-4 flex-grow">
+            <div className="flex items-center gap-2">
+              <span className="inline-flex rounded-md bg-brand-coral/10 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-brand-coral">
+                {internship.type === "learnership" ? "Learnership" : "Internship"}
+              </span>
+            </div>
+            <p className="mt-2 text-sm font-bold text-brand-coral">{internship.provider}</p>
+            <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-ink-soft">
+              <span>📅</span> {formatApplicationWindow(internship.opensOn, internship.closesOn)}
+            </p>
+            
+            <div className="mt-4 flex flex-wrap items-center gap-2">
+              <span className="inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">
+                {internship.matricOnly ? "Matric only" : internship.minQualification}
+                {internship.province ? ` · ${internship.province}` : ""}
+              </span>
+              {internship.fieldsOfStudy.map((field) => (
+                <FieldTag key={field} field={field} />
+              ))}
+            </div>
           </div>
-          <p className="mt-2 text-sm text-ink-soft">{internship.provider}</p>
-          <p className="mt-1 font-mono text-xs tabular-nums text-ink-soft">
-            {formatApplicationWindow(internship.opensOn, internship.closesOn)}
-          </p>
-          <div className="mt-2 flex flex-wrap items-center gap-1.5">
-            <span className="text-xs text-ink-faint">
-              {internship.matricOnly ? "Matric only" : internship.minQualification}
-              {internship.province ? ` · ${internship.province}` : ""}
-            </span>
-            {internship.fieldsOfStudy.map((field) => (
-              <FieldTag key={field} field={field} />
-            ))}
-          </div>
-          <div className="mt-3 flex items-center justify-between border-t border-line pt-2 text-xs">
+          
+          <div className="mt-6 flex flex-wrap items-center justify-between gap-3 border-t border-line/60 pt-4">
             <a
               href={internship.applyUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="min-h-11 rounded-full bg-mark-green px-4 py-1.5 font-medium text-white transition-transform hover-fine:scale-[1.03] active:scale-[0.97]"
+              className="inline-flex min-h-11 items-center justify-center rounded-xl bg-mark-green px-6 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-mark-green/30"
             >
-              Apply
+              Apply Officially
             </a>
             <a
               href={internship.sourceUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="font-mono text-ink-faint underline"
+              className="text-xs font-bold text-ink-soft transition-colors hover:text-brand-coral hover:underline"
             >
-              Verified {internship.verifiedOn} · Source
+              Source verified {internship.verifiedOn} ↗
             </a>
           </div>
         </article>

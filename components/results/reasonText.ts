@@ -1,12 +1,5 @@
 import type { MatchReason } from "@/lib/matching/types";
 
-/**
- * Turns a MatchReason into the exact, numbered copy the brief calls for
- * (docs/MASTER_PROMPT_v2.md sect. 3: "Never a vague 'you nearly made it'.
- * Always the number, the subject, and the shortfall."). Kept separate
- * from lib/matching/engine.ts (data/logic) since this is presentation
- * copy, but it's still pure and independently testable.
- */
 export function reasonText(reason: MatchReason): string {
   switch (reason.type) {
     case "aps":

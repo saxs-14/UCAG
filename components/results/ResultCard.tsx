@@ -38,15 +38,15 @@ interface ResultCardProps {
 }
 
 const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
-  qualify: "border-l-4 border-mark-green",
-  almostQualify: "border-l-4 border-mark-gold",
-  notYet: "border-l-4 border-slate",
+  qualify: "border-l-8 border-l-emerald-500 border-y-line/60 border-r-line/60",
+  almostQualify: "border-l-8 border-l-amber-400 border-y-line/60 border-r-line/60",
+  notYet: "border-l-8 border-l-slate-300 border-y-line/60 border-r-line/60",
 };
 
 const BUCKET_LABEL_STYLE: Record<MatchResult["bucket"], string> = {
-  qualify: "bg-mark-green-soft text-mark-green border-mark-green/30",
-  almostQualify: "bg-mark-gold-soft text-mark-gold border-mark-gold/30",
-  notYet: "bg-slate-soft text-ink-soft border-line",
+  qualify: "bg-emerald-100 text-emerald-800 border-emerald-200",
+  almostQualify: "bg-amber-100 text-amber-800 border-amber-200",
+  notYet: "bg-slate-100 text-slate-700 border-slate-200",
 };
 
 const BUCKET_EXPLANATION: Record<MatchResult["bucket"], string> = {
@@ -101,13 +101,13 @@ export function ResultCard({
 
   return (
     <div className={`stagger-${stagger} animate-rise-in`}>
-      <article className={`flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm transition-all hover:shadow-md sm:p-5 ${BUCKET_SPINE[matchResult.bucket]}`}>
-        <header className="flex flex-col gap-3">
-          <div className="flex flex-wrap items-center justify-between gap-2 border-b border-line/40 pb-2.5">
-            <span className={`rounded-full border px-3 py-1 text-xs font-bold uppercase tracking-wider ${BUCKET_LABEL_STYLE[matchResult.bucket]}`}>
+      <article className={`flex flex-col gap-5 rounded-3xl border bg-white p-5 shadow-sm transition-all hover:shadow-md sm:p-7 ${BUCKET_SPINE[matchResult.bucket]}`}>
+        <header className="flex flex-col gap-4">
+          <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/50 pb-4">
+            <span className={`rounded-xl border px-3 py-1 text-xs font-black uppercase tracking-widest shadow-sm ${BUCKET_LABEL_STYLE[matchResult.bucket]}`}>
               {LABELS.resultBuckets[matchResult.bucket]}
             </span>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3">
               {matchResult.bucket === "qualify" && (
                 <CircledMark
                   value={matchResult.apsResult.score}
@@ -121,28 +121,30 @@ export function ResultCard({
                   value={`-${apsGap}`}
                   variant="almost"
                   size="sm"
-                  label={`${apsGap} points short of this programme's minimum`}
+                  label={`${apsGap} points short`}
                 />
               )}
             </div>
           </div>
 
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
-            <div>
-              <h3 className="text-lg font-bold text-ink">
-                <Link href={`/programmes/${programme.id}`} className="hover:underline hover:text-brand-teal transition-colors">
+          <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+            <div className="flex-1">
+              <h3 className="font-display text-xl font-black leading-tight text-ink">
+                <Link href={`/programmes/${programme.id}`} className="transition-colors hover:text-brand-teal hover:underline">
                   {programme.name}
                 </Link>
               </h3>
-              <p className="text-xs font-semibold text-ink-soft">
-                {programme.qualificationType} · NQF Level {programme.nqfLevel} · {programme.duration}
-              </p>
-              <p className="text-xs text-ink-faint">
+              <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-bold text-ink-soft">
+                <span className="rounded-md bg-slate-100 px-2 py-1">{programme.qualificationType}</span>
+                <span className="rounded-md bg-slate-100 px-2 py-1">NQF {programme.nqfLevel}</span>
+                <span className="rounded-md bg-slate-100 px-2 py-1">{programme.duration}</span>
+              </div>
+              <p className="mt-2 text-sm font-medium text-ink-soft">
                 {faculty.name} · {school.name}
               </p>
             </div>
-            <div className="no-print flex flex-wrap items-center gap-2">
-              <label className="min-h-11 flex items-center gap-1.5 rounded-lg border border-line bg-paper px-3 py-1.5 text-xs font-semibold text-ink-soft cursor-pointer hover:bg-slate-soft shadow-2xs">
+            <div className="no-print flex shrink-0 flex-wrap items-center gap-2">
+              <label className="flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border-2 border-line/60 bg-white px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-brand-teal/50 hover:bg-slate-50 focus-within:ring-4 focus-within:ring-brand-teal/20 shadow-sm">
                 <input
                   type="checkbox"
                   id={`compare-${programme.id}`}
@@ -150,7 +152,7 @@ export function ResultCard({
                   checked={isComparing}
                   disabled={!isComparing && compareDisabled}
                   onChange={onToggleCompare}
-                  className="h-3.5 w-3.5 cursor-pointer accent-brand-teal"
+                  className="h-4 w-4 cursor-pointer accent-brand-teal"
                 />
                 Compare
               </label>
@@ -158,29 +160,29 @@ export function ResultCard({
                 <button
                   type="button"
                   onClick={onToggleShortlist}
-                  className={`inline-flex items-center gap-1.5 rounded-lg border px-3 py-1.5 text-xs font-semibold transition-all active:scale-95 shadow-2xs ${
+                  className={`inline-flex min-h-12 items-center gap-2 rounded-xl border-2 px-4 py-2 text-sm font-bold transition-all shadow-sm active:scale-95 ${
                     isShortlisted
-                      ? "border-mark-red bg-mark-red text-white"
-                      : "border-line bg-paper text-ink-soft hover:bg-slate-soft hover:text-ink"
+                      ? "border-brand-teal bg-brand-teal text-white hover:bg-brand-teal/90"
+                      : "border-line/60 bg-white text-ink hover:border-brand-teal/50 hover:bg-slate-50"
                   }`}
                 >
                   <StarIcon size={ICON_SIZE.sm} filled={isShortlisted} />
-                  {isShortlisted ? "Shortlisted" : "Shortlist"}
+                  {isShortlisted ? "Saved" : "Save"}
                 </button>
               )}
             </div>
           </div>
 
-          <div className="rounded-xl bg-slate-soft p-3 text-sm text-ink-soft border border-line/60">
-            <p className="font-semibold text-ink">{BUCKET_EXPLANATION[matchResult.bucket]}</p>
+          <div className="rounded-2xl border border-line/40 bg-slate-50 p-4 text-sm font-medium text-ink-soft">
+            <p>{BUCKET_EXPLANATION[matchResult.bucket]}</p>
             {matchResult.bucket === "almostQualify" && apsGap !== null && (
-              <p className="mt-1 font-bold text-mark-gold">APS gap: {apsGap} point{apsGap === 1 ? "" : "s"}</p>
+              <p className="mt-1.5 font-bold text-amber-600">APS gap: {apsGap} point{apsGap === 1 ? "" : "s"}</p>
             )}
           </div>
 
           {(programme.campuses?.length > 0 || programme.modeOfDelivery) && (
-            <p className="flex items-center gap-1.5 text-xs text-ink-faint font-medium">
-              <MapPinIcon size={ICON_SIZE.sm} className="shrink-0" />
+            <p className="flex items-center gap-2 text-sm font-bold text-ink-soft">
+              <MapPinIcon size={ICON_SIZE.md} className="shrink-0 text-brand-teal" />
               {[programme.campuses?.length > 0 ? programme.campuses.join(", ") : null, programme.modeOfDelivery]
                 .filter(Boolean)
                 .join(" · ")}
@@ -189,27 +191,29 @@ export function ResultCard({
           <DeadlineCountdown applicationWindow={applicationWindow} status={status} />
         </header>
 
-        <ul className="flex flex-col gap-2 rounded-xl border border-line/60 bg-paper p-3.5 text-xs">
+        <ul className="flex flex-col gap-3 rounded-2xl border border-line/60 bg-white p-5 text-sm shadow-sm">
           {matchResult.reasons.map((reason, i) => {
             const met = "met" in reason ? reason.met : false;
             return (
-              <li key={i} className="flex items-start gap-2.5">
-                <span aria-hidden className={`mt-0.5 inline-flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-white ${met ? "bg-mark-green" : "bg-mark-gold"}`}>
+              <li key={i} className="flex items-start gap-3">
+                <span aria-hidden className={`mt-0.5 inline-flex h-5 w-5 shrink-0 items-center justify-center rounded-full text-white shadow-sm ${met ? "bg-emerald-500" : "bg-amber-400"}`}>
                   {met ? <CheckIcon size={ICON_SIZE.xs} /> : <XIcon size={ICON_SIZE.xs} />}
                 </span>
-                <span className="text-ink font-medium leading-relaxed">{reasonText(reason)}</span>
+                <span className="font-semibold text-ink leading-relaxed">{reasonText(reason)}</span>
               </li>
             );
           })}
           {matchResult.reasons.length === 0 && (
-            <li className="text-ink-faint">No specific requirements on record for this programme.</li>
+            <li className="font-medium text-ink-soft">No specific requirements on record for this programme.</li>
           )}
         </ul>
 
         {gapClosers.length > 0 && (
-          <div className="flex flex-col gap-1.5 rounded-xl bg-amber-50 p-3 text-xs text-amber-900 border border-amber-200/80">
-            <p className="font-bold uppercase tracking-wide text-2xs">How to close the gap</p>
-            <ul className="flex flex-col gap-1">
+          <div className="flex flex-col gap-2 rounded-2xl border border-amber-200 bg-amber-50 p-5 text-sm text-amber-900 shadow-sm">
+            <p className="flex items-center gap-2 font-display font-black uppercase tracking-widest text-amber-700 text-xs">
+              <span>🎯</span> How to close the gap
+            </p>
+            <ul className="flex flex-col gap-2">
               {gapClosers.map((text, i) => (
                 <li key={i} className="font-medium leading-relaxed">
                   {text}
@@ -220,134 +224,132 @@ export function ResultCard({
         )}
 
         {matchResult.suggestedNextStep && (
-          <p className="flex items-start gap-1.5 rounded-xl bg-mark-gold-soft p-3 text-xs text-mark-gold border border-mark-gold/30 font-medium">
-            <LightbulbIcon size={ICON_SIZE.sm} className="mt-0.5 shrink-0" />
-            <span><strong>Next step: </strong>{matchResult.suggestedNextStep}</span>
-          </p>
+          <div className="flex items-start gap-3 rounded-2xl border border-brand-teal/20 bg-brand-teal/5 p-4 text-sm font-medium text-brand-teal shadow-sm">
+            <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-teal text-white shadow-sm">
+              <LightbulbIcon size={ICON_SIZE.sm} />
+            </div>
+            <p className="mt-1"><strong>Next step: </strong>{matchResult.suggestedNextStep}</p>
+          </div>
         )}
 
         <ApsBreakdown apsResult={matchResult.apsResult} institutionName={institution.shortName || institution.name} />
 
-        <div className="flex flex-col gap-2 border-t border-line pt-3 text-xs sm:flex-row sm:flex-wrap sm:items-center">
+        <div className="flex flex-col gap-3 border-t border-line/60 pt-5 sm:flex-row sm:flex-wrap sm:items-center">
           {cta.kind === "apply" && (
             <a
               href={cta.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex min-h-11 w-full items-center justify-center gap-1.5 rounded-xl bg-brand-teal sm:w-auto px-4 font-bold text-white transition-all hover:opacity-90 shadow-sm active:scale-95"
+              className="inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-teal px-6 text-sm font-bold text-white shadow-md transition-transform hover:-translate-y-0.5 active:scale-95 sm:w-auto"
             >
               <RocketIcon size={ICON_SIZE.sm} />
               {cta.label}
             </a>
           )}
           {cta.kind === "openingSoon" && (
-            <>
-              <div className="w-full rounded-xl bg-mark-green-soft p-3 text-xs text-mark-green border border-mark-green/30">
-                <p className="font-bold">Prepare before applications open</p>
-                <p className="mt-1">Use this time to prepare your documents and check the official programme page.</p>
-              </div>
-              <span className="inline-flex min-h-10 items-center gap-1.5 rounded-xl bg-mark-green-soft px-3.5 font-bold text-mark-green border border-mark-green/30">
+            <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
+              <span className="inline-flex min-h-12 shrink-0 items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-100 px-5 text-sm font-bold text-emerald-800 shadow-sm">
                 <HourglassIcon size={ICON_SIZE.sm} />
                 {cta.label}
               </span>
-            </>
+              <div className="rounded-xl border border-line/40 bg-slate-50 p-3 text-sm font-medium text-ink-soft flex-1">
+                <p className="font-bold text-ink">Prepare before applications open</p>
+                <p className="mt-1">Use this time to gather documents and check the official page.</p>
+              </div>
+            </div>
           )}
           {cta.kind === "statusCheck" && (
-            <>
-              <div className="w-full rounded-xl bg-slate-soft p-3 text-xs text-ink-soft border border-line">
-                <p className="font-bold">This application window is closed</p>
-                <p className="mt-1">You can still review the programme and prepare for the next application cycle.</p>
-              </div>
-              <span className="inline-flex min-h-10 items-center rounded-xl bg-paper-overlay px-3.5 font-semibold text-ink-soft">
+            <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
+              <span className="inline-flex min-h-12 shrink-0 items-center rounded-xl border border-line bg-slate-100 px-5 text-sm font-bold text-ink-soft shadow-sm">
                 {LABELS.applicationStatus.closed}
               </span>
-              {cta.url && (
-                <a
-                  href={cta.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-10 items-center px-2 text-brand-teal font-bold hover:underline"
-                >
-                  {cta.label}
-                </a>
-              )}
-            </>
+              <div className="rounded-xl border border-line/40 bg-slate-50 p-3 text-sm font-medium text-ink-soft flex-1">
+                <p className="font-bold text-ink">This application window is closed</p>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span>Prepare for the next cycle, or</span>
+                  {cta.url && (
+                    <a href={cta.url} target="_blank" rel="noopener noreferrer" className="font-bold text-brand-teal hover:underline">
+                      {cta.label}
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
           {cta.kind === "datesBeingVerified" && (
-            <>
-              <div className="w-full rounded-xl bg-slate-soft p-3 text-xs text-ink-soft border border-line">
-                <p className="font-bold">Dates need verification</p>
-                <p className="mt-1">UCAG has not verified this application window yet. Use the official institution site for the current deadline.</p>
-              </div>
-              <span className="inline-flex min-h-10 items-center rounded-xl bg-paper-overlay px-3.5 font-semibold text-ink-soft">
+            <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
+               <span className="inline-flex min-h-12 shrink-0 items-center rounded-xl border border-line bg-slate-100 px-5 text-sm font-bold text-ink-soft shadow-sm">
                 {cta.label}
               </span>
-              {cta.url && (
-                <a
-                  href={cta.url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex min-h-10 items-center px-2 text-brand-teal font-bold hover:underline"
-                >
-                  Visit institution site
-                </a>
-              )}
-            </>
+              <div className="rounded-xl border border-line/40 bg-slate-50 p-3 text-sm font-medium text-ink-soft flex-1">
+                <p className="font-bold text-ink">Dates need verification</p>
+                <div className="mt-1 flex flex-wrap items-center gap-2">
+                  <span>UCAG is verifying dates. In the meantime,</span>
+                  {cta.url && (
+                    <a href={cta.url} target="_blank" rel="noopener noreferrer" className="font-bold text-brand-teal hover:underline">
+                      visit the institution site.
+                    </a>
+                  )}
+                </div>
+              </div>
+            </div>
           )}
         </div>
 
-        <details className="no-print rounded-xl border border-line/60 bg-paper p-3.5 text-xs">
-          <summary className="cursor-pointer min-h-11 flex items-center font-bold text-ink">
-            Readiness & planning
-          </summary>
-
-          <div className="mt-3 flex flex-col gap-3">
-            <div className="flex flex-wrap items-center gap-2">
-              <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-teal-soft px-2.5 py-1 font-semibold text-brand-teal border border-brand-teal/30 text-2xs">
-                <RulerIcon size={ICON_SIZE.xs} className="shrink-0" />
-                <span>{institution.shortName || institution.name} Formula:</span>
-                <span>{matchResult.apsResult.loTreatmentMessage}</span>
+        <div className="mt-2 overflow-hidden rounded-2xl border border-line/60 bg-white shadow-sm transition-all">
+          <details className="group">
+            <summary className="flex min-h-14 cursor-pointer items-center justify-between bg-slate-50/50 p-5 font-display text-lg font-bold text-ink focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
+              Readiness & Planning
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink-soft shadow-sm transition-transform duration-300 group-open:rotate-180 group-open:bg-brand-teal/10 group-open:text-brand-teal">
+                ▼
               </span>
-              {matchResult.apsResult.appliedBonuses.length > 0 && (
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-brand-violet-soft px-2.5 py-1 font-semibold text-brand-violet border border-brand-violet/30 text-2xs">
-                  <StarIcon size={ICON_SIZE.xs} filled className="shrink-0" />
-                  <span>Bonus:</span>
-                  <span>{matchResult.apsResult.appliedBonuses.map((b) => b.description).join(", ")}</span>
+            </summary>
+
+            <div className="border-t border-line/50 p-5 flex flex-col gap-5">
+              <div className="flex flex-wrap items-center gap-3">
+                <span className="inline-flex items-center gap-2 rounded-xl border border-brand-teal/20 bg-brand-teal/5 px-3 py-1.5 text-xs font-bold text-brand-teal">
+                  <RulerIcon size={ICON_SIZE.sm} className="shrink-0" />
+                  <span>{institution.shortName || institution.name} Formula: {matchResult.apsResult.loTreatmentMessage}</span>
                 </span>
+                {matchResult.apsResult.appliedBonuses.length > 0 && (
+                  <span className="inline-flex items-center gap-2 rounded-xl border border-brand-violet/20 bg-brand-violet/5 px-3 py-1.5 text-xs font-bold text-brand-violet">
+                    <StarIcon size={ICON_SIZE.sm} filled className="shrink-0" />
+                    <span>Bonus: {matchResult.apsResult.appliedBonuses.map((b) => b.description).join(", ")}</span>
+                  </span>
+                )}
+              </div>
+
+              <div className="rounded-2xl border border-brand-teal/20 bg-brand-teal/5 p-5 text-sm font-medium text-ink-soft">
+                <p className="font-bold text-ink text-base">Before you apply</p>
+                <p className="mt-1.5 leading-relaxed">
+                  Have your ID and latest results ready, then check the official programme page for specific required documents.
+                </p>
+              </div>
+
+              <ReadinessBar readiness={readiness} />
+
+              <ReadinessScorecard
+                matchResult={matchResult}
+                checkedItemIds={checkedChecklistIds}
+                applicationWindow={applicationWindow}
+              />
+
+              {matchResult.bucket !== "qualify" && (
+                <SmartBackupPlan
+                  programme={programme}
+                  institution={institution}
+                  matchResult={matchResult}
+                  allProgrammes={allProgrammes}
+                />
               )}
             </div>
+          </details>
+        </div>
 
-            <div className="rounded-xl border border-brand-teal/30 bg-brand-teal-soft/70 p-3 text-ink">
-              <p className="font-bold">Before you apply</p>
-              <p className="mt-1 leading-relaxed">
-                General preparation: have your ID and latest results ready, then check the official programme page for any documents or steps this institution requires.
-              </p>
-              <p className="mt-1 text-2xs font-medium text-brand-teal">UCAG guidance only — this is not the institution&apos;s official document list.</p>
-            </div>
-
-            <ReadinessBar readiness={readiness} />
-
-            <ReadinessScorecard
-              matchResult={matchResult}
-              checkedItemIds={checkedChecklistIds}
-              applicationWindow={applicationWindow}
-            />
-
-            {matchResult.bucket !== "qualify" && (
-              <SmartBackupPlan
-                programme={programme}
-                institution={institution}
-                matchResult={matchResult}
-                allProgrammes={allProgrammes}
-              />
-            )}
-          </div>
-        </details>
-
-        <p className="text-2xs font-mono tabular-nums text-ink-faint border-t border-line/40 pt-2">
+        <p className="mt-2 text-xs font-bold text-ink-faint text-center">
           Verified {programme.verifiedOn} ·{" "}
-          <a href={programme.sourceUrl} target="_blank" rel="noopener noreferrer" className="underline hover:text-ink">
-            Official Source
+          <a href={programme.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-brand-teal hover:underline transition-colors">
+            Official Source ↗
           </a>
         </p>
       </article>

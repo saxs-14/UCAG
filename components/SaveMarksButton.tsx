@@ -40,10 +40,10 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
         type="button"
         onClick={handleSave}
         disabled={status === "saving"}
-        className="no-print inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-brand-teal/30 bg-brand-teal px-5 text-xs font-extrabold text-white shadow transition-all hover:opacity-90 active:scale-95 disabled:opacity-50"
+        className="no-print inline-flex min-h-12 items-center justify-center gap-2 rounded-2xl bg-brand-teal px-6 text-sm font-extrabold text-white shadow-md shadow-brand-teal/20 transition-all hover:bg-teal-700 active:scale-95 disabled:opacity-50"
       >
         <SaveIcon size={ICON_SIZE.sm} />
-        <span className="inline-flex items-center gap-1">
+        <span className="inline-flex items-center gap-1.5">
           {status === "saving"
             ? "Saving marks..."
             : status === "saved"
@@ -59,38 +59,38 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
       </button>
 
       {showModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-xs">
-          <div className="w-full max-w-md rounded-2xl border border-line bg-paper-raised p-6 shadow-xl animate-rise-in">
-            <div className="flex justify-between items-start mb-3">
-              <span className="rounded-full bg-brand-teal/10 p-2.5 text-brand-teal">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
+          <div className="w-full max-w-md rounded-3xl border border-line bg-white p-7 shadow-2xl animate-rise-in">
+            <div className="flex justify-between items-start mb-4">
+              <span className="rounded-2xl bg-brand-teal/10 p-3 text-brand-teal shadow-2xs">
                 <GraduationCapIcon size={ICON_SIZE.md} />
               </span>
               <button
                 type="button"
                 onClick={() => setShowModal(false)}
-                className="inline-flex items-center gap-1 text-xs text-ink-soft hover:text-ink font-bold p-1"
+                className="inline-flex items-center gap-1.5 text-xs font-bold text-ink-soft hover:text-ink p-1 rounded-lg"
               >
                 <XIcon size={ICON_SIZE.xs} /> Close
               </button>
             </div>
 
-            <h3 className="text-lg font-extrabold text-brand-navy">
-              Save Your APS & Subject Results
+            <h3 className="font-display text-xl font-black text-ink">
+              Save Your APS & Results
             </h3>
-            <p className="mt-2 text-xs text-ink-soft leading-relaxed">
-              Create your free UCAG account or sign in to save your results, track application deadlines, and unlock personalized SA university recommendations.
+            <p className="mt-2 text-xs font-medium leading-relaxed text-ink-soft">
+              Create your free UCAG account or sign in to save your results, track application deadlines, and unlock personalized South African university recommendations.
             </p>
 
-            <div className="mt-6 flex flex-col gap-2.5">
+            <div className="mt-6 flex flex-col gap-3">
               <Link
                 href="/register"
-                className="flex min-h-11 items-center justify-center rounded-xl bg-brand-teal text-xs font-bold text-white shadow hover:opacity-90 transition"
+                className="flex min-h-12 items-center justify-center rounded-2xl bg-brand-teal text-xs font-bold text-white shadow-md shadow-brand-teal/20 hover:bg-teal-700 transition"
               >
                 Create Free UCAG Account
               </Link>
               <Link
                 href="/login"
-                className="flex min-h-11 items-center justify-center rounded-xl border border-line bg-paper text-xs font-bold text-ink hover:bg-paper-raised transition"
+                className="flex min-h-12 items-center justify-center rounded-2xl border border-line bg-slate-50 text-xs font-bold text-ink hover:bg-slate-100 transition"
               >
                 Already have an account? Sign In
               </Link>

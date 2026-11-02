@@ -1,19 +1,6 @@
 @import "tailwindcss";
 
 @theme {
-  /* "Signal" direction (2026-10-26, replacing "Warm Paper") -- user
-     feedback on the previous admin-dashboard/learner UI was "I hate it, I
-     don't like it." Three concept directions were mocked up (Night Shift,
-     Field Notebook, Signal); Signal -- bold flat color blocking on a
-     bright near-white base, no gradients, no offset-shadow cards -- is
-     the one picked to ship. brand-navy becomes a true near-black ink
-     (not navy-blue) and brand-teal becomes the new primary accent, a
-     saturated indigo -- both tokens keep their names (45+ files already
-     consume them) so this is a value-only swap, not a rename. mark-*
-     (qualify/almost/not-yet) and brand-coral/violet/amber are untouched:
-     they're semantic/categorical colors used across results, bursary and
-     career-roadmap UI that have nothing to do with the hero's visual
-     identity, and changing them would be pure risk with no payoff here. */
   --color-paper: #fafaf8;
   --color-paper-raised: #ffffff;
   --color-paper-overlay: #f1effb;
@@ -40,45 +27,12 @@
   --color-brand-violet-soft: #f5f3ff;
   --color-brand-amber: #b45309;
   --color-brand-amber-soft: #fffbeb;
-  /* Signal's decorative flat yellow -- background/fill only (hero blobs,
-     the "Verified where it matters" banner, the eyebrow pill's backing
-     chip behind dark text). #ffd93d is far too light to pass WCAG
-     contrast as a text color on --color-paper, so unlike every other
-     --color-brand-* token this one is never used as a `text-*` class --
-     grep before adding a new consumer. */
   --color-signal-yellow: #ffd93d;
-  /* Same reasoning, for a solid indigo fill with light text/shapes on
-     top (the hero's "study." chip, its decorative square): brand-teal's
-     dark-mode value is deliberately lighter (it doubles as a text/icon
-     color on dark paper, see NavBar/MobileNavBar active states), which
-     would read as light-on-light under a literal white/text-on-brand
-     foreground once dark mode swaps it in. Scheme-invariant, like
-     signal-yellow, so it's never used as a `text-*` class on --color-paper
-     either (the light-mode value is already a bit dark for AA on dark
-     paper). */
   --color-signal-indigo: #4c3df0;
-  /* For text on a backdrop that is always brand-navy regardless of color
-     scheme (.hero-atmosphere) -- matches the "color/text-on-brand" token
-     already defined in the canonical Figma design system
-     (figma.com/design/ESMzjguGV5nlAK7fE1hlVD) but never wired into code.
-     No dark-mode override is needed or wanted: this token's only job is
-     "stay legible on a permanently-dark ink background," in either color
-     scheme. */
   --color-text-on-brand: #fafaf8;
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
-  /* Was Fraunces (a serif, for the "Warm Paper" direction). Signal's
-     headlines want a bold, geometric, confident display face instead of
-     a literary one -- Space Grotesk gives every heading using
-     font-display that character. Loaded by the same data-saver-aware
-     script as Inter, see app/layout.tsx's RICH_FONTS_SCRIPT -- falls back
-     to a geometric sans stack below (not a serif) so a save-data visitor
-     still gets a display face in the right register, not an invisible
-     request for a font that never arrives. */
   --font-display: "Space Grotesk", ui-sans-serif, "Helvetica Neue", Arial, sans-serif;
-  /* Weights 600/700 loaded to match every existing font-display consumer
-     across the app -- grep before changing this file further. No italic:
-     nothing uses font-display italic (Fraunces' only reason to load one). */
 }
 
 body {
@@ -112,16 +66,6 @@ h1, h2, h3 { overflow-wrap: break-word; }
   color: white;
 }
 
-/* Signal's card treatment -- flat, confident, no offset "sticker" shadow
-   (that was "Warm Paper"'s signature trope, deliberately dropped). A 2px
-   ink border and a colored top accent instead; .card-learner stays the
-   quieter default for dense lists like programme/bursary results, where
-   even a top accent on every item would be visual noise. Scoped to
-   genuinely hero-level content: the calculator's 3-step cards and
-   bursary's numbered steps. --card-bold-shadow is set per-instance
-   (teal/gold/coral) to get an alternating accent without three
-   near-duplicate classes -- the variable name is kept as-is (it now
-   colors a border, not a shadow) so call sites didn't need to change. */
 .card-bold {
   background: var(--color-paper-raised);
   border: 2px solid var(--color-brand-navy);
@@ -167,6 +111,16 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
 }
 .animate-logo-pulse { animation: logo-pulse 2.6s ease-in-out infinite; }
 
+/* components/results/ConfettiBurst.tsx sets --fall-duration/--drift/--spin
+   per piece; the generic prefers-reduced-motion override below already
+   collapses this (like every .animate-* class) to an instant snap, so
+   nothing reduced-motion-specific is needed here. */
+@keyframes confetti-fall {
+  0% { transform: translate(0, 0) rotate(0deg); opacity: 1; }
+  100% { transform: translate(var(--drift, 0px), 100vh) rotate(var(--spin, 360deg)); opacity: 0; }
+}
+.animate-confetti { animation: confetti-fall var(--fall-duration, 2000ms) ease-in forwards; }
+
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
     animation-duration: 0.01ms !important;
@@ -180,17 +134,6 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
   body { padding-bottom: 4.25rem; }
 }
 
-/* "App mode" -- public/manifest.json already declares display: "standalone"
-   (so installing UCAG strips the browser's own address bar/tabs), but
-   nothing in the UI used to notice the difference: the same "Sign in"
-   call-to-action rendered in the top header AND the bottom tab bar at once.
-   On a narrow installed app, MobileNavBar's own "Sign in"/"Profile" tab is
-   the primary entry point, so the header's copy becomes redundant chrome --
-   exactly the kind of thing a learner coming back to an already-installed
-   app shouldn't have to read past. Scoped to max-width: 639px (matches
-   MobileNavBar's own sm:hidden cutoff) so a desktop-installed PWA window,
-   which never shows the bottom tab bar, never loses its only sign-in entry
-   point. */
 @media (display-mode: standalone) and (max-width: 639px) {
   .app-mode-hide-narrow { display: none !important; }
 }
@@ -204,32 +147,14 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
     --color-ink-soft: #c7c4d6;
     --color-ink-faint: #9b96ad;
     --color-line: #2b2838;
-    /* --color-slate (not just -soft) needs its own override here too, so
-       it doesn't leak into dark mode unchanged as a dark-on-dark pairing
-       against --color-slate-soft's own dark override 2 lines down (the
-       exact bug class fixed in the calculator's status-icon contrast
-       issue previously -- UnscoredProgrammeCard.tsx's "Verified
-       programme" badge and CircledMark.tsx's "neutral" variant both use
-       bare text-slate). */
     --color-slate: #b6b2c9;
     --color-slate-soft: #201e2e;
-    /* Desaturated/lightened tonal variants, not inverted colors -- the
-       light-mode values, tuned for dark text on a near-white soft fill,
-       read as blown-out and low-contrast on a dark paper background, so
-       every mark and brand pair gets a dark-appropriate counterpart
-       here. brand-navy and brand-navy-soft are already dark and used as
-       opaque backgrounds (.brand-band, .hero-atmosphere), so those are
-       intentionally left unchanged. */
     --color-mark-green: #34d399;
     --color-mark-green-soft: #0b2e22;
     --color-mark-gold: #fbbf24;
     --color-mark-gold-soft: #2e2308;
     --color-mark-red: #f87171;
     --color-mark-red-soft: #2e1212;
-    /* A lighter periwinkle, not the light-mode indigo unchanged -- #4c3df0
-       text on a near-black --color-paper falls well short of 4.5:1.
-       Picked distinct enough in hue from brand-violet's own dark variant
-       (#a78bfa, pinker/lighter) that the two stay tellable apart. */
     --color-brand-teal: #8b83fb;
     --color-brand-teal-soft: #221f3d;
     --color-brand-coral: #fb923c;

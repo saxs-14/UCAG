@@ -4,16 +4,6 @@ import { useRef } from "react";
 
 const MAX_TILT_DEG = 6;
 
-/**
- * A real 3D tilt on hover, tracked to cursor position -- perspective +
- * rotateX/rotateY driven by where the pointer actually is over the
- * card, not a canned CSS-only hover transform. Pure transform/opacity
- * (GPU-composited, no layout cost) and gated on prefers-reduced-motion
- * itself (rather than relying only on the global animation-duration
- * override, since this is a continuous pointermove handler, not a
- * one-shot CSS animation) -- readers who've asked for less motion get
- * a perfectly normal static card, not a jittery near-instant one.
- */
 export function TiltCard({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
   const reduceMotionRef = useRef(false);

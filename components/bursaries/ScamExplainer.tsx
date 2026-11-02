@@ -1,32 +1,38 @@
 import { LABELS } from "@/config/labels";
 import { ICON_SIZE, ShieldIcon } from "@/components/icons/Icon";
 
-/** "How to spot a bursary scam" -- explicitly required, not optional
- * (docs/MASTER_PROMPT_v2.md Phase 5) -- plus a trust callout for UCAG's
- * own automated screening (lib/ingestion/bursaryScamModel/), genuinely
- * true of every listing shown here: isSafeToPublish() (lib/bursaries/
- * filter.ts) re-checks riskFlags at render time regardless of how a
- * listing entered the system, so this holds for hand-seeded real data
- * too, not just anything that went through the AI ingestion pipeline. */
 export function ScamExplainer() {
   return (
-    <section className="animate-rise-in flex flex-col gap-4">
-      <div className="flex flex-col gap-2 rounded-xl border border-mark-gold bg-mark-gold-soft p-4 text-sm text-ink">
-        <h2 className="font-semibold">{LABELS.bursaries.scamExplainerTitle}</h2>
-        <p>{LABELS.bursaries.scamExplainerIntro}</p>
-        <ul className="list-inside list-disc">
+    <section className="animate-rise-in mt-4 flex flex-col gap-5 sm:flex-row">
+      <div className="flex flex-1 flex-col gap-3 rounded-3xl border-2 border-mark-gold/20 bg-mark-gold/5 p-6 text-sm text-ink sm:p-8">
+        <div className="flex items-center gap-3">
+          <span className="flex h-10 w-10 items-center justify-center rounded-full bg-mark-gold/20 text-xl">⚠️</span>
+          <h2 className="font-display text-lg font-black">{LABELS.bursaries.scamExplainerTitle}</h2>
+        </div>
+        <p className="font-medium text-ink-soft">{LABELS.bursaries.scamExplainerIntro}</p>
+        <ul className="mt-1 flex flex-col gap-2 font-medium">
           {LABELS.bursaries.scamWarningSigns.map((sign, i) => (
-            <li key={i}>{sign}</li>
+            <li key={i} className="flex items-start gap-2">
+              <span className="text-mark-gold mt-0.5">•</span>
+              <span className="text-ink-soft">{sign}</span>
+            </li>
           ))}
         </ul>
-        <p>{LABELS.bursaries.scamExplainerOutro}</p>
+        <p className="mt-1 font-bold text-mark-gold">{LABELS.bursaries.scamExplainerOutro}</p>
       </div>
-      <div className="flex flex-col gap-1 rounded-xl border border-brand-teal bg-brand-teal-soft p-4 text-sm text-ink">
-        <h2 className="flex items-center gap-2 font-semibold text-brand-teal">
-          <ShieldIcon size={ICON_SIZE.sm} />
-          {LABELS.bursaries.scamShieldTitle}
-        </h2>
-        <p>{LABELS.bursaries.scamShieldBody}</p>
+
+      <div className="flex flex-1 flex-col gap-3 rounded-3xl border-2 border-brand-teal/20 bg-brand-teal/5 p-6 text-sm text-ink sm:p-8">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-teal/20 text-brand-teal">
+            <ShieldIcon size={ICON_SIZE.md} />
+          </div>
+          <h2 className="font-display text-lg font-black text-brand-teal">
+            {LABELS.bursaries.scamShieldTitle}
+          </h2>
+        </div>
+        <p className="font-medium leading-relaxed text-ink-soft">
+          {LABELS.bursaries.scamShieldBody}
+        </p>
       </div>
     </section>
   );

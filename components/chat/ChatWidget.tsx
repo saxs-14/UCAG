@@ -5,27 +5,6 @@ import { LABELS } from "@/config/labels";
 import { splitSseFrames } from "@/lib/chat/sse";
 import { useAuth } from "@/components/auth/AuthProvider";
 
-/**
- * A floating help assistant, mounted once in app/layout.tsx via a
- * next/dynamic({ ssr: false }) import -- see layout.tsx for why: it
- * keeps this out of the server-rendered HTML and initial JS bundle
- * entirely, which matters on the "/" route given Phase 8's <200KB
- * budget and low-data-mode commitment (app/globals.css). Nothing here
- * loads or runs until a visitor actually clicks the button.
- *
- * No conversation persistence -- plain useState, gone on reload. See
- * lib/chat/systemPrompt.ts and config/labels.ts's privacy-notice entry
- * for why: consistent with the calculator's own "nothing you type is
- * saved unless you create an account" promise, and this feature has no
- * account-linked storage story of its own to opt into.
- *
- * Replies stream in over SSE (app/api/chat/route.ts) rather than
- * arriving as one JSON blob -- streamingReply holds the in-progress
- * reply text (empty string while waiting for the first chunk, so the
- * thinking indicator still shows), and gets folded into `messages` once
- * the stream ends, errors, or the connection drops.
- */
-
 interface DisplayMessage {
   role: "user" | "model";
   text: string;
@@ -129,102 +108,80 @@ export function ChatWidget() {
   }
 
   return (
-    // bottom-20 (not bottom-4) below sm: MobileNavBar reserves 4.25rem at
-    // the viewport bottom (globals.css's body padding-bottom) and sits at
-    // z-50, above this widget's z-40 -- a fixed bottom-4 button landed
-    // entirely under the nav bar's "Sign in" tab, so every tap on it
-    // actually triggered a navigation to /login instead of opening the
-    // assistant (confirmed via elementFromPoint at the button's own
-    // center). sm:bottom-4 once MobileNavBar is hidden (sm:hidden).
     <div className="no-print fixed bottom-20 right-4 z-40 sm:bottom-4" onKeyDown={handleKeyDown}>
       {isOpen && (
         <div
           role="dialog"
-          aria-label={LABELS.chat.assistantName}
-          className="animate-rise-in mb-3 flex h-[28rem] w-[22rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-2xl border border-line bg-paper shadow-xl"
+          aria-label="Student Support"
+          className="animate-rise-in mb-4 flex h-[32rem] w-[24rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-line/60 bg-white shadow-2xl shadow-brand-teal/10"
         >
-          <header className="flex items-center justify-between gap-2 border-b border-line bg-paper-raised px-4 py-3">
-            <div className="flex items-center gap-2">
-              <span className="font-display text-base font-semibold text-ink">
-                {LABELS.chat.assistantName}
-              </span>
-              <span className="rounded-full bg-brand-teal-soft px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide text-brand-teal">
-                {LABELS.chat.aiDisclosureBadge}
-              </span>
+          <header className="flex items-center justify-between gap-3 border-b border-line/50 bg-gradient-to-r from-brand-teal to-teal-700 px-5 py-4 text-white">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-white/20 text-xl backdrop-blur-sm">
+                💬
+              </div>
+              <div className="flex flex-col">
+                <span className="font-display text-base font-bold">Virtual Guide</span>
+                <span className="text-[10px] font-medium text-teal-100">Ready to help you plan</span>
+              </div>
             </div>
             <button
               type="button"
-              aria-label={LABELS.chat.closeButtonLabel}
+              aria-label="Close"
               onClick={() => setIsOpen(false)}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition-[background-color,color,transform] duration-150 ease-out hover:bg-slate-soft hover:text-ink active:scale-[0.97]"
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-white/10 text-white transition-colors hover:bg-white/20 active:scale-[0.97]"
             >
               ×
             </button>
           </header>
 
-          <p className="border-b border-line bg-paper-raised px-4 py-2 text-xs text-ink-faint">
-            {LABELS.chat.disclaimer}
-          </p>
-
-          <div ref={scrollRef} className="flex flex-1 flex-col gap-2 overflow-y-auto px-3 py-3">
-            <div className="animate-pop-in max-w-[85%] rounded-2xl rounded-bl-sm bg-slate-soft px-3 py-2 text-sm text-ink">
-              {displayName ? `Hi ${displayName}! ` : "Hi! "}
-              {LABELS.chat.greeting.replace(/^Hi! /, "")}
+          <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto bg-slate-50/50 p-4">
+            <div className="animate-pop-in max-w-[85%] self-start rounded-2xl rounded-bl-sm bg-white p-3 text-sm font-medium leading-relaxed text-ink shadow-sm border border-line/40">
+              {displayName ? `Hi ${displayName}! ` : "Hi there! "}
+              How can I help you with your application journey today?
             </div>
             {messages.map((message, i) => (
               <div
                 key={i}
-                className={`animate-pop-in max-w-[85%] rounded-2xl px-3 py-2 text-sm ${
+                className={`animate-pop-in max-w-[85%] rounded-2xl p-3 text-sm font-medium leading-relaxed shadow-sm ${
                   message.role === "user"
                     ? "self-end rounded-br-sm bg-brand-teal text-white"
-                    : "self-start rounded-bl-sm bg-slate-soft text-ink"
+                    : "self-start rounded-bl-sm bg-white text-ink border border-line/40"
                 }`}
               >
                 {message.text}
               </div>
             ))}
             {streamingReply !== null && (
-              <div className="animate-pop-in self-start max-w-[85%] rounded-2xl rounded-bl-sm bg-slate-soft px-3 py-2 text-sm text-ink">
-                {streamingReply || LABELS.chat.thinkingIndicator}
+              <div className="animate-pop-in self-start max-w-[85%] rounded-2xl rounded-bl-sm bg-white p-3 text-sm font-medium text-ink shadow-sm border border-line/40">
+                {streamingReply || "Thinking..."}
               </div>
             )}
             {error && (
-              <div
-                role="alert"
-                className="animate-pop-in self-start rounded-2xl rounded-bl-sm bg-mark-red-soft px-3 py-2 text-sm text-mark-red"
-              >
+              <div role="alert" className="animate-pop-in self-start rounded-2xl rounded-bl-sm bg-mark-red/10 p-3 text-sm font-bold text-mark-red">
                 {error}
               </div>
             )}
           </div>
 
-          <form
-            className="flex items-center gap-2 border-t border-line p-2"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void handleSend();
-            }}
-          >
-            <label htmlFor="chat-message-input" className="sr-only">
-              {LABELS.chat.inputPlaceholder}
-            </label>
+          <form className="flex items-center gap-3 border-t border-line/50 bg-white p-3" onSubmit={(e) => { e.preventDefault(); void handleSend(); }}>
             <input
               ref={inputRef}
-              id="chat-message-input"
-              name="chatMessage"
               type="text"
               value={draft}
               onChange={(e) => setDraft(e.target.value)}
-              placeholder={LABELS.chat.inputPlaceholder}
+              placeholder="Ask a question..."
               disabled={isLoading}
-              className="h-11 flex-1 rounded-xl border border-line bg-paper-raised px-3 text-sm text-ink transition-colors focus:border-brand-coral focus:outline-none"
+              className="h-12 flex-1 rounded-2xl border border-line/60 bg-slate-50 px-4 text-sm font-medium text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
             />
             <button
               type="submit"
               disabled={isLoading || !draft.trim()}
-              className="flex h-11 min-w-11 items-center justify-center rounded-full bg-brand-teal px-4 text-sm font-medium text-white transition-transform hover-fine:scale-[1.03] active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50"
+              className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-teal text-white shadow-md transition-transform hover:-translate-y-0.5 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0"
             >
-              {LABELS.chat.sendButtonLabel}
+              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+              </svg>
             </button>
           </form>
         </div>
@@ -232,22 +189,16 @@ export function ChatWidget() {
 
       <button
         type="button"
-        aria-label={isOpen ? LABELS.chat.closeButtonLabel : LABELS.chat.openButtonLabel}
+        aria-label="Open support"
         aria-expanded={isOpen}
         onClick={() => setIsOpen((v) => !v)}
-        className="flex h-14 w-14 items-center justify-center rounded-full bg-brand-teal text-white shadow-lg transition-transform hover-fine:scale-105 active:scale-[0.97]"
+        className="flex h-16 w-16 items-center justify-center rounded-full bg-brand-teal text-white shadow-xl shadow-brand-teal/30 transition-transform hover:-translate-y-1 active:scale-[0.97]"
       >
         {isOpen ? (
-          <span aria-hidden className="text-2xl leading-none">
-            ×
-          </span>
+          <span aria-hidden className="text-3xl leading-none">×</span>
         ) : (
-          <svg aria-hidden viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="2">
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z"
-            />
+          <svg aria-hidden viewBox="0 0 24 24" className="h-7 w-7" fill="none" stroke="currentColor" strokeWidth="2.5">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5Z" />
           </svg>
         )}
       </button>

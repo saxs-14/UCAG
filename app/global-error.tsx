@@ -4,11 +4,6 @@ import { useEffect } from "react";
 import { reportError } from "@/lib/errorReporting";
 import "./globals.css";
 
-/**
- * Catches errors in the root layout itself (rare -- app/error.tsx catches
- * everything below it) -- must render its own <html>/<body> since it
- * replaces the whole root layout tree when triggered.
- */
 export default function GlobalError({
   error,
   reset,
@@ -22,19 +17,21 @@ export default function GlobalError({
 
   return (
     <html lang="en">
-      <body className="antialiased">
-        <main className="flex min-h-screen flex-col items-center justify-center gap-4 p-8 text-center">
-          <h1 className="text-2xl font-extrabold tracking-tight text-ink">Something went wrong</h1>
-          <p className="max-w-md text-sm text-ink-soft">
-            That&apos;s on us, not you -- the whole page failed to load. Try again, or come back
-            in a few minutes.
+      <body className="antialiased bg-paper text-ink">
+        <main className="flex min-h-screen flex-col items-center justify-center gap-6 p-12 text-center">
+          <div className="flex h-16 w-16 items-center justify-center rounded-3xl bg-rose-100 text-rose-600 shadow-sm">
+            💥
+          </div>
+          <h1 className="font-display text-3xl font-black tracking-tight text-ink">Critical Error</h1>
+          <p className="max-w-md text-sm font-medium leading-relaxed text-ink-soft">
+            That&apos;s on us, not you — the whole application failed to load. Please try again or come back in a few minutes.
           </p>
           <button
             type="button"
             onClick={reset}
-            className="rounded bg-mark-green px-4 py-2 text-sm font-medium text-white hover:opacity-90"
+            className="inline-flex min-h-12 items-center justify-center rounded-2xl bg-brand-teal px-8 text-sm font-black text-white shadow-md shadow-brand-teal/20 transition-transform hover:-translate-y-0.5 active:scale-95"
           >
-            Try again
+            Try Again
           </button>
         </main>
       </body>

@@ -3,16 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Subject } from "@/lib/firestore/types";
 
-/**
- * A searchable, grouped combobox with full keyboard support (ArrowUp/
- * ArrowDown to move the highlight, Enter to select it, Escape to close)
- * per the WAI-ARIA combobox pattern -- satisfies Phase 2.1's functional
- * requirement (searchable, grouped by category, designated-list subjects
- * visually marked) plus Phase 8's promised keyboard/accessibility pass,
- * which this component hadn't actually received despite the comment that
- * used to sit here.
- */
-
 interface SubjectComboboxProps {
   label: string;
   options: Subject[];
@@ -57,13 +47,8 @@ export function SubjectCombobox({
     return Array.from(groups.entries());
   }, [options, query]);
 
-  // Flattened, group-order-preserving list -- what ArrowUp/ArrowDown
-  // actually step through, independent of the group headers.
   const flatOptions = useMemo(() => grouped.flatMap(([, subjects]) => subjects), [grouped]);
 
-  // Re-anchor the highlight whenever the visible option list changes
-  // (query edited, or freshly opened) so it's never stuck pointing at a
-  // now-filtered-out subject.
   useEffect(() => {
     if (!isOpen) return;
     setHighlightedCode((prev) =>
@@ -132,13 +117,12 @@ export function SubjectCombobox({
   }
 
   function handleBlur() {
-    // Defer so a click on an option registers before the list closes.
     window.setTimeout(closeList, 150);
   }
 
   return (
-    <div className="flex flex-col gap-1" ref={containerRef}>
-      <label className="text-sm font-medium" htmlFor={`combobox-${label}`}>
+    <div className="flex flex-col gap-2" ref={containerRef}>
+      <label className="text-sm font-bold text-ink" htmlFor={`combobox-${label}`}>
         {label}
       </label>
       <div className="relative">
@@ -152,7 +136,7 @@ export function SubjectCombobox({
           aria-activedescendant={
             isOpen && highlightedCode ? optionDomId(label, highlightedCode) : undefined
           }
-          className="h-11 w-full cursor-text rounded-xl border border-line bg-paper-raised px-3 text-sm text-ink transition-colors focus:border-brand-coral focus:outline-none"
+          className="h-12 w-full cursor-text rounded-2xl border-2 border-line bg-slate-50 px-4 text-sm font-bold text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
           placeholder={selected ? selected.name : placeholder}
           value={isOpen ? query : selected?.name ?? ""}
           onFocus={() => {
@@ -167,7 +151,7 @@ export function SubjectCombobox({
           <button
             type="button"
             aria-label={`Clear ${label}`}
-            className="absolute right-1 top-1/2 flex h-11 w-11 -translate-y-1/2 cursor-pointer items-center justify-center text-lg text-ink-faint transition-transform duration-150 ease-out hover-fine:scale-110 hover:text-brand-coral active:scale-95"
+            className="absolute right-2 top-1/2 flex h-10 w-10 -translate-y-1/2 cursor-pointer items-center justify-center text-xl font-bold text-ink-faint transition-transform hover:scale-110 hover:text-brand-coral active:scale-95"
             onClick={() => onChange(null)}
           >
             ×
@@ -177,16 +161,16 @@ export function SubjectCombobox({
           <ul
             id={`combobox-listbox-${label}`}
             role="listbox"
-            className={`absolute z-10 mt-1 max-h-64 w-full overflow-y-auto rounded-xl border border-line bg-paper-raised shadow-lg ${
+            className={`absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-line bg-white shadow-xl ${
               isClosing ? "animate-dropdown-out" : "animate-dropdown"
             }`}
           >
             {grouped.length === 0 && (
-              <li className="px-3 py-2 text-sm text-ink-faint">No subjects match.</li>
+              <li className="px-4 py-3 text-sm font-medium text-ink-faint">No subjects match.</li>
             )}
             {grouped.map(([groupLabel, subjects]) => (
               <li key={groupLabel}>
-                <div className="bg-slate-soft px-3 py-1 text-xs font-semibold uppercase tracking-wide text-ink-faint">
+                <div className="sticky top-0 bg-slate-100 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-ink-faint border-y border-line/50">
                   {groupLabel}
                 </div>
                 <ul>
@@ -197,15 +181,15 @@ export function SubjectCombobox({
                         type="button"
                         role="option"
                         aria-selected={subject.code === value}
-                        className={`flex min-h-11 w-full cursor-pointer items-center justify-between px-3 text-left text-sm transition-colors hover:bg-brand-teal-soft ${
-                          subject.code === highlightedCode ? "bg-brand-teal-soft" : ""
+                        className={`flex min-h-12 w-full cursor-pointer items-center justify-between px-4 text-left text-sm font-semibold transition-colors ${
+                          subject.code === highlightedCode ? "bg-brand-teal/10 text-brand-teal" : "hover:bg-slate-50 text-ink"
                         }`}
                         onClick={() => handleSelect(subject)}
                         onMouseEnter={() => setHighlightedCode(subject.code)}
                       >
-                        <span className="text-ink">{subject.name}</span>
+                        <span>{subject.name}</span>
                         {subject.isDesignated && (
-                          <span className="ml-2 rounded-full bg-brand-coral-soft px-2 py-0.5 text-[10px] font-medium text-brand-coral">
+                          <span className="ml-2 rounded-full bg-brand-coral/10 px-2.5 py-0.5 text-xs font-bold text-brand-coral">
                             Designated
                           </span>
                         )}

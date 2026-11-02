@@ -38,39 +38,43 @@ export function SmartBackupPlan({
   }
 
   return (
-    <div className="no-print mt-2 flex flex-col gap-2 rounded border border-mark-amber/30 bg-mark-amber-soft/40 p-3 text-xs text-ink">
-      <div className="flex items-center gap-1.5 font-semibold text-mark-amber">
-        <span>&rarr; Your Smart Backup Plan</span>
+    <div className="no-print mt-3 flex flex-col gap-4 rounded-3xl border border-amber-200 bg-gradient-to-br from-amber-50 to-orange-50/50 p-6 shadow-sm">
+      <div className="flex items-center gap-3 font-display text-lg font-black text-amber-800">
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-amber-200/50 shadow-sm">🛡️</span>
+        Smart Backup Plan
       </div>
 
-      <p className="text-xs text-ink-soft">
-        You are close to qualifying for <span className="font-semibold text-ink">{programme.name}</span>. Don&apos;t give up -- here is how to bridge the gap:
+      <p className="text-sm font-medium leading-relaxed text-amber-900/80">
+        You are close to qualifying for <span className="font-bold text-amber-950">{programme.name}</span>. Don&apos;t give up! Here are ways to bridge the gap:
       </p>
 
-      {/* Shortfall summary */}
       {matchResult.unmetReasons.length > 0 && (
-        <div className="flex flex-col gap-1 rounded bg-paper-raised p-2">
-          <span className="font-medium text-ink">Shortfall Analysis:</span>
-          <ul className="list-disc pl-4 text-ink-soft">
+        <div className="flex flex-col gap-2 rounded-2xl bg-white/60 p-4 shadow-sm backdrop-blur-sm border border-white/40">
+          <span className="font-bold text-amber-950 text-sm">Shortfall Analysis:</span>
+          <ul className="flex flex-col gap-1.5 pl-2">
             {matchResult.unmetReasons.map((reason, i) => (
-              <li key={i}>{reasonText(reason)}</li>
+              <li key={i} className="flex items-start gap-2 text-sm font-medium text-amber-900/80">
+                <span className="mt-1 flex h-1.5 w-1.5 shrink-0 rounded-full bg-amber-500" />
+                <span className="leading-snug">{reasonText(reason)}</span>
+              </li>
             ))}
           </ul>
         </div>
       )}
 
-      {/* Alternative pathways */}
       {alternatives.length > 0 && (
-        <div className="mt-1 flex flex-col gap-1">
-          <span className="font-medium text-ink">Recommended Alternative Pathways:</span>
-          <div className="flex flex-col gap-1">
+        <div className="flex flex-col gap-3">
+          <span className="font-bold text-amber-950 text-sm">Recommended Alternative Pathways:</span>
+          <div className="flex flex-col gap-2">
             {alternatives.slice(0, 3).map((alt) => (
               <div
                 key={alt.id}
-                className="flex items-center justify-between rounded bg-paper px-2 py-1 text-2xs"
+                className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-amber-200 bg-white p-3 shadow-sm transition-transform hover:-translate-y-0.5"
               >
-                <span className="font-medium text-ink truncate">{alt.name}</span>
-                <span className="font-mono text-ink-faint">APS {alt.minAps ?? "N/A"} ({alt.duration})</span>
+                <span className="font-bold text-ink text-sm">{alt.name}</span>
+                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold text-ink-soft">
+                  APS {alt.minAps ?? "N/A"} <span className="font-sans font-medium">({alt.duration})</span>
+                </span>
               </div>
             ))}
           </div>

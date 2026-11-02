@@ -36,36 +36,10 @@ interface UnscoredEntry {
   school: School;
 }
 
-/**
- * Real, live-Firestore results -- config/sampleData.ts's fictional
- * "[Sample]" catalogue is gone from this component entirely. Every
- * programme rendered here passed isFactVerified() (lib/catalog/
- * getRealCatalog.ts): it has a real sourceUrl, a real verifiedOn date,
- * and was independently confirmed against the institution's own page
- * before an admin approved it through the verification queue.
- *
- * The one thing this deliberately does NOT do: compute a qualify/almost/
- * not-yet verdict for an institution with no verified ApsRule on record.
- * matchProgramme() needs that institution's actual APS formula (how many
- * subjects count, how Life Orientation is weighted, etc.) to convert a
- * learner's raw percentages into a real score -- guessing a plausible-
- * looking formula would produce a number that LOOKS like every other
- * verified fact on this page but isn't one. Programmes at an
- * unverified-formula institution still render (UnscoredProgrammeCard),
- * with everything that IS verified (name, minAps, subject requirements,
- * source) and a plain statement of what isn't yet -- never silently
- * hidden, never faked.
- *
- * Phase 6 addition: signed-in learners can shortlist a programme --
- * persisted to their userProfiles document, per-user-owned per
- * firestore.rules (see tests/firestore-rules.test.ts).
- */
 export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   const { user } = useAuth();
   const [shortlist, setShortlist] = useState<string[]>([]);
-  const { checked: checklistChecked, toggle: toggleChecklistItem } = useApplicationChecklist(
-    user?.uid
-  );
+  const { checked: checklistChecked, toggle: toggleChecklistItem } = useApplicationChecklist(user?.uid);
   const [compareIds, setCompareIds] = useState<string[]>([]);
   const [catalog, setCatalog] = useState<RealCatalog | null>(null);
   const [catalogError, setCatalogError] = useState<string | null>(null);
@@ -73,13 +47,6 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   const MAX_COMPARE = 3;
 
   useEffect(() => {
-    // Dynamic import, same reasoning and pattern as the shortlist effect
-    // below: firebase/firestore is the single heaviest piece of the
-    // Firebase SDK, and an anonymous visitor who hasn't entered any
-    // marks yet -- the state every "/" visit starts in -- shouldn't pay
-    // for it (Phase 8's <200KB calculator-route budget). Gated on
-    // `marks.length > 0` rather than firing on mount so the fetch (and
-    // the import) only happens once there's actually something to match.
     if (marks.length === 0) return;
     let cancelled = false;
     import("@/lib/catalog/getRealCatalog").then(({ fetchRealCatalog }) =>
@@ -91,10 +58,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
           if (!cancelled) setCatalogError(err instanceof Error ? err.message : String(err));
         })
     );
-    return () => {
-      cancelled = true;
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentionally only re-triggers on the 0-to-nonzero transition, not on every mark edit.
+    return () => { cancelled = true; };
   }, [marks.length > 0]);
 
   function toggleCompare(programmeId: string) {
@@ -112,11 +76,6 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       setShortlist([]);
       return;
     }
-    // Dynamic import: lib/auth/profile.ts pulls in Firestore (and its
-    // persistence layer), the single heaviest piece of the Firebase SDK.
-    // An anonymous visitor -- the common case on "/" -- never triggers
-    // this branch, so it never pays for that bundle weight (Phase 8's
-    // <200KB calculator-route budget).
     import("@/lib/auth/profile").then(({ getUserProfile }) =>
       getUserProfile(user.uid).then((profile) => setShortlist(profile?.shortlist ?? []))
     );
@@ -136,15 +95,8 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       const institution = institutionsById.get(programme.institutionId);
       const faculty = facultiesById.get(programme.facultyId);
       const school = schoolsById.get(programme.schoolId);
-      // A programme whose institution/faculty/school links don't resolve
-      // to a verified document of their own can't render an honest card
-      // (no real institution/faculty/school name to show) -- skip it
-      // rather than show a broken or misleading shell.
       if (!institution || !faculty || !school) continue;
 
-      // Faculty-specific rule (e.g. Stellenbosch Engineering's weighted
-      // formula) wins over the institution-wide default -- see
-      // ApsRule.facultyId in lib/firestore/types.ts.
       const apsRule = resolveApsRule(catalog.apsRules, programme.institutionId, programme.facultyId);
       if (apsRule) {
         scoredResults.push({
@@ -159,31 +111,15 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
     return { scored: scoredResults, unscored: unscoredResults };
   }, [catalog, marks]);
 
-  // Fires ConfettiBurst exactly once per genuinely new "you qualify"
-  // moment -- the 0-to-positive transition -- not on every keystroke
-  // that happens to leave the qualify count unchanged (the effect's
-  // dependency is the count itself, not the scored array reference,
-  // which is a new object on every recompute even when its content
-  // hasn't changed) and not again while it merely grows from, say, 2
-  // qualifying programmes to 3.
-  const qualifyCount = useMemo(
-    () => scored.filter((entry) => entry.matchResult.bucket === "qualify").length,
-    [scored]
-  );
-  const almostCount = useMemo(
-    () => scored.filter((entry) => entry.matchResult.bucket === "almostQualify").length,
-    [scored]
-  );
-  const notYetCount = useMemo(
-    () => scored.filter((entry) => entry.matchResult.bucket === "notYet").length,
-    [scored]
-  );
+  const qualifyCount = useMemo(() => scored.filter((entry) => entry.matchResult.bucket === "qualify").length, [scored]);
+  const almostCount = useMemo(() => scored.filter((entry) => entry.matchResult.bucket === "almostQualify").length, [scored]);
+  const notYetCount = useMemo(() => scored.filter((entry) => entry.matchResult.bucket === "notYet").length, [scored]);
 
   const FILTERS = [
-    { key: "all" as const, label: "All matches" },
-    { key: "qualify" as const, label: "You qualify" },
-    { key: "almostQualify" as const, label: "Almost" },
-    { key: "notYet" as const, label: "Not yet" },
+    { key: "all" as const, label: "All Matches" },
+    { key: "qualify" as const, label: "You Qualify" },
+    { key: "almostQualify" as const, label: "Near-Miss" },
+    { key: "notYet" as const, label: "Not Yet" },
   ];
 
   const filterCounts = {
@@ -209,22 +145,30 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
 
   if (marks.length === 0) {
     return (
-      <p className="text-sm text-ink-faint">
-        Enter at least one subject mark above to see matched programmes.
-      </p>
+      <div className="flex flex-col items-center justify-center rounded-3xl border-2 border-dashed border-line/60 bg-paper-raised p-10 text-center">
+        <span className="text-4xl mb-4">🎓</span>
+        <h3 className="font-display text-xl font-bold text-ink">Enter your marks above</h3>
+        <p className="mt-2 text-sm font-medium text-ink-soft">Add your subjects and percentages to unlock your personalized programme matches.</p>
+      </div>
     );
   }
 
   if (catalogError) {
     return (
-      <p role="alert" className="rounded bg-mark-red-soft p-3 text-sm text-mark-red">
-        Couldn&apos;t load the programme catalogue right now -- please refresh and try again.
-      </p>
+      <div className="rounded-3xl border border-mark-red/20 bg-mark-red/5 p-6 text-center">
+        <p className="font-bold text-mark-red">Couldn&apos;t load the programme catalogue.</p>
+        <p className="mt-1 text-sm font-medium text-mark-red/80">Please refresh the page and try again.</p>
+      </div>
     );
   }
 
   if (!catalog) {
-    return <p className="text-sm text-ink-faint">Loading verified programme data...</p>;
+    return (
+      <div className="flex items-center justify-center gap-3 rounded-3xl border border-line bg-white p-8 shadow-sm">
+        <div className="h-6 w-6 animate-spin rounded-full border-4 border-brand-teal border-t-transparent"></div>
+        <p className="font-bold text-ink-soft">Loading verified programmes...</p>
+      </div>
+    );
   }
 
   async function toggleShortlist(programmeId: string) {
@@ -237,8 +181,6 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       const { updateShortlist } = await import("@/lib/auth/profile");
       await updateShortlist(user.uid, next);
     } catch {
-      // Roll back on failure rather than leaving the UI showing a state
-      // that never actually saved.
       setShortlist(shortlist);
     }
   }
@@ -249,27 +191,27 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
 
   if (scored.length === 0 && unscored.length === 0) {
     return (
-      <p className="rounded border border-dashed border-line bg-paper-raised p-3 text-sm text-ink-soft">
-        No verified programmes match your subjects yet -- we&apos;re still building out the verified
-        catalogue institution by institution. Check back as more institutions are added.
-      </p>
+      <div className="rounded-3xl border border-dashed border-line/80 bg-paper-raised p-8 text-center shadow-sm">
+        <span className="text-3xl mb-3">🛠️</span>
+        <p className="font-display text-lg font-bold text-ink">No verified matches yet</p>
+        <p className="mt-2 text-sm font-medium text-ink-soft">
+          We&apos;re currently verifying and adding new university catalogues. Check back soon as more programmes are unlocked.
+        </p>
+      </div>
     );
   }
 
   return (
-    <section className="flex w-full max-w-2xl flex-col gap-6">
+    <section className="flex w-full max-w-3xl flex-col gap-8">
       {celebrate && <ConfettiBurst />}
-      <ShareBar marks={marks} />
+      
+      <div className="flex items-center justify-between gap-4">
+        <h2 className="font-display text-3xl font-black tracking-tight text-ink">Your Matches</h2>
+        <ShareBar marks={marks} />
+      </div>
 
       {scored.length > 0 && (
-        <div className="sticky top-[4.5rem] z-20 -mx-1 rounded-xl border border-line bg-paper/95 p-2 shadow-sm backdrop-blur">
-          <div className="flex items-center justify-between gap-3 px-1 pb-2">
-            <div>
-              <p className="text-sm font-semibold text-ink">Your matches</p>
-              <p className="text-xs text-ink-faint">{scored.length} verified programme{scored.length === 1 ? "" : "s"}</p>
-            </div>
-            <span className="hidden text-xs text-ink-faint sm:block">Choose a view</span>
-          </div>
+        <div className="sticky top-[4.5rem] z-20 -mx-2 rounded-2xl border border-line/60 bg-white/90 p-2 shadow-md backdrop-blur-md">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" role="tablist" aria-label="Filter programme matches">
             {FILTERS.map((filter) => {
               const count = filterCounts[filter.key];
@@ -281,9 +223,13 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
                   role="tab"
                   aria-selected={selected}
                   onClick={() => setActiveFilter(filter.key)}
-                  className={"min-h-11 rounded-lg border px-3 py-2 text-sm font-semibold transition-colors " + (selected ? "border-brand-teal bg-brand-teal text-white" : "border-line bg-paper-raised text-ink-soft hover:border-brand-teal/60 hover:text-ink")}
+                  className={`min-h-12 rounded-xl text-sm font-bold transition-all focus:outline-none focus:ring-4 focus:ring-brand-teal/20 ${
+                    selected 
+                      ? "bg-ink text-white shadow-md" 
+                      : "bg-transparent text-ink-soft hover:bg-slate-100 hover:text-ink"
+                  }`}
                 >
-                  {filter.label} <span className="opacity-75">({count})</span>
+                  {filter.label} <span className={`ml-1 rounded-md px-1.5 py-0.5 text-[10px] ${selected ? "bg-white/20" : "bg-line"}`}>{count}</span>
                 </button>
               );
             })}
@@ -304,105 +250,115 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         const entries = byBucket.get(bucket)!;
         if (entries.length === 0) return null;
         return (
-          <div key={bucket} role="region" aria-label={LABELS.resultBuckets[bucket]} className="flex flex-col gap-3">
-            <h2 className="animate-rise-in font-display text-xl font-bold tracking-tight text-ink">
+          <div key={bucket} role="region" aria-label={LABELS.resultBuckets[bucket]} className="flex flex-col gap-5">
+            <h2 className="animate-rise-in font-display text-2xl font-black tracking-tight text-ink flex items-center gap-3">
               {LABELS.resultBuckets[bucket]}
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-ink-soft">{entries.length}</span>
             </h2>
-            {entries.map(({ programme, matchResult }, i) => {
-              const institution = catalog.institutions.find((i) => i.id === programme.institutionId)!;
-              const faculty = catalog.faculties.find((f) => f.id === programme.facultyId)!;
-              const school = catalog.schools.find((s) => s.id === programme.schoolId)!;
-              return (
-                <ResultCard
-                  key={programme.id}
-                  staggerIndex={i}
-                  programme={programme}
-                  institution={institution}
-                  faculty={faculty}
-                  school={school}
-                  matchResult={matchResult}
-                  applicationWindow={catalog.applicationWindows.find(
-                    (w) =>
-                      w.institutionId === programme.institutionId &&
-                      (w.programmeId === programme.id || w.programmeId === null)
-                  )}
-                  isShortlisted={user ? shortlist.includes(programme.id) : undefined}
-                  onToggleShortlist={user ? () => toggleShortlist(programme.id) : undefined}
-                  checkedChecklistIds={checklistChecked}
-                  isComparing={compareIds.includes(programme.id)}
-                  onToggleCompare={() => toggleCompare(programme.id)}
-                  compareDisabled={compareIds.length >= MAX_COMPARE}
-                  allProgrammes={catalog.programmes}
-                />
-              );
-            })}
+            <div className="flex flex-col gap-6">
+              {entries.map(({ programme, matchResult }, i) => {
+                const institution = catalog.institutions.find((i) => i.id === programme.institutionId)!;
+                const faculty = catalog.faculties.find((f) => f.id === programme.facultyId)!;
+                const school = catalog.schools.find((s) => s.id === programme.schoolId)!;
+                return (
+                  <ResultCard
+                    key={programme.id}
+                    staggerIndex={i}
+                    programme={programme}
+                    institution={institution}
+                    faculty={faculty}
+                    school={school}
+                    matchResult={matchResult}
+                    applicationWindow={catalog.applicationWindows.find(
+                      (w) =>
+                        w.institutionId === programme.institutionId &&
+                        (w.programmeId === programme.id || w.programmeId === null)
+                    )}
+                    isShortlisted={user ? shortlist.includes(programme.id) : undefined}
+                    onToggleShortlist={user ? () => toggleShortlist(programme.id) : undefined}
+                    checkedChecklistIds={checklistChecked}
+                    isComparing={compareIds.includes(programme.id)}
+                    onToggleCompare={() => toggleCompare(programme.id)}
+                    compareDisabled={compareIds.length >= MAX_COMPARE}
+                    allProgrammes={catalog.programmes}
+                  />
+                );
+              })}
+            </div>
           </div>
         );
       })}
 
       {activeFilter === "all" && unscored.length > 0 && (
-        <div className="flex flex-col gap-3">
-          <h2 className="animate-rise-in font-display text-xl font-bold tracking-tight text-ink">
-            Real programmes, score not yet available
+        <div className="flex flex-col gap-5">
+          <h2 className="animate-rise-in font-display text-2xl font-black tracking-tight text-ink flex items-center gap-3">
+            Real programmes, score pending
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-ink-soft">{unscored.length}</span>
           </h2>
-          {unscored.map(({ programme, institution, faculty, school }, i) => (
-            <UnscoredProgrammeCard
-              key={programme.id}
-              staggerIndex={i}
-              programme={programme}
-              institution={institution}
-              faculty={faculty}
-              school={school}
-            />
-          ))}
+          <div className="flex flex-col gap-6">
+            {unscored.map(({ programme, institution, faculty, school }, i) => (
+              <UnscoredProgrammeCard
+                key={programme.id}
+                staggerIndex={i}
+                programme={programme}
+                institution={institution}
+                faculty={faculty}
+                school={school}
+              />
+            ))}
+          </div>
         </div>
       )}
 
-      <details className="no-print rounded-xl border border-line bg-paper-raised p-4">
-        <summary className="cursor-pointer min-h-11 flex items-center text-base font-bold text-ink">
-          More tools for planning your application
-        </summary>
+      <div className="overflow-hidden rounded-3xl border border-line bg-paper-raised shadow-sm transition-all hover:shadow-md">
+        <details className="group">
+          <summary className="flex min-h-16 cursor-pointer items-center justify-between bg-white p-6 font-display text-xl font-black text-ink focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
+            More tools for planning your application
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-ink-soft shadow-sm transition-transform duration-300 group-open:rotate-180 group-open:bg-brand-teal/10 group-open:text-brand-teal">
+              ▼
+            </span>
+          </summary>
 
-        <div className="mt-4 flex flex-col gap-6">
-          <ApplicationMission
-            marks={marks}
-            shortlistCount={shortlist.length}
-            checkedChecklistCount={checklistChecked.size}
-            signedIn={!!user}
-          />
-
-          {scored.length > 0 && (
-            <ApsFormulaBanner institutions={catalog.institutions} apsRules={catalog.apsRules} />
-          )}
-
-
-          {scored.length > 0 && (
-            <AdmissionPathwayGraph
+          <div className="flex flex-col gap-8 border-t border-line/50 p-6 pt-8">
+            <ApplicationMission
               marks={marks}
-              scored={scored}
-              institutions={catalog.institutions}
+              shortlistCount={shortlist.length}
+              checkedChecklistCount={checklistChecked.size}
+              signedIn={!!user}
             />
-          )}
 
-          {scored.length > 0 && (
-            <ApsImprovementSimulator
-              marks={marks}
-              scored={scored}
-              apsRules={catalog.apsRules}
-              programmes={catalog.programmes}
-              institutions={catalog.institutions}
+            {scored.length > 0 && (
+              <ApsFormulaBanner institutions={catalog.institutions} apsRules={catalog.apsRules} />
+            )}
+
+            {scored.length > 0 && (
+              <AdmissionPathwayGraph
+                marks={marks}
+                scored={scored}
+                institutions={catalog.institutions}
+              />
+            )}
+
+            {scored.length > 0 && (
+              <ApsImprovementSimulator
+                marks={marks}
+                scored={scored}
+                apsRules={catalog.apsRules}
+                programmes={catalog.programmes}
+                institutions={catalog.institutions}
+              />
+            )}
+
+            {scored.length > 0 && <InterestQuiz entries={scored} />}
+
+            <ApplicationChecklist
+              checked={checklistChecked}
+              onToggle={toggleChecklistItem}
+              signedIn={!!user}
             />
-          )}
-
-          {scored.length > 0 && <InterestQuiz entries={scored} />}
-
-          <ApplicationChecklist
-            checked={checklistChecked}
-            onToggle={toggleChecklistItem}
-            signedIn={!!user}
-          />
-        </div>
-      </details>
+          </div>
+        </details>
+      </div>
     </section>
   );
 }

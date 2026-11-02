@@ -1,4 +1,3 @@
-// cSpell:words Matric Mpumalanga Tshwane
 "use client";
 
 import { useMemo, useState } from "react";
@@ -22,12 +21,6 @@ const LIFE_ORIENTATION_CODE = "LO";
 const MIN_ELECTIVES = 3;
 const MAX_ELECTIVES = 4;
 
-/** Each stage names a real step the calculation actually does (lib/aps/
- * engine.ts + lib/matching/engine.ts), not decorative filler -- the
- * brief asked for the calculator to feel like it's genuinely working for
- * the learner, and a staged sequence only earns that if it's honest
- * about what's happening, matching the same "institution-specific
- * rules, not one generic score" message the rest of the app leads with. */
 const CALC_STAGES = [
   "Reading your subjects and marks...",
   "Applying the institution's APS rules...",
@@ -135,89 +128,166 @@ export function SubjectForm({
   }
 
   return (
-    <form className="animate-rise-in flex w-full max-w-2xl flex-col gap-5" onSubmit={(e) => e.preventDefault()}>
-      <div className="rounded-2xl border border-line bg-paper-raised p-4 shadow-sm sm:p-5">
-        <p className="text-xs font-bold uppercase tracking-wider text-brand-teal">Your NSC results</p>
-        <h2 className="mt-1 text-lg font-bold text-ink sm:text-xl">Enter everything below, then calculate.</h2>
-        <p className="mt-1 text-sm leading-relaxed text-ink-soft">Your answers stay on this page until you choose to calculate.</p>
+    <form className="animate-rise-in flex w-full max-w-3xl flex-col gap-8" onSubmit={(e) => e.preventDefault()}>
+      <div className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-teal to-teal-900 p-8 text-white shadow-lg">
+        <p className="text-xs font-extrabold uppercase tracking-widest text-teal-200">Your NSC Results</p>
+        <h2 className="mt-2 font-display text-3xl font-black tracking-tight sm:text-4xl">Enter your subjects below</h2>
+        <p className="mt-3 text-sm font-medium leading-relaxed text-teal-50 sm:text-base">
+          Your marks stay secure on your device until you choose to calculate your matches.
+        </p>
       </div>
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm sm:p-5" aria-labelledby="languages-title">
-        <div><h2 id="languages-title" className="text-base font-bold text-ink">1. Your languages</h2><p className="mt-1 text-sm text-ink-soft">Choose the subjects exactly as they appear on your NSC results.</p></div>
-        <div className="rounded-xl border border-line/60 bg-paper p-3.5">
-          <label className="text-sm font-semibold text-ink" htmlFor="home-language">Home Language</label>
-          <select id="home-language" className="mt-2 min-h-11 w-full rounded-xl border border-line bg-paper-raised px-3.5 text-base text-ink" value={homeLanguage} onChange={(e) => { const next = e.target.value as LanguageOption | ""; setHomeLanguage(next); if (next === firstAdditionalLanguage) setFirstAdditionalLanguage(""); }}>
-            <option value="">Select your Home Language</option>{HOME_LANGUAGE_OPTIONS.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
-          </select>
-          {homeLanguage && <div className="mt-3 border-t border-line/40 pt-3"><MarkInput label={`${homeLanguage} (HL)`} percentage={homeLanguageMark} onChange={setHomeLanguageMark} /></div>}
+      <section className="flex flex-col gap-6 rounded-3xl border border-line bg-paper-raised p-6 shadow-sm sm:p-8" aria-labelledby="languages-title">
+        <div>
+          <h2 id="languages-title" className="font-display text-xl font-black text-ink">1. Your Languages</h2>
+          <p className="mt-1 text-sm font-medium text-ink-soft">Choose subjects exactly as they appear on your NSC results certificate.</p>
         </div>
-        <div className="rounded-xl border border-line/60 bg-paper p-3.5">
-          <label className="text-sm font-semibold text-ink" htmlFor="fal">First Additional Language</label>
-          <select id="fal" className="mt-2 min-h-11 w-full rounded-xl border border-line bg-paper-raised px-3.5 text-base text-ink" value={firstAdditionalLanguage} onChange={(e) => setFirstAdditionalLanguage(e.target.value as LanguageOption | "")}>
-            <option value="">Select your First Additional Language</option>{firstAdditionalLanguageOptions.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
-          </select>
-          {firstAdditionalLanguage && <div className="mt-3 border-t border-line/40 pt-3"><MarkInput label={`${firstAdditionalLanguage} (FAL)`} percentage={firstAdditionalLanguageMark} onChange={setFirstAdditionalLanguageMark} /></div>}
+        
+        <div className="flex flex-col gap-4">
+          <div className="rounded-2xl border border-line/60 bg-white p-5 shadow-sm">
+            <label className="text-sm font-bold text-ink" htmlFor="home-language">Home Language</label>
+            <select
+              id="home-language"
+              className="mt-2.5 h-12 w-full cursor-pointer rounded-xl border border-line bg-slate-50 px-4 text-base font-semibold text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+              value={homeLanguage}
+              onChange={(e) => {
+                const next = e.target.value as LanguageOption | "";
+                setHomeLanguage(next);
+                if (next === firstAdditionalLanguage) setFirstAdditionalLanguage("");
+              }}
+            >
+              <option value="">Select your Home Language</option>
+              {HOME_LANGUAGE_OPTIONS.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
+            </select>
+            {homeLanguage && <div className="mt-4 border-t border-line/60 pt-4"><MarkInput label={`${homeLanguage} (Home Language)`} percentage={homeLanguageMark} onChange={setHomeLanguageMark} /></div>}
+          </div>
+
+          <div className="rounded-2xl border border-line/60 bg-white p-5 shadow-sm">
+            <label className="text-sm font-bold text-ink" htmlFor="fal">First Additional Language</label>
+            <select
+              id="fal"
+              className="mt-2.5 h-12 w-full cursor-pointer rounded-xl border border-line bg-slate-50 px-4 text-base font-semibold text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+              value={firstAdditionalLanguage}
+              onChange={(e) => setFirstAdditionalLanguage(e.target.value as LanguageOption | "")}
+            >
+              <option value="">Select your First Additional Language</option>
+              {firstAdditionalLanguageOptions.map((lang) => <option key={lang} value={lang}>{lang}</option>)}
+            </select>
+            {firstAdditionalLanguage && <div className="mt-4 border-t border-line/60 pt-4"><MarkInput label={`${firstAdditionalLanguage} (First Additional)`} percentage={firstAdditionalLanguageMark} onChange={setFirstAdditionalLanguageMark} /></div>}
+          </div>
         </div>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm sm:p-5" aria-labelledby="maths-title">
-        <div><h2 id="maths-title" className="text-base font-bold text-ink">2. Your Maths mark</h2><p className="mt-1 text-sm text-ink-soft">Tell us whether you took Mathematics or Mathematical Literacy.</p></div>
-        <select id="mathematics" aria-label="Mathematics type" className="min-h-12 w-full rounded-xl border border-line bg-paper-raised px-3.5 text-base font-semibold text-ink" value={mathematics} onChange={(e) => setMathematics(e.target.value as MathematicsOption | "")}>
-          <option value="">Select your Maths subject</option>{MATHEMATICS_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
-        </select>
-        {mathematics && <MarkInput label={mathematics} percentage={mathematicsMark} onChange={setMathematicsMark} />}
-        <div className="rounded-xl bg-brand-teal-soft/60 p-3 text-xs leading-relaxed text-ink-soft"><strong className="text-ink">Why we ask:</strong> different programmes can require Mathematics or Mathematical Literacy, so UCAG keeps the distinction.</div>
+      <section className="flex flex-col gap-6 rounded-3xl border border-line bg-paper-raised p-6 shadow-sm sm:p-8" aria-labelledby="maths-title">
+        <div>
+          <h2 id="maths-title" className="font-display text-xl font-black text-ink">2. Mathematics or Math Literacy</h2>
+          <p className="mt-1 text-sm font-medium text-ink-soft">Select your mathematical subject type and enter your percentage.</p>
+        </div>
+        
+        <div className="flex flex-col gap-4 rounded-2xl border border-line/60 bg-white p-5 shadow-sm">
+          <select
+            id="mathematics"
+            aria-label="Mathematics type"
+            className="h-12 w-full cursor-pointer rounded-xl border border-line bg-slate-50 px-4 text-base font-bold text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+            value={mathematics}
+            onChange={(e) => setMathematics(e.target.value as MathematicsOption | "")}
+          >
+            <option value="">Select Mathematics or Math Literacy</option>
+            {MATHEMATICS_OPTIONS.map((opt) => <option key={opt} value={opt}>{opt}</option>)}
+          </select>
+          {mathematics && <div className="border-t border-line/60 pt-4"><MarkInput label={mathematics} percentage={mathematicsMark} onChange={setMathematicsMark} /></div>}
+          <p className="text-xs font-medium text-ink-faint">Different programmes require specific math subjects. UCAG keeps this distinction clear.</p>
+        </div>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm sm:p-5" aria-labelledby="lo-title">
-        <div><h2 id="lo-title" className="text-base font-bold text-ink">3. Life Orientation</h2><p className="mt-1 text-sm text-ink-soft">Enter the percentage shown on your results.</p></div>
-        <MarkInput label="Life Orientation" percentage={lifeOrientationMark} onChange={setLifeOrientationMark} />
-        <p className="text-xs text-ink-faint">UCAG applies the verified institution rule when calculating a programme match. We do not assume every university uses LO in the same way.</p>
+      <section className="flex flex-col gap-6 rounded-3xl border border-line bg-paper-raised p-6 shadow-sm sm:p-8" aria-labelledby="lo-title">
+        <div>
+          <h2 id="lo-title" className="font-display text-xl font-black text-ink">3. Life Orientation</h2>
+          <p className="mt-1 text-sm font-medium text-ink-soft">Enter the percentage shown on your NSC certificate.</p>
+        </div>
+        
+        <div className="rounded-2xl border border-line/60 bg-white p-5 shadow-sm">
+          <MarkInput label="Life Orientation" percentage={lifeOrientationMark} onChange={setLifeOrientationMark} />
+        </div>
       </section>
 
-      <section className="flex flex-col gap-4 rounded-2xl border border-line bg-paper-raised p-4 shadow-sm sm:p-5" aria-labelledby="electives-title">
-        <div><h2 id="electives-title" className="text-base font-bold text-ink">4. Your other subjects</h2><p className="mt-1 text-sm text-ink-soft">Choose at least 3 elective subjects and enter each mark.</p></div>
-        {electives.map((elective, index) => {
-          const availableOptions = ELECTIVE_SUBJECTS.filter((s) => s.code === elective.code || !selectedElectiveCodes.includes(s.code));
-          return (
-            <div key={index} className={`flex flex-col gap-3 rounded-xl border border-line bg-paper p-3.5 ${removingIndex === index ? "animate-pop-out" : "animate-pop-in"}`}>
-              <div className="flex items-start gap-2">
-                <div className="min-w-0 flex-1"><SubjectCombobox label={`Elective Subject ${index + 1}`} options={availableOptions} value={elective.code} onChange={(code) => updateElective(index, { code, percentage: null })} /></div>
-                {electives.length > MIN_ELECTIVES && <button type="button" onClick={() => removeElective(index)} className="min-h-11 px-2 text-xs font-bold text-mark-red hover:underline" disabled={removingIndex === index}>Remove</button>}
+      <section className="flex flex-col gap-6 rounded-3xl border border-line bg-paper-raised p-6 shadow-sm sm:p-8" aria-labelledby="electives-title">
+        <div>
+          <h2 id="electives-title" className="font-display text-xl font-black text-ink">4. Elective Subjects</h2>
+          <p className="mt-1 text-sm font-medium text-ink-soft">Choose at least 3 elective subjects and enter your marks.</p>
+        </div>
+
+        <div className="flex flex-col gap-4">
+          {electives.map((elective, index) => {
+            const availableOptions = ELECTIVE_SUBJECTS.filter((s) => s.code === elective.code || !selectedElectiveCodes.includes(s.code));
+            return (
+              <div key={index} className={`flex flex-col gap-4 rounded-2xl border border-line/60 bg-white p-5 shadow-sm transition-all ${removingIndex === index ? "animate-pop-out" : "animate-pop-in"}`}>
+                <div className="flex items-start justify-between gap-4">
+                  <div className="min-w-0 flex-1">
+                    <SubjectCombobox label={`Elective Subject ${index + 1}`} options={availableOptions} value={elective.code} onChange={(code) => updateElective(index, { code, percentage: null })} />
+                  </div>
+                  {electives.length > MIN_ELECTIVES && (
+                    <button type="button" onClick={() => removeElective(index)} className="mt-8 text-xs font-bold text-mark-red transition-colors hover:underline" disabled={removingIndex === index}>
+                      Remove
+                    </button>
+                  )}
+                </div>
+                {elective.code && (
+                  <div className="border-t border-line/60 pt-4">
+                    <MarkInput label={ELECTIVE_SUBJECTS.find((s) => s.code === elective.code)?.name ?? ""} percentage={elective.percentage} onChange={(percentage) => updateElective(index, { percentage })} />
+                  </div>
+                )}
               </div>
-              {elective.code && <div className="border-t border-line/40 pt-2"><MarkInput label={ELECTIVE_SUBJECTS.find((s) => s.code === elective.code)?.name ?? ""} percentage={elective.percentage} onChange={(percentage) => updateElective(index, { percentage })} /></div>}
-            </div>
-          );
-        })}
-        {electives.length < MAX_ELECTIVES && <button type="button" onClick={addElective} className="min-h-11 rounded-xl border-2 border-dashed border-brand-teal/50 bg-brand-teal-soft/30 px-4 text-sm font-bold text-brand-teal hover:bg-brand-teal-soft">+ Add another subject</button>}
+            );
+          })}
+          {electives.length < MAX_ELECTIVES && (
+            <button type="button" onClick={addElective} className="flex min-h-14 items-center justify-center rounded-2xl border-2 border-dashed border-brand-teal/50 bg-brand-teal/5 px-6 text-sm font-bold text-brand-teal transition-colors hover:bg-brand-teal/10">
+              + Add another elective subject
+            </button>
+          )}
+        </div>
       </section>
 
-      <section className="rounded-2xl border border-brand-teal/30 bg-brand-teal-soft/40 p-4 shadow-sm sm:p-5">
-        <label htmlFor="target-institution" className="text-xs font-bold uppercase tracking-wider text-ink">Matching rule</label>
-        <select id="target-institution" className="mt-2 min-h-11 w-full rounded-xl border border-line bg-paper-raised px-3.5 text-base font-semibold text-ink" value={targetInstitution} onChange={(e) => setTargetInstitution(e.target.value)}>
-          <option value="ump">University of Mpumalanga</option><option value="up">University of Pretoria</option><option value="wits">University of the Witwatersrand</option><option value="uj">University of Johannesburg</option><option value="tut">Tshwane University of Technology</option><option value="all">All South African Universities</option>
+      <section className="rounded-3xl border-2 border-brand-teal/30 bg-brand-teal/5 p-6 shadow-sm sm:p-8">
+        <label htmlFor="target-institution" className="font-display text-lg font-bold text-ink">Preferred Institution Rule</label>
+        <select
+          id="target-institution"
+          className="mt-3 h-12 w-full cursor-pointer rounded-xl border border-line bg-white px-4 text-base font-bold text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+          value={targetInstitution}
+          onChange={(e) => setTargetInstitution(e.target.value)}
+        >
+          <option value="ump">University of Mpumalanga</option>
+          <option value="up">University of Pretoria</option>
+          <option value="wits">University of the Witwatersrand</option>
+          <option value="uj">University of Johannesburg</option>
+          <option value="tut">Tshwane University of Technology</option>
+          <option value="all">All South African Universities</option>
         </select>
-        <p className="mt-2 text-xs text-ink-soft">The programme catalogue uses verified institutional rules where available.</p>
+        <p className="mt-2 text-xs font-medium text-ink-soft">Programmes use verified institutional calculation rules automatically.</p>
       </section>
 
-      {validationError && <p role="alert" className="rounded-xl border border-mark-red/30 bg-mark-red-soft p-3 text-sm font-semibold text-mark-red">{validationError}</p>}
+      {validationError && (
+        <div role="alert" className="rounded-2xl border border-mark-red/30 bg-mark-red/10 p-5 text-sm font-bold text-mark-red shadow-sm">
+          {validationError}
+        </div>
+      )}
 
       <button
         type="button"
         onClick={calculate}
         disabled={calcStage !== null}
         aria-live="polite"
-        className="btn-bold flex min-h-12 items-center justify-center gap-2 rounded-xl bg-brand-teal px-6 text-sm font-extrabold text-white transition-colors hover:bg-[#352ab8] disabled:cursor-wait disabled:opacity-90"
+        className="flex min-h-16 w-full items-center justify-center gap-3 rounded-2xl bg-brand-teal px-8 text-lg font-black text-white shadow-xl shadow-brand-teal/30 transition-transform hover:-translate-y-0.5 active:scale-[0.97] disabled:cursor-wait disabled:opacity-90"
       >
         {calcStage !== null ? (
           <>
-            <span className="size-4 shrink-0 animate-spin rounded-full border-2 border-white/40 border-t-white" aria-hidden="true" />
+            <span className="h-6 w-6 shrink-0 animate-spin rounded-full border-3 border-white/40 border-t-white" aria-hidden="true" />
             {CALC_STAGES[calcStage]}
           </>
         ) : (
           <>
-            <TargetIcon size={ICON_SIZE.sm} />
-            Calculate & find my options
+            <TargetIcon size={ICON_SIZE.md} />
+            Calculate & Find My Options 🚀
           </>
         )}
       </button>

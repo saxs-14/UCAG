@@ -6,18 +6,17 @@ export const metadata = {
   title: `${LABELS.account.pageTitle} -- ${LABELS.app.name}`,
   description: LABELS.account.pageSubtitle,
   alternates: { canonical: "/account" },
-  // Real account settings behind auth -- nothing here is content worth a
-  // stranger finding via search, and indexing it would just show Google
-  // an empty/signed-out shell.
   robots: { index: false, follow: true },
 };
 
 export default function Account() {
   return (
-    <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
+    <main id="main-content" className="flex min-h-screen flex-col items-center bg-gradient-to-b from-brand-teal/10 to-paper pb-12">
       <PageHero title={LABELS.account.pageTitle} subtitle={LABELS.account.pageSubtitle} />
-      <div className="flex w-full flex-col items-center gap-6 p-6 sm:p-8">
-        <AccountPage />
+      <div className="flex w-full max-w-5xl flex-col items-center gap-8 p-6 sm:p-10">
+        <div className="w-full rounded-3xl border border-brand-teal/15 bg-white/90 p-6 shadow-2xl shadow-brand-teal/5 backdrop-blur-sm transition-all hover:shadow-brand-teal/10 sm:p-12">
+          <AccountPage />
+        </div>
       </div>
     </main>
   );

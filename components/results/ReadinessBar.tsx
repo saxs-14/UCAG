@@ -1,24 +1,23 @@
 import type { ReadinessResult } from "@/lib/readiness";
 
-/** A slim, secondary indicator -- deliberately not another CircledMark
- * (Phase 8's design system reserves that for the one number that matters
- * most per card; this is a supporting figure, not the headline). */
 export function ReadinessBar({ readiness }: { readiness: ReadinessResult }) {
   const color =
-    readiness.percent >= 80 ? "bg-mark-green" : readiness.percent >= 50 ? "bg-mark-gold" : "bg-slate";
-
-  const progressClass =
-    readiness.percent >= 80 ? "readiness-progress-green" : readiness.percent >= 50 ? "readiness-progress-gold" : "readiness-progress-slate";
+    readiness.percent >= 80 ? "bg-emerald-500" : readiness.percent >= 50 ? "bg-amber-500" : "bg-rose-500";
+  const textColor = 
+    readiness.percent >= 80 ? "text-emerald-700" : readiness.percent >= 50 ? "text-amber-700" : "text-rose-700";
 
   return (
-    <div className="flex items-center gap-2 text-xs text-ink-soft">
-      <span className="whitespace-nowrap">Application readiness</span>
-      <progress
-        value={readiness.percent}
-        max={100}
-        className={`h-1.5 w-full rounded-full bg-slate-soft ${progressClass}`}
-      />
-      <span className={`font-mono tabular-nums ${color}`}>{readiness.percent}%</span>
+    <div className="flex flex-col gap-1.5">
+      <div className="flex items-center justify-between text-xs font-bold">
+        <span className="text-ink-soft uppercase tracking-wide">Application readiness</span>
+        <span className={`font-mono ${textColor}`}>{readiness.percent}%</span>
+      </div>
+      <div className="h-2 w-full overflow-hidden rounded-full bg-slate-100 shadow-inner">
+        <div
+          className={`h-full rounded-full transition-all duration-700 ease-out ${color}`}
+          style={{ width: `${readiness.percent}%` }}
+        />
+      </div>
     </div>
   );
 }

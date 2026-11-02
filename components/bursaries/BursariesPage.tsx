@@ -46,60 +46,96 @@ export function BursariesPage({ bursaries: allBursaries }: BursariesPageProps) {
   };
 
   return (
-    <div className="flex w-full max-w-4xl flex-col gap-6">
-      <section className="card-learner rounded-2xl p-5 sm:p-6" aria-labelledby="funding-start">
-        <div className="max-w-2xl">
-          <p className="text-xs font-bold uppercase tracking-[0.16em] text-brand-teal">Start with your funding need</p>
-          <h2 id="funding-start" className="mt-1 text-2xl font-bold tracking-tight text-ink">Find funding, then verify before you apply.</h2>
-          <p className="mt-2 text-sm leading-6 text-ink-soft">
-            UCAG helps you discover bursaries from the records we have verified.
-            It does not decide whether a provider will award you funding.
-          </p>
+    <div className="flex w-full max-w-5xl flex-col gap-8">
+      <section className="overflow-hidden rounded-3xl bg-gradient-to-br from-brand-teal to-teal-900 shadow-lg" aria-labelledby="funding-start">
+        <div className="p-6 sm:p-10">
+          <div className="max-w-2xl text-white">
+            <p className="text-xs font-extrabold uppercase tracking-widest text-teal-200">Start with your funding need</p>
+            <h2 id="funding-start" className="mt-2 font-display text-3xl font-black tracking-tight sm:text-4xl">Find funding, then verify before you apply.</h2>
+            <p className="mt-3 text-sm font-medium leading-relaxed text-teal-50 sm:text-base">
+              UCAG helps you discover bursaries from verified records. We help you find the opportunities, but the final decision always rests with the funding provider.
+            </p>
+          </div>
+          <ol className="mt-8 grid gap-4 sm:grid-cols-3">
+            <li className="flex flex-col rounded-2xl bg-white/10 p-5 backdrop-blur-md border border-white/20">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-black text-brand-teal">1</span>
+              <h3 className="mt-3 font-display text-base font-bold text-white">Filter</h3>
+              <p className="mt-1 text-sm text-teal-100">Choose your study level or specific field.</p>
+            </li>
+            <li className="flex flex-col rounded-2xl bg-white/10 p-5 backdrop-blur-md border border-white/20">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-amber text-sm font-black text-amber-950">2</span>
+              <h3 className="mt-3 font-display text-base font-bold text-white">Check</h3>
+              <p className="mt-1 text-sm text-teal-100">Review the required criteria and closing dates.</p>
+            </li>
+            <li className="flex flex-col rounded-2xl bg-white/10 p-5 backdrop-blur-md border border-white/20">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-coral text-sm font-black text-white">3</span>
+              <h3 className="mt-3 font-display text-base font-bold text-white">Apply</h3>
+              <p className="mt-1 text-sm text-teal-100">Head straight to the provider&apos;s official page.</p>
+            </li>
+          </ol>
         </div>
-        <ol className="mt-5 grid gap-4 sm:grid-cols-3">
-          <li className="card-bold p-4" style={{ "--card-bold-shadow": "var(--color-brand-teal)" } as React.CSSProperties}><span className="font-display text-xs font-extrabold text-brand-teal">1</span><h3 className="mt-1 font-display text-sm font-bold text-ink">Filter</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Choose your level or field.</p></li>
-          <li className="card-bold p-4" style={{ "--card-bold-shadow": "var(--color-brand-amber)" } as React.CSSProperties}><span className="font-display text-xs font-extrabold text-brand-teal">2</span><h3 className="mt-1 font-display text-sm font-bold text-ink">Check</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Read the recorded criteria and dates.</p></li>
-          <li className="card-bold p-4" style={{ "--card-bold-shadow": "var(--color-brand-coral)" } as React.CSSProperties}><span className="font-display text-xs font-extrabold text-brand-teal">3</span><h3 className="mt-1 font-display text-sm font-bold text-ink">Apply</h3><p className="mt-1 text-xs leading-5 text-ink-soft">Open the provider&apos;s official application page.</p></li>
-        </ol>
       </section>
 
       <Link
         href="/internships"
-        className="group flex items-center justify-between gap-3 rounded-2xl border border-line bg-paper-raised p-4 transition-colors hover:border-brand-coral"
+        className="group flex flex-col gap-4 rounded-3xl border-2 border-line bg-paper-raised p-6 transition-all hover:-translate-y-1 hover:border-brand-coral hover:shadow-md sm:flex-row sm:items-center sm:justify-between"
       >
-        <div>
-          <p className="text-sm font-bold text-ink">Looking for internships or learnerships instead?</p>
-          <p className="mt-0.5 text-xs text-ink-soft">Work experience and SETA-registered learnerships now have their own page.</p>
+        <div className="flex items-start gap-4">
+          <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full bg-brand-coral/10 text-brand-coral">💼</div>
+          <div>
+            <p className="text-base font-bold text-ink">Looking for internships or learnerships instead?</p>
+            <p className="mt-1 text-sm font-medium text-ink-soft">Work experience and SETA-registered learnerships now have their own dedicated page.</p>
+          </div>
         </div>
-        <span className="shrink-0 text-sm font-extrabold text-brand-coral transition-transform group-hover:translate-x-1">Explore &rarr;</span>
+        <span className="shrink-0 rounded-xl bg-brand-coral px-5 py-2.5 text-sm font-bold text-white transition-transform group-hover:scale-105">Explore Internships &rarr;</span>
       </Link>
 
-      <section className="rounded-2xl border border-line bg-paper-raised p-5 sm:p-6" aria-labelledby="funding-filters">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div><h2 id="funding-filters" className="font-display text-lg font-bold text-ink">Narrow the list</h2><p className="mt-1 text-xs text-ink-faint">Filters use recorded fields only. They are not an eligibility verdict.</p></div>
-          {hasFilters && <button type="button" onClick={clearFilters} className="min-h-11 rounded-full border border-line px-4 text-sm font-semibold text-ink transition-colors hover:border-brand-teal hover:text-brand-teal">Clear filters</button>}
+      <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm sm:p-8" aria-labelledby="funding-filters">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div>
+            <h2 id="funding-filters" className="font-display text-xl font-black text-ink">Narrow your search</h2>
+            <p className="mt-1 text-sm font-medium text-ink-soft">Filters use recorded fields only. Always check the official page for full eligibility.</p>
+          </div>
+          {hasFilters && (
+            <button type="button" onClick={clearFilters} className="min-h-12 rounded-xl border-2 border-line px-5 text-sm font-bold text-ink transition-colors hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
+              Clear filters
+            </button>
+          )}
         </div>
-        <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+        <div className="mt-6 grid gap-5 sm:grid-cols-2">
+          <label className="flex flex-col gap-2 text-sm font-bold text-ink-soft">
             {LABELS.bursaries.fieldOfStudyFilterLabel}
-            <select id="bursaries-field-of-study-filter" name="fieldOfStudy" className="min-h-11 rounded-xl border border-line bg-paper px-3 text-ink transition-colors hover:border-brand-teal focus:border-brand-teal" value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)}>
+            <select id="bursaries-field-of-study-filter" name="fieldOfStudy" className="min-h-12 w-full cursor-pointer rounded-xl border border-line bg-paper px-4 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" value={fieldOfStudy} onChange={(e) => setFieldOfStudy(e.target.value)}>
               <option value="">{LABELS.bursaries.allFields}</option>
               {fieldOptions.map((field) => <option key={field} value={field}>{field}</option>)}
             </select>
           </label>
-          <label className="flex flex-col gap-1.5 text-sm font-medium text-ink">
+          <label className="flex flex-col gap-2 text-sm font-bold text-ink-soft">
             {LABELS.bursaries.levelFilterLabel}
-            <select id="bursaries-level-filter" name="levelFilter" className="min-h-11 rounded-xl border border-line bg-paper px-3 text-ink transition-colors hover:border-brand-teal focus:border-brand-teal" value={levelFilter} onChange={(e) => setLevelFilter(e.target.value as BursaryLevelRequired | "all")}>
+            <select id="bursaries-level-filter" name="levelFilter" className="min-h-12 w-full cursor-pointer rounded-xl border border-line bg-paper px-4 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" value={levelFilter} onChange={(e) => setLevelFilter(e.target.value as BursaryLevelRequired | "all")}>
               {LEVEL_OPTIONS.map((opt) => <option key={opt.value} value={opt.value}>{opt.label}</option>)}
             </select>
           </label>
         </div>
       </section>
 
-      <section className="flex flex-col gap-3" aria-labelledby="bursaries-heading">
-        <div><h2 id="bursaries-heading" className="flex items-baseline gap-2 text-xl font-bold tracking-tight text-ink">Bursaries <span className="rounded-full bg-brand-teal-soft px-2 py-0.5 font-mono text-xs font-semibold tabular-nums text-brand-teal"><CountUp value={bursaries.length} /></span></h2><p className="mt-1 text-xs text-ink-faint">Funding opportunities currently present in the verified catalogue.</p></div>
-        {bursaries.length === 0 && <p className="rounded-xl border border-line p-4 text-sm text-ink-faint">{LABELS.bursaries.noResults}</p>}
-        <div key={`${fieldOfStudy}-${levelFilter}`} className="grid gap-4 lg:grid-cols-2">{bursaries.map((b, i) => <BursaryCard key={b.id} bursary={b} staggerIndex={i} />)}</div>
+      <section className="flex flex-col gap-5" aria-labelledby="bursaries-heading">
+        <div className="flex items-center gap-3">
+          <h2 id="bursaries-heading" className="font-display text-2xl font-black text-ink">Available Bursaries</h2>
+          <span className="inline-flex items-center justify-center rounded-full bg-brand-teal/10 px-3 py-1 text-sm font-bold text-brand-teal">
+            <CountUp value={bursaries.length} /> Results
+          </span>
+        </div>
+        {bursaries.length === 0 && (
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-line bg-paper-raised p-10 text-center">
+            <span className="text-4xl mb-3">🔍</span>
+            <p className="text-base font-bold text-ink">No exact matches found</p>
+            <p className="mt-1 text-sm font-medium text-ink-soft">{LABELS.bursaries.noResults}</p>
+          </div>
+        )}
+        <div key={`${fieldOfStudy}-${levelFilter}`} className="grid gap-5 lg:grid-cols-2">
+          {bursaries.map((b, i) => <BursaryCard key={b.id} bursary={b} staggerIndex={i} />)}
+        </div>
       </section>
 
       <ScamExplainer />

@@ -1,17 +1,7 @@
-/**
- * A small solid "verified" checkmark badge -- the same kind of clean,
- * crisp verification indicator you'd see on any real institutional or
- * professional site, not a hand-drawn circle. Repeats this app's one
- * real promise ("verified, not guessed") on every card it marks.
- *
- * Pure presentational, no client-side interactivity -- safe as a server
- * component wherever it's used.
- */
-
 const VARIANT_BG: Record<"teal" | "coral" | "green", string> = {
   teal: "bg-brand-teal",
-  coral: "bg-brand-coral",
-  green: "bg-mark-green",
+  coral: "bg-orange-500",
+  green: "bg-emerald-500",
 };
 
 interface StampBadgeProps {
@@ -22,7 +12,7 @@ interface StampBadgeProps {
 export function StampBadge({ variant = "teal", label = "Verified" }: StampBadgeProps) {
   return (
     <span
-      className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-white ${VARIANT_BG[variant]}`}
+      className={`inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full text-white shadow-2xs ${VARIANT_BG[variant]}`}
       role="img"
       aria-label={label}
     >
