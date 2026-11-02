@@ -23,10 +23,10 @@ test("learner enters marks, sees they qualify, and reaches a real apply link", a
   // Single-screen entry -- every section is visible at once, no step
   // navigation between them.
   await page.getByLabel("Home Language").selectOption("English");
-  await page.getByLabel("English (HL)").fill("80");
+  await page.getByLabel("English (Home Language)").fill("80");
 
   await page.getByLabel("First Additional Language").selectOption("Afrikaans");
-  await page.getByLabel("Afrikaans (FAL)").fill("70");
+  await page.getByLabel("Afrikaans (First Additional)").fill("70");
 
   await page.getByLabel("Mathematics type").selectOption("Mathematics");
   await page.getByLabel("Mathematics", { exact: true }).fill("75");

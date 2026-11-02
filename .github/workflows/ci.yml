@@ -78,6 +78,22 @@ jobs:
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
 
+      # The Firestore emulator started above is otherwise empty: the
+      # "demo-ucag" project tests/e2e/ runs against (lib/firebase/client.ts,
+      # lib/firebase/admin.ts) never gets a single document written to it,
+      # so calculator-to-apply.spec.ts and ump-platform.spec.ts were
+      # guaranteed to fail on any real run regardless of local state --
+      # discovered when CI failed on commit 3a2def6. These two seed
+      # scripts are pure static data (no network/AI calls), so they're
+      # safe to run directly with env vars instead of --env-file=.env.local
+      # (there is no .env.local in CI).
+      - name: Seed E2E fixture data into the Firestore emulator
+        run: |
+          npx tsx scripts/seed-ump-data.mts
+          npx tsx scripts/seed-real-aps-rules.mts
+        env:
+          NEXT_PUBLIC_USE_FIREBASE_EMULATOR: "true"
+
       # tests/e2e/ existed with real coverage (the calculator-to-apply
       # journey, the UMP platform) but was never run anywhere but a
       # developer's own machine -- wired in here so a regression in
