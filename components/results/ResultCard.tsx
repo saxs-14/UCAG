@@ -3,6 +3,9 @@ import { resolveEffectiveApplicationWindowStatus, resolveApplicationCta } from "
 import { calculateReadiness } from "@/lib/readiness";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
+import { gapCloserText } from "./gapCloserText";
+import { ApsBreakdown } from "./ApsBreakdown";
+import { DeadlineCountdown } from "./DeadlineCountdown";
 import { CircledMark } from "@/components/CircledMark";
 import { CheckIcon, HourglassIcon, ICON_SIZE, LightbulbIcon, MapPinIcon, RocketIcon, RulerIcon, StarIcon, XIcon } from "@/components/icons/Icon";
 import { ReadinessBar } from "./ReadinessBar";
@@ -88,6 +91,13 @@ export function ResultCard({
 
   const apsGap = matchResult.bucket === "almostQualify" ? findApsGap(matchResult) : null;
   const stagger = Math.min(staggerIndex + 1, 6);
+
+  const gapClosers =
+    matchResult.bucket === "almostQualify"
+      ? matchResult.unmetReasons
+          .map((reason) => gapCloserText(reason))
+          .filter((text): text is string => text !== null)
+      : [];
 
   return (
     <div className={`stagger-${stagger} animate-rise-in`}>
@@ -176,6 +186,7 @@ export function ResultCard({
                 .join(" · ")}
             </p>
           )}
+          <DeadlineCountdown applicationWindow={applicationWindow} status={status} />
         </header>
 
         <ul className="flex flex-col gap-2 rounded-xl border border-line/60 bg-paper p-3.5 text-xs">
@@ -195,12 +206,27 @@ export function ResultCard({
           )}
         </ul>
 
+        {gapClosers.length > 0 && (
+          <div className="flex flex-col gap-1.5 rounded-xl bg-amber-50 p-3 text-xs text-amber-900 border border-amber-200/80">
+            <p className="font-bold uppercase tracking-wide text-2xs">How to close the gap</p>
+            <ul className="flex flex-col gap-1">
+              {gapClosers.map((text, i) => (
+                <li key={i} className="font-medium leading-relaxed">
+                  {text}
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
         {matchResult.suggestedNextStep && (
           <p className="flex items-start gap-1.5 rounded-xl bg-mark-gold-soft p-3 text-xs text-mark-gold border border-mark-gold/30 font-medium">
             <LightbulbIcon size={ICON_SIZE.sm} className="mt-0.5 shrink-0" />
             <span><strong>Next step: </strong>{matchResult.suggestedNextStep}</span>
           </p>
         )}
+
+        <ApsBreakdown apsResult={matchResult.apsResult} institutionName={institution.shortName || institution.name} />
 
         <div className="flex flex-col gap-2 border-t border-line pt-3 text-xs sm:flex-row sm:flex-wrap sm:items-center">
           {cta.kind === "apply" && (

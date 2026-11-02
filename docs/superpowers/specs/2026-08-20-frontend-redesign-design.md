@@ -125,7 +125,7 @@ being touched). This phase's mobile-nav work is: replace the emoji icons with th
 
 | Page | Redesign scope this phase |
 |---|---|
-| Calculator (`app/page.tsx`, `CalculatorPage.tsx`) | Refresh hero band and subject-entry layout on the new token system; **preserve** the documented "learner from a WhatsApp link sees subject dropdowns with no scroll" requirement — verify after, don't just assume |
+| Calculator (`app/page.tsx`, `CalculatorPage.tsx`) | Refresh hero band and subject-entry layout on the new token system. **Correction (2026-08-21, verified by reading `CalculatorPage.tsx`/`SubjectForm.tsx` during Phase 1b planning):** the "no scroll to see subject dropdowns" requirement is NOT enforced anywhere in code today — no comment, no max-height, no viewport-aware layout. It exists only as aspirational language in this spec document itself. There is nothing to "preserve" because it was never built. **Decision (owner, 2026-08-21): build it for real** — the subject-entry layout in Phase 1b must be redesigned (compact rows, tighter spacing, a 2-column layout on desktop where a single column would push electives below the fold) so the compulsory + elective dropdowns genuinely fit above the fold on a typical phone viewport, not just restyled in place. |
 | Results (`components/results/`) | Institution-branded programme cards (visual only — real per-institution color binding is Phase 2 data wiring; this phase builds the component to accept a theme prop), live countdown *component* (Phase 2 wires real dates), new "gap-closer" panel for Almost-Qualify, "Explain my APS" expandable breakdown, mentor snippet slot |
 | Institutions (`app/institutions/`) | Card/list redesign on new tokens; branding-token *slots* added to `/institutions/[id]` (Phase 2 binds real values) |
 | Bursaries (`app/bursaries/`) | Scam-radar badge kept prominent (trust signal — do not soften it), add match-to-my-programme filter UI |
@@ -145,10 +145,19 @@ being touched). This phase's mobile-nav work is: replace the emoji icons with th
 - **Gap-closer panel**: for each Almost-Qualify programme, show the specific shortfall
   already computed by `lib/matching/` in human terms ("Raise Mathematics from 62% to
   66%" rather than just a numeric delta).
-- **Mentor snippet on results**: surface 1-2 verified mentors from `lib/mentors/getMentors.ts`
-  filtered by institution/programme, with a link to the full `/account/mentor` request
-  flow — this phase is the UI slot + real data fetch (the fetch function already
-  exists), not a new backend feature.
+- **Mentor snippet on results**: **Correction (2026-08-21, verified by reading
+  `lib/mentors/getMentors.ts` during Phase 1b planning):** the claim above was wrong on
+  two counts. There is no `getMentors` function — the real export is
+  `getUmpMentors(): MentorProfile[]`, zero parameters, no institution/programme
+  filtering of any kind, returning a hardcoded 2-entry array that is UMP-only by
+  construction (not by a filter). There is also a second, differently-shaped
+  `MentorProfile` interface at `lib/firestore/types.ts:461` used by
+  `app/mentor/register/page.tsx` — two same-named, different-shaped types across the
+  codebase. Real cross-institution mentor filtering is new logic, not existing logic to
+  wire up — it does not belong in this UI-only phase per this spec's own non-goals.
+  **Decision (owner, 2026-08-21): show `getUmpMentors()`'s existing 2 entries as-is**
+  on results, only when the learner's target institution is UMP — no new filtering
+  logic, no claim of cross-institution coverage.
 - **Deadline countdown**: UI component taking an `applicationWindow` prop; Phase 1 can
   wire it to real Firestore `applicationWindows` data since that collection and read
   path already exist (per `UCAG_CURRENT_STATE_AUDIT.md` §10) — this is a read of

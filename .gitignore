@@ -57,3 +57,5 @@ firestore-debug.log
 __pycache__/
 *.pyc
 scripts/scraping/tmp_*
+# superpowers subagent-driven-development scratch (progress ledger, review packages)
+/.superpowers/

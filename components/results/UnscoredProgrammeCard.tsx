@@ -32,7 +32,7 @@ export function UnscoredProgrammeCard({
 }: UnscoredProgrammeCardProps) {
   const stagger = Math.min(staggerIndex + 1, 6);
   return (
-    <article className={`stagger-${stagger} animate-pop-in flex flex-col gap-4 rounded-[32px] border border-line bg-paper-raised p-5 shadow-sm transition-transform duration-200 hover-fine:-translate-y-1 hover-fine:shadow-[0_26px_72px_-40px_rgba(17,72,88,0.18)]`}>
+    <article className={`card-learner stagger-${stagger} animate-pop-in flex flex-col gap-4 rounded-2xl p-5`}>
       <header className="flex flex-col gap-2">
         <div className="flex flex-wrap items-center gap-2">
           <span className="rounded-full bg-brand-coral-soft px-3 py-1 text-xs font-semibold uppercase tracking-[0.2em] text-brand-coral">

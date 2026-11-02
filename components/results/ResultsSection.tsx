@@ -375,6 +375,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
             <ApsFormulaBanner institutions={catalog.institutions} apsRules={catalog.apsRules} />
           )}
 
+
           {scored.length > 0 && (
             <AdmissionPathwayGraph
               marks={marks}

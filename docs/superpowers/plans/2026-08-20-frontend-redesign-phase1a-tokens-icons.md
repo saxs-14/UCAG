@@ -17,8 +17,13 @@ strict, `lucide-react` (new dependency, this plan installs it).
 
 - Next.js 15 App Router, TypeScript strict (`tsc --noEmit` clean) — CLAUDE.md Definition
   of Done #1.
-- No hardcoded English strings in components — every user-facing string sources from
-  `config/labels.ts` (`config/labels.ts` file header, "config over hardcode").
+- No *new* hardcoded English strings introduced by this plan — the one label this plan
+  adds (`institutions`) sources from `config/labels.ts` (`config/labels.ts` file header,
+  "config over hardcode"). Pre-existing hardcoded strings in `NavBar.tsx` /
+  `MobileNavBar.tsx` not touched by this plan's tasks (e.g. "Sign In", "Create Account",
+  "APS Calc", "Programmes") are deliberately left as-is — migrating every existing
+  string to `LABELS` is out of scope for an icon-replacement task and not part of any
+  task below. Do not flag their continued presence as a spec gap in this plan's review.
 - No `NEXT_PUBLIC_` secrets introduced (n/a to this plan — no secrets touched).
 - `npm run lint` and `npm run typecheck` clean before each task's commit.
 - No emoji used as a structural/navigational icon anywhere touched by this plan (design
