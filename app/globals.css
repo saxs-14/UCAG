@@ -30,6 +30,9 @@
   --color-signal-yellow: #ffd93d;
   --color-signal-indigo: #4c3df0;
   --color-text-on-brand: #fafaf8;
+  --color-glass-surface: rgba(255, 255, 255, 0.62);
+  --color-glass-surface-strong: rgba(255, 255, 255, 0.8);
+  --color-glass-border: rgba(255, 255, 255, 0.6);
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
   --font-display: "Space Grotesk", ui-sans-serif, "Helvetica Neue", Arial, sans-serif;
@@ -46,6 +49,39 @@ h1, h2, h3 { overflow-wrap: break-word; }
 .brand-band {
   background: var(--color-brand-navy);
   color: white;
+}
+
+/* Frosted-glass surfaces: nav, result/account cards, the chat widget,
+   and modals (see CLAUDE.md -- used selectively, not a full reskin).
+   Needs a colorful backdrop-atmosphere div (.ambient-blobs, below) behind
+   it to actually read as glass; on a flat background the blur is a no-op. */
+.glass-blur {
+  backdrop-filter: blur(16px) saturate(160%);
+  -webkit-backdrop-filter: blur(16px) saturate(160%);
+}
+
+.glass-blur-strong {
+  backdrop-filter: blur(22px) saturate(170%);
+  -webkit-backdrop-filter: blur(22px) saturate(170%);
+}
+
+.ambient-blobs {
+  position: fixed;
+  inset: 0;
+  z-index: -10;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.ambient-blobs > span {
+  position: absolute;
+  border-radius: 9999px;
+  filter: blur(64px);
+  opacity: 0.35;
+}
+
+@media (prefers-color-scheme: dark) {
+  .ambient-blobs > span { opacity: 0.22; }
 }
 
 .card-learner {
@@ -163,6 +199,9 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
     --color-brand-violet-soft: #211a3d;
     --color-brand-amber: #fbbf24;
     --color-brand-amber-soft: #2e2308;
+    --color-glass-surface: rgba(21, 19, 31, 0.58);
+    --color-glass-surface-strong: rgba(11, 10, 18, 0.78);
+    --color-glass-border: rgba(255, 255, 255, 0.1);
   }
 }
 

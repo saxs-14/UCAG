@@ -113,7 +113,7 @@ export function ChatWidget() {
         <div
           role="dialog"
           aria-label="Student Support"
-          className="animate-rise-in mb-4 flex h-[32rem] w-[24rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-line/60 bg-white shadow-2xl shadow-brand-teal/10"
+          className="glass-blur-strong animate-rise-in mb-4 flex h-[32rem] w-[24rem] max-w-[calc(100vw-2rem)] flex-col overflow-hidden rounded-3xl border border-glass-border bg-glass-surface-strong shadow-2xl shadow-brand-teal/10"
         >
           <header className="flex items-center justify-between gap-3 border-b border-line/50 bg-gradient-to-r from-brand-teal to-teal-700 px-5 py-4 text-white">
             <div className="flex items-center gap-3">
