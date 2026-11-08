@@ -162,7 +162,7 @@ export function AccountPage() {
     return (
       <div className="flex w-full max-w-sm flex-col gap-6">
         <p className="text-center text-sm font-medium text-ink-soft">{LABELS.account.optionalNote}</p>
-        <div className="rounded-3xl bg-paper-raised p-6 shadow-xl shadow-brand-teal/5 sm:p-8">
+        <div className="glass-blur-strong rounded-3xl border border-glass-border bg-glass-surface-strong p-6 shadow-xl shadow-brand-teal/5 sm:p-8">
           {mode === "signUp" ? <SignUpForm onSwitchToSignIn={() => setMode("signIn")} /> : <SignInForm onSwitchToSignUp={() => setMode("signUp")} />}
         </div>
         <div className="text-center">
@@ -192,7 +192,7 @@ export function AccountPage() {
       {notice && <div role="status" className="rounded-2xl border-l-4 border-mark-green bg-mark-green/10 p-4 text-sm font-semibold text-mark-green shadow-sm">{notice}</div>}
       {error && <p role="alert" className="rounded-2xl border-l-4 border-mark-red bg-mark-red/10 p-4 text-sm font-medium text-mark-red shadow-sm">{error}</p>}
 
-      <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
+      <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
         <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <div className="mb-2 inline-flex items-center rounded-full bg-brand-teal/10 px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-brand-teal">
@@ -246,7 +246,7 @@ export function AccountPage() {
         </div>
       </section>
 
-      <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
+      <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
         <div className="flex items-center justify-between gap-4">
           <div>
             <h2 className="text-xs font-extrabold uppercase tracking-widest text-brand-teal">{LABELS.account.savedMarksHeading}</h2>
@@ -275,7 +275,7 @@ export function AccountPage() {
 
       {profile && <LearnerApplicationJourney profile={profile} />}
 
-      <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
+      <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
         <h2 className="text-xs font-extrabold uppercase tracking-widest text-brand-coral">{LABELS.account.shortlistHeading}</h2>
         <p className="mt-1 text-sm text-ink-soft">{LABELS.account.shortlistIntro}</p>
         {profile?.shortlist.length ? (
@@ -295,7 +295,7 @@ export function AccountPage() {
       </section>
 
       {isAdmin && (
-        <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
+        <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
           <h2 className="text-xs font-extrabold uppercase tracking-widest text-brand-navy">{LABELS.account.adminHeading}</h2>
           <Link href="/admin" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line px-5 text-sm font-bold text-ink transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
             {LABELS.account.adminPortalButton}

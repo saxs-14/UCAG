@@ -32,7 +32,7 @@ export function MobileNavBar() {
   return (
     <nav
       aria-label="Mobile bottom navigation"
-      className="no-print fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-line/60 bg-white/95 px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] backdrop-blur-xl sm:hidden"
+      className="glass-blur-strong no-print fixed inset-x-0 bottom-0 z-50 grid grid-cols-5 border-t border-glass-border bg-glass-surface-strong px-2 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2 shadow-[0_-8px_30px_rgba(0,0,0,0.08)] sm:hidden"
     >
       {navItems.map(({ href, label, icon }) => {
         const active = pathname === href || (href !== "/" && pathname.startsWith(href));

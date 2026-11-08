@@ -42,7 +42,7 @@ export function SavedApplicationStatus({ profile }: { profile: UserProfile }) {
   }, [catalog, profile.shortlist]);
 
   if (!profile.shortlist.length) return (
-    <section className="rounded-3xl border border-line bg-paper-raised p-6 text-center shadow-sm sm:p-10">
+    <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 text-center shadow-sm sm:p-10">
       <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-brand-coral/10 text-3xl">🎯</div>
       <h2 className="font-display text-2xl font-black text-ink">Nothing to track yet</h2>
       <p className="mt-2 text-sm font-medium text-ink-soft mx-auto max-w-md">Add programmes to your shortlist and UCAG will organize their verified application statuses right here.</p>
@@ -51,14 +51,14 @@ export function SavedApplicationStatus({ profile }: { profile: UserProfile }) {
   );
 
   if (failed) return (
-    <section className="rounded-3xl border-2 border-brand-coral/20 bg-paper-raised p-6 shadow-sm sm:p-8">
+    <section className="glass-blur rounded-3xl border-2 border-brand-coral/20 bg-glass-surface p-6 shadow-sm sm:p-8">
       <h2 className="font-display text-xl font-black text-ink">Your shortlist is safe</h2>
       <p className="mt-2 text-sm font-medium text-ink-soft">The catalogue is taking a moment to load. Your saved choices are securely stored in your profile.</p>
     </section>
   );
 
   if (!catalog) return (
-    <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm sm:p-8">
+    <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm sm:p-8">
       <div className="flex items-center gap-3">
         <div className="h-5 w-5 animate-spin rounded-full border-2 border-brand-teal border-t-transparent"></div>
         <p className="text-sm font-bold text-ink-soft">Loading your application timeline...</p>
@@ -67,7 +67,7 @@ export function SavedApplicationStatus({ profile }: { profile: UserProfile }) {
   );
 
   return (
-    <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
+    <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <p className="text-xs font-extrabold uppercase tracking-widest text-brand-coral">Your Watchlist</p>

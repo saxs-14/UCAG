@@ -19,7 +19,7 @@ export function NavBar() {
   const isLoggedIn = !!user && !user.isAnonymous;
 
   return (
-    <header className="no-print sticky top-0 z-40 border-b border-line/60 bg-white/90 text-ink shadow-sm backdrop-blur-md">
+    <header className="glass-blur no-print sticky top-0 z-40 border-b border-glass-border bg-glass-surface-strong text-ink shadow-sm">
       <nav className="mx-auto flex min-h-[80px] w-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8" aria-label="Primary navigation">
         <Link href="/" className="flex min-h-12 shrink-0 items-center text-ink" aria-label="UCAG home">
           <Logo size={38} wordmarkClassName="text-xl font-black tracking-tight text-ink" />

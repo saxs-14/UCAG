@@ -39,9 +39,9 @@ interface ResultCardProps {
 }
 
 const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
-  qualify: "border-l-8 border-l-emerald-500 border-y-line/60 border-r-line/60",
-  almostQualify: "border-l-8 border-l-amber-400 border-y-line/60 border-r-line/60",
-  notYet: "border-l-8 border-l-slate-300 border-y-line/60 border-r-line/60",
+  qualify: "border-l-8 border-l-emerald-500 border-y-glass-border border-r-glass-border",
+  almostQualify: "border-l-8 border-l-amber-400 border-y-glass-border border-r-glass-border",
+  notYet: "border-l-8 border-l-slate-300 border-y-glass-border border-r-glass-border",
 };
 
 const BUCKET_LABEL_STYLE: Record<MatchResult["bucket"], string> = {
@@ -102,7 +102,7 @@ export function ResultCard({
 
   return (
     <div className={`stagger-${stagger} animate-rise-in`}>
-      <article className={`flex flex-col gap-5 rounded-3xl border bg-white p-5 shadow-sm transition-all hover:shadow-md sm:p-7 ${BUCKET_SPINE[matchResult.bucket]}`}>
+      <article className={`glass-blur flex flex-col gap-5 rounded-3xl border bg-glass-surface p-5 shadow-sm transition-all hover:shadow-md sm:p-7 ${BUCKET_SPINE[matchResult.bucket]}`}>
         <header className="flex flex-col gap-4">
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-line/50 pb-4">
             <span className={`rounded-xl border px-3 py-1 text-xs font-black uppercase tracking-widest shadow-sm ${BUCKET_LABEL_STYLE[matchResult.bucket]}`}>

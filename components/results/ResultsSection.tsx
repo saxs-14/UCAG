@@ -335,7 +335,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         </div>
       )}
 
-      <div className="overflow-hidden rounded-3xl border border-line bg-paper-raised shadow-sm transition-all hover:shadow-md">
+      <div className="glass-blur overflow-hidden rounded-3xl border border-glass-border bg-glass-surface shadow-sm transition-all hover:shadow-md">
         <details className="group">
           <summary className="flex min-h-16 cursor-pointer items-center justify-between bg-white p-6 font-display text-xl font-black text-ink focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
             More tools for planning your application

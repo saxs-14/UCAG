@@ -56,7 +56,7 @@ export function CompleteProfileForm({ uid, onComplete }: { uid: string; onComple
   }
 
   return (
-    <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm sm:p-8">
+    <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm sm:p-8">
       <div className="mb-2 inline-flex items-center rounded-full bg-brand-amber/10 px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-brand-amber">
         Finish setting up your profile
       </div>

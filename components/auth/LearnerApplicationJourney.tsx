@@ -142,7 +142,7 @@ export function LearnerApplicationJourney({ profile }: { profile: UserProfile })
   }, [saved, profile.shortlist.length]);
 
   return (
-    <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
+    <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
       <div>
         <p className="text-xs font-extrabold uppercase tracking-widest text-brand-teal">
           Your Journey
