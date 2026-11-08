@@ -16,6 +16,13 @@ export const MAX_MESSAGE_LENGTH = 1000;
  * buildChatSystemPrompt's own framing of this field as data, never an
  * instruction, for the other half of that defence. */
 export const MAX_USER_NAME_LENGTH = 80;
+/** A compact plain-text summary of the signed-in learner's own saved
+ * marks/APS/shortlist (built client-side in ChatWidget.tsx from their
+ * real profile data) -- long enough for a full subject list plus a
+ * handful of shortlisted programme names, bounded for the same reason
+ * as MAX_USER_NAME_LENGTH: client-asserted and embedded in the system
+ * prompt, so it needs a firm upper bound regardless of trust level. */
+export const MAX_USER_CONTEXT_LENGTH = 2000;
 
 const chatMessageSchema = z.object({
   role: z.enum(["user", "model"]),
@@ -29,6 +36,9 @@ const chatRequestSchema = z.object({
    * MAX_USER_NAME_LENGTH's comment on why that's an acceptable/bounded
    * risk here rather than something requiring full authentication. */
   userName: z.string().trim().min(1).max(MAX_USER_NAME_LENGTH).nullish(),
+  /** See MAX_USER_CONTEXT_LENGTH's comment. Omitted/null when signed out
+   * or when the learner has no saved marks/shortlist yet. */
+  userContext: z.string().trim().min(1).max(MAX_USER_CONTEXT_LENGTH).nullish(),
 });
 
 export type ChatMessage = z.infer<typeof chatMessageSchema>;
