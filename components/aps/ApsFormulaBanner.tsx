@@ -83,7 +83,7 @@ export function ApsFormulaBanner({ institutions, apsRules }: ApsFormulaBannerPro
             {verifiedRules.map((rule) => {
               const institution = institutionsById.get(rule.institutionId)!;
               return (
-                <div key={rule.id} className="flex flex-col rounded-2xl border border-line/50 bg-white p-5 shadow-sm transition-colors hover:border-brand-teal/30">
+                <div key={rule.id} className="flex flex-col rounded-2xl border border-line/50 bg-paper-raised p-5 shadow-sm transition-colors hover:border-brand-teal/30">
                   <span className="mb-2 block border-b border-line/50 pb-2 font-display text-lg font-bold text-ink">
                     {institution.shortName || institution.name}
                   </span>

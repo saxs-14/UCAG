@@ -36,9 +36,11 @@ interface ElectiveSlot {
 
 export function SubjectForm({
   onMarksChange,
+  onInstitutionChange,
   initialState,
 }: {
   onMarksChange?: (marks: SubjectMarkInput[]) => void;
+  onInstitutionChange?: (institutionId: string) => void;
   initialState?: SubjectFormInitialState;
 }) {
   const [homeLanguage, setHomeLanguage] = useState<LanguageOption | "">(initialState?.homeLanguage ?? "");
@@ -144,11 +146,11 @@ export function SubjectForm({
         </div>
         
         <div className="flex flex-col gap-4">
-          <div className="rounded-2xl border border-line/60 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-line/60 bg-paper-raised p-5 shadow-sm">
             <label className="text-sm font-bold text-ink" htmlFor="home-language">Home Language</label>
             <select
               id="home-language"
-              className="mt-2.5 h-12 w-full cursor-pointer rounded-xl border border-line bg-slate-50 px-4 text-base font-semibold text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+              className="mt-2.5 h-12 w-full cursor-pointer rounded-xl border border-line bg-slate-soft px-4 text-base font-semibold text-ink transition-all focus:border-brand-teal focus:bg-paper-raised focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
               value={homeLanguage}
               onChange={(e) => {
                 const next = e.target.value as LanguageOption | "";
@@ -162,11 +164,11 @@ export function SubjectForm({
             {homeLanguage && <div className="mt-4 border-t border-line/60 pt-4"><MarkInput label={`${homeLanguage} (Home Language)`} percentage={homeLanguageMark} onChange={setHomeLanguageMark} /></div>}
           </div>
 
-          <div className="rounded-2xl border border-line/60 bg-white p-5 shadow-sm">
+          <div className="rounded-2xl border border-line/60 bg-paper-raised p-5 shadow-sm">
             <label className="text-sm font-bold text-ink" htmlFor="fal">First Additional Language</label>
             <select
               id="fal"
-              className="mt-2.5 h-12 w-full cursor-pointer rounded-xl border border-line bg-slate-50 px-4 text-base font-semibold text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+              className="mt-2.5 h-12 w-full cursor-pointer rounded-xl border border-line bg-slate-soft px-4 text-base font-semibold text-ink transition-all focus:border-brand-teal focus:bg-paper-raised focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
               value={firstAdditionalLanguage}
               onChange={(e) => setFirstAdditionalLanguage(e.target.value as LanguageOption | "")}
             >
@@ -184,11 +186,11 @@ export function SubjectForm({
           <p className="mt-1 text-sm font-medium text-ink-soft">Select your mathematical subject type and enter your percentage.</p>
         </div>
         
-        <div className="flex flex-col gap-4 rounded-2xl border border-line/60 bg-white p-5 shadow-sm">
+        <div className="flex flex-col gap-4 rounded-2xl border border-line/60 bg-paper-raised p-5 shadow-sm">
           <select
             id="mathematics"
             aria-label="Mathematics type"
-            className="h-12 w-full cursor-pointer rounded-xl border border-line bg-slate-50 px-4 text-base font-bold text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+            className="h-12 w-full cursor-pointer rounded-xl border border-line bg-slate-soft px-4 text-base font-bold text-ink transition-all focus:border-brand-teal focus:bg-paper-raised focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
             value={mathematics}
             onChange={(e) => setMathematics(e.target.value as MathematicsOption | "")}
           >
@@ -206,7 +208,7 @@ export function SubjectForm({
           <p className="mt-1 text-sm font-medium text-ink-soft">Enter the percentage shown on your NSC certificate.</p>
         </div>
         
-        <div className="rounded-2xl border border-line/60 bg-white p-5 shadow-sm">
+        <div className="rounded-2xl border border-line/60 bg-paper-raised p-5 shadow-sm">
           <MarkInput label="Life Orientation" percentage={lifeOrientationMark} onChange={setLifeOrientationMark} />
         </div>
       </section>
@@ -221,7 +223,7 @@ export function SubjectForm({
           {electives.map((elective, index) => {
             const availableOptions = ELECTIVE_SUBJECTS.filter((s) => s.code === elective.code || !selectedElectiveCodes.includes(s.code));
             return (
-              <div key={index} className={`flex flex-col gap-4 rounded-2xl border border-line/60 bg-white p-5 shadow-sm transition-all ${removingIndex === index ? "animate-pop-out" : "animate-pop-in"}`}>
+              <div key={index} className={`flex flex-col gap-4 rounded-2xl border border-line/60 bg-paper-raised p-5 shadow-sm transition-all ${removingIndex === index ? "animate-pop-out" : "animate-pop-in"}`}>
                 <div className="flex items-start justify-between gap-4">
                   <div className="min-w-0 flex-1">
                     <SubjectCombobox label={`Elective Subject ${index + 1}`} options={availableOptions} value={elective.code} onChange={(code) => updateElective(index, { code, percentage: null })} />
@@ -252,9 +254,12 @@ export function SubjectForm({
         <label htmlFor="target-institution" className="font-display text-lg font-bold text-ink">Preferred Institution Rule</label>
         <select
           id="target-institution"
-          className="mt-3 h-12 w-full cursor-pointer rounded-xl border border-line bg-white px-4 text-base font-bold text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+          className="mt-3 h-12 w-full cursor-pointer rounded-xl border border-line bg-paper-raised px-4 text-base font-bold text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
           value={targetInstitution}
-          onChange={(e) => setTargetInstitution(e.target.value)}
+          onChange={(e) => {
+            setTargetInstitution(e.target.value);
+            onInstitutionChange?.(e.target.value);
+          }}
         >
           <option value="ump">University of Mpumalanga</option>
           <option value="up">University of Pretoria</option>

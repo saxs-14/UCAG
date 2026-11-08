@@ -18,6 +18,7 @@ const STEPS = [
 export function CalculatorPage() {
   const { user } = useAuth();
   const [marks, setMarks] = useState<SubjectMarkInput[]>([]);
+  const [institutionFilter, setInstitutionFilter] = useState("ump");
   const [initialState, setInitialState] = useState<SubjectFormInitialState | undefined>(undefined);
   const [formKey, setFormKey] = useState(0);
 
@@ -69,7 +70,7 @@ export function CalculatorPage() {
             </div>
           </div>
 
-          <div className="rounded-3xl border border-line bg-white p-6 shadow-xl sm:p-8">
+          <div className="rounded-3xl border border-line bg-paper-raised p-6 shadow-xl sm:p-8">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-xs font-black uppercase tracking-widest text-brand-teal">Quick Start Guide</p>
@@ -84,7 +85,7 @@ export function CalculatorPage() {
                 ["2", "Calculate your APS", "UCAG applies available institution-specific calculation rules.", "bg-amber-100 text-amber-800"],
                 ["3", "Understand your options", "Review matched programmes and the requirements behind each result.", "bg-brand-violet/10 text-brand-violet"],
               ].map(([number, title, detail, accent]) => (
-                <li key={number} className="flex gap-4 rounded-2xl border border-line/60 bg-slate-50/50 p-4 transition-all hover:bg-white hover:shadow-sm">
+                <li key={number} className="flex gap-4 rounded-2xl border border-line/60 bg-slate-soft/50 p-4 transition-all hover:bg-paper-raised hover:shadow-sm">
                   <span className={`flex size-10 shrink-0 items-center justify-center rounded-xl font-display text-base font-black ${accent}`}>{number}</span>
                   <div>
                     <span className="block font-bold text-ink">{title}</span>
@@ -135,6 +136,7 @@ export function CalculatorPage() {
                 body: JSON.stringify({ event: "calculator_completed" }),
               }).catch(() => {});
             }}
+            onInstitutionChange={setInstitutionFilter}
             initialState={initialState}
           />
 
@@ -149,7 +151,7 @@ export function CalculatorPage() {
         </div>
 
         <aside className="no-print hidden lg:sticky lg:top-28 lg:block" aria-label="How UCAG works">
-          <div className="rounded-3xl border border-line bg-white p-6 shadow-sm">
+          <div className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm">
             <p className="text-xs font-black uppercase tracking-widest text-brand-teal">What to expect</p>
             <div className="mt-5 space-y-5">
               {[
@@ -158,7 +160,7 @@ export function CalculatorPage() {
                 ["→", "Not yet", "A realistic alternative pathway instead of a dead end."],
               ].map(([icon, title, detail]) => (
                 <div key={title} className="flex gap-3.5">
-                  <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl bg-slate-100 text-sm font-black text-ink shadow-sm">{icon}</span>
+                  <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-xl bg-slate-soft text-sm font-black text-ink shadow-sm">{icon}</span>
                   <div>
                     <p className="text-sm font-bold text-ink">{title}</p>
                     <p className="mt-1 text-xs font-medium leading-relaxed text-ink-soft">{detail}</p>
@@ -175,7 +177,7 @@ export function CalculatorPage() {
         </aside>
       </section>
 
-      <section className="border-y border-line/60 bg-slate-50/50">
+      <section className="border-y border-line/60 bg-slate-soft/50">
         <div className="mx-auto w-full max-w-7xl px-4 py-16 sm:px-6 lg:px-8">
           <div className="mb-8">
             <p className="text-xs font-black uppercase tracking-widest text-brand-teal">Your Journey</p>
@@ -184,7 +186,7 @@ export function CalculatorPage() {
           </div>
           <div className="grid gap-6 md:grid-cols-3">
             {STEPS.map((step) => (
-              <Link key={step.number} href={step.href} className="group flex flex-col rounded-3xl border border-line bg-white p-7 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
+              <Link key={step.number} href={step.href} className="group flex flex-col rounded-3xl border border-line bg-paper-raised p-7 shadow-sm transition-all hover:-translate-y-1 hover:shadow-md">
                 <span className={`flex size-14 items-center justify-center rounded-2xl font-display text-lg font-black shadow-sm ${step.accent}`}>{step.number}</span>
                 <h3 className="mt-6 font-display text-2xl font-black text-ink">{step.title}</h3>
                 <p className="mt-2 text-sm font-medium leading-relaxed text-ink-soft">{step.detail}</p>
@@ -207,7 +209,7 @@ export function CalculatorPage() {
                 Read the exact requirements behind each result. UCAG maintains distinct institution rules for complete accuracy.
               </p>
             </div>
-            <ResultsSection marks={marks} />
+            <ResultsSection marks={marks} institutionFilter={institutionFilter} />
           </div>
         </section>
       )}

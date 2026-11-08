@@ -164,7 +164,7 @@ export function LearnerApplicationJourney({ profile }: { profile: UserProfile })
             <p className="mt-1 text-sm leading-relaxed text-teal-50">{nextAction.detail}</p>
             <Link
               href={nextAction.href}
-              className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-white px-6 text-sm font-bold text-brand-teal transition-transform hover:-translate-y-0.5 hover:shadow-md"
+              className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl bg-paper-raised px-6 text-sm font-bold text-brand-teal transition-transform hover:-translate-y-0.5 hover:shadow-md"
             >
               {nextAction.label}
             </Link>
@@ -185,7 +185,7 @@ export function LearnerApplicationJourney({ profile }: { profile: UserProfile })
           </div>
         </div>
 
-        <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-100 shadow-inner" aria-hidden>
+        <div className="mt-4 h-3 overflow-hidden rounded-full bg-slate-soft shadow-inner" aria-hidden>
           <div
             className="h-full rounded-full bg-brand-teal transition-all duration-700 ease-out"
             style={{ width: `${progressPercent}%` }}
@@ -193,7 +193,7 @@ export function LearnerApplicationJourney({ profile }: { profile: UserProfile })
         </div>
 
         <details className="group mt-5">
-          <summary className="cursor-pointer min-h-11 flex w-full items-center justify-between rounded-xl bg-slate-50 px-4 text-sm font-bold text-ink transition-colors hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
+          <summary className="cursor-pointer min-h-11 flex w-full items-center justify-between rounded-xl bg-slate-soft px-4 text-sm font-bold text-ink transition-colors hover:bg-slate-soft focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
             <span>View your full checklist</span>
             <span className="text-brand-teal transition-transform group-open:rotate-180">▼</span>
           </summary>

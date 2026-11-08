@@ -74,7 +74,7 @@ export function SavedApplicationStatus({ profile }: { profile: UserProfile }) {
           <h2 className="mt-2 font-display text-2xl font-black text-ink">Application Timeline</h2>
           <p className="mt-1 text-sm font-medium leading-relaxed text-ink-soft">Track critical dates for the programmes you want most.</p>
         </div>
-        <Link href="/programmes" className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-line bg-white px-5 text-sm font-bold text-ink transition-colors hover:border-brand-teal hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20">Add Choices</Link>
+        <Link href="/programmes" className="inline-flex min-h-12 items-center justify-center rounded-xl border-2 border-line bg-paper-raised px-5 text-sm font-bold text-ink transition-colors hover:border-brand-teal hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20">Add Choices</Link>
       </div>
       
       <div className="mt-6 flex flex-col gap-4">
@@ -88,7 +88,7 @@ export function SavedApplicationStatus({ profile }: { profile: UserProfile }) {
             : soon 
             ? "border-amber-200 bg-amber-50 text-amber-900 shadow-amber-100/50" 
             : closed 
-            ? "border-slate-200 bg-slate-50 text-slate-600" 
+            ? "border-slate-200 bg-slate-soft text-slate-600" 
             : "border-line bg-paper-raised text-ink-soft";
 
           const label = open ? "● Applications Open" : soon ? "Opening Soon" : closed ? "Window Closed" : "Dates Verifying";
@@ -115,12 +115,12 @@ export function SavedApplicationStatus({ profile }: { profile: UserProfile }) {
                 </div>
               </div>
               
-              <div className="mt-4 rounded-xl bg-slate-50 p-3 text-sm font-medium text-ink-soft border border-line/40">
+              <div className="mt-4 rounded-xl bg-slate-soft p-3 text-sm font-medium text-ink-soft border border-line/40">
                 📅 {detail}
               </div>
               
               <div className="mt-4 flex flex-wrap gap-3">
-                <Link href={`/programmes/${programme.id}`} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-paper-raised px-4 text-xs font-bold text-ink border border-line transition-colors hover:bg-slate-100">
+                <Link href={`/programmes/${programme.id}`} className="inline-flex min-h-11 items-center justify-center rounded-xl bg-paper-raised px-4 text-xs font-bold text-ink border border-line transition-colors hover:bg-slate-soft">
                   Programme Info
                 </Link>
                 {open && programme.applyUrl && (

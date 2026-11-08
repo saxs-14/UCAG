@@ -101,7 +101,7 @@ export default function UmpCampusGuidePage() {
         {UMP_CAMPUSES.map((campus) => (
           <section
             key={campus.id}
-            className="flex flex-col gap-5 rounded-3xl border bg-white dark:bg-paper-raised p-6 sm:p-8 shadow-sm"
+            className="flex flex-col gap-5 rounded-3xl border bg-paper-raised dark:bg-paper-raised p-6 sm:p-8 shadow-sm"
             style={{ borderColor: `${UMP_NAVY}20` }}
           >
             <div

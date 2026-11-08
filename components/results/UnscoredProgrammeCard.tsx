@@ -21,13 +21,13 @@ export function UnscoredProgrammeCard({
   const stagger = Math.min(staggerIndex + 1, 6);
   
   return (
-    <article className={`stagger-${stagger} animate-pop-in flex flex-col gap-5 rounded-3xl border border-line/60 bg-white p-6 shadow-sm transition-all hover:shadow-md sm:p-8`}>
+    <article className={`stagger-${stagger} animate-pop-in flex flex-col gap-5 rounded-3xl border border-line/60 bg-paper-raised p-6 shadow-sm transition-all hover:shadow-md sm:p-8`}>
       <header className="flex flex-col gap-4">
         <div className="flex flex-wrap items-center gap-2">
-          <span className="rounded-lg bg-slate-100 px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 shadow-sm border border-slate-200">
+          <span className="rounded-lg bg-slate-soft px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-slate-500 shadow-sm border border-slate-200">
             {LABELS.verification.apsRulesBeingVerified}
           </span>
-          <span className="rounded-lg bg-white px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-ink-soft shadow-sm border border-line">
+          <span className="rounded-lg bg-paper-raised px-3 py-1.5 text-[10px] font-black uppercase tracking-widest text-ink-soft shadow-sm border border-line">
             Verified Programme
           </span>
         </div>
@@ -43,7 +43,7 @@ export function UnscoredProgrammeCard({
         </div>
       </header>
 
-      <div className="flex flex-col gap-3 rounded-2xl border border-line/50 bg-slate-50 p-5 shadow-inner text-sm">
+      <div className="flex flex-col gap-3 rounded-2xl border border-line/50 bg-slate-soft p-5 shadow-inner text-sm">
         {programme.minAps !== null && (
           <p className="font-bold text-ink">
             Minimum APS: <span className="font-mono text-brand-teal bg-brand-teal/10 px-2 py-0.5 rounded">{programme.minAps}</span>
@@ -52,7 +52,7 @@ export function UnscoredProgrammeCard({
         <ul className="flex flex-col gap-1.5 text-ink-soft font-medium">
           {programme.subjectRequirements.map((req, i) => (
             <li key={i} className="flex items-start gap-2">
-              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300" />
+              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-soft" />
               <span>
                 {req.subjectCode}
                 {req.minLevel !== undefined ? ` (Level ${req.minLevel})` : ""}
@@ -62,7 +62,7 @@ export function UnscoredProgrammeCard({
           ))}
           {programme.additionalRequirements.map((req, i) => (
             <li key={`extra-${i}`} className="flex items-start gap-2 text-ink-faint">
-              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-300" />
+              <span className="mt-1 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-soft" />
               <span>{req}</span>
             </li>
           ))}

@@ -16,7 +16,7 @@ export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; s
   return (
     <div className={`stagger-${stagger} animate-rise-in h-full`}>
       <TiltCard>
-        <article className="flex h-full flex-col rounded-3xl border border-line bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6">
+        <article className="flex h-full flex-col rounded-3xl border border-line bg-paper-raised p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
               <StampBadge variant="teal" />
@@ -28,7 +28,7 @@ export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; s
           <div className="mt-4 flex-grow">
             <p className="text-sm font-bold text-brand-teal">{bursary.provider}</p>
             <p className="mt-1.5 text-xs font-medium text-ink-soft">
-              Recorded value: <span className="rounded bg-slate-100 px-1.5 py-0.5 font-bold text-ink">{bursary.value}</span>
+              Recorded value: <span className="rounded bg-slate-soft px-1.5 py-0.5 font-bold text-ink">{bursary.value}</span>
             </p>
             <p className="mt-2 flex items-center gap-1.5 text-xs font-semibold text-ink-soft">
               <span>📅</span> {formatApplicationWindow(bursary.opensOn, bursary.closesOn)}
@@ -55,7 +55,7 @@ export function BursaryCard({ bursary, staggerIndex = 0 }: { bursary: Bursary; s
             )}
           </div>
 
-          <div className="mt-5 rounded-xl bg-slate-50 p-3 text-xs font-medium leading-relaxed text-ink-soft border border-line/40">
+          <div className="mt-5 rounded-xl bg-slate-soft p-3 text-xs font-medium leading-relaxed text-ink-soft border border-line/40">
             Always double-check criteria on the official site before applying.
           </div>
           

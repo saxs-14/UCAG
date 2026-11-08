@@ -48,7 +48,7 @@ export function AdmissionPathwayGraph({ marks, scored, institutions }: Admission
 
         <div className="flex flex-wrap gap-2">
           {[
-            { id: "all", label: `All Outcomes (${scored.length})`, colors: "bg-slate-100 text-ink hover:bg-slate-200" },
+            { id: "all", label: `All Outcomes (${scored.length})`, colors: "bg-slate-soft text-ink hover:bg-slate-soft" },
             { id: "qualify", label: "Qualified", colors: "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100" },
             { id: "almostQualify", label: "Near-Miss", colors: "bg-amber-50 text-amber-700 border border-amber-200 hover:bg-amber-100" }
           ].map((cat) => (
@@ -69,7 +69,7 @@ export function AdmissionPathwayGraph({ marks, scored, institutions }: Admission
           <span className="font-bold text-ink-soft mr-2">Filter by University:</span>
           <button
             onClick={() => setActiveInstitutionId(null)}
-            className={`rounded-lg px-3 py-1.5 font-bold transition-colors ${activeInstitutionId === null ? "bg-ink text-white shadow-md" : "bg-paper border border-line text-ink-soft hover:bg-slate-50 hover:text-ink"}`}
+            className={`rounded-lg px-3 py-1.5 font-bold transition-colors ${activeInstitutionId === null ? "bg-ink text-white shadow-md" : "bg-paper border border-line text-ink-soft hover:bg-slate-soft hover:text-ink"}`}
           >
             All ({grouped.length})
           </button>
@@ -77,7 +77,7 @@ export function AdmissionPathwayGraph({ marks, scored, institutions }: Admission
             <button
               key={institution.id}
               onClick={() => setActiveInstitutionId(institution.id)}
-              className={`rounded-lg px-3 py-1.5 font-bold transition-colors ${activeInstitutionId === institution.id ? "bg-brand-teal text-white shadow-md" : "bg-paper border border-line text-ink-soft hover:bg-slate-50 hover:text-ink"}`}
+              className={`rounded-lg px-3 py-1.5 font-bold transition-colors ${activeInstitutionId === institution.id ? "bg-brand-teal text-white shadow-md" : "bg-paper border border-line text-ink-soft hover:bg-slate-soft hover:text-ink"}`}
             >
               {institution.shortName || institution.name}
             </button>
@@ -109,13 +109,13 @@ export function AdmissionPathwayGraph({ marks, scored, institutions }: Admission
             if (!renderQualify.length && !renderAlmost.length && !renderNotYet.length) return null;
 
             return (
-              <div key={institution.id} className="flex flex-col gap-4 rounded-2xl border-2 border-line/50 bg-white p-5 shadow-sm transition-shadow hover:shadow-md">
+              <div key={institution.id} className="flex flex-col gap-4 rounded-2xl border-2 border-line/50 bg-paper-raised p-5 shadow-sm transition-shadow hover:shadow-md">
                 <div className="flex items-center justify-between border-b border-line/60 pb-3">
                   <div className="flex items-center gap-3">
                     <div className="h-3 w-3 rounded-full bg-brand-teal shadow-inner" />
                     <span className="font-display text-lg font-bold text-ink">{institution.shortName || institution.name}</span>
                   </div>
-                  <span className="rounded-full bg-slate-100 px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft">{institution.province}</span>
+                  <span className="rounded-full bg-slate-soft px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-ink-soft">{institution.province}</span>
                 </div>
 
                 {renderQualify.length > 0 && (
@@ -140,7 +140,7 @@ export function AdmissionPathwayGraph({ marks, scored, institutions }: Admission
                           <span className="font-mono font-bold text-amber-700 bg-amber-100 px-2 py-0.5 rounded-lg">APS {programme.minAps}</span>
                         </div>
                         {matchResult.unmetReasons.length > 0 && (
-                          <span className="text-xs font-semibold text-amber-700 bg-white px-2 py-1 rounded border border-amber-200">
+                          <span className="text-xs font-semibold text-amber-700 bg-paper-raised px-2 py-1 rounded border border-amber-200">
                             Shortfall: {reasonText(matchResult.unmetReasons[0]!)}
                           </span>
                         )}
@@ -150,7 +150,7 @@ export function AdmissionPathwayGraph({ marks, scored, institutions }: Admission
                 )}
 
                 {renderNotYet.length > 0 && (
-                  <div className="mt-2 rounded-xl bg-slate-50 p-3 text-center">
+                  <div className="mt-2 rounded-xl bg-slate-soft p-3 text-center">
                     <span className="text-xs font-bold text-ink-soft">
                       Alternative Route Available ({renderNotYet.length})
                     </span>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchProgramme } from "@/lib/matching/engine";
 import { resolveApsRule } from "@/lib/matching/resolveApsRule";
+import { filterProgrammesByInstitution } from "@/lib/catalog/filterByInstitution";
 import { ResultCard } from "./ResultCard";
 import { UnscoredProgrammeCard } from "./UnscoredProgrammeCard";
 import { ConfettiBurst } from "./ConfettiBurst";
@@ -37,7 +38,7 @@ interface UnscoredEntry {
   school: School;
 }
 
-export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
+export function ResultsSection({ marks, institutionFilter }: { marks: SubjectMarkInput[]; institutionFilter: string }) {
   const { user } = useAuth();
   const [shortlist, setShortlist] = useState<string[]>([]);
   const { checked: checklistChecked, toggle: toggleChecklistItem } = useApplicationChecklist(user?.uid);
@@ -83,6 +84,17 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
     );
   }, [user]);
 
+  // A learner who picks one specific institution should see only that
+  // institution's programmes -- both in the results list and in anything
+  // derived from it (pathway/backup-plan suggestions, the APS formula
+  // explanation, etc.). Filtering the programme list once here, before
+  // scoring, keeps that guarantee in one place instead of threading the
+  // filter through every downstream component separately.
+  const filteredProgrammes = useMemo(
+    () => filterProgrammesByInstitution(catalog?.programmes ?? [], institutionFilter),
+    [catalog, institutionFilter]
+  );
+
   const { scored, unscored } = useMemo((): { scored: ScoredEntry[]; unscored: UnscoredEntry[] } => {
     if (!catalog) return { scored: [], unscored: [] };
 
@@ -93,7 +105,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
     const scoredResults: ScoredEntry[] = [];
     const unscoredResults: UnscoredEntry[] = [];
 
-    for (const programme of catalog.programmes) {
+    for (const programme of filteredProgrammes) {
       const institution = institutionsById.get(programme.institutionId);
       const faculty = facultiesById.get(programme.facultyId);
       const school = schoolsById.get(programme.schoolId);
@@ -103,7 +115,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       if (apsRule) {
         scoredResults.push({
           programme,
-          matchResult: matchProgramme(programme, apsRule, marks, { catalog: catalog.programmes }),
+          matchResult: matchProgramme(programme, apsRule, marks, { catalog: filteredProgrammes }),
         });
       } else {
         unscoredResults.push({ programme, institution, faculty, school });
@@ -111,7 +123,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
     }
 
     return { scored: scoredResults, unscored: unscoredResults };
-  }, [catalog, marks]);
+  }, [catalog, marks, filteredProgrammes]);
 
   const qualifyCount = useMemo(() => scored.filter((entry) => entry.matchResult.bucket === "qualify").length, [scored]);
   const almostCount = useMemo(() => scored.filter((entry) => entry.matchResult.bucket === "almostQualify").length, [scored]);
@@ -166,7 +178,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
 
   if (!catalog) {
     return (
-      <div className="flex items-center justify-center gap-3 rounded-3xl border border-line bg-white p-8 shadow-sm">
+      <div className="flex items-center justify-center gap-3 rounded-3xl border border-line bg-paper-raised p-8 shadow-sm">
         <div className="h-6 w-6 animate-spin rounded-full border-4 border-brand-teal border-t-transparent"></div>
         <p className="font-bold text-ink-soft">Loading verified programmes...</p>
       </div>
@@ -199,13 +211,20 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   for (const bucket of BUCKET_ORDER) byBucket.set(bucket, []);
   for (const entry of scored) byBucket.get(entry.matchResult.bucket)!.push(entry);
 
+  const selectedInstitutionName =
+    institutionFilter !== "all"
+      ? catalog.institutions.find((i) => i.id === institutionFilter)?.name ?? null
+      : null;
+
   if (scored.length === 0 && unscored.length === 0) {
     return (
       <div className="rounded-3xl border border-dashed border-line/80 bg-paper-raised p-8 text-center shadow-sm">
         <span className="text-3xl mb-3">🛠️</span>
         <p className="font-display text-lg font-bold text-ink">No verified matches yet</p>
         <p className="mt-2 text-sm font-medium text-ink-soft">
-          We&apos;re currently verifying and adding new university catalogues. Check back soon as more programmes are unlocked.
+          {selectedInstitutionName
+            ? `We don't have catalogued programmes for ${selectedInstitutionName} yet. Try "All South African Universities" in the form above, or check back soon.`
+            : "We're currently verifying and adding new university catalogues. Check back soon as more programmes are unlocked."}
         </p>
       </div>
     );
@@ -214,9 +233,16 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   return (
     <section className="flex w-full max-w-3xl flex-col gap-8">
       {celebrate && <ConfettiBurst />}
-      
+
       <div className="flex items-center justify-between gap-4">
-        <h2 className="font-display text-3xl font-black tracking-tight text-ink">Your Matches</h2>
+        <div>
+          <h2 className="font-display text-3xl font-black tracking-tight text-ink">Your Matches</h2>
+          <p className="mt-1 text-sm font-medium text-ink-soft">
+            {selectedInstitutionName
+              ? <>Showing results for <strong className="text-ink">{selectedInstitutionName}</strong> only.</>
+              : "Showing results across all South African universities in our catalogue."}
+          </p>
+        </div>
         <ShareBar marks={marks} />
       </div>
 
@@ -251,7 +277,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
                   className={`min-h-12 rounded-xl text-sm font-bold transition-all focus:outline-none focus:ring-4 focus:ring-brand-teal/20 ${
                     selected 
                       ? "bg-ink text-white shadow-md" 
-                      : "bg-transparent text-ink-soft hover:bg-slate-100 hover:text-ink"
+                      : "bg-transparent text-ink-soft hover:bg-slate-soft hover:text-ink"
                   }`}
                 >
                   {filter.label} <span className={`ml-1 rounded-md px-1.5 py-0.5 text-[10px] ${selected ? "bg-white/20" : "bg-line"}`}>{count}</span>
@@ -278,7 +304,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
           <div key={bucket} role="region" aria-label={LABELS.resultBuckets[bucket]} className="flex flex-col gap-5">
             <h2 className="animate-rise-in font-display text-2xl font-black tracking-tight text-ink flex items-center gap-3">
               {LABELS.resultBuckets[bucket]}
-              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-ink-soft">{entries.length}</span>
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-soft text-sm font-bold text-ink-soft">{entries.length}</span>
             </h2>
             <div className="flex flex-col gap-6">
               {entries.map(({ programme, matchResult }, i) => {
@@ -305,7 +331,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
                     isComparing={compareIds.includes(programme.id)}
                     onToggleCompare={() => toggleCompare(programme.id)}
                     compareDisabled={compareIds.length >= MAX_COMPARE}
-                    allProgrammes={catalog.programmes}
+                    allProgrammes={filteredProgrammes}
                   />
                 );
               })}
@@ -318,7 +344,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         <div className="flex flex-col gap-5">
           <h2 className="animate-rise-in font-display text-2xl font-black tracking-tight text-ink flex items-center gap-3">
             Real programmes, score pending
-            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-sm font-bold text-ink-soft">{unscored.length}</span>
+            <span className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-soft text-sm font-bold text-ink-soft">{unscored.length}</span>
           </h2>
           <div className="flex flex-col gap-6">
             {unscored.map(({ programme, institution, faculty, school }, i) => (
@@ -337,9 +363,9 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
 
       <div className="glass-blur overflow-hidden rounded-3xl border border-glass-border bg-glass-surface shadow-sm transition-all hover:shadow-md">
         <details className="group">
-          <summary className="flex min-h-16 cursor-pointer items-center justify-between bg-white p-6 font-display text-xl font-black text-ink focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
+          <summary className="flex min-h-16 cursor-pointer items-center justify-between bg-paper-raised p-6 font-display text-xl font-black text-ink focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
             More tools for planning your application
-            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-50 text-ink-soft shadow-sm transition-transform duration-300 group-open:rotate-180 group-open:bg-brand-teal/10 group-open:text-brand-teal">
+            <span className="flex h-10 w-10 items-center justify-center rounded-full bg-slate-soft text-ink-soft shadow-sm transition-transform duration-300 group-open:rotate-180 group-open:bg-brand-teal/10 group-open:text-brand-teal">
               ▼
             </span>
           </summary>
@@ -369,7 +395,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
                 marks={marks}
                 scored={scored}
                 apsRules={catalog.apsRules}
-                programmes={catalog.programmes}
+                programmes={filteredProgrammes}
                 institutions={catalog.institutions}
               />
             )}

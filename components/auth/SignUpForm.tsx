@@ -120,7 +120,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
           <button type="button" className="min-h-14 rounded-xl bg-mark-green px-4 text-base font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-mark-green/30" onClick={() => { setIsMinor(false); setStep("details"); }}>
             {LABELS.account.ageGateYes}
           </button>
-          <button type="button" className="min-h-14 rounded-xl border-2 border-line bg-white px-4 text-base font-bold text-ink-soft transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" onClick={() => { setIsMinor(true); setStep("guardianConsent"); }}>
+          <button type="button" className="min-h-14 rounded-xl border-2 border-line bg-paper-raised px-4 text-base font-bold text-ink-soft transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" onClick={() => { setIsMinor(true); setStep("guardianConsent"); }}>
             {LABELS.account.ageGateNo}
           </button>
         </div>
@@ -210,7 +210,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
           <div className="flex-grow border-t border-line"></div>
         </div>
 
-        <button type="button" disabled={submitting || !institutionId} onClick={handleGoogleSignUp} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-line bg-white px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20 disabled:opacity-50">
+        <button type="button" disabled={submitting || !institutionId} onClick={handleGoogleSignUp} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-line bg-paper-raised px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20 disabled:opacity-50">
           <svg className="h-5 w-5" viewBox="0 0 24 24">
             <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
             <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />

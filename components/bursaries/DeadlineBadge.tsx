@@ -11,7 +11,7 @@ export function DeadlineBadge({ closesOn }: { closesOn: string | null }) {
       className={`shrink-0 inline-flex items-center justify-center rounded-xl px-3 py-1.5 text-xs font-bold tracking-wide shadow-sm transition-colors ${
         urgent 
           ? "border border-mark-gold/30 bg-mark-gold/10 text-mark-gold animate-pulse" 
-          : "border border-line bg-slate-50 text-ink-faint"
+          : "border border-line bg-slate-soft text-ink-faint"
       }`}
     >
       {text}

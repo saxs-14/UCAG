@@ -34,7 +34,7 @@ export function DeadlineCountdown({ applicationWindow, status }: DeadlineCountdo
             className={`no-print inline-flex shrink-0 items-center gap-2 rounded-xl px-3 py-1.5 text-xs font-bold tracking-wide shadow-sm transition-colors ${
               urgent 
                 ? "bg-mark-red/10 text-mark-red border border-mark-red/20 animate-pulse" 
-                : "bg-white text-ink border border-line"
+                : "bg-paper-raised text-ink border border-line"
             }`}
           >
             <Hourglass className="h-4 w-4 shrink-0" aria-hidden="true" />
@@ -59,7 +59,7 @@ export function DeadlineCountdown({ applicationWindow, status }: DeadlineCountdo
 
   if (status === "unknown") {
     return (
-      <span className="no-print inline-flex shrink-0 items-center gap-2 rounded-xl bg-slate-50 px-3 py-1.5 text-xs font-bold tracking-wide text-ink-soft border border-line shadow-sm">
+      <span className="no-print inline-flex shrink-0 items-center gap-2 rounded-xl bg-slate-soft px-3 py-1.5 text-xs font-bold tracking-wide text-ink-soft border border-line shadow-sm">
         <Clock className="h-4 w-4 shrink-0" aria-hidden="true" />
         Verifying Dates
       </span>

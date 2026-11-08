@@ -60,7 +60,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           </p>
           <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-4">
             <p className="text-xs font-medium text-blue-800">To gain access, request an administrator to run:</p>
-            <pre className="mt-2 overflow-x-auto rounded-xl bg-white p-3 text-xs font-mono text-ink shadow-sm">
+            <pre className="mt-2 overflow-x-auto rounded-xl bg-paper-raised p-3 text-xs font-mono text-ink shadow-sm">
               npm run admin:grant -- {user.email}
             </pre>
           </div>
@@ -73,8 +73,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-50 md:flex-row">
-      <nav className="flex shrink-0 flex-row gap-2 overflow-x-auto border-b border-line bg-white p-4 shadow-sm md:w-64 md:flex-col md:border-b-0 md:border-r md:p-6 md:shadow-none">
+    <div className="flex min-h-screen flex-col bg-slate-soft md:flex-row">
+      <nav className="flex shrink-0 flex-row gap-2 overflow-x-auto border-b border-line bg-paper-raised p-4 shadow-sm md:w-64 md:flex-col md:border-b-0 md:border-r md:p-6 md:shadow-none">
         <div className="hidden md:mb-8 md:flex md:items-center md:gap-3">
           <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-teal text-white shadow-md">
             <span className="font-bold">UCAG</span>
@@ -97,8 +97,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           ))}
         </div>
       </nav>
-      <main className="min-w-0 flex-1 bg-slate-50 p-4 sm:p-6 md:p-10">
-        <div className="mx-auto max-w-7xl rounded-3xl bg-white p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
+      <main className="min-w-0 flex-1 bg-slate-soft p-4 sm:p-6 md:p-10">
+        <div className="mx-auto max-w-7xl rounded-3xl bg-paper-raised p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
           {children}
         </div>
       </main>

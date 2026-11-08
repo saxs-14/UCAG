@@ -15,7 +15,7 @@ const LEVEL_STYLE: Record<number, string> = {
   6: "bg-teal-100 text-teal-800 border-teal-300 font-bold",
   5: "bg-purple-100 text-purple-800 border-purple-300 font-semibold",
   4: "bg-amber-100 text-amber-800 border-amber-300 font-semibold",
-  3: "bg-slate-100 text-slate-700 border-slate-300 font-medium",
+  3: "bg-slate-soft text-slate-700 border-slate-300 font-medium",
   2: "bg-rose-100 text-rose-800 border-rose-300 font-medium",
   1: "bg-rose-100 text-rose-800 border-rose-300 font-medium",
 };
@@ -27,7 +27,7 @@ export function MarkInput({ label, percentage, onChange, disabled }: MarkInputPr
   }
 
   return (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-line/60 bg-white p-4 shadow-sm transition-all hover:border-brand-teal/40">
+    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-2xl border border-line/60 bg-paper-raised p-4 shadow-sm transition-all hover:border-brand-teal/40">
       <label className="text-sm font-bold text-ink" htmlFor={`mark-${label}`}>
         {label}
       </label>
@@ -41,7 +41,7 @@ export function MarkInput({ label, percentage, onChange, disabled }: MarkInputPr
             inputMode="numeric"
             disabled={disabled}
             placeholder="0-100"
-            className="h-12 w-28 rounded-xl border-2 border-line bg-slate-50 px-4 text-base font-mono font-bold tabular-nums text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20 disabled:bg-slate-100"
+            className="h-12 w-28 rounded-xl border-2 border-line bg-slate-soft px-4 text-base font-mono font-bold tabular-nums text-ink transition-all focus:border-brand-teal focus:bg-paper-raised focus:outline-none focus:ring-4 focus:ring-brand-teal/20 disabled:bg-slate-soft"
             value={percentage ?? ""}
             onChange={(e) => {
               const raw = e.target.value;
@@ -60,7 +60,7 @@ export function MarkInput({ label, percentage, onChange, disabled }: MarkInputPr
         {level !== null && (
           <span
             className={`rounded-xl border px-3 py-1.5 text-xs font-mono font-bold shadow-sm transition-all animate-pop-in ${
-              LEVEL_STYLE[level] ?? "bg-slate-100 text-slate-700"
+              LEVEL_STYLE[level] ?? "bg-slate-soft text-slate-700"
             }`}
           >
             Level {level}

@@ -30,22 +30,25 @@
   --color-signal-yellow: #ffd93d;
   --color-signal-indigo: #4c3df0;
   --color-text-on-brand: #fafaf8;
-  --color-glass-surface: rgba(255, 255, 255, 0.5);
-  --color-glass-surface-strong: rgba(255, 255, 255, 0.68);
-  --color-glass-border: rgba(255, 255, 255, 0.75);
+  --color-glass-surface: rgba(255, 255, 255, 0.62);
+  --color-glass-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-glass-border: rgba(255, 255, 255, 0.5);
   --color-glass-highlight: rgba(255, 255, 255, 0.9);
   --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
   --font-mono: ui-monospace, "SF Mono", "Roboto Mono", Menlo, Consolas, monospace;
   --font-display: "Space Grotesk", ui-sans-serif, "Helvetica Neue", Arial, sans-serif;
 }
 
+/* A restrained, mostly two-tone (brand teal/violet) wash -- deliberately
+   not a multi-hue "rainbow" gradient. Real glass/vibrancy materials (iOS,
+   visionOS) read as professional because the tint is coherent and the
+   material does the work, not because the backdrop itself is colorful. */
 body {
   background:
-    radial-gradient(1700px 1200px at 15% -10%, color-mix(in srgb, var(--color-brand-teal) 32%, transparent), transparent 80%),
-    radial-gradient(1600px 1200px at 90% 5%, color-mix(in srgb, var(--color-brand-violet) 30%, transparent), transparent 80%),
-    radial-gradient(1500px 1300px at 0% 50%, color-mix(in srgb, var(--color-brand-coral) 22%, transparent), transparent 78%),
-    radial-gradient(1600px 1400px at 100% 55%, color-mix(in srgb, var(--color-brand-teal) 26%, transparent), transparent 78%),
-    radial-gradient(1500px 1200px at 25% 100%, color-mix(in srgb, var(--color-brand-violet) 24%, transparent), transparent 78%),
+    radial-gradient(1700px 1200px at 12% -10%, color-mix(in srgb, var(--color-brand-teal) 18%, transparent), transparent 80%),
+    radial-gradient(1600px 1200px at 92% 5%, color-mix(in srgb, var(--color-brand-violet) 17%, transparent), transparent 80%),
+    radial-gradient(1600px 1400px at 100% 60%, color-mix(in srgb, var(--color-brand-teal) 15%, transparent), transparent 78%),
+    radial-gradient(1500px 1200px at 20% 100%, color-mix(in srgb, var(--color-brand-violet) 14%, transparent), transparent 78%),
     var(--color-paper);
   background-attachment: fixed;
   color: var(--color-ink);
@@ -65,13 +68,25 @@ h1, h2, h3 { overflow-wrap: break-word; }
    that makes the blur actually read as glass -- on a flat background
    backdrop-filter is a no-op. */
 .glass-blur {
-  backdrop-filter: blur(20px) saturate(180%);
-  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  backdrop-filter: blur(24px) saturate(150%) brightness(1.06);
+  -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(1.06);
 }
 
 .glass-blur-strong {
-  backdrop-filter: blur(28px) saturate(190%);
-  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  backdrop-filter: blur(34px) saturate(160%) brightness(1.08);
+  -webkit-backdrop-filter: blur(34px) saturate(160%) brightness(1.08);
+}
+
+@media (prefers-color-scheme: dark) {
+  .glass-blur {
+    backdrop-filter: blur(24px) saturate(150%) brightness(0.95);
+    -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(0.95);
+  }
+
+  .glass-blur-strong {
+    backdrop-filter: blur(34px) saturate(160%) brightness(0.92);
+    -webkit-backdrop-filter: blur(34px) saturate(160%) brightness(0.92);
+  }
 }
 
 .card-learner {
@@ -189,9 +204,9 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
     --color-brand-violet-soft: #211a3d;
     --color-brand-amber: #fbbf24;
     --color-brand-amber-soft: #2e2308;
-    --color-glass-surface: rgba(21, 19, 31, 0.42);
-    --color-glass-surface-strong: rgba(11, 10, 18, 0.6);
-    --color-glass-border: rgba(255, 255, 255, 0.16);
+    --color-glass-surface: rgba(21, 19, 31, 0.5);
+    --color-glass-surface-strong: rgba(11, 10, 18, 0.68);
+    --color-glass-border: rgba(255, 255, 255, 0.12);
     --color-glass-highlight: rgba(255, 255, 255, 0.22);
   }
 }

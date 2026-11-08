@@ -44,7 +44,7 @@ export function MobileNavBar() {
             className={`flex min-h-12 flex-col items-center justify-center gap-1 rounded-2xl px-1 text-[11px] font-black transition-colors ${
               active 
                 ? "bg-brand-teal/10 text-brand-teal shadow-2xs" 
-                : "text-slate-400 hover:bg-slate-50 hover:text-ink"
+                : "text-slate-400 hover:bg-slate-soft hover:text-ink"
             }`}
           >
             <span aria-hidden="true" className="text-xl leading-none">{icon}</span>

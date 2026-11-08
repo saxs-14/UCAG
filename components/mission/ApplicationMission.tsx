@@ -76,7 +76,7 @@ export function ApplicationMission({
         </div>
         <div className="flex flex-col gap-2 sm:items-end">
           <span className="font-display text-3xl font-black text-brand-teal">{progressPercent}%</span>
-          <div className="h-3 w-40 overflow-hidden rounded-full bg-slate-100 shadow-inner">
+          <div className="h-3 w-40 overflow-hidden rounded-full bg-slate-soft shadow-inner">
             <div
               className="h-full rounded-full bg-gradient-to-r from-brand-teal to-teal-500 transition-all duration-700 ease-out"
               style={{ width: `${progressPercent}%` }}
@@ -96,7 +96,7 @@ export function ApplicationMission({
             }`}
           >
             <div className="flex items-center justify-between">
-              <span className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-wider ${step.completed ? "bg-brand-teal/20 text-brand-teal" : "bg-slate-100 text-ink-faint"}`}>
+              <span className={`rounded-md px-2 py-0.5 font-mono text-[10px] font-black uppercase tracking-wider ${step.completed ? "bg-brand-teal/20 text-brand-teal" : "bg-slate-soft text-ink-faint"}`}>
                 Phase {i + 1}
               </span>
               {step.completed ? (
@@ -104,7 +104,7 @@ export function ApplicationMission({
                   <CheckIcon size={ICON_SIZE.sm} />
                 </div>
               ) : (
-                <span className="h-3 w-3 rounded-full bg-slate-200" />
+                <span className="h-3 w-3 rounded-full bg-slate-soft" />
               )}
             </div>
             <span className={`mt-1 text-sm font-bold ${step.completed ? "text-ink" : "text-ink-soft"}`}>{step.label}</span>

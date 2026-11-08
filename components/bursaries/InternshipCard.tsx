@@ -16,7 +16,7 @@ export function InternshipCard({
   return (
     <div className={`stagger-${stagger} animate-rise-in h-full`}>
       <TiltCard>
-        <article className="flex h-full flex-col rounded-3xl border border-line bg-white p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6">
+        <article className="flex h-full flex-col rounded-3xl border border-line bg-paper-raised p-5 shadow-sm transition-shadow hover:shadow-md sm:p-6">
           <div className="flex items-start justify-between gap-3">
             <div className="flex items-start gap-3">
               <StampBadge variant="coral" />
@@ -37,7 +37,7 @@ export function InternshipCard({
             </p>
             
             <div className="mt-4 flex flex-wrap items-center gap-2">
-              <span className="inline-flex rounded-md bg-slate-100 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">
+              <span className="inline-flex rounded-md bg-slate-soft px-2 py-1 text-[10px] font-extrabold uppercase tracking-wide text-ink-soft">
                 {internship.matricOnly ? "Matric only" : internship.minQualification}
                 {internship.province ? ` · ${internship.province}` : ""}
               </span>

@@ -193,7 +193,7 @@ export default function UmpLearnershipPage() {
               💡 What is a Learnership?
             </h2>
           </div>
-          <div className="p-6 grid gap-4 sm:grid-cols-3 text-sm bg-white dark:bg-paper-raised">
+          <div className="p-6 grid gap-4 sm:grid-cols-3 text-sm bg-paper-raised dark:bg-paper-raised">
             {[
               {
                 icon: "📋",
@@ -238,7 +238,7 @@ export default function UmpLearnershipPage() {
             {LEARNERSHIPS.map((item) => (
               <article
                 key={item.id}
-                className="flex flex-col gap-4 rounded-2xl border bg-white dark:bg-paper-raised p-6 shadow-sm hover:shadow-md transition"
+                className="flex flex-col gap-4 rounded-2xl border bg-paper-raised dark:bg-paper-raised p-6 shadow-sm hover:shadow-md transition"
                 style={{ borderColor: `${UMP_NAVY}15` }}
               >
                 <div className="flex flex-wrap items-start justify-between gap-3">
