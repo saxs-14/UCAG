@@ -58,6 +58,16 @@
     "vitest": "^4.1.10"
   },
   "overrides": {
-    "jose": "5.10.0"
+    "jose": "5.10.0",
+    "postcss": "^8.5.23",
+    "@grpc/grpc-js": "^1.13.6",
+    "@typescript-eslint/eslint-plugin": "^8.72.1",
+    "@typescript-eslint/parser": "^8.72.1",
+    "@typescript-eslint/utils": "^8.72.1",
+    "@typescript-eslint/type-utils": "^8.72.1",
+    "@typescript-eslint/typescript-estree": {
+      ".": "^8.72.1",
+      "minimatch": "^11.0.1"
+    }
   }
 }
