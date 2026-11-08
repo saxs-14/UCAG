@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import Link from "next/link";
 import { resolveApplicationCta, resolveEffectiveApplicationWindowStatus } from "@/lib/applicationStatus";
 import { LABELS } from "@/config/labels";
+import { academicUnitLabel } from "@/lib/academicUnitLabel";
 import { getRealProgrammeDetail } from "@/lib/catalog/getRealProgrammeDetail";
 
 export const dynamic = "force-dynamic";
@@ -65,7 +66,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
               {programme.duration && <span className="rounded-full bg-white/10 px-3 py-1 text-xs font-semibold">{programme.duration}</span>}
             </div>
             <h1 className="mt-4 font-display text-2xl font-extrabold tracking-tight sm:text-3xl">{programme.name}</h1>
-            <p className="mt-2 text-sm text-white/80">{institution.name} · {faculty.name} · {school.name}</p>
+            <p className="mt-2 text-sm text-white/80">{institution.name} · {academicUnitLabel(faculty, school)}</p>
             {(campuses.length > 0 || programme.modeOfDelivery) && (
               <p className="mt-2 text-xs text-white/70">{[campuses.length ? campuses.join(", ") : null, programme.modeOfDelivery].filter(Boolean).join(" · ")}</p>
             )}

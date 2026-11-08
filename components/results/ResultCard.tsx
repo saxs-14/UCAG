@@ -4,6 +4,7 @@ import { calculateReadiness } from "@/lib/readiness";
 import { LABELS } from "@/config/labels";
 import { reasonText } from "./reasonText";
 import { gapCloserText } from "./gapCloserText";
+import { academicUnitLabel } from "@/lib/academicUnitLabel";
 import { ApsBreakdown } from "./ApsBreakdown";
 import { DeadlineCountdown } from "./DeadlineCountdown";
 import { CircledMark } from "@/components/CircledMark";
@@ -140,7 +141,7 @@ export function ResultCard({
                 <span className="rounded-md bg-slate-100 px-2 py-1">{programme.duration}</span>
               </div>
               <p className="mt-2 text-sm font-medium text-ink-soft">
-                {faculty.name} · {school.name}
+                {academicUnitLabel(faculty, school)}
               </p>
             </div>
             <div className="no-print flex shrink-0 flex-wrap items-center gap-2">

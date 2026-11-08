@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import { LABELS } from "@/config/labels";
+import { academicUnitLabel } from "@/lib/academicUnitLabel";
 import { getRealProgrammeDetail } from "@/lib/catalog/getRealProgrammeDetail";
 import { resolveEffectiveApplicationWindowStatus, resolveApplicationCta } from "@/lib/applicationStatus";
 
@@ -126,7 +127,7 @@ export default async function UmpProgrammeDetailPage({
             {programme.duration ? ` · ${programme.duration}` : ""}
           </p>
           <p className="text-xs text-teal-100/70">
-            {faculty.name} &middot; {school.name} &middot; {institution.name}
+            {academicUnitLabel(faculty, school)} &middot; {institution.name}
           </p>
 
           {/* Application status pill */}

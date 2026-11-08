@@ -138,7 +138,11 @@ describe("matchProgramme: not yet", () => {
     expect(missing).toBeDefined();
     expect(result.bucket).toBe("notYet");
     expect(result.suggestedNextStep).not.toBeNull();
-    expect(result.suggestedNextStep).toMatch(/rewriting|upgrading/i);
+    // A subject never taken can't be fixed by a supplementary/second-chance
+    // exam (that only re-sits a subject already written) -- the copy must
+    // say so rather than suggesting a "rewrite", which it wrongly used to.
+    expect(result.suggestedNextStep).not.toMatch(/rewriting/i);
+    expect(result.suggestedNextStep).toMatch(/isn't among your recorded subjects/i);
   });
 
   it("a large APS shortfall (beyond the almost margin) buckets as notYet", () => {
@@ -178,9 +182,13 @@ describe("matchProgramme: not yet", () => {
       catalog: [baseProgramme, higherCertificate],
     });
     expect(result.bucket).toBe("notYet");
-    // subjectMissing takes priority in suggestNextStep over the catalog
-    // lookup (rewriting a required subject is more actionable than a
-    // pathway suggestion) -- assert that behaviour explicitly.
+    // weakMarks includes a low (but present) Mathematics mark alongside
+    // the missing PHS subject, so this hits both a subjectLevel and a
+    // subjectMissing reason. A rewrite-fixable level gap takes priority
+    // in suggestNextStep over both the missing-subject reason and the
+    // catalog lookup (a supplementary exam is more actionable than
+    // repeating a grade or a pathway suggestion) -- assert that
+    // behaviour explicitly.
     expect(result.suggestedNextStep).toMatch(/rewriting|upgrading/i);
   });
 });

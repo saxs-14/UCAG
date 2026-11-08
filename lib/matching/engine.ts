@@ -158,18 +158,36 @@ function suggestNextStep(
   programme: Programme,
   catalog: Programme[] | undefined
 ): string {
-  const subjectIssue = unmetReasons.find(
-    (r) => r.type === "subjectWrongVariant" || r.type === "subjectLevel" || r.type === "subjectMissing"
-  );
+  // A supplementary/second-chance NSC exam only lets a learner rewrite a
+  // subject they already sat at a low mark -- it cannot add a subject
+  // never taken, or swap Mathematical Literacy for Mathematics. Those
+  // need a full subject change, typically by repeating the relevant
+  // grade or via a bridging course. Picking whichever unmet reason
+  // happened to come first in `unmetReasons` (as this used to) could
+  // attach the "just rewrite it" framing to a requirement it's wrong
+  // for, so level issues (genuinely rewrite-fixable) are preferred over
+  // variant/missing issues (not), regardless of list order.
+  const levelIssue = unmetReasons.find((r) => r.type === "subjectLevel");
+  const variantIssue = unmetReasons.find((r) => r.type === "subjectWrongVariant");
+  const missingIssue = unmetReasons.find((r) => r.type === "subjectMissing");
+  const subjectIssueCount = unmetReasons.filter(
+    (r) => r.type === "subjectLevel" || r.type === "subjectWrongVariant" || r.type === "subjectMissing"
+  ).length;
+  const otherIssuesNote =
+    subjectIssueCount > 1
+      ? ` This programme has ${subjectIssueCount} unmet subject requirements in total -- check the full list above, since closing just this one may not be enough on its own.`
+      : "";
 
-  if (subjectIssue) {
-    const label =
-      subjectIssue.type === "subjectWrongVariant"
-        ? subjectIssue.requiredLabel
-        : subjectIssue.type === "subjectMissing"
-          ? subjectIssue.label
-          : subjectIssue.label;
-    return `Consider rewriting or upgrading ${label} through a supplementary/second-chance NSC exam -- this is the most direct route to meeting this specific requirement.`;
+  if (levelIssue && levelIssue.type === "subjectLevel") {
+    return `Consider rewriting or upgrading ${levelIssue.label} through a supplementary/second-chance NSC exam -- this is the most direct route to meeting this specific requirement.${otherIssuesNote}`;
+  }
+
+  if (variantIssue && variantIssue.type === "subjectWrongVariant") {
+    return `This programme needs ${variantIssue.requiredLabel}, not ${variantIssue.achievedLabel} -- a supplementary exam can't swap subjects. You would need to study ${variantIssue.requiredLabel} as a new subject, typically by repeating the relevant grade or through a bridging course.${otherIssuesNote}`;
+  }
+
+  if (missingIssue && missingIssue.type === "subjectMissing") {
+    return `This programme requires ${missingIssue.label}, which isn't among your recorded subjects -- a supplementary exam only lets you rewrite a subject you've already sat, not add a new one. You would need to add it, typically by repeating the relevant grade or through a bridging course.${otherIssuesNote}`;
   }
 
   const lowerTierProgramme = catalog?.find(
