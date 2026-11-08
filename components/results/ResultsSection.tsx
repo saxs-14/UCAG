@@ -262,7 +262,7 @@ export function ResultsSection({ marks, institutionFilter }: { marks: SubjectMar
       )}
 
       {scored.length > 0 && (
-        <div className="sticky top-[4.5rem] z-20 -mx-2 rounded-2xl border border-line/60 bg-white/90 p-2 shadow-md backdrop-blur-md">
+        <div className="sticky top-[4.5rem] z-20 -mx-2 rounded-2xl border border-line/60 bg-paper-raised/90 p-2 shadow-md backdrop-blur-md">
           <div className="grid grid-cols-2 gap-2 sm:grid-cols-4" role="tablist" aria-label="Filter programme matches">
             {FILTERS.map((filter) => {
               const count = filterCounts[filter.key];
