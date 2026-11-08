@@ -86,6 +86,16 @@ export function LearnerApplicationJourney({ profile }: { profile: UserProfile })
   const progressPercent = Math.round((checkedCount / APPLICATION_CHECKLIST_ITEMS.length) * 100);
 
   const nextAction = useMemo(() => {
+    if (profile.shortlist.length === 0) {
+      return {
+        title: "Get Started",
+        detail: "Use the APS Calculator to find programmes you qualify for, then save the ones you're interested in to track them here.",
+        href: "/",
+        label: "Open Calculator",
+        icon: "🧭"
+      };
+    }
+
     const open = saved.find((item) => item.status === "open");
     if (open) {
       return {
@@ -129,7 +139,7 @@ export function LearnerApplicationJourney({ profile }: { profile: UserProfile })
       label: "Review Programmes",
       icon: "🔍"
     };
-  }, [saved]);
+  }, [saved, profile.shortlist.length]);
 
   return (
     <section className="rounded-3xl border border-line bg-paper-raised p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
