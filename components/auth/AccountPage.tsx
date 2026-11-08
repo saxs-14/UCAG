@@ -12,6 +12,7 @@ import { useAuth } from "./AuthProvider";
 import { SignUpForm } from "./SignUpForm";
 import { SignInForm } from "./SignInForm";
 import { LearnerApplicationJourney } from "./LearnerApplicationJourney";
+import { CompleteProfileForm } from "./CompleteProfileForm";
 import { LABELS } from "@/config/labels";
 import type { UserProfile } from "@/lib/firestore/types";
 import { useRouter } from "next/navigation";
@@ -31,6 +32,7 @@ export function AccountPage() {
   const { user, loading, authUnavailable, isAdmin, displayName, setDisplayName } = useAuth();
   const [mode, setMode] = useState<"signUp" | "signIn">("signUp");
   const [profile, setProfile] = useState<UserProfile | null>(null);
+  const [profileChecked, setProfileChecked] = useState(false);
   const [institutionId, setInstitutionId] = useState("");
   const [fullName, setFullName] = useState("");
   const [editing, setEditing] = useState(false);
@@ -51,6 +53,7 @@ export function AccountPage() {
       .then(async (fetchedProfile) => {
         if (cancelled) return;
         setProfile(fetchedProfile);
+        setProfileChecked(true);
         setInstitutionId(fetchedProfile?.institutionId ?? "");
 
         try {
@@ -73,7 +76,10 @@ export function AccountPage() {
           // Silent fallback for session hand-off
         }
       })
-      .catch((err) => setError(err instanceof Error ? err.message : String(err)));
+      .catch((err) => {
+        setProfileChecked(true);
+        setError(err instanceof Error ? err.message : String(err));
+      });
 
     return () => { cancelled = true; };
   }, [user, loading, router]);
@@ -142,6 +148,19 @@ export function AccountPage() {
         <div className="text-center">
           <Link href="/privacy" className="text-xs font-medium text-brand-teal hover:underline">{LABELS.account.privacyNoticeLink}</Link>
         </div>
+      </div>
+    );
+  }
+
+  // Signed in (e.g. via "Sign In -> Continue with Google" on a first-ever
+  // visit) but no userProfiles document exists yet -- every marks/shortlist/
+  // checklist save would otherwise fail. Never auto-create one with guessed
+  // isMinor/consent values here; that would silently skip the POPIA
+  // guardian-consent step for exactly these users.
+  if (profileChecked && !profile) {
+    return (
+      <div className="flex w-full max-w-xl flex-col gap-6">
+        <CompleteProfileForm uid={user.uid} onComplete={() => getUserProfile(user.uid).then((p) => { setProfile(p); setInstitutionId(p?.institutionId ?? ""); })} />
       </div>
     );
   }

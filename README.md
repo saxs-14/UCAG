@@ -9,12 +9,14 @@ what they don't qualify for and the realistic alternative pathway, and
 matched bursaries/internships — backed by a scheduled AI ingestion pipeline
 with a human verification gate on anything a learner acts on.
 
-**Status: core application and post-launch engineering hardening are complete.**
-The repository is live at [ucag-nine.vercel.app](https://ucag-nine.vercel.app).
-The remaining production activation steps are external configuration: connect a
-real Firebase project and provide an LLM provider key before account persistence
-and AI ingestion can run against production data. No code path fabricates success
-when those dependencies are absent.
+**Status: core application and post-launch engineering hardening are complete,
+and production is fully live.** The repository is live at
+[ucag-nine.vercel.app](https://ucag-nine.vercel.app), connected to a real
+Firebase project (Auth + Firestore) and a real LLM provider key — verified
+2026-11-07 against the live site: an authenticated admin session returns real
+Firestore-backed catalogue counts from `/api/admin/stats`, and `/api/chat`
+returns genuine, on-topic AI answers. No code path fabricates success when
+those dependencies are absent.
 v1 (UMP-only, simulated backend) is archived at git tag
 [`v1-archive`](../../releases/tag/v1-archive) and branch `archive/v1` —
 nothing from it was carried forward; v2 is a from-scratch, national-capable

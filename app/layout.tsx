@@ -101,7 +101,10 @@ const organizationJsonLd = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#14121f",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#fafaf8" },
+    { media: "(prefers-color-scheme: dark)", color: "#0b0a12" },
+  ],
 };
 
 export default async function RootLayout({

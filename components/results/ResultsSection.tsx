@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { matchProgramme } from "@/lib/matching/engine";
 import { resolveApsRule } from "@/lib/matching/resolveApsRule";
@@ -44,6 +45,7 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
   const [catalog, setCatalog] = useState<RealCatalog | null>(null);
   const [catalogError, setCatalogError] = useState<string | null>(null);
   const [activeFilter, setActiveFilter] = useState<"all" | MatchBucket>("all");
+  const [shortlistError, setShortlistError] = useState<string | null>(null);
   const MAX_COMPARE = 3;
 
   useEffect(() => {
@@ -177,11 +179,19 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
       ? shortlist.filter((id) => id !== programmeId)
       : [...shortlist, programmeId];
     setShortlist(next);
+    setShortlistError(null);
     try {
       const { updateShortlist } = await import("@/lib/auth/profile");
       await updateShortlist(user.uid, next);
-    } catch {
+    } catch (err) {
       setShortlist(shortlist);
+      const message = err instanceof Error ? err.message : String(err);
+      console.error("[ResultsSection] toggleShortlist failed:", err);
+      setShortlistError(
+        message.includes("Profile not found")
+          ? "Couldn't save -- finish setting up your profile on the Account page first."
+          : "Couldn't save your shortlist. Please try again."
+      );
     }
   }
 
@@ -209,6 +219,21 @@ export function ResultsSection({ marks }: { marks: SubjectMarkInput[] }) {
         <h2 className="font-display text-3xl font-black tracking-tight text-ink">Your Matches</h2>
         <ShareBar marks={marks} />
       </div>
+
+      {shortlistError && (
+        <div role="alert" className="flex items-center justify-between gap-4 rounded-2xl border-l-4 border-mark-red bg-mark-red/10 p-4 text-sm font-medium text-mark-red shadow-sm">
+          <span>
+            {shortlistError}
+            {shortlistError.includes("Account page") && (
+              <>
+                {" "}
+                <Link href="/account" className="font-bold underline">Go to Account</Link>
+              </>
+            )}
+          </span>
+          <button type="button" onClick={() => setShortlistError(null)} aria-label="Dismiss" className="shrink-0 text-mark-red/70 hover:text-mark-red">✕</button>
+        </div>
+      )}
 
       {scored.length > 0 && (
         <div className="sticky top-[4.5rem] z-20 -mx-2 rounded-2xl border border-line/60 bg-white/90 p-2 shadow-md backdrop-blur-md">
