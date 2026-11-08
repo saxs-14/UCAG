@@ -32,7 +32,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   if (!user) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-paper to-brand-teal/10 p-6">
-        <div className="w-full max-w-md rounded-3xl border-2 border-white bg-white/80 p-8 shadow-2xl backdrop-blur-sm">
+        <div className="w-full max-w-md rounded-3xl border-2 border-glass-border bg-paper-raised/80 p-8 shadow-2xl backdrop-blur-sm">
           <div className="mb-6 flex justify-center">
             <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-teal text-white shadow-lg">
               <span className="text-2xl font-bold">UCAG</span>
@@ -53,13 +53,13 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   if (!isAdmin) {
     return (
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-paper to-brand-teal/10 p-6">
-        <div className="w-full max-w-md rounded-3xl border-2 border-white bg-white/80 p-8 shadow-2xl backdrop-blur-sm">
+        <div className="w-full max-w-md rounded-3xl border-2 border-glass-border bg-paper-raised/80 p-8 shadow-2xl backdrop-blur-sm">
           <h1 className="font-display text-2xl font-extrabold text-ink">Access Restricted</h1>
           <p className="mt-3 text-sm leading-relaxed text-ink-soft">
             You are signed in as <strong className="font-semibold text-brand-teal">{user.email}</strong>, but this account does not have management permissions.
           </p>
-          <div className="mt-6 rounded-2xl border border-blue-100 bg-blue-50 p-4">
-            <p className="text-xs font-medium text-blue-800">To gain access, request an administrator to run:</p>
+          <div className="mt-6 rounded-2xl border border-brand-teal/20 bg-brand-teal/5 p-4">
+            <p className="text-xs font-medium text-brand-teal">To gain access, request an administrator to run:</p>
             <pre className="mt-2 overflow-x-auto rounded-xl bg-paper-raised p-3 text-xs font-mono text-ink shadow-sm">
               npm run admin:grant -- {user.email}
             </pre>
