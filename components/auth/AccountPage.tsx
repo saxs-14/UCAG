@@ -172,6 +172,37 @@ export function AccountPage() {
     );
   }
 
+  // Admin/staff accounts stay admin-only, never a learner account too --
+  // no CompleteProfileForm prompt, no institution/marks/shortlist to
+  // save. Checked before the learner-profile branches below so an admin
+  // is never routed into learner-only flows. See the explicit decision
+  // this followed: admin accounts must not accumulate learner data.
+  if (isAdmin) {
+    return (
+      <div className="flex w-full max-w-xl flex-col gap-6">
+        <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm sm:p-8">
+          <div className="inline-flex items-center rounded-full bg-brand-navy/10 px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-brand-navy">
+            {LABELS.account.adminHeading}
+          </div>
+          <h2 className="mt-2 font-display text-2xl font-black text-ink">{displayName ?? user.email ?? user.uid}</h2>
+          {displayName && <p className="text-sm font-medium text-ink-soft">{user.email}</p>}
+          <p className="mt-3 text-sm leading-relaxed text-ink-soft">{LABELS.account.adminAccountIntro}</p>
+          <p className="mt-2 text-xs leading-relaxed text-ink-faint">{LABELS.account.adminAccountNote}</p>
+          <Link href="/admin" className="mt-6 inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-teal px-6 text-sm font-bold text-white shadow-md transition-transform hover:-translate-y-0.5 hover:shadow-lg">
+            {LABELS.account.adminPortalButton}
+          </Link>
+        </section>
+
+        <div className="flex flex-wrap gap-3 border-t border-line pt-6">
+          <button type="button" onClick={() => signOut(getFirebaseAuth())} className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line px-5 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-soft hover:text-ink">
+            {LABELS.account.signOutButton}
+          </button>
+        </div>
+        <Link href="/privacy" className="text-xs font-medium text-brand-teal hover:underline">{LABELS.account.privacyNoticeLink}</Link>
+      </div>
+    );
+  }
+
   // Signed in (e.g. via "Sign In -> Continue with Google" on a first-ever
   // visit) but no userProfiles document exists yet -- every marks/shortlist/
   // checklist save would otherwise fail. Never auto-create one with guessed
@@ -293,15 +324,6 @@ export function AccountPage() {
           </div>
         )}
       </section>
-
-      {isAdmin && (
-        <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm transition-all hover:shadow-md sm:p-8">
-          <h2 className="text-xs font-extrabold uppercase tracking-widest text-brand-navy">{LABELS.account.adminHeading}</h2>
-          <Link href="/admin" className="mt-4 inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line px-5 text-sm font-bold text-ink transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
-            {LABELS.account.adminPortalButton}
-          </Link>
-        </section>
-      )}
 
       <div className="flex flex-wrap gap-3 border-t border-line pt-6">
         <button type="button" onClick={() => signOut(getFirebaseAuth())} className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line px-5 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-soft hover:text-ink">

@@ -4,6 +4,7 @@ import { LABELS } from "@/config/labels";
 import { NavBar } from "@/components/NavBar";
 import { Footer } from "@/components/Footer";
 import { AuthProvider } from "@/components/auth/AuthProvider";
+import { AdminRedirect } from "@/components/auth/AdminRedirect";
 import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistration";
 import { ChatWidgetLoader } from "@/components/chat/ChatWidgetLoader";
 import { MobileNavBar } from "@/components/MobileNavBar";
@@ -132,6 +133,7 @@ export default async function RootLayout({
           Skip to content
         </a>
         <AuthProvider>
+          <AdminRedirect />
           <NavBar />
           <main id="main-content" className="flex-1 w-full pb-16 sm:pb-0">
             {children}
