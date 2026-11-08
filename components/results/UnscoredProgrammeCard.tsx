@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LABELS } from "@/config/labels";
+import { academicUnitLabel } from "@/lib/academicUnitLabel";
 import type { Faculty, Institution, Programme, School } from "@/lib/firestore/types";
 
 interface UnscoredProgrammeCardProps {
@@ -37,7 +38,7 @@ export function UnscoredProgrammeCard({
             </Link>
           </h3>
           <p className="mt-2 text-sm font-medium text-ink-soft">
-            {institution.name} · {faculty.name} · {school.name}
+            {institution.name} · {academicUnitLabel(faculty, school)}
           </p>
         </div>
       </header>
