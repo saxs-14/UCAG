@@ -23,10 +23,13 @@ const USER_MOBILE_NAV_ITEMS = [
 
 export function MobileNavBar() {
   const pathname = usePathname();
-  const { user } = useAuth();
+  const { user, isAdmin } = useAuth();
   const isLoggedIn = !!user && !user.isAnonymous;
 
-  if (pathname.startsWith("/admin")) return null;
+  // Admin accounts stay admin-only -- no learner nav at all, not just
+  // hidden on /admin paths (see AdminRedirect, which bounces them back
+  // here anyway if they reach a learner URL).
+  if (pathname.startsWith("/admin") || isAdmin) return null;
 
   const navItems = isLoggedIn ? USER_MOBILE_NAV_ITEMS : GUEST_MOBILE_NAV_ITEMS;
 

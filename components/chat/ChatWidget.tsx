@@ -33,7 +33,7 @@ function TypingDots() {
 }
 
 export function ChatWidget() {
-  const { user, displayName } = useAuth();
+  const { user, displayName, isAdmin } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -170,6 +170,11 @@ export function ChatWidget() {
   function handleKeyDown(e: React.KeyboardEvent<HTMLElement>) {
     if (e.key === "Escape") closeChat();
   }
+
+  // The assistant is a learner support tool ("help with your application
+  // journey") -- not relevant to a staff/admin account, which stays
+  // admin-only (see AdminRedirect).
+  if (isAdmin) return null;
 
   return (
     <div className="no-print fixed bottom-20 right-4 z-40 sm:bottom-4" onKeyDown={handleKeyDown}>

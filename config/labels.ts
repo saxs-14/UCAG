@@ -186,6 +186,8 @@ export const LABELS = {
     openCalculatorButton: "Open calculator",
     adminHeading: "Admin",
     adminPortalButton: "Open admin portal",
+    adminAccountIntro: "This is a staff account, not a learner account -- it doesn't keep NSC marks, a shortlist, or an institution preference.",
+    adminAccountNote: "Need to check marks, APS results, or shortlists? Use a separate learner account -- staff accounts stay admin-only by design.",
     privacyNoticeLink: "Privacy notice",
   },
   privacy: {
