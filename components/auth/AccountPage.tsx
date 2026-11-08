@@ -40,6 +40,7 @@ export function AccountPage() {
   const [savingProfile, setSavingProfile] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [notice, setNotice] = useState<string | null>(null);
+  const [shortlistNames, setShortlistNames] = useState<Record<string, string>>({});
 
   useEffect(() => {
     if (!loading && !user) {
@@ -83,6 +84,25 @@ export function AccountPage() {
 
     return () => { cancelled = true; };
   }, [user, loading, router]);
+
+  useEffect(() => {
+    if (!profile?.shortlist.length) return;
+    let cancelled = false;
+
+    import("@/lib/catalog/getRealCatalog")
+      .then(({ fetchRealCatalog }) => fetchRealCatalog())
+      .then((catalog) => {
+        if (cancelled) return;
+        const names: Record<string, string> = {};
+        for (const programme of catalog.programmes) names[programme.id] = programme.name;
+        setShortlistNames(names);
+      })
+      .catch(() => {
+        // Leave shortlistNames empty -- the list falls back to showing the raw id.
+      });
+
+    return () => { cancelled = true; };
+  }, [profile?.shortlist]);
 
   async function handleSaveProfile() {
     if (!user || !institutionId) return;
@@ -262,7 +282,7 @@ export function AccountPage() {
           <ul className="mt-6 flex flex-col gap-2">
             {profile.shortlist.map((id) => (
               <li key={id} className="rounded-xl bg-paper px-4 py-3 text-sm font-medium border border-line/50 transition-colors hover:border-brand-coral/30">
-                <Link href={`/programmes/${id}`} className="font-bold text-brand-teal hover:underline">{id}</Link>
+                <Link href={`/programmes/${id}`} className="font-bold text-brand-teal hover:underline">{shortlistNames[id] ?? id}</Link>
               </li>
             ))}
           </ul>
