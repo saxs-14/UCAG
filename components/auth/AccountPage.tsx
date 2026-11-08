@@ -144,14 +144,14 @@ export function AccountPage() {
 
   if (loading) return (
     <div className="flex w-full animate-pulse flex-col items-center p-10">
-      <div className="h-6 w-32 rounded bg-slate-200"></div>
+      <div className="h-6 w-32 rounded bg-slate-soft"></div>
     </div>
   );
 
   if (authUnavailable) {
     return (
       <div className="flex w-full max-w-sm flex-col gap-4 rounded-3xl bg-paper-raised p-8 text-center shadow-sm">
-        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-100 text-2xl">🚧</div>
+        <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-slate-soft text-2xl">🚧</div>
         <p className="text-sm font-medium text-ink-soft">{LABELS.account.authUnavailable}</p>
         <Link href="/privacy" className="text-xs text-brand-teal hover:underline">{LABELS.account.privacyNoticeLink}</Link>
       </div>
@@ -232,7 +232,7 @@ export function AccountPage() {
                 <button type="button" disabled={!institutionId || savingProfile} onClick={handleSaveProfile} className="min-h-12 rounded-xl bg-brand-teal px-6 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none">
                   {savingProfile ? LABELS.account.savingProfileButton : LABELS.account.saveProfileButton}
                 </button>
-                <button type="button" onClick={() => { setInstitutionId(profile?.institutionId ?? ""); setFullName(displayName ?? ""); setEditing(false); }} className="min-h-12 rounded-xl border-2 border-line px-6 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-50 hover:text-ink">
+                <button type="button" onClick={() => { setInstitutionId(profile?.institutionId ?? ""); setFullName(displayName ?? ""); setEditing(false); }} className="min-h-12 rounded-xl border-2 border-line px-6 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-soft hover:text-ink">
                   {LABELS.account.cancelEditButton}
                 </button>
               </div>
@@ -304,10 +304,10 @@ export function AccountPage() {
       )}
 
       <div className="flex flex-wrap gap-3 border-t border-line pt-6">
-        <button type="button" onClick={() => signOut(getFirebaseAuth())} className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line px-5 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-50 hover:text-ink">
+        <button type="button" onClick={() => signOut(getFirebaseAuth())} className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line px-5 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-soft hover:text-ink">
           {LABELS.account.signOutButton}
         </button>
-        <button type="button" onClick={() => profile && downloadJson("ucag-my-data.json", profileToExportJson(profile))} disabled={!profile} className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line px-5 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-50 hover:text-ink disabled:opacity-50">
+        <button type="button" onClick={() => profile && downloadJson("ucag-my-data.json", profileToExportJson(profile))} disabled={!profile} className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line px-5 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-soft hover:text-ink disabled:opacity-50">
           {LABELS.account.downloadDataButton}
         </button>
         {!confirmingDelete ? (
@@ -321,7 +321,7 @@ export function AccountPage() {
               <button type="button" onClick={handleDeleteAccount} className="min-h-11 rounded-xl bg-mark-red px-5 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg">
                 {LABELS.account.deleteAccountConfirmButton}
               </button>
-              <button type="button" onClick={() => setConfirmingDelete(false)} className="min-h-11 rounded-xl border-2 border-line px-5 text-sm font-bold text-ink-soft hover:bg-slate-50">
+              <button type="button" onClick={() => setConfirmingDelete(false)} className="min-h-11 rounded-xl border-2 border-line px-5 text-sm font-bold text-ink-soft hover:bg-slate-soft">
                 {LABELS.account.deleteAccountCancelButton}
               </button>
             </div>

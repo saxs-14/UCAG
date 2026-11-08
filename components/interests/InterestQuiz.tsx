@@ -44,7 +44,7 @@ export function InterestQuiz({ entries }: InterestQuizProps) {
             <p className="text-sm font-medium text-ink-soft">Take the 1-minute interest quiz</p>
           </div>
         </div>
-        <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink shadow-sm transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}>
+        <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-paper-raised text-ink shadow-sm transition-transform duration-300 ${expanded ? "rotate-180" : ""}`}>
           ▼
         </div>
       </button>
@@ -54,7 +54,7 @@ export function InterestQuiz({ entries }: InterestQuizProps) {
           {!submitted ? (
             <div className="mt-4 flex flex-col gap-6">
               {INTEREST_QUIZ.map((q) => (
-                <fieldset key={q.id} className="flex flex-col gap-3 rounded-2xl bg-white p-5 border border-line/60 shadow-sm">
+                <fieldset key={q.id} className="flex flex-col gap-3 rounded-2xl bg-paper-raised p-5 border border-line/60 shadow-sm">
                   <legend className="font-bold text-ink text-base">{q.question}</legend>
                   <div className="mt-2 flex flex-col gap-2">
                     {q.options.map((opt, i) => (
@@ -95,7 +95,7 @@ export function InterestQuiz({ entries }: InterestQuizProps) {
               </div>
 
               {recommendations.length === 0 ? (
-                <div className="rounded-2xl border border-line/60 bg-white p-6 text-center shadow-sm">
+                <div className="rounded-2xl border border-line/60 bg-paper-raised p-6 text-center shadow-sm">
                   <span className="text-3xl mb-2">🤔</span>
                   <p className="font-medium text-ink-soft">
                     None of the programmes you qualify for perfectly match these specific interests. Check the full list below instead!
@@ -104,7 +104,7 @@ export function InterestQuiz({ entries }: InterestQuizProps) {
               ) : (
                 <div className="grid gap-3 sm:grid-cols-2">
                   {recommendations.map(({ programme, overlapScore }) => (
-                    <div key={programme.id} className="rounded-2xl border border-brand-teal/30 bg-white p-4 shadow-sm transition-transform hover:-translate-y-0.5">
+                    <div key={programme.id} className="rounded-2xl border border-brand-teal/30 bg-paper-raised p-4 shadow-sm transition-transform hover:-translate-y-0.5">
                       <p className="font-bold text-ink">{programme.name}</p>
                       <div className="mt-2 inline-flex items-center gap-1.5 rounded-full bg-brand-teal/10 px-3 py-1 text-xs font-bold text-brand-teal">
                         <span>⭐</span>

@@ -47,7 +47,7 @@ const BUCKET_SPINE: Record<MatchResult["bucket"], string> = {
 const BUCKET_LABEL_STYLE: Record<MatchResult["bucket"], string> = {
   qualify: "bg-emerald-100 text-emerald-800 border-emerald-200",
   almostQualify: "bg-amber-100 text-amber-800 border-amber-200",
-  notYet: "bg-slate-100 text-slate-700 border-slate-200",
+  notYet: "bg-slate-soft text-slate-700 border-slate-200",
 };
 
 const BUCKET_EXPLANATION: Record<MatchResult["bucket"], string> = {
@@ -136,16 +136,16 @@ export function ResultCard({
                 </Link>
               </h3>
               <div className="mt-2 flex flex-wrap items-center gap-2 text-xs font-bold text-ink-soft">
-                <span className="rounded-md bg-slate-100 px-2 py-1">{programme.qualificationType}</span>
-                <span className="rounded-md bg-slate-100 px-2 py-1">NQF {programme.nqfLevel}</span>
-                <span className="rounded-md bg-slate-100 px-2 py-1">{programme.duration}</span>
+                <span className="rounded-md bg-slate-soft px-2 py-1">{programme.qualificationType}</span>
+                <span className="rounded-md bg-slate-soft px-2 py-1">NQF {programme.nqfLevel}</span>
+                <span className="rounded-md bg-slate-soft px-2 py-1">{programme.duration}</span>
               </div>
               <p className="mt-2 text-sm font-medium text-ink-soft">
                 {academicUnitLabel(faculty, school)}
               </p>
             </div>
             <div className="no-print flex shrink-0 flex-wrap items-center gap-2">
-              <label className="flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border-2 border-line/60 bg-white px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-brand-teal/50 hover:bg-slate-50 focus-within:ring-4 focus-within:ring-brand-teal/20 shadow-sm">
+              <label className="flex min-h-12 cursor-pointer items-center gap-2 rounded-xl border-2 border-line/60 bg-paper-raised px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-brand-teal/50 hover:bg-slate-soft focus-within:ring-4 focus-within:ring-brand-teal/20 shadow-sm">
                 <input
                   type="checkbox"
                   id={`compare-${programme.id}`}
@@ -164,7 +164,7 @@ export function ResultCard({
                   className={`inline-flex min-h-12 items-center gap-2 rounded-xl border-2 px-4 py-2 text-sm font-bold transition-all shadow-sm active:scale-95 ${
                     isShortlisted
                       ? "border-brand-teal bg-brand-teal text-white hover:bg-brand-teal/90"
-                      : "border-line/60 bg-white text-ink hover:border-brand-teal/50 hover:bg-slate-50"
+                      : "border-line/60 bg-paper-raised text-ink hover:border-brand-teal/50 hover:bg-slate-soft"
                   }`}
                 >
                   <StarIcon size={ICON_SIZE.sm} filled={isShortlisted} />
@@ -174,7 +174,7 @@ export function ResultCard({
             </div>
           </div>
 
-          <div className="rounded-2xl border border-line/40 bg-slate-50 p-4 text-sm font-medium text-ink-soft">
+          <div className="rounded-2xl border border-line/40 bg-slate-soft p-4 text-sm font-medium text-ink-soft">
             <p>{BUCKET_EXPLANATION[matchResult.bucket]}</p>
             {matchResult.bucket === "almostQualify" && apsGap !== null && (
               <p className="mt-1.5 font-bold text-amber-600">APS gap: {apsGap} point{apsGap === 1 ? "" : "s"}</p>
@@ -192,7 +192,7 @@ export function ResultCard({
           <DeadlineCountdown applicationWindow={applicationWindow} status={status} />
         </header>
 
-        <ul className="flex flex-col gap-3 rounded-2xl border border-line/60 bg-white p-5 text-sm shadow-sm">
+        <ul className="flex flex-col gap-3 rounded-2xl border border-line/60 bg-paper-raised p-5 text-sm shadow-sm">
           {matchResult.reasons.map((reason, i) => {
             const met = "met" in reason ? reason.met : false;
             return (
@@ -253,7 +253,7 @@ export function ResultCard({
                 <HourglassIcon size={ICON_SIZE.sm} />
                 {cta.label}
               </span>
-              <div className="rounded-xl border border-line/40 bg-slate-50 p-3 text-sm font-medium text-ink-soft flex-1">
+              <div className="rounded-xl border border-line/40 bg-slate-soft p-3 text-sm font-medium text-ink-soft flex-1">
                 <p className="font-bold text-ink">Prepare before applications open</p>
                 <p className="mt-1">Use this time to gather documents and check the official page.</p>
               </div>
@@ -261,10 +261,10 @@ export function ResultCard({
           )}
           {cta.kind === "statusCheck" && (
             <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
-              <span className="inline-flex min-h-12 shrink-0 items-center rounded-xl border border-line bg-slate-100 px-5 text-sm font-bold text-ink-soft shadow-sm">
+              <span className="inline-flex min-h-12 shrink-0 items-center rounded-xl border border-line bg-slate-soft px-5 text-sm font-bold text-ink-soft shadow-sm">
                 {LABELS.applicationStatus.closed}
               </span>
-              <div className="rounded-xl border border-line/40 bg-slate-50 p-3 text-sm font-medium text-ink-soft flex-1">
+              <div className="rounded-xl border border-line/40 bg-slate-soft p-3 text-sm font-medium text-ink-soft flex-1">
                 <p className="font-bold text-ink">This application window is closed</p>
                 <div className="mt-1 flex flex-wrap items-center gap-2">
                   <span>Prepare for the next cycle, or</span>
@@ -279,10 +279,10 @@ export function ResultCard({
           )}
           {cta.kind === "datesBeingVerified" && (
             <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center">
-               <span className="inline-flex min-h-12 shrink-0 items-center rounded-xl border border-line bg-slate-100 px-5 text-sm font-bold text-ink-soft shadow-sm">
+               <span className="inline-flex min-h-12 shrink-0 items-center rounded-xl border border-line bg-slate-soft px-5 text-sm font-bold text-ink-soft shadow-sm">
                 {cta.label}
               </span>
-              <div className="rounded-xl border border-line/40 bg-slate-50 p-3 text-sm font-medium text-ink-soft flex-1">
+              <div className="rounded-xl border border-line/40 bg-slate-soft p-3 text-sm font-medium text-ink-soft flex-1">
                 <p className="font-bold text-ink">Dates need verification</p>
                 <div className="mt-1 flex flex-wrap items-center gap-2">
                   <span>UCAG is verifying dates. In the meantime,</span>
@@ -297,11 +297,11 @@ export function ResultCard({
           )}
         </div>
 
-        <div className="mt-2 overflow-hidden rounded-2xl border border-line/60 bg-white shadow-sm transition-all">
+        <div className="mt-2 overflow-hidden rounded-2xl border border-line/60 bg-paper-raised shadow-sm transition-all">
           <details className="group">
-            <summary className="flex min-h-14 cursor-pointer items-center justify-between bg-slate-50/50 p-5 font-display text-lg font-bold text-ink focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
+            <summary className="flex min-h-14 cursor-pointer items-center justify-between bg-slate-soft/50 p-5 font-display text-lg font-bold text-ink focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
               Readiness & Planning
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink-soft shadow-sm transition-transform duration-300 group-open:rotate-180 group-open:bg-brand-teal/10 group-open:text-brand-teal">
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-paper-raised text-ink-soft shadow-sm transition-transform duration-300 group-open:rotate-180 group-open:bg-brand-teal/10 group-open:text-brand-teal">
                 ▼
               </span>
             </summary>

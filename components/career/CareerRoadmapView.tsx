@@ -19,7 +19,7 @@ const PHASE_STYLES: Record<RoadmapStep["phase"], { dot: string; badge: string; l
   degree: { dot: "bg-brand-violet border-brand-violet/30", badge: "bg-brand-violet/10 text-brand-violet", label: "Degree" },
   skills: { dot: "bg-mark-green border-mark-green/30", badge: "bg-mark-green/10 text-mark-green", label: "Skills" },
   work: { dot: "bg-brand-coral border-brand-coral/30", badge: "bg-brand-coral/10 text-brand-coral", label: "Work" },
-  career: { dot: "bg-brand-navy border-brand-navy/30", badge: "bg-slate-100 text-brand-navy", label: "Career" },
+  career: { dot: "bg-brand-navy border-brand-navy/30", badge: "bg-slate-soft text-brand-navy", label: "Career" },
 };
 
 export function CareerRoadmapView({ heading, steps }: { heading: string; steps: RoadmapStep[] }) {
@@ -50,7 +50,7 @@ export function CareerRoadmapView({ heading, steps }: { heading: string; steps: 
                   type="button"
                   onClick={() => setExpandedId(isExpanded ? null : step.id)}
                   aria-expanded={isExpanded}
-                  className="w-full rounded-2xl border border-line/60 bg-white p-5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+                  className="w-full rounded-2xl border border-line/60 bg-paper-raised p-5 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
                 >
                   <div className="flex items-start justify-between gap-3">
                     <div className="flex min-w-0 flex-col gap-1.5">
@@ -63,7 +63,7 @@ export function CareerRoadmapView({ heading, steps }: { heading: string; steps: 
                       <p className="font-display text-lg font-bold text-ink">{step.title}</p>
                       <p className="text-sm font-medium leading-relaxed text-ink-soft">{step.subtitle}</p>
                     </div>
-                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-50 text-ink-soft transition-transform duration-300 ${isExpanded ? "rotate-180 bg-brand-teal/10 text-brand-teal" : ""}`}>
+                    <div className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-slate-soft text-ink-soft transition-transform duration-300 ${isExpanded ? "rotate-180 bg-brand-teal/10 text-brand-teal" : ""}`}>
                       ▼
                     </div>
                   </div>

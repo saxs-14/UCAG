@@ -1,6 +1,6 @@
 export function PageHero({ title, subtitle }: { title: React.ReactNode; subtitle?: React.ReactNode }) {
   return (
-    <section className="relative isolate w-full overflow-hidden border-b border-line/60 bg-slate-50/50 py-12 sm:py-16" aria-labelledby="page-hero-title">
+    <section className="relative isolate w-full overflow-hidden border-b border-line/60 bg-slate-soft/50 py-12 sm:py-16" aria-labelledby="page-hero-title">
       <div aria-hidden="true" className="pointer-events-none absolute -right-16 -top-24 -z-10 size-72 rounded-full bg-brand-teal/10 blur-3xl" />
       <div className="mx-auto flex w-full max-w-7xl flex-col gap-4 px-4 sm:px-6 lg:px-8">
         <div className="inline-flex w-fit items-center gap-2 rounded-full border border-brand-teal/20 bg-brand-teal/10 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-brand-teal shadow-2xs">

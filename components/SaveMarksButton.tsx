@@ -60,7 +60,7 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
 
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm">
-          <div className="w-full max-w-md rounded-3xl border border-line bg-white p-7 shadow-2xl animate-rise-in">
+          <div className="w-full max-w-md rounded-3xl border border-line bg-paper-raised p-7 shadow-2xl animate-rise-in">
             <div className="flex justify-between items-start mb-4">
               <span className="rounded-2xl bg-brand-teal/10 p-3 text-brand-teal shadow-2xs">
                 <GraduationCapIcon size={ICON_SIZE.md} />
@@ -90,7 +90,7 @@ export function SaveMarksButton({ marks }: { marks: SubjectMarkInput[] }) {
               </Link>
               <Link
                 href="/login"
-                className="flex min-h-12 items-center justify-center rounded-2xl border border-line bg-slate-50 text-xs font-bold text-ink hover:bg-slate-100 transition"
+                className="flex min-h-12 items-center justify-center rounded-2xl border border-line bg-slate-soft text-xs font-bold text-ink hover:bg-slate-soft transition"
               >
                 Already have an account? Sign In
               </Link>

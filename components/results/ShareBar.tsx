@@ -24,14 +24,14 @@ export function ShareBar({ marks }: { marks: SubjectMarkInput[] }) {
       <button
         type="button"
         onClick={handleCopyLink}
-        className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line bg-white px-5 text-sm font-bold text-ink shadow-sm transition-all hover:border-brand-teal hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+        className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line bg-paper-raised px-5 text-sm font-bold text-ink shadow-sm transition-all hover:border-brand-teal hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
       >
         {copied ? "✓ Link Copied!" : "🔗 Copy Share Link"}
       </button>
       <button
         type="button"
         onClick={() => window.print()}
-        className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line bg-white px-5 text-sm font-bold text-ink shadow-sm transition-all hover:border-brand-teal hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+        className="inline-flex min-h-11 items-center justify-center rounded-xl border-2 border-line bg-paper-raised px-5 text-sm font-bold text-ink shadow-sm transition-all hover:border-brand-teal hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
       >
         📄 Download PDF
       </button>

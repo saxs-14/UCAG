@@ -71,7 +71,7 @@ export function CompleteProfileForm({ uid, onComplete }: { uid: string; onComple
             <button type="button" className="min-h-14 rounded-xl bg-mark-green px-4 text-base font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-mark-green/30" onClick={() => { setIsMinor(false); setStep("institution"); }}>
               {LABELS.account.ageGateYes}
             </button>
-            <button type="button" className="min-h-14 rounded-xl border-2 border-line bg-white px-4 text-base font-bold text-ink-soft transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" onClick={() => { setIsMinor(true); setStep("guardianConsent"); }}>
+            <button type="button" className="min-h-14 rounded-xl border-2 border-line bg-paper-raised px-4 text-base font-bold text-ink-soft transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" onClick={() => { setIsMinor(true); setStep("guardianConsent"); }}>
               {LABELS.account.ageGateNo}
             </button>
           </div>

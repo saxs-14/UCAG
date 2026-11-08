@@ -69,10 +69,10 @@ export function SmartBackupPlan({
             {alternatives.slice(0, 3).map((alt) => (
               <div
                 key={alt.id}
-                className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-amber-200 bg-white p-3 shadow-sm transition-transform hover:-translate-y-0.5"
+                className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between rounded-xl border border-amber-200 bg-paper-raised p-3 shadow-sm transition-transform hover:-translate-y-0.5"
               >
                 <span className="font-bold text-ink text-sm">{alt.name}</span>
-                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-slate-100 px-2.5 py-1 font-mono text-xs font-bold text-ink-soft">
+                <span className="inline-flex shrink-0 items-center gap-1.5 rounded-lg bg-slate-soft px-2.5 py-1 font-mono text-xs font-bold text-ink-soft">
                   APS {alt.minAps ?? "N/A"} <span className="font-sans font-medium">({alt.duration})</span>
                 </span>
               </div>

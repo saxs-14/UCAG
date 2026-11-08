@@ -121,7 +121,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
                 {cta.kind === "openingSoon" && <span className="inline-flex min-h-11 items-center rounded-xl border border-emerald-300 bg-emerald-100 px-4 text-sm font-bold text-emerald-800">{cta.label}</span>}
                 {(cta.kind === "statusCheck" || cta.kind === "datesBeingVerified") && (
                   <>
-                    <span className="inline-flex min-h-11 items-center rounded-xl bg-slate-100 px-4 text-sm font-semibold text-slate-700">{cta.label}</span>
+                    <span className="inline-flex min-h-11 items-center rounded-xl bg-slate-soft px-4 text-sm font-semibold text-slate-700">{cta.label}</span>
                     {cta.url && <a href={cta.url} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center px-2 text-sm font-bold text-brand-teal hover:underline">Visit official site ↗</a>}
                   </>
                 )}

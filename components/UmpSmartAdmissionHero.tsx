@@ -142,7 +142,7 @@ export function UmpSmartAdmissionHero() {
               <div
                 key={f.id}
                 data-id={f.id}
-                className={`feature-card-observer card-learner flex flex-col gap-4 rounded-3xl border border-line bg-white p-7 text-center shadow-sm transition-all duration-700 hover:shadow-md ${
+                className={`feature-card-observer card-learner flex flex-col gap-4 rounded-3xl border border-line bg-paper-raised p-7 text-center shadow-sm transition-all duration-700 hover:shadow-md ${
                   isVisible ? "opacity-100 translate-y-0" : "opacity-0 translate-y-8"
                 }`}
               >

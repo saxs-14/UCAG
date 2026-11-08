@@ -293,7 +293,7 @@ export default function UmpFundingPage() {
               🎯 Looking for Learnerships?
             </h2>
           </div>
-          <div className="p-6 bg-white dark:bg-paper-raised flex flex-col gap-3 text-sm text-ink-soft">
+          <div className="p-6 bg-paper-raised dark:bg-paper-raised flex flex-col gap-3 text-sm text-ink-soft">
             <p className="leading-relaxed">
               <strong className="text-ink">Learnerships</strong> are a funded alternative to traditional degrees —
               ideal for Grade 11/12 learners and school leavers who want to earn a stipend while training

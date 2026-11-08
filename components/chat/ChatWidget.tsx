@@ -135,8 +135,8 @@ export function ChatWidget() {
             </button>
           </header>
 
-          <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto bg-slate-50/50 p-4">
-            <div className="animate-pop-in max-w-[85%] self-start rounded-2xl rounded-bl-sm bg-white p-3 text-sm font-medium leading-relaxed text-ink shadow-sm border border-line/40">
+          <div ref={scrollRef} className="flex flex-1 flex-col gap-3 overflow-y-auto bg-slate-soft/50 p-4">
+            <div className="animate-pop-in max-w-[85%] self-start rounded-2xl rounded-bl-sm bg-paper-raised p-3 text-sm font-medium leading-relaxed text-ink shadow-sm border border-line/40">
               {displayName ? `Hi ${displayName}! ` : "Hi there! "}
               How can I help you with your application journey today?
             </div>
@@ -146,14 +146,14 @@ export function ChatWidget() {
                 className={`animate-pop-in max-w-[85%] rounded-2xl p-3 text-sm font-medium leading-relaxed shadow-sm ${
                   message.role === "user"
                     ? "self-end rounded-br-sm bg-brand-teal text-white"
-                    : "self-start rounded-bl-sm bg-white text-ink border border-line/40"
+                    : "self-start rounded-bl-sm bg-paper-raised text-ink border border-line/40"
                 }`}
               >
                 {message.text}
               </div>
             ))}
             {streamingReply !== null && (
-              <div className="animate-pop-in self-start max-w-[85%] rounded-2xl rounded-bl-sm bg-white p-3 text-sm font-medium text-ink shadow-sm border border-line/40">
+              <div className="animate-pop-in self-start max-w-[85%] rounded-2xl rounded-bl-sm bg-paper-raised p-3 text-sm font-medium text-ink shadow-sm border border-line/40">
                 {streamingReply || "Thinking..."}
               </div>
             )}
@@ -164,7 +164,7 @@ export function ChatWidget() {
             )}
           </div>
 
-          <form className="flex items-center gap-3 border-t border-line/50 bg-white p-3" onSubmit={(e) => { e.preventDefault(); void handleSend(); }}>
+          <form className="flex items-center gap-3 border-t border-line/50 bg-paper-raised p-3" onSubmit={(e) => { e.preventDefault(); void handleSend(); }}>
             <input
               ref={inputRef}
               type="text"
@@ -172,7 +172,7 @@ export function ChatWidget() {
               onChange={(e) => setDraft(e.target.value)}
               placeholder="Ask a question..."
               disabled={isLoading}
-              className="h-12 flex-1 rounded-2xl border border-line/60 bg-slate-50 px-4 text-sm font-medium text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+              className="h-12 flex-1 rounded-2xl border border-line/60 bg-slate-soft px-4 text-sm font-medium text-ink transition-all focus:border-brand-teal focus:bg-paper-raised focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
             />
             <button
               type="submit"

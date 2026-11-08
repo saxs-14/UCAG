@@ -58,7 +58,7 @@ export function BursariesPage({ bursaries: allBursaries }: BursariesPageProps) {
           </div>
           <ol className="mt-8 grid gap-4 sm:grid-cols-3">
             <li className="flex flex-col rounded-2xl bg-white/10 p-5 backdrop-blur-md border border-white/20">
-              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-white text-sm font-black text-brand-teal">1</span>
+              <span className="flex h-8 w-8 items-center justify-center rounded-full bg-paper-raised text-sm font-black text-brand-teal">1</span>
               <h3 className="mt-3 font-display text-base font-bold text-white">Filter</h3>
               <p className="mt-1 text-sm text-teal-100">Choose your study level or specific field.</p>
             </li>
@@ -97,7 +97,7 @@ export function BursariesPage({ bursaries: allBursaries }: BursariesPageProps) {
             <p className="mt-1 text-sm font-medium text-ink-soft">Filters use recorded fields only. Always check the official page for full eligibility.</p>
           </div>
           {hasFilters && (
-            <button type="button" onClick={clearFilters} className="min-h-12 rounded-xl border-2 border-line px-5 text-sm font-bold text-ink transition-colors hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
+            <button type="button" onClick={clearFilters} className="min-h-12 rounded-xl border-2 border-line px-5 text-sm font-bold text-ink transition-colors hover:bg-slate-soft focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
               Clear filters
             </button>
           )}

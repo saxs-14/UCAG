@@ -161,7 +161,7 @@ export default async function UmpHubPage() {
                 📋 Application Window
               </h2>
             </div>
-            <div className="p-6 flex flex-wrap items-center gap-4 bg-white dark:bg-paper-raised">
+            <div className="p-6 flex flex-wrap items-center gap-4 bg-paper-raised dark:bg-paper-raised">
               {windowStatus === "open" && (
                 <span className="rounded-full bg-mark-green-soft px-4 py-1.5 text-sm font-bold text-mark-green border border-mark-green/30">
                   ✅ Applications are open
@@ -309,7 +309,7 @@ export default async function UmpHubPage() {
               <Link
                 key={href}
                 href={href}
-                className="group flex flex-col gap-3 rounded-2xl border p-5 bg-white dark:bg-paper-raised shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
+                className="group flex flex-col gap-3 rounded-2xl border p-5 bg-paper-raised dark:bg-paper-raised shadow-sm transition-all duration-200 hover:-translate-y-1 hover:shadow-md"
                 style={{ borderColor: `${accent}25` }}
               >
                 <div className="flex items-center justify-between">
@@ -364,7 +364,7 @@ export default async function UmpHubPage() {
                 return (
                   <div
                     key={faculty.id}
-                    className="flex flex-col gap-3 rounded-2xl border bg-white dark:bg-paper-raised p-5 shadow-sm transition hover:shadow-md"
+                    className="flex flex-col gap-3 rounded-2xl border bg-paper-raised dark:bg-paper-raised p-5 shadow-sm transition hover:shadow-md"
                     style={{ borderColor: `${UMP_NAVY}20` }}
                   >
                     <div>

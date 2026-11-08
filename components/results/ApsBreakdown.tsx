@@ -16,21 +16,21 @@ export function ApsBreakdown({ apsResult, institutionName }: ApsBreakdownProps) 
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
-        className="flex w-full items-center justify-between bg-slate-50/50 p-4 focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+        className="flex w-full items-center justify-between bg-slate-soft/50 p-4 focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
       >
         <span className="font-bold text-ink">Explain my APS for {institutionName}</span>
-        <span className={`flex h-8 w-8 items-center justify-center rounded-full bg-white text-ink-soft shadow-sm transition-transform duration-300 ${expanded ? "rotate-180 bg-brand-teal/10 text-brand-teal" : ""}`}>
+        <span className={`flex h-8 w-8 items-center justify-center rounded-full bg-paper-raised text-ink-soft shadow-sm transition-transform duration-300 ${expanded ? "rotate-180 bg-brand-teal/10 text-brand-teal" : ""}`}>
           ▼
         </span>
       </button>
 
       {expanded && (
-        <div className="border-t border-line/50 bg-white p-4">
+        <div className="border-t border-line/50 bg-paper-raised p-4">
           <p className="text-xs font-medium text-ink-soft">{apsResult.loTreatmentMessage}</p>
 
           <div className="mt-4 overflow-hidden rounded-xl border border-line/60">
             <table className="w-full text-left text-sm">
-              <thead className="bg-slate-50 border-b border-line/60">
+              <thead className="bg-slate-soft border-b border-line/60">
                 <tr>
                   <th className="py-2.5 pl-4 pr-2 text-xs font-bold uppercase tracking-wider text-ink-soft">Subject</th>
                   <th className="py-2.5 pr-2 text-xs font-bold uppercase tracking-wider text-ink-soft">Mark</th>
@@ -39,10 +39,10 @@ export function ApsBreakdown({ apsResult, institutionName }: ApsBreakdownProps) 
               </thead>
               <tbody className="divide-y divide-line/40">
                 {apsResult.countedSubjects.map((subject) => (
-                  <tr key={subject.subjectCode} className="hover:bg-slate-50/50 transition-colors">
+                  <tr key={subject.subjectCode} className="hover:bg-slate-soft/50 transition-colors">
                     <td className="py-3 pl-4 pr-2 font-semibold text-ink">
                       {resolveSubjectLabel(subject.subjectCode)}
-                      {subject.isLifeOrientation && <span className="ml-1.5 rounded-full bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-ink-faint">(LO)</span>}
+                      {subject.isLifeOrientation && <span className="ml-1.5 rounded-full bg-slate-soft px-1.5 py-0.5 text-[10px] font-bold text-ink-faint">(LO)</span>}
                     </td>
                     <td className="py-3 pr-2 font-mono font-medium text-ink-soft">
                       {subject.percentage}%

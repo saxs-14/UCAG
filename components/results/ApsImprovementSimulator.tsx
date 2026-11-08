@@ -96,7 +96,7 @@ export function ApsImprovementSimulator({
             <p className="text-sm font-medium text-ink-soft">Test how boosting a mark impacts your APS.</p>
           </div>
         </div>
-        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-ink shadow-sm transition-transform duration-300 border border-line/50 ${expanded ? "rotate-180 bg-brand-teal/10 text-brand-teal" : ""}`}>
+        <div className={`flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-paper-raised text-ink shadow-sm transition-transform duration-300 border border-line/50 ${expanded ? "rotate-180 bg-brand-teal/10 text-brand-teal" : ""}`}>
           ▼
         </div>
       </button>
@@ -110,7 +110,7 @@ export function ApsImprovementSimulator({
                 <select
                   value={selectedInstitutionId}
                   onChange={(e) => setSelectedInstitutionId(e.target.value)}
-                  className="h-12 w-full rounded-xl border border-line/60 bg-white px-3 font-semibold text-ink focus:border-brand-teal focus:ring-brand-teal"
+                  className="h-12 w-full rounded-xl border border-line/60 bg-paper-raised px-3 font-semibold text-ink focus:border-brand-teal focus:ring-brand-teal"
                 >
                   {scoredInstitutionIds.map((id) => (
                     <option key={id} value={id}>{institutions.find((i) => i.id === id)?.name ?? id}</option>
@@ -124,7 +124,7 @@ export function ApsImprovementSimulator({
               <select
                 value={selectedSubject}
                 onChange={(e) => { setSelectedSubject(e.target.value); setTargetMark(marks.find((m) => m.subjectCode === e.target.value)?.percentage ?? 0); setUserEditedTarget(false); }}
-                className="h-12 w-full rounded-xl border border-line/60 bg-white px-3 font-semibold text-ink focus:border-brand-teal focus:ring-brand-teal"
+                className="h-12 w-full rounded-xl border border-line/60 bg-paper-raised px-3 font-semibold text-ink focus:border-brand-teal focus:ring-brand-teal"
               >
                 {marks.map((m) => (
                   <option key={m.subjectCode} value={m.subjectCode}>{resolveSubjectLabel(m.subjectCode)} (Now: {m.percentage}%)</option>
@@ -140,12 +140,12 @@ export function ApsImprovementSimulator({
                 max={100}
                 value={targetMark}
                 onChange={(e) => handleTargetMarkChange(e.target.value)}
-                className="h-12 w-full rounded-xl border-2 border-brand-teal/50 bg-white px-3 text-center font-mono text-lg font-bold text-brand-teal focus:border-brand-teal focus:ring-brand-teal"
+                className="h-12 w-full rounded-xl border-2 border-brand-teal/50 bg-paper-raised px-3 text-center font-mono text-lg font-bold text-brand-teal focus:border-brand-teal focus:ring-brand-teal"
               />
             </label>
           </div>
 
-          <div className="flex flex-col items-center justify-center gap-6 rounded-2xl border-2 border-brand-teal/20 bg-white py-8 sm:flex-row sm:gap-12">
+          <div className="flex flex-col items-center justify-center gap-6 rounded-2xl border-2 border-brand-teal/20 bg-paper-raised py-8 sm:flex-row sm:gap-12">
             <div className="flex flex-col items-center">
               <span className="mb-2 text-xs font-black uppercase tracking-widest text-ink-soft">Current APS</span>
               <span className="font-mono text-4xl font-black text-slate-400">{currentApsResult.score}</span>
@@ -173,7 +173,7 @@ export function ApsImprovementSimulator({
               </div>
               <div className="mt-3 flex flex-wrap gap-2">
                 {newlyUnlocked.map((p) => (
-                  <span key={p.id} className="rounded-lg bg-white px-3 py-1.5 text-sm font-semibold text-emerald-700 shadow-sm border border-emerald-100">
+                  <span key={p.id} className="rounded-lg bg-paper-raised px-3 py-1.5 text-sm font-semibold text-emerald-700 shadow-sm border border-emerald-100">
                     {p.name}
                   </span>
                 ))}

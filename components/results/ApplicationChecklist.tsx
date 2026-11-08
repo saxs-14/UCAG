@@ -19,7 +19,7 @@ export function ApplicationChecklist({ checked, onToggle, signedIn }: Applicatio
   const [expanded, setExpanded] = useState(false);
 
   return (
-    <div className="no-print overflow-hidden rounded-3xl border border-line bg-white shadow-sm transition-all hover:shadow-md">
+    <div className="no-print overflow-hidden rounded-3xl border border-line bg-paper-raised shadow-sm transition-all hover:shadow-md">
       <button
         type="button"
         onClick={() => setExpanded(!expanded)}
@@ -35,13 +35,13 @@ export function ApplicationChecklist({ checked, onToggle, signedIn }: Applicatio
               <span className="text-sm font-medium text-ink-soft">
                 {checkedCount} of {APPLICATION_CHECKLIST_ITEMS.length} tasks ready
               </span>
-              <div className="hidden h-2 w-24 overflow-hidden rounded-full bg-slate-200 sm:block">
+              <div className="hidden h-2 w-24 overflow-hidden rounded-full bg-slate-soft sm:block">
                 <div className="h-full bg-brand-teal transition-all duration-500" style={{ width: `${progressPercent}%` }} />
               </div>
             </div>
           </div>
         </div>
-        <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-white text-ink shadow-sm transition-transform duration-300 border border-line/50 ${expanded ? "rotate-180 bg-brand-teal/5 text-brand-teal" : ""}`}>
+        <div className={`flex h-10 w-10 items-center justify-center rounded-full bg-paper-raised text-ink shadow-sm transition-transform duration-300 border border-line/50 ${expanded ? "rotate-180 bg-brand-teal/5 text-brand-teal" : ""}`}>
           ▼
         </div>
       </button>
@@ -64,7 +64,7 @@ export function ApplicationChecklist({ checked, onToggle, signedIn }: Applicatio
               {documents.map((item) => {
                 const isChecked = checked.has(item.id);
                 return (
-                  <label key={item.id} className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-all ${isChecked ? "border-brand-teal/40 bg-brand-teal/5 shadow-sm" : "border-line/60 bg-white hover:border-brand-teal/30"}`}>
+                  <label key={item.id} className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-all ${isChecked ? "border-brand-teal/40 bg-brand-teal/5 shadow-sm" : "border-line/60 bg-paper-raised hover:border-brand-teal/30"}`}>
                     <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors ${isChecked ? "bg-brand-teal text-white" : "border-2 border-line/80"}`}>
                       {isChecked && <CheckIcon size={ICON_SIZE.sm} />}
                     </div>
@@ -82,7 +82,7 @@ export function ApplicationChecklist({ checked, onToggle, signedIn }: Applicatio
               {timeline.map((item) => {
                 const isChecked = checked.has(item.id);
                 return (
-                  <label key={item.id} className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-all ${isChecked ? "border-brand-coral/40 bg-brand-coral/5 shadow-sm" : "border-line/60 bg-white hover:border-brand-coral/30"}`}>
+                  <label key={item.id} className={`flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition-all ${isChecked ? "border-brand-coral/40 bg-brand-coral/5 shadow-sm" : "border-line/60 bg-paper-raised hover:border-brand-coral/30"}`}>
                     <div className={`mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded transition-colors ${isChecked ? "bg-brand-coral text-white" : "border-2 border-line/80"}`}>
                       {isChecked && <CheckIcon size={ICON_SIZE.sm} />}
                     </div>

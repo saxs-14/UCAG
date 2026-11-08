@@ -136,7 +136,7 @@ export function SubjectCombobox({
           aria-activedescendant={
             isOpen && highlightedCode ? optionDomId(label, highlightedCode) : undefined
           }
-          className="h-12 w-full cursor-text rounded-2xl border-2 border-line bg-slate-50 px-4 text-sm font-bold text-ink transition-all focus:border-brand-teal focus:bg-white focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
+          className="h-12 w-full cursor-text rounded-2xl border-2 border-line bg-slate-soft px-4 text-sm font-bold text-ink transition-all focus:border-brand-teal focus:bg-paper-raised focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
           placeholder={selected ? selected.name : placeholder}
           value={isOpen ? query : selected?.name ?? ""}
           onFocus={() => {
@@ -161,7 +161,7 @@ export function SubjectCombobox({
           <ul
             id={`combobox-listbox-${label}`}
             role="listbox"
-            className={`absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-line bg-white shadow-xl ${
+            className={`absolute z-20 mt-2 max-h-72 w-full overflow-y-auto rounded-2xl border border-line bg-paper-raised shadow-xl ${
               isClosing ? "animate-dropdown-out" : "animate-dropdown"
             }`}
           >
@@ -170,7 +170,7 @@ export function SubjectCombobox({
             )}
             {grouped.map(([groupLabel, subjects]) => (
               <li key={groupLabel}>
-                <div className="sticky top-0 bg-slate-100 px-4 py-1.5 text-xs font-black uppercase tracking-widest text-ink-faint border-y border-line/50">
+                <div className="sticky top-0 bg-slate-soft px-4 py-1.5 text-xs font-black uppercase tracking-widest text-ink-faint border-y border-line/50">
                   {groupLabel}
                 </div>
                 <ul>
@@ -182,7 +182,7 @@ export function SubjectCombobox({
                         role="option"
                         aria-selected={subject.code === value}
                         className={`flex min-h-12 w-full cursor-pointer items-center justify-between px-4 text-left text-sm font-semibold transition-colors ${
-                          subject.code === highlightedCode ? "bg-brand-teal/10 text-brand-teal" : "hover:bg-slate-50 text-ink"
+                          subject.code === highlightedCode ? "bg-brand-teal/10 text-brand-teal" : "hover:bg-slate-soft text-ink"
                         }`}
                         onClick={() => handleSelect(subject)}
                         onMouseEnter={() => setHighlightedCode(subject.code)}

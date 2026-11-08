@@ -72,7 +72,7 @@ export function InternshipsPage({ internships: allInternships }: InternshipsPage
             <p className="mt-1 text-sm font-medium text-ink-soft">Filters use recorded fields only. Always check the official provider for final eligibility.</p>
           </div>
           {hasFilters && (
-            <button type="button" onClick={clearFilters} className="min-h-12 rounded-xl border-2 border-line px-5 text-sm font-bold text-ink transition-colors hover:bg-slate-100 focus:outline-none focus:ring-4 focus:ring-brand-coral/20">
+            <button type="button" onClick={clearFilters} className="min-h-12 rounded-xl border-2 border-line px-5 text-sm font-bold text-ink transition-colors hover:bg-slate-soft focus:outline-none focus:ring-4 focus:ring-brand-coral/20">
               Clear filters
             </button>
           )}
