@@ -21,6 +21,18 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v5
+        with:
+          # gitleaks needs real commit history to diff against (it computes
+          # a range like <before>^..<after>) -- actions/checkout's default
+          # fetch-depth: 1 only fetches the single latest commit, with no
+          # parent at all, so that range is unresolvable ("unknown
+          # revision") on a shallow checkout. Confirmed failing both on a
+          # pull_request event (ef971e4^ literally didn't exist locally)
+          # and on a push right after a force-push/history rewrite (the
+          # recorded "before" SHA no longer existed at all). Full history
+          # makes both cases resolve correctly regardless of event type or
+          # what happened to the branch just before this run.
+          fetch-depth: 0
 
       - name: Setup Node.js
         uses: actions/setup-node@v5
