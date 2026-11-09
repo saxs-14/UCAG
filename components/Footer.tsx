@@ -30,6 +30,9 @@ export function Footer() {
           <Link href="/privacy" className="text-slate-300 transition-colors hover:text-white hover:underline">
             {LABELS.account.privacyNoticeLink}
           </Link>
+          <Link href="/terms" className="text-slate-300 transition-colors hover:text-white hover:underline">
+            {LABELS.account.termsLink}
+          </Link>
         </div>
 
         <div className="flex flex-col gap-3 text-sm font-medium">

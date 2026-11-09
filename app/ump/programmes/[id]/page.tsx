@@ -5,6 +5,7 @@ import { LABELS } from "@/config/labels";
 import { academicUnitLabel } from "@/lib/academicUnitLabel";
 import { getRealProgrammeDetail } from "@/lib/catalog/getRealProgrammeDetail";
 import { resolveEffectiveApplicationWindowStatus, resolveApplicationCta } from "@/lib/applicationStatus";
+import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 
 /**
  * UMP-specific programme detail page (app/ump/programmes/[id]/page.tsx).
@@ -103,7 +104,7 @@ export default async function UmpProgrammeDetailPage({
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }}
       />
 
       {/* ── UMP Hero band ── */}

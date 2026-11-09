@@ -5,6 +5,7 @@ import { resolveApplicationCta, resolveEffectiveApplicationWindowStatus } from "
 import { LABELS } from "@/config/labels";
 import { academicUnitLabel } from "@/lib/academicUnitLabel";
 import { getRealProgrammeDetail } from "@/lib/catalog/getRealProgrammeDetail";
+import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 
 export const dynamic = "force-dynamic";
 
@@ -50,7 +51,7 @@ export default async function ProgrammePage({ params }: { params: Promise<{ id: 
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
-      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
+      <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: safeJsonLd(jsonLd) }} />
 
       <div className="mx-auto flex w-full max-w-4xl flex-col gap-5 p-6 sm:p-8">
         <Link href="/programmes" className="inline-flex min-h-11 w-fit items-center text-sm font-semibold text-brand-teal hover:underline focus:outline-none focus:ring-2 focus:ring-brand-teal focus:ring-offset-2">

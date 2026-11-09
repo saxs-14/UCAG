@@ -149,6 +149,8 @@ export const LABELS = {
     fullNameLabel: "Your name",
     fullNameNote: "Used to personalise your account and the UCAG assistant -- e.g. \"Hi Thando, here's what I found\". Not shown to anyone else.",
     emailLabel: "Email",
+    showEmailLabel: "Show email",
+    hideEmailLabel: "Hide email",
     passwordLabel: "Password",
     createAccountButton: "Create account",
     signInButton: "Sign in",
@@ -189,6 +191,9 @@ export const LABELS = {
     adminAccountIntro: "This is a staff account, not a learner account -- it doesn't keep NSC marks, a shortlist, or an institution preference.",
     adminAccountNote: "Need to check marks, APS results, or shortlists? Use a separate learner account -- staff accounts stay admin-only by design.",
     privacyNoticeLink: "Privacy notice",
+    termsLink: "Terms of use",
+    termsAgreementPrefix: "By creating an account, you agree to our",
+    termsAgreementJoiner: "and",
   },
   privacy: {
     pageTitle: "Privacy Notice",
@@ -230,6 +235,49 @@ export const LABELS = {
       {
         heading: "The chat assistant",
         body: "Messages you send to the UCAG Assistant are sent to Google's Gemini API to generate a reply and are not stored by UCAG. Don't share personal details you wouldn't want processed by a third-party AI service. The assistant can help you understand APS and this site -- it never provides institution-specific requirements or dates; those always come from the calculator's verified, sourced results.",
+      },
+    ],
+  },
+  terms: {
+    pageTitle: "Terms of Use",
+    intro:
+      "The short version: UCAG is free, we never ask you to pay for anything, and it's a guide -- not an official application system. Here's what that means in more detail.",
+    sections: [
+      {
+        heading: "UCAG is free -- there is no payment feature anywhere on this site",
+        body: "Using the calculator, creating an account, saving marks, building a shortlist, and browsing bursaries and internships all cost nothing, for everyone, with no paid tier. UCAG will never ask you for card details, a bank account, or an \"admin fee\" for anything -- any message that does, even if it claims to be from UCAG, is a scam.",
+      },
+      {
+        heading: "UCAG is a guide, not the official application system",
+        body: "Your real application happens on each university's own portal, using their own rules. UCAG helps you work out what you're likely to qualify for and points you to the right official link -- it doesn't submit applications, hold your application fee, or make admission decisions. Where a programme's application window shows as open, always complete and submit the application on the institution's own site.",
+      },
+      {
+        heading: "APS results are an estimate, not a guarantee",
+        body: "Every APS score, requirement, and status shown here is checked against a real, verifiable source and dated when it was last confirmed -- see the \"Verified\" / \"being verified\" labels throughout the site. Even so, universities can change requirements, quotas, and selection criteria at any time, and some programmes use additional selection steps (interviews, portfolios, NBT results) beyond APS alone. Meeting the APS shown here improves your chances; it does not guarantee a place.",
+      },
+      {
+        heading: "Account use",
+        body: "Create an account with your own real details -- not on someone else's behalf except a parent/guardian setting one up for a minor in their care, as covered by the sign-up flow's consent step. Don't use someone else's account, and don't try to access data that isn't yours. You're responsible for keeping your own password private.",
+      },
+      {
+        heading: "If you're under 18",
+        body: "The same guardian-consent requirement described in the Privacy Notice applies here: a parent or guardian needs to agree before an account for a minor is created.",
+      },
+      {
+        heading: "Fair use",
+        body: "UCAG is built for individual learners planning their own university applications. Please don't scrape, mass-download, or automate requests against this site, and don't try to interfere with how it works for other users.",
+      },
+      {
+        heading: "Links to other sites",
+        body: "Application portals, status-check pages, and bursary/internship provider links point to sites UCAG doesn't control. We check that a link is genuine before it's shown, but we're not responsible for what happens on the other end of it once you leave UCAG.",
+      },
+      {
+        heading: "If something here ever changes",
+        body: "If these terms change in a way that matters, the date at the top of this page will reflect it. Continuing to use UCAG after a change means you're okay with the updated version; if you're not, you can stop using the site at any time, and delete your account from the account page if you have one.",
+      },
+      {
+        heading: "Which country's law applies",
+        body: "UCAG is built for South African school-leavers and is governed by South African law, including POPIA -- see the Privacy Notice for how that applies to your information specifically.",
       },
     ],
   },

@@ -113,6 +113,15 @@ const nextConfig: NextConfig = {
           { key: "X-Content-Type-Options", value: "nosniff" },
           { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
           { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+          // Vercel's edge already adds this for production custom domains,
+          // but that's a hosting-provider default, not something this repo
+          // controls or can verify from the code -- declaring it here means
+          // HSTS holds even if this app is ever hosted elsewhere, matching
+          // CLAUDE.md's explicit "security headers (CSP, HSTS, X-Frame-
+          // Options)" requirement instead of relying on an unverified
+          // platform default. 2 years + preload is the standard HSTS
+          // baseline for a domain with no non-HTTPS subdomains in use.
+          { key: "Strict-Transport-Security", value: "max-age=63072000; includeSubDomains; preload" },
         ],
       },
     ];
