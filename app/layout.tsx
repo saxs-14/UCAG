@@ -9,6 +9,7 @@ import { ServiceWorkerRegistration } from "@/components/ServiceWorkerRegistratio
 import { ChatWidgetLoader } from "@/components/chat/ChatWidgetLoader";
 import { MobileNavBar } from "@/components/MobileNavBar";
 import { getBaseUrl } from "@/lib/env/client";
+import { safeJsonLd } from "@/lib/seo/safeJsonLd";
 import "./globals.css";
 
 const RICH_FONTS_SCRIPT = `try {
@@ -118,7 +119,7 @@ export default async function RootLayout({
       <body className="flex min-h-screen flex-col antialiased bg-paper text-ink">
         <script
           type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
+          dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationJsonLd) }}
         />
         <Script id="rich-fonts-detect" strategy="beforeInteractive">
           {RICH_FONTS_SCRIPT}

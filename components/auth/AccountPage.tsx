@@ -165,8 +165,9 @@ export function AccountPage() {
         <div className="glass-blur-strong rounded-3xl border border-glass-border bg-glass-surface-strong p-6 shadow-xl shadow-brand-teal/5 sm:p-8">
           {mode === "signUp" ? <SignUpForm onSwitchToSignIn={() => setMode("signIn")} /> : <SignInForm onSwitchToSignUp={() => setMode("signUp")} />}
         </div>
-        <div className="text-center">
+        <div className="flex justify-center gap-4 text-center">
           <Link href="/privacy" className="text-xs font-medium text-brand-teal hover:underline">{LABELS.account.privacyNoticeLink}</Link>
+          <Link href="/terms" className="text-xs font-medium text-brand-teal hover:underline">{LABELS.account.termsLink}</Link>
         </div>
       </div>
     );

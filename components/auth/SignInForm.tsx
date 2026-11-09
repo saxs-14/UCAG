@@ -10,6 +10,7 @@ import {
 import { getFirebaseAuth } from "@/lib/firebase/client";
 import { formatAuthError } from "@/lib/auth/formatAuthError";
 import { LABELS } from "@/config/labels";
+import { MaskedEmailInput } from "./MaskedEmailInput";
 
 export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void }) {
   const [email, setEmail] = useState("");
@@ -51,13 +52,7 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
 
       <label className="flex flex-col gap-1.5 text-sm font-bold text-ink-soft">
         {LABELS.account.emailLabel}
-        <input
-          type="email"
-          required
-          className="min-h-12 rounded-xl border border-line bg-paper-raised px-4 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-        />
+        <MaskedEmailInput value={email} onChange={setEmail} />
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm font-bold text-ink-soft">

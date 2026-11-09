@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   GoogleAuthProvider,
   browserPopupRedirectResolver,
@@ -14,6 +15,7 @@ import { formatAuthError } from "@/lib/auth/formatAuthError";
 import { LABELS } from "@/config/labels";
 import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
 import { useAuth } from "./AuthProvider";
+import { MaskedEmailInput } from "./MaskedEmailInput";
 import type { ConsentRecord } from "@/lib/firestore/types";
 
 type Step = "ageGate" | "guardianConsent" | "details";
@@ -189,7 +191,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
 
       <label className="flex flex-col gap-1.5 text-sm font-bold text-ink-soft">
         {LABELS.account.emailLabel}
-        <input type="email" required className="min-h-12 rounded-xl border border-line bg-paper-raised px-4 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" value={email} onChange={(e) => setEmail(e.target.value)} />
+        <MaskedEmailInput value={email} onChange={setEmail} />
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm font-bold text-ink-soft">
@@ -198,7 +200,14 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
       </label>
 
       {error && <p role="alert" className="rounded-xl bg-mark-red/10 p-3 text-sm font-medium text-mark-red">{error}</p>}
-      
+
+      <p className="-mt-1 text-xs leading-relaxed text-ink-faint">
+        {LABELS.account.termsAgreementPrefix}{" "}
+        <Link href="/terms" className="font-semibold text-brand-teal hover:underline">{LABELS.account.termsLink}</Link>{" "}
+        {LABELS.account.termsAgreementJoiner}{" "}
+        <Link href="/privacy" className="font-semibold text-brand-teal hover:underline">{LABELS.account.privacyNoticeLink}</Link>.
+      </p>
+
       <div className="mt-2 flex flex-col gap-3">
         <button type="submit" disabled={submitting || !institutionId} className="min-h-12 rounded-xl bg-mark-green px-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 focus:outline-none focus:ring-4 focus:ring-mark-green/30">
           {LABELS.account.createAccountButton}
