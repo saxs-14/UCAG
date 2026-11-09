@@ -6,6 +6,13 @@ on:
   pull_request:
     branches: [ master ]
 
+# Least-privilege default: nothing in this workflow pushes commits, opens
+# PRs, or writes issues/packages, so the GITHUB_TOKEN handed to every step
+# (including the third-party gitleaks action below) gets read-only repo
+# access rather than the default read-write.
+permissions:
+  contents: read
+
 jobs:
   build-and-test:
     name: Build, Lint & Test
@@ -41,7 +48,13 @@ jobs:
       # negotiable "secrets never reach the browser" (and, by extension,
       # never reach the repo either).
       - name: Scan for committed secrets (gitleaks)
-        uses: gitleaks/gitleaks-action@v2
+        # Pinned to v3.0.0's commit SHA, not the floating "@v2"/"@v3" tag --
+        # a mutable major-version tag on a third-party action is a supply-
+        # chain foot-gun (the maintainer, or anyone who compromises their
+        # account, can repoint it to different code with no corresponding
+        # change in this repo's history). The version comment is just for
+        # human/Dependabot readability; the SHA is what actually runs.
+        uses: gitleaks/gitleaks-action@e0c47f4f8be36e29cdc102c57e68cb5cbf0e8d1e # v3.0.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
