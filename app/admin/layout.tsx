@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { Logo } from "@/components/Logo";
 
 const NAV = [
   { href: "/admin", label: "Dashboard" },
@@ -34,9 +35,7 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
       <main className="flex min-h-screen items-center justify-center bg-gradient-to-br from-paper to-brand-teal/10 p-6">
         <div className="w-full max-w-md rounded-3xl border-2 border-glass-border bg-paper-raised/80 p-8 shadow-2xl backdrop-blur-sm">
           <div className="mb-6 flex justify-center">
-            <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-brand-teal text-white shadow-lg">
-              <span className="text-2xl font-bold">UCAG</span>
-            </div>
+            <Logo size={64} showWordmark={false} />
           </div>
           <h1 className="text-center font-display text-2xl font-extrabold text-ink">Staff Access Required</h1>
           <p className="mt-3 text-center text-sm leading-relaxed text-ink-soft">
@@ -73,12 +72,10 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-slate-soft md:flex-row">
-      <nav className="flex shrink-0 flex-row gap-2 overflow-x-auto border-b border-line bg-paper-raised p-4 shadow-sm md:w-64 md:flex-col md:border-b-0 md:border-r md:p-6 md:shadow-none">
+    <div className="flex min-h-screen flex-col md:flex-row">
+      <nav className="glass-blur-strong flex shrink-0 flex-row gap-2 overflow-x-auto border-b border-glass-border bg-glass-surface-strong p-4 shadow-sm md:w-64 md:flex-col md:border-b-0 md:border-r md:p-6 md:shadow-none">
         <div className="hidden md:mb-8 md:flex md:items-center md:gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-teal text-white shadow-md">
-            <span className="font-bold">UCAG</span>
-          </div>
+          <Logo size={40} showWordmark={false} />
           <span className="font-display text-lg font-bold text-ink">Management</span>
         </div>
         <div className="flex md:flex-col md:gap-1.5">
@@ -97,8 +94,8 @@ export default function AdminLayout({ children }: { children: ReactNode }) {
           ))}
         </div>
       </nav>
-      <main className="min-w-0 flex-1 bg-slate-soft p-4 sm:p-6 md:p-10">
-        <div className="mx-auto max-w-7xl rounded-3xl bg-paper-raised p-6 shadow-sm ring-1 ring-black/5 sm:p-8">
+      <main className="min-w-0 flex-1 p-4 sm:p-6 md:p-10">
+        <div className="glass-blur mx-auto max-w-7xl rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm sm:p-8">
           {children}
         </div>
       </main>
