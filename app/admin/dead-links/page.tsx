@@ -27,6 +27,9 @@ function diagnose(check: LinkHealthCheckRecord): string {
   if (check.error?.toLowerCase().includes("abort") || check.error?.toLowerCase().includes("timeout")) {
     return "The site took too long to respond. Could be temporary -- try running the check again later.";
   }
+  if (check.error?.toLowerCase().includes("certificate") || check.error?.toLowerCase().includes("leaf signature")) {
+    return "The institution's own server isn't sending its full HTTPS certificate chain -- a real misconfiguration on their end, but one most browsers quietly work around, so the site is very likely fine for a real visitor. Open it yourself to confirm; this isn't something to fix on our side.";
+  }
   if (!check.statusCode) {
     return "This address didn't respond at all, which usually means it's outdated. Find the institution's current link and update it in Institution Data.";
   }

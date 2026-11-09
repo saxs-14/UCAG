@@ -15,6 +15,7 @@ import { formatAuthError } from "@/lib/auth/formatAuthError";
 import { LABELS } from "@/config/labels";
 import { useAuth } from "./AuthProvider";
 import { PasswordInput } from "./PasswordInput";
+import { passwordRequirementError } from "@/lib/auth/passwordStrength";
 import type { ConsentRecord } from "@/lib/firestore/types";
 
 type Step = "ageGate" | "guardianConsent" | "details";
@@ -59,6 +60,11 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
   async function handleEmailSignUp(e: React.FormEvent) {
     e.preventDefault();
     setError(null);
+    const passwordError = passwordRequirementError(password);
+    if (passwordError) {
+      setError(passwordError);
+      return;
+    }
     setSubmitting(true);
     try {
       const credential = await createUserWithEmailAndPassword(getFirebaseAuth(), email, password);
@@ -172,8 +178,9 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
 
       <label className="flex flex-col gap-1.5 text-sm font-bold text-ink-soft">
         {LABELS.account.passwordLabel}
-        <PasswordInput value={password} onChange={setPassword} autoComplete="new-password" minLength={6} />
+        <PasswordInput value={password} onChange={setPassword} autoComplete="new-password" minLength={8} />
       </label>
+      <p className="-mt-2 text-xs font-medium text-ink-faint px-1">{LABELS.account.passwordRequirementsNote}</p>
 
       {error && <p role="alert" className="rounded-xl bg-mark-red/10 p-3 text-sm font-medium text-mark-red">{error}</p>}
 

@@ -40,7 +40,16 @@ export async function checkLinkHealth(
       });
     }
 
-    return { url, alive: response.ok, statusCode: response.status, error: null, checkedAt };
+    // 401/403 specifically -- not response.ok, but still proof the
+    // destination exists: DNS resolved, TCP/TLS connected, and a real
+    // server answered with "access denied," which is categorically
+    // different from "this doesn't exist" (404) or genuinely unreachable
+    // (network error, below). University sites commonly return exactly
+    // this to an automated/bot User-Agent (confirmed by hand: the same
+    // URLs load real content in a normal browser) -- treating them as
+    // dead was a false positive, not a real broken link.
+    const alive = response.ok || response.status === 401 || response.status === 403;
+    return { url, alive, statusCode: response.status, error: null, checkedAt };
   } catch (err) {
     return {
       url,

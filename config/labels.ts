@@ -152,6 +152,7 @@ export const LABELS = {
     emailLabel: "Email",
     showPasswordLabel: "Show password",
     hidePasswordLabel: "Hide password",
+    passwordRequirementsNote: "At least 8 characters, with 1 capital letter, 1 number, and 1 special character.",
     passwordLabel: "Password",
     createAccountButton: "Create account",
     creatingAccountButton: "Creating account...",
