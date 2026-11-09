@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   GoogleAuthProvider,
   browserPopupRedirectResolver,
@@ -65,6 +66,12 @@ export function SignInForm({ onSwitchToSignUp }: { onSwitchToSignUp: () => void 
           onChange={(e) => setPassword(e.target.value)}
         />
       </label>
+
+      <div className="-mt-2 text-right">
+        <Link href="/forgot-password" className="text-sm font-bold text-brand-teal hover:underline">
+          {LABELS.account.forgotPasswordLink}
+        </Link>
+      </div>
 
       {error && <p className="rounded-xl bg-mark-red/10 p-3 text-sm font-medium text-mark-red">{error}</p>}
       

@@ -101,14 +101,17 @@ service cloud.firestore {
     // calling the Firestore SDK directly.
     match /userProfiles/{uid} {
       allow read: if isOwner(uid);
-      allow create: if isOwner(uid) && isValidProfileWrite(uid, request.resource.data) && institutionIsKnown(request.resource.data) && clientCreatedRoleIsLearner();
+      allow create: if isOwner(uid)
+        && isValidProfileWrite(uid, request.resource.data)
+        && !request.resource.data.keys().hasAny(["institutionId", "institutionDomain"])
+        && clientCreatedRoleIsLearner();
       allow update: if isOwner(uid)
         && isValidProfileWrite(uid, request.resource.data)
         && consentRecordNotRemoved()
         && createdAtUnchanged()
         && roleUnchanged()
         && onlyLearnerEditableFieldsChanged()
-        && institutionIsKnownWhenPresent();
+        && legacyInstitutionFieldsUnchangedOrRemoved();
       // Self-service account deletion (docs/MASTER_PROMPT_v2.md Phase 6:
       // "a working delete my account flow, not a stub") -- a signed-in
       // user may delete only their own profile document.
@@ -144,20 +147,6 @@ service cloud.firestore {
         );
     }
 
-    // Once a consent record exists, a client write can replace it (e.g.
-    // re-confirming consent) but can never null it out -- consent is a
-    // record to preserve, not a flag to toggle off from the client.
-    function institutionIsKnown(data) {
-      return data.institutionId is string
-        && data.institutionId != ""
-        && exists(/databases/$(database)/documents/institutions/$(data.institutionId));
-    }
-
-    function institutionIsKnownWhenPresent() {
-      return !request.resource.data.keys().hasAny(["institutionId"])
-        || institutionIsKnown(request.resource.data);
-    }
-
     function clientCreatedRoleIsLearner() {
       return !request.resource.data.keys().hasAny(["role"])
         || request.resource.data.role == "learner";
@@ -178,6 +167,7 @@ service cloud.firestore {
     function onlyLearnerEditableFieldsChanged() {
       return request.resource.data.diff(resource.data).affectedKeys().hasOnly([
         "institutionId",
+        "institutionDomain",
         "marks",
         "shortlist",
         "checklistProgress",
@@ -185,6 +175,30 @@ service cloud.firestore {
         "isMinor",
         "guardianConsentAt"
       ]);
+    }
+
+    // Legacy profiles may still carry institution fields. They can remain
+    // unchanged or be removed during migration, but cannot be added to new
+    // profiles or changed to another institution.
+    function legacyInstitutionFieldsUnchangedOrRemoved() {
+      return legacyInstitutionIdUnchangedOrRemoved()
+        && legacyInstitutionDomainUnchangedOrRemoved();
+    }
+
+    function legacyInstitutionIdUnchangedOrRemoved() {
+      return !request.resource.data.keys().hasAny(["institutionId"])
+        || (
+          resource.data.keys().hasAny(["institutionId"])
+          && request.resource.data.institutionId == resource.data.institutionId
+        );
+    }
+
+    function legacyInstitutionDomainUnchangedOrRemoved() {
+      return !request.resource.data.keys().hasAny(["institutionDomain"])
+        || (
+          resource.data.keys().hasAny(["institutionDomain"])
+          && request.resource.data.institutionDomain == resource.data.institutionDomain
+        );
     }
 
     function consentRecordNotRemoved() {

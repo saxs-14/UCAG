@@ -57,7 +57,7 @@
 
 ## 8. Current Firestore User Structure
 - Collection: `userProfiles/{uid}`
-- Fields: `uid`, `role`, `institutionId`, `institutionDomain`, `marks`, `shortlist`, `checklistProgress`, `consentRecord`, `isMinor`, `guardianConsentAt`, `createdAt`.
+- Fields: `uid`, `role`, `marks`, `shortlist`, `checklistProgress`, `consentRecord`, `isMinor`, `guardianConsentAt`, `createdAt`. Legacy institution fields are removed when an existing learner profile is loaded.
 - Additional collections: `mentorProfiles/{uid}` and `guardianLinks/{docId}`.
 
 ---

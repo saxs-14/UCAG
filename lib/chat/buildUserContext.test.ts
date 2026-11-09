@@ -51,7 +51,7 @@ const baseProfile: UserProfile = {
 };
 
 describe("buildUserContext", () => {
-  it("returns null for a profile with no marks, institution, or shortlist", () => {
+  it("returns null for a profile with no marks or shortlist", () => {
     expect(buildUserContext(baseProfile, catalog)).toBeNull();
   });
 
@@ -63,35 +63,6 @@ describe("buildUserContext", () => {
     const profile: UserProfile = { ...baseProfile, marks: [{ subjectCode: "MATH", percentage: 72 }] };
     const context = buildUserContext(profile, catalog);
     expect(context).toMatch(/Mathematics: 72%/);
-  });
-
-  it("includes a computed APS when the institution has a real institution-wide rule", () => {
-    const profile: UserProfile = {
-      ...baseProfile,
-      institutionId: "ump",
-      marks: [
-        { subjectCode: "ENG-HL", percentage: 80 },
-        { subjectCode: "MATH", percentage: 75 },
-      ],
-    };
-    const context = buildUserContext(profile, catalog);
-    expect(context).toContain("University of Mpumalanga");
-    expect(context).toMatch(/APS for University of Mpumalanga.*computed by UCAG's calculator.*: \d+/);
-  });
-
-  it("omits the APS line when the institution has no institution-wide rule (faculty-specific only)", () => {
-    const noFallbackCatalog: RealCatalog = {
-      ...catalog,
-      apsRules: [{ ...catalog.apsRules[0], facultyId: "some-faculty" } as RealCatalog["apsRules"][number]],
-    };
-    const profile: UserProfile = {
-      ...baseProfile,
-      institutionId: "ump",
-      marks: [{ subjectCode: "MATH", percentage: 75 }],
-    };
-    const context = buildUserContext(profile, noFallbackCatalog);
-    expect(context).toContain("University of Mpumalanga");
-    expect(context).not.toMatch(/APS for/);
   });
 
   it("resolves shortlisted programme ids to their real names", () => {

@@ -66,7 +66,6 @@ beforeEach(async (ctx) => {
 function validMajorProfile(uid: string) {
   return {
     uid,
-    institutionId: "ump",
     marks: [],
     shortlist: [],
     consentRecord: null,
@@ -79,7 +78,6 @@ function validMajorProfile(uid: string) {
 function validMinorProfileWithConsent(uid: string) {
   return {
     uid,
-    institutionId: "ump",
     marks: [],
     shortlist: [],
     consentRecord: {
@@ -95,19 +93,43 @@ function validMinorProfileWithConsent(uid: string) {
 }
 
 describe("userProfiles security rules", () => {
-  it("a user cannot create a profile without an institution", async () => {
+  it("a user can create a profile without an institution", async () => {
     const alice = testEnv.authenticatedContext("user-a");
-    const profile: Record<string, unknown> = { ...validMajorProfile("user-a") };
-    delete profile.institutionId;
-    await assertFails(alice.firestore().doc("userProfiles/user-a").set(profile));
+    await assertSucceeds(alice.firestore().doc("userProfiles/user-a").set(validMajorProfile("user-a")));
   });
 
-  it("a user cannot select an unknown institution", async () => {
+  it("a user cannot add institution fields to a new profile", async () => {
     const alice = testEnv.authenticatedContext("user-a");
     await assertFails(
       alice.firestore().doc("userProfiles/user-a").set({
         ...validMajorProfile("user-a"),
-        institutionId: "does-not-exist",
+        institutionId: "ump",
+      })
+    );
+    await assertFails(
+      alice.firestore().doc("userProfiles/user-a").set({
+        ...validMajorProfile("user-a"),
+        institutionDomain: "university.example",
+      })
+    );
+  });
+
+  it("legacy institution fields can be removed but not changed", async () => {
+    await testEnv.withSecurityRulesDisabled(async (adminCtx) => {
+      await adminCtx.firestore().doc("userProfiles/user-a").set({
+        ...validMajorProfile("user-a"),
+        institutionId: "ump",
+        institutionDomain: "ump.ac.za",
+      });
+    });
+
+    const alice = testEnv.authenticatedContext("user-a");
+    const profileRef = alice.firestore().doc("userProfiles/user-a");
+    await assertFails(profileRef.update({ institutionId: "another-institution" }));
+    await assertSucceeds(
+      profileRef.update({
+        institutionId: (await import("firebase/firestore")).deleteField(),
+        institutionDomain: (await import("firebase/firestore")).deleteField(),
       })
     );
   });

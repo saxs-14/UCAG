@@ -13,14 +13,11 @@ import { getFirebaseAuth } from "@/lib/firebase/client";
 import { createUserProfile } from "@/lib/auth/profile";
 import { formatAuthError } from "@/lib/auth/formatAuthError";
 import { LABELS } from "@/config/labels";
-import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
 import { useAuth } from "./AuthProvider";
 import { MaskedEmailInput } from "./MaskedEmailInput";
 import type { ConsentRecord } from "@/lib/firestore/types";
 
 type Step = "ageGate" | "guardianConsent" | "details";
-
-const institutions = SEED_INSTITUTIONS.filter((institution) => institution.tier <= 2);
 
 export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void }) {
   const { setDisplayName } = useAuth();
@@ -29,7 +26,6 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
   const [guardianName, setGuardianName] = useState("");
   const [guardianEmail, setGuardianEmail] = useState("");
   const [guardianConfirmed, setGuardianConfirmed] = useState(false);
-  const [institutionId, setInstitutionId] = useState("");
   const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,7 +50,6 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
     const { consentRecord, guardianConsentAt } = buildConsentRecord();
     await createUserProfile({
       uid,
-      institutionId,
       isMinor: isMinor ?? false,
       consentRecord,
       guardianConsentAt,
@@ -63,10 +58,6 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
 
   async function handleEmailSignUp(e: React.FormEvent) {
     e.preventDefault();
-    if (!institutionId) {
-      setError(LABELS.account.institutionRequired);
-      return;
-    }
     setError(null);
     setSubmitting(true);
     try {
@@ -85,10 +76,6 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
   }
 
   async function handleGoogleSignUp() {
-    if (!institutionId) {
-      setError(LABELS.account.institutionRequired);
-      return;
-    }
     setError(null);
     setSubmitting(true);
     try {
@@ -178,17 +165,6 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
         <input type="text" required autoComplete="name" className="min-h-12 rounded-xl border border-line bg-paper-raised px-4 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" value={fullName} onChange={(e) => setFullName(e.target.value)} />
       </label>
       <p className="-mt-2 text-xs font-medium text-ink-faint px-1">{LABELS.account.fullNameNote}</p>
-      
-      <label className="flex flex-col gap-1.5 text-sm font-bold text-ink-soft">
-        {LABELS.account.institutionLabel}
-        <select required value={institutionId} onChange={(e) => setInstitutionId(e.target.value)} className="min-h-12 rounded-xl border border-line bg-paper-raised px-4 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
-          <option value="">{LABELS.account.institutionPlaceholder}</option>
-          {institutions.map((institution) => (
-            <option key={institution.id} value={institution.id}>{institution.name} ({institution.shortName})</option>
-          ))}
-        </select>
-      </label>
-
       <label className="flex flex-col gap-1.5 text-sm font-bold text-ink-soft">
         {LABELS.account.emailLabel}
         <MaskedEmailInput value={email} onChange={setEmail} />
@@ -209,7 +185,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
       </p>
 
       <div className="mt-2 flex flex-col gap-3">
-        <button type="submit" disabled={submitting || !institutionId} className="min-h-12 rounded-xl bg-mark-green px-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 focus:outline-none focus:ring-4 focus:ring-mark-green/30">
+        <button type="submit" disabled={submitting} className="min-h-12 rounded-xl bg-mark-green px-4 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 focus:outline-none focus:ring-4 focus:ring-mark-green/30">
           {submitting ? LABELS.account.creatingAccountButton : LABELS.account.createAccountButton}
         </button>
         
@@ -219,7 +195,7 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
           <div className="flex-grow border-t border-line"></div>
         </div>
 
-        <button type="button" disabled={submitting || !institutionId} onClick={handleGoogleSignUp} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-line bg-paper-raised px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20 disabled:opacity-50">
+        <button type="button" disabled={submitting} onClick={handleGoogleSignUp} className="flex min-h-12 items-center justify-center gap-2 rounded-xl border-2 border-line bg-paper-raised px-4 py-2 text-sm font-bold text-ink transition-colors hover:border-brand-teal hover:bg-brand-teal/5 hover:text-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20 disabled:opacity-50">
           <svg className="h-5 w-5" viewBox="0 0 24 24">
             <path fill="currentColor" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" />
             <path fill="currentColor" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" />

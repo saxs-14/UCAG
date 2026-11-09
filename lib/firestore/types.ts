@@ -527,10 +527,6 @@ export type UserRole = "learner" | "staff" | "admin";
 export interface UserProfile {
   uid: string;
   role?: UserRole;
-  /** Institution selected by the learner for their UCAG journey. */
-  institutionId?: string;
-  /** Optional legacy/domain field retained for existing profiles. */
-  institutionDomain?: string;
   marks: SubjectMark[];
   shortlist: string[];
   /** IDs of config/applicationDocuments.ts's APPLICATION_CHECKLIST_ITEMS this

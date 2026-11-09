@@ -4,10 +4,9 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { deleteUser, signOut, updateProfile } from "firebase/auth";
 import { getFirebaseAuth } from "@/lib/firebase/client";
-import { deleteUserProfile, getUserProfile, updateProfilePreferences } from "@/lib/auth/profile";
+import { deleteUserProfile, getUserProfile } from "@/lib/auth/profile";
 import { profileToExportJson } from "@/lib/auth/export";
 import { resolveSubjectLabel } from "@/config/subjects";
-import { SEED_INSTITUTIONS } from "@/config/institutions.seed";
 import { useAuth } from "./AuthProvider";
 import { SignUpForm } from "./SignUpForm";
 import { SignInForm } from "./SignInForm";
@@ -33,7 +32,6 @@ export function AccountPage() {
   const [mode, setMode] = useState<"signUp" | "signIn">("signUp");
   const [profile, setProfile] = useState<UserProfile | null>(null);
   const [profileChecked, setProfileChecked] = useState(false);
-  const [institutionId, setInstitutionId] = useState("");
   const [fullName, setFullName] = useState("");
   const [editing, setEditing] = useState(false);
   const [confirmingDelete, setConfirmingDelete] = useState(false);
@@ -55,7 +53,6 @@ export function AccountPage() {
         if (cancelled) return;
         setProfile(fetchedProfile);
         setProfileChecked(true);
-        setInstitutionId(fetchedProfile?.institutionId ?? "");
 
         try {
           const rawStashed = sessionStorage.getItem("ucag_stashed_marks");
@@ -68,7 +65,6 @@ export function AccountPage() {
               const updated = await getUserProfile(user.uid);
               if (!cancelled) {
                 setProfile(updated);
-                setInstitutionId(updated?.institutionId ?? "");
                 setNotice(LABELS.account.stashedMarksNotice);
               }
             }
@@ -105,7 +101,7 @@ export function AccountPage() {
   }, [profile?.shortlist]);
 
   async function handleSaveProfile() {
-    if (!user || !institutionId) return;
+    if (!user) return;
     setSavingProfile(true);
     setError(null);
     setNotice(null);
@@ -115,8 +111,6 @@ export function AccountPage() {
         await updateProfile(user, { displayName: trimmedName || null });
         setDisplayName(trimmedName || null);
       }
-      await updateProfilePreferences(user.uid, { institutionId });
-      setProfile((current) => current ? { ...current, institutionId } : current);
       setEditing(false);
       setNotice(LABELS.account.profileSaved);
     } catch (err) {
@@ -212,12 +206,10 @@ export function AccountPage() {
   if (profileChecked && !profile) {
     return (
       <div className="flex w-full max-w-xl flex-col gap-6">
-        <CompleteProfileForm uid={user.uid} onComplete={() => getUserProfile(user.uid).then((p) => { setProfile(p); setInstitutionId(p?.institutionId ?? ""); })} />
+        <CompleteProfileForm uid={user.uid} onComplete={() => getUserProfile(user.uid).then(setProfile)} />
       </div>
     );
   }
-
-  const selectedInstitution = SEED_INSTITUTIONS.find((institution) => institution.id === profile?.institutionId);
 
   return (
     <div className="flex w-full max-w-xl flex-col gap-6">
@@ -250,32 +242,16 @@ export function AccountPage() {
           </div>
         )}
 
-        <div className="mt-6 rounded-2xl border border-line/70 bg-paper p-5">
-          <p className="text-sm font-bold text-ink-soft">{LABELS.account.institutionLabel}</p>
-          {editing ? (
-            <div className="mt-3 flex flex-col gap-4">
-              <select value={institutionId} onChange={(e) => setInstitutionId(e.target.value)} className="min-h-12 w-full rounded-xl border border-line bg-paper-raised px-4 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20">
-                <option value="">{LABELS.account.institutionPlaceholder}</option>
-                {SEED_INSTITUTIONS.filter((institution) => institution.tier <= 2).map((institution) => (
-                  <option key={institution.id} value={institution.id}>{institution.name} ({institution.shortName})</option>
-                ))}
-              </select>
-              <div className="flex flex-wrap gap-3">
-                <button type="button" disabled={!institutionId || savingProfile} onClick={handleSaveProfile} className="min-h-12 rounded-xl bg-brand-teal px-6 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none">
-                  {savingProfile ? LABELS.account.savingProfileButton : LABELS.account.saveProfileButton}
-                </button>
-                <button type="button" onClick={() => { setInstitutionId(profile?.institutionId ?? ""); setFullName(displayName ?? ""); setEditing(false); }} className="min-h-12 rounded-xl border-2 border-line px-6 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-soft hover:text-ink">
-                  {LABELS.account.cancelEditButton}
-                </button>
-              </div>
-            </div>
-          ) : (
-            <div className="mt-2 flex items-center gap-3 rounded-xl bg-paper-raised p-4 border border-line/50">
-              <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-brand-teal/10 text-brand-teal">🏫</div>
-              <p className="text-base font-bold text-ink">{selectedInstitution?.name ?? LABELS.account.institutionMissing}</p>
-            </div>
-          )}
-        </div>
+        {editing && (
+          <div className="mt-4 flex flex-wrap gap-3">
+            <button type="button" disabled={savingProfile} onClick={handleSaveProfile} className="min-h-12 rounded-xl bg-brand-teal px-6 text-sm font-bold text-white transition-transform hover:-translate-y-0.5 hover:shadow-lg disabled:opacity-50 disabled:hover:translate-y-0 disabled:hover:shadow-none">
+              {savingProfile ? LABELS.account.savingProfileButton : LABELS.account.saveProfileButton}
+            </button>
+            <button type="button" onClick={() => { setFullName(displayName ?? ""); setEditing(false); }} className="min-h-12 rounded-xl border-2 border-line px-6 text-sm font-bold text-ink-soft transition-colors hover:bg-slate-soft hover:text-ink">
+              {LABELS.account.cancelEditButton}
+            </button>
+          </div>
+        )}
       </section>
 
       <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm transition-all hover:shadow-md sm:p-8">

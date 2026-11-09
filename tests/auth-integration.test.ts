@@ -21,6 +21,7 @@ import {
   createUserWithEmailAndPassword,
   deleteUser,
   getAuth,
+  sendPasswordResetEmail,
   signInWithEmailAndPassword,
   signOut,
   type Auth,
@@ -48,11 +49,8 @@ let db: Firestore;
  * firestore.rules -- institutions/{docId} is `allow write: if false` for
  * every client, matching how the real ingestion pipeline/admin console
  * write it, per lib/firebase/admin.ts's own header comment). Required
- * because firestore.rules' institutionIsKnown() does a real exists()
- * check against this collection -- a profile create with an institutionId
- * that doesn't resolve to a real document is correctly rejected, so this
- * suite's own profile-creation calls need a real institution to point at,
- * the same way tests/firestore-rules.test.ts's beforeEach already does.
+ * The institution document is seeded for public catalogue assertions. User
+ * profile creation no longer depends on institutions being present.
  */
 async function seedInstitution() {
   process.env.FIRESTORE_EMULATOR_HOST ??= "127.0.0.1:8080";
@@ -120,7 +118,6 @@ describe("sign-up flow (real Auth + Firestore emulators)", { timeout: 15000 }, (
 
     const profile = {
       uid: credential.user.uid,
-      institutionId: "ump",
       marks: [],
       shortlist: [],
       consentRecord: null,
@@ -141,7 +138,6 @@ describe("sign-up flow (real Auth + Firestore emulators)", { timeout: 15000 }, (
 
     const profileWithoutConsent = {
       uid: credential.user.uid,
-      institutionId: "ump",
       marks: [],
       shortlist: [],
       consentRecord: null,
@@ -187,13 +183,19 @@ describe("sign-up flow (real Auth + Firestore emulators)", { timeout: 15000 }, (
     await expect(signInWithEmailAndPassword(auth, email, "wrong-password")).rejects.toThrow();
   });
 
+  it("sends a password reset email for a registered account", async () => {
+    const email = randomEmail();
+    await createUserWithEmailAndPassword(auth, email, "correct-horse-battery");
+
+    await expect(sendPasswordResetEmail(auth, email)).resolves.toBeUndefined();
+  });
+
   it("deletes a profile (account-deletion flow) so it no longer exists", async () => {
     const email = randomEmail();
     const credential = await createUserWithEmailAndPassword(auth, email, "correct-horse-battery");
     const ref = doc(db, "userProfiles", credential.user.uid);
     await setDoc(ref, {
       uid: credential.user.uid,
-      institutionId: "ump",
       marks: [],
       shortlist: [],
       consentRecord: null,

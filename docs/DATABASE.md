@@ -106,7 +106,7 @@ All interfaces below are the real, current shape in `lib/firestore/types.ts` —
 | `verificationQueue` | `id`, `proposalKey`, `collection`, `docId`, `field`, `currentValue`, `proposedValue`, `confidence`, `status` | — (pipeline-internal) |
 | `linkHealthChecks` | `id`, `url`, `alive`, `statusCode`, `error`, `checkedAt` | — (pipeline-internal) |
 | `usageStats` | `date` (doc ID, `YYYY-MM-DD`), `calculatorCompletions?`, `programmeSearches?`, `fundingDiscoveryViews?` (each a running count, field absent until first incremented that day) | — (aggregate-only analytics, see §10) |
-| `userProfiles` | `uid`, `role?`, `institutionId?`, `marks[]` (`subjectCode`/`percentage`), `shortlist[]`, `checklistProgress[]?`, `consentRecord` (`consentedBy: "self"\|"guardian"`), `isMinor`, `guardianConsentAt` | per-user-owned, not a fact-bearing public collection |
+| `userProfiles` | `uid`, `role?`, `marks[]` (`subjectCode`/`percentage`), `shortlist[]`, `checklistProgress[]?`, `consentRecord` (`consentedBy: "self"\|"guardian"`), `isMinor`, `guardianConsentAt` | per-user-owned, not a fact-bearing public collection |
 
 ## 10. Learner-activity reporting (`usageStats`)
 
