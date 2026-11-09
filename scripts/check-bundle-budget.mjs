@@ -23,6 +23,20 @@
 // measured 289KB rather than setting the budget to the exact current
 // number.
 //
+// Raised to 305KB (2026-11-09): by the end of the previous round of work
+// this had already drifted to exactly 300KB (zero headroom -- confirmed
+// by building that exact commit, 3775c99, in isolation), so the very next
+// real change of any size was always going to trip this. Two genuine,
+// already-shipped additions since then measured out to +2KB: NavBar now
+// imports firebase/auth's signOut (there was previously no admin sign-out
+// path in the app at all -- the global nav needs it, not just an admin-
+// only page, since that's the one control reachable from every route),
+// and config/institutions.seed.ts carries more real per-institution data
+// (verified phone/email, corrected campus lists) that the calculator's
+// own institution selector bundles directly. Left 3KB of fresh headroom
+// above the measured 302KB rather than setting the budget to the exact
+// current number, same reasoning as the zod raise above.
+//
 // Reads Next's own human-readable build output rather than hand-parsing
 // its internal manifest JSON (which is undocumented and has changed
 // shape across versions) -- the "First Load JS" figure printed here is
@@ -33,7 +47,7 @@
 
 import { readFileSync } from "node:fs";
 
-const BUDGET_KB = 300;
+const BUDGET_KB = 305;
 const ROUTE = "/";
 
 const logPath = process.argv[2];
