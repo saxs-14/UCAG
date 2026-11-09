@@ -1,0 +1,51 @@
+name: Publish package
+
+# Builds the Dockerfile and pushes it to this repo's own GitHub Container
+# Registry package (ghcr.io/saxs-14/ucag) every time a release is
+# published, plus on manual request. Independent of ci.yml and of the
+# real production deployment (Vercel, git-linked, separate from this
+# entirely) -- this exists purely so the repo has a real, versioned,
+# pullable package artifact under its Packages tab.
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: "Image tag to publish (e.g. v2.1.0)"
+        required: true
+        default: latest
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@8aa5831fb8d48d8f76594c7ddde61ae58019f550 # v4.8.0
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Determine image tag
+        id: tag
+        run: |
+          TAG="${{ github.event.release.tag_name }}"
+          if [ -z "$TAG" ]; then TAG="${{ github.event.inputs.tag }}"; fi
+          echo "value=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Build and push
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/ucag:${{ steps.tag.outputs.value }}
+            ghcr.io/${{ github.repository_owner }}/ucag:latest

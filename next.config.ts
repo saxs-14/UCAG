@@ -77,6 +77,14 @@ const nextConfig: NextConfig = {
   // Drops the X-Powered-By: Next.js response header -- a free framework
   // fingerprint for an attacker, with no functional purpose.
   poweredByHeader: false,
+  // Only consumed by Dockerfile's own build (a self-contained server.js +
+  // the minimal node_modules it actually needs, instead of the full repo)
+  // for the ghcr.io image published alongside each release. The real
+  // production deployment stays Vercel's own git-linked build, which
+  // doesn't read this field at all and isn't affected by it either way --
+  // confirmed via Vercel's own docs: "this output mode isn't necessary
+  // to run on Vercel... but won't cause issues if set."
+  output: "standalone",
   // firebase-admin/auth (requireAdmin() -> verifyIdToken(), every
   // /api/admin/* route's actual security gate) depends transitively on
   // jwks-rsa, which itself require()s "jose". jose went fully ESM-only
