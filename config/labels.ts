@@ -24,7 +24,7 @@ export const LABELS = {
     navLabel: "UMP",
     hubPageTitle: "University of Mpumalanga",
     hubPageSubtitle:
-      "Explore verified programmes, entry requirements, and application dates for the University of Mpumalanga — Mpumalanga's own university, right in the heart of the province.",
+      "Explore verified programmes, entry requirements, and application dates for the University of Mpumalanga -- Mpumalanga's own university, right in the heart of the province.",
     programmesPageTitle: "UMP Programmes",
     programmesPageSubtitle:
       "All verified undergraduate programmes offered at the University of Mpumalanga. Filter by faculty or field of study, then check your APS in the calculator.",
@@ -35,7 +35,7 @@ export const LABELS = {
     facultiesHeading: "Faculties & Schools",
     applyHeading: "How to apply",
     applyBody:
-      "Applications to UMP are submitted online through the UMP Student Application Portal. The portal opens annually — check the application window status below for current dates.",
+      "Applications to UMP are submitted online through the UMP Student Application Portal. The portal opens annually -- check the application window status below for current dates.",
     applyCtaLabel: "Apply via UMP Portal",
     keyFactsHeading: "At a glance",
     programmeCountLabel: "Verified programmes",

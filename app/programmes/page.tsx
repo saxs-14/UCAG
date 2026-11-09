@@ -42,8 +42,18 @@ interface PageProps {
     qualification?: string;
     field?: string;
     q?: string;
+    page?: string;
   }>;
 }
+
+// This page renders every matching programme server-side in one response
+// -- fine at today's Tier-1 scale, but CLAUDE.md's "no fixed institution
+// count assumed anywhere in the code" is the whole point of v2: the
+// catalogue is designed to grow to every SA institution, at which point an
+// unpaginated grid becomes a genuinely large unbounded HTML payload, not
+// just a cosmetic long scroll. Paginating now avoids having to retrofit it
+// once that data actually lands.
+const PROGRAMMES_PER_PAGE = 24;
 
 export default async function ProgrammeExplorerPage({ searchParams }: PageProps) {
   const filters = await searchParams;
@@ -87,11 +97,32 @@ export default async function ProgrammeExplorerPage({ searchParams }: PageProps)
     if (filters.q) params.set("q", filters.q);
     if (value === null) params.delete(key);
     else params.set(key, value);
+    // Changing a filter invalidates whatever page number was open --
+    // without this, "page=5" from a broad list could silently land past
+    // the end of a newly-narrowed one.
+    params.delete("page");
+    const query = params.toString();
+    return `/programmes${query ? `?${query}` : ""}`;
+  }
+
+  function pageHref(page: number) {
+    const params = new URLSearchParams();
+    if (filters.institution) params.set("institution", filters.institution);
+    if (filters.qualification) params.set("qualification", filters.qualification);
+    if (filters.field) params.set("field", filters.field);
+    if (filters.q) params.set("q", filters.q);
+    if (page > 1) params.set("page", String(page));
     const query = params.toString();
     return `/programmes${query ? `?${query}` : ""}`;
   }
 
   const hasFilters = Boolean(filters.q || filters.institution || filters.qualification || filters.field);
+
+  const totalPages = Math.max(1, Math.ceil(filtered.length / PROGRAMMES_PER_PAGE));
+  const requestedPage = Number.parseInt(filters.page ?? "1", 10);
+  const currentPage = Number.isFinite(requestedPage) ? Math.min(Math.max(1, requestedPage), totalPages) : 1;
+  const pageStart = (currentPage - 1) * PROGRAMMES_PER_PAGE;
+  const pageItems = filtered.slice(pageStart, pageStart + PROGRAMMES_PER_PAGE);
 
   return (
     <main id="main-content" className="flex flex-1 flex-col items-center bg-paper">
@@ -174,7 +205,9 @@ export default async function ProgrammeExplorerPage({ searchParams }: PageProps)
           <div>
             <h2 className="text-xl font-bold tracking-tight text-ink">Programmes</h2>
             <p className="text-sm text-ink-soft">
-              {filtered.length} of {programmes.length} programmes shown
+              {filtered.length > PROGRAMMES_PER_PAGE
+                ? `Showing ${pageStart + 1}-${pageStart + pageItems.length} of ${filtered.length} matching programmes`
+                : `${filtered.length} of ${programmes.length} programmes shown`}
             </p>
           </div>
           <div className="flex flex-wrap gap-2">
@@ -210,7 +243,7 @@ export default async function ProgrammeExplorerPage({ searchParams }: PageProps)
           </div>
         ) : (
           <ol className="grid list-none gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {filtered.map((programme) => {
+            {pageItems.map((programme) => {
               const institution = institutionById.get(programme.institutionId);
               return (
                 <li key={programme.id}>
@@ -264,6 +297,34 @@ export default async function ProgrammeExplorerPage({ searchParams }: PageProps)
               );
             })}
           </ol>
+        )}
+
+        {totalPages > 1 && (
+          <nav aria-label="Programme list pages" className="flex items-center justify-center gap-2 pt-2">
+            <Link
+              href={pageHref(currentPage - 1)}
+              aria-disabled={currentPage <= 1}
+              tabIndex={currentPage <= 1 ? -1 : undefined}
+              className={`inline-flex min-h-11 items-center rounded-xl border border-line px-4 text-sm font-semibold text-ink ${
+                currentPage <= 1 ? "pointer-events-none opacity-40" : "hover:border-brand-teal hover:text-brand-teal"
+              }`}
+            >
+              ← Previous
+            </Link>
+            <span className="px-2 text-sm font-medium text-ink-soft">
+              Page {currentPage} of {totalPages}
+            </span>
+            <Link
+              href={pageHref(currentPage + 1)}
+              aria-disabled={currentPage >= totalPages}
+              tabIndex={currentPage >= totalPages ? -1 : undefined}
+              className={`inline-flex min-h-11 items-center rounded-xl border border-line px-4 text-sm font-semibold text-ink ${
+                currentPage >= totalPages ? "pointer-events-none opacity-40" : "hover:border-brand-teal hover:text-brand-teal"
+              }`}
+            >
+              Next →
+            </Link>
+          </nav>
         )}
       </div>
     </main>
