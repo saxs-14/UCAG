@@ -19,7 +19,7 @@ const PHASE_STYLES: Record<RoadmapStep["phase"], { dot: string; badge: string; l
   degree: { dot: "bg-brand-violet border-brand-violet/30", badge: "bg-brand-violet/10 text-brand-violet", label: "Degree" },
   skills: { dot: "bg-mark-green border-mark-green/30", badge: "bg-mark-green/10 text-mark-green", label: "Skills" },
   work: { dot: "bg-brand-coral border-brand-coral/30", badge: "bg-brand-coral/10 text-brand-coral", label: "Work" },
-  career: { dot: "bg-brand-navy border-brand-navy/30", badge: "bg-slate-soft text-brand-navy", label: "Career" },
+  career: { dot: "bg-brand-navy border-brand-navy/30", badge: "bg-slate-soft text-ink", label: "Career" },
 };
 
 export function CareerRoadmapView({ heading, steps }: { heading: string; steps: RoadmapStep[] }) {
@@ -28,7 +28,7 @@ export function CareerRoadmapView({ heading, steps }: { heading: string; steps: 
   return (
     <section aria-label={heading} className="flex flex-col gap-4 rounded-3xl border border-line bg-paper-raised p-6 shadow-sm sm:p-8">
       <div className="flex items-center gap-3">
-        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-navy/10 text-xl text-brand-navy">🗺️</span>
+        <span className="flex h-10 w-10 items-center justify-center rounded-full bg-brand-navy/10 text-xl text-ink">🗺️</span>
         <h2 className="font-display text-2xl font-black text-ink">{heading}</h2>
       </div>
       <ol className="relative mt-4 flex list-none flex-col gap-0">

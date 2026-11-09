@@ -2,9 +2,11 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "firebase/auth";
 import { Logo } from "@/components/Logo";
 import { LABELS } from "@/config/labels";
 import { useAuth } from "@/components/auth/AuthProvider";
+import { getFirebaseAuth } from "@/lib/firebase/client";
 
 const PUBLIC_NAV_ITEMS = [
   { href: "/", label: LABELS.nav.calculator },
@@ -17,16 +19,24 @@ export function NavBar() {
   const pathname = usePathname();
   const { user, loading, isAdmin } = useAuth();
   const isLoggedIn = !!user && !user.isAnonymous;
-  const profileHref = isAdmin ? "/admin" : "/account";
+  // Known synchronously from the URL, unlike `isAdmin` -- which depends on
+  // the Firebase ID token's custom claim resolving asynchronously after
+  // auth state loads. On a hard reload of an /admin page, isAdmin starts
+  // `false` for a brief window before that claim resolves; without this,
+  // the full learner nav (calculator/bursaries/internships links) would
+  // render and then disappear a moment later -- the exact "flash of the
+  // learner site" the admin account should never see while on /admin.
+  const onAdminRoute = pathname.startsWith("/admin");
+  const hideLearnerNav = isAdmin || onAdminRoute;
 
   return (
     <header className="glass-blur no-print sticky top-0 z-40 border-b border-glass-border bg-glass-surface-strong text-ink shadow-sm">
       <nav className="mx-auto flex min-h-[80px] w-full max-w-7xl items-center gap-4 px-4 sm:px-6 lg:px-8" aria-label="Primary navigation">
-        <Link href={isAdmin ? "/admin" : "/"} className="flex min-h-12 shrink-0 items-center text-ink" aria-label="UCAG home">
+        <Link href={hideLearnerNav ? "/admin" : "/"} className="flex min-h-12 shrink-0 items-center text-ink" aria-label="UCAG home">
           <Logo size={38} wordmarkClassName="text-xl font-black tracking-tight text-ink" />
         </Link>
 
-        {!isAdmin && (
+        {!hideLearnerNav && (
           <div className="hidden min-w-0 flex-1 items-center justify-center gap-2 md:flex">
             {PUBLIC_NAV_ITEMS.map(({ href, label }) => {
               const active = pathname === href || (href !== "/" && pathname.startsWith(href));
@@ -49,16 +59,30 @@ export function NavBar() {
         )}
 
         <div className="ml-auto flex shrink-0 items-center gap-3">
-          {!loading && (isLoggedIn ? (
+          {!loading && (isAdmin ? (
+            // The one and only sign-out control for an admin account --
+            // AdminRedirect keeps admins off every learner page (including
+            // /account, where the equivalent "Sign out" button already
+            // lives), so without this an admin had no way to sign out at
+            // all. Deliberately a sign-out action here, not a link back to
+            // /admin -- the sidebar inside /admin already covers that.
+            <button
+              type="button"
+              onClick={() => signOut(getFirebaseAuth())}
+              className="inline-flex min-h-11 items-center rounded-2xl bg-slate-soft px-5 py-2.5 text-xs font-black text-ink shadow-sm transition-all hover:bg-slate-200"
+            >
+              Admin -- Sign out
+            </button>
+          ) : isLoggedIn ? (
             <Link
-              href={profileHref}
+              href="/account"
               className={`inline-flex min-h-11 items-center rounded-2xl px-5 py-2.5 text-xs font-black transition-all shadow-sm ${
-                pathname.startsWith(profileHref)
+                pathname.startsWith("/account")
                   ? "bg-brand-teal text-white shadow-brand-teal/30"
                   : "bg-slate-soft text-ink hover:bg-slate-200"
               }`}
             >
-              {isAdmin ? "Admin" : "Profile"}
+              Profile
             </Link>
           ) : (
             <Link 

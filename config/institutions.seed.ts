@@ -186,13 +186,20 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
     // Potchefstroom, Mahikeng, and Vanderbijlpark campuses.
     campuses: ["Potchefstroom", "Mahikeng", "Vanderbijlpark"],
     websiteUrl: "https://www.nwu.ac.za/",
-    applicationPortalUrl: "https://applynow.nwu.ac.za/OnlineApplication/",
+    // applynow.nwu.ac.za (the previous value here) no longer resolves --
+    // connection refused on a live check 2026-11-09. Replaced with the
+    // real, currently-live application entry point, confirmed by fetching
+    // it directly: studies.nwu.ac.za/studies/apply shows NWU's real 2027
+    // intake application flow (fees, required documents, "Apply now!"
+    // button through to vssweb.nwu.ac.za), not a guess from a third-party
+    // aggregator site.
+    applicationPortalUrl: "https://studies.nwu.ac.za/studies/apply",
     appliesThroughThirdParty: null,
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
-    sourceUrl: "https://www.nwu.ac.za/",
-    verifiedOn: VERIFIED_ON,
+    sourceUrl: "https://studies.nwu.ac.za/studies/apply",
+    verifiedOn: "2026-11-09",
     academicYear: ACADEMIC_YEAR,
   },
   {

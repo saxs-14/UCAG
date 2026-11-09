@@ -31,15 +31,22 @@ export function UmpHeader() {
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-6">
           <Link href="/ump" className="flex items-center gap-4 group">
             <div
-              className="flex size-14 items-center justify-center rounded-2xl shadow-lg flex-shrink-0"
-              style={{ background: UMP_GOLD }}
+              className="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white p-2 shadow-lg"
+              style={{ border: `2px solid ${UMP_GOLD}` }}
             >
               <Image
                 src="https://www.ump.ac.za/images/logo.png"
                 alt="UMP Logo"
-                width={44}
-                height={44}
-                className="object-contain"
+                width={56}
+                height={56}
+                // h-full/w-full + object-contain (not a fixed pixel size
+                // smaller than the box) -- matching how every other
+                // institution's logo badge fills its own box
+                // (InstitutionLogo.tsx). A hardcoded 44px image inside a
+                // 56px box left a visible gap of flat gold background
+                // around the logo instead of the logo actually filling
+                // the badge it sits in.
+                className="h-full w-full object-contain"
                 onError={(e) => {
                   const target = e.currentTarget as HTMLImageElement;
                   target.style.display = "none";

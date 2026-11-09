@@ -20,8 +20,7 @@ import type { Source } from "@/lib/firestore/types";
  * link-health/run route.
  *
  * If no LLM_API_KEY is configured yet, this returns a clear 501 rather
- * than a fabricated success -- consistent with every other "not wired up
- * yet" surface in this app (see runs/[id]/rerun).
+ * than a fabricated success.
  */
 export async function POST(request: NextRequest) {
   let admin: DecodedIdToken;

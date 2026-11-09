@@ -73,16 +73,11 @@ export default function QueuePage() {
   return (
     <div className="flex w-full flex-col gap-5">
       <header className="rounded-2xl bg-brand-navy p-5 text-white sm:p-7">
-        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-teal-soft">Human review</p>
-        <h1 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">Verification queue</h1>
+        <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Course approvals</h1>
         <p className="mt-2 text-sm leading-6 text-white/80">
-          Review queue for proposed data changes awaiting human approval, edit, or rejection.
+          {items.length} pending {items.length === 1 ? "change" : "changes"} waiting for approval.
         </p>
       </header>
-      <p className="rounded-xl border border-line bg-paper-raised p-4 text-sm leading-6 text-ink-soft">
-        Every proposed change waits here until a human approves, edits, or rejects it -- nothing
-        below has been auto-published. {items.length} pending.
-      </p>
       {error && (
         <p className="rounded-xl border border-mark-red bg-mark-red-soft p-3 text-sm text-mark-red">
           {error}
@@ -91,9 +86,7 @@ export default function QueuePage() {
       {loading && <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">Loading...</p>}
       {!loading && items.length === 0 && (
         <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">
-          Nothing pending. Queue items appear here once a live ingestion run proposes a change
-          with confidence or corroboration below the auto-publish threshold (see
-          lib/ingestion/route.ts routeProposal).
+          Nothing pending right now.
         </p>
       )}
       <ul className="flex flex-col gap-4">

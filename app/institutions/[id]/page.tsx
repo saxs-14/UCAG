@@ -125,7 +125,7 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
           <div className="flex flex-wrap items-center gap-3 pt-2">
             <Link
               href="/"
-              className="inline-flex items-center gap-1.5 rounded-xl bg-paper-raised text-xs font-extrabold text-brand-navy shadow hover:bg-slate-soft transition px-4 py-2.5"
+              className="inline-flex items-center gap-1.5 rounded-xl bg-paper-raised text-xs font-extrabold text-ink shadow hover:bg-slate-soft transition px-4 py-2.5"
             >
               Calculate {inst.shortName} APS →
             </Link>

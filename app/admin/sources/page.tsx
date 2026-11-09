@@ -109,11 +109,7 @@ export default function SourcesPage() {
 
   return (
     <div className="flex w-full flex-col gap-5">
-      <header className="rounded-2xl bg-brand-navy p-5 text-white sm:p-7"><p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-teal-soft">Ingestion pipeline</p><h1 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">Source register</h1><p className="mt-2 text-sm leading-6 text-white/80">Every URL the ingestion pipeline is allowed to read.</p></header>
-      <p className="rounded-xl border border-line bg-paper-raised p-4 text-sm leading-6 text-ink-soft">
-        Disabling a source stops it being fetched regardless of cadence -- for one that&apos;s gone
-        stale or needs re-verifying by hand.
-      </p>
+      <header className="rounded-2xl bg-brand-navy p-5 text-white sm:p-7"><h1 className="font-display text-2xl font-extrabold sm:text-3xl">Institution data</h1><p className="mt-2 text-sm leading-6 text-white/80">Every source URL the system checks, and how healthy each one is.</p></header>
 
       {error && (
         <p className="rounded-xl border border-mark-red bg-mark-red-soft p-3 text-sm text-mark-red">
@@ -122,35 +118,44 @@ export default function SourcesPage() {
       )}
 
       <details className="rounded-2xl border border-line bg-paper-raised p-4 sm:p-5">
-        <summary className="cursor-pointer font-bold text-ink">Add a source</summary>
+        <summary className="cursor-pointer font-bold text-ink">Add a new source</summary>
         <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-2">
           <div className="flex flex-col gap-1">
-            <label htmlFor="source-id" className="text-xs font-bold text-ink">
-              Source ID
+            <label htmlFor="source-publisher" className="text-xs font-bold text-ink">
+              Publisher name
             </label>
             <input
-              id="source-id"
-              placeholder="id (e.g. some-university-admissions)"
-              value={form.id}
-              onChange={(e) => setForm({ ...form, id: e.target.value })}
+              id="source-publisher"
+              value={form.publisher}
+              onChange={(e) => {
+                const publisher = e.target.value;
+                setForm({
+                  ...form,
+                  publisher,
+                  // The ID is what the system uses internally -- deriving
+                  // it from the name the admin already typed means they
+                  // never have to invent and type a second identifier.
+                  id: publisher.trim().toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, ""),
+                });
+              }}
               className="min-h-11 rounded-xl border border-line bg-paper px-3.5 text-base text-ink focus:border-brand-teal focus:outline-none"
             />
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="source-publisher" className="text-xs font-bold text-ink">
-              Publisher
+            <label htmlFor="source-institution" className="text-xs font-bold text-ink">
+              Institution (leave blank if not one specific institution)
             </label>
             <input
-              id="source-publisher"
-              placeholder="publisher"
-              value={form.publisher}
-              onChange={(e) => setForm({ ...form, publisher: e.target.value })}
+              id="source-institution"
+              placeholder="e.g. ump"
+              value={form.institutionId}
+              onChange={(e) => setForm({ ...form, institutionId: e.target.value })}
               className="min-h-11 rounded-xl border border-line bg-paper px-3.5 text-base text-ink focus:border-brand-teal focus:outline-none"
             />
           </div>
           <div className="flex flex-col gap-1 sm:col-span-2">
             <label htmlFor="source-url" className="text-xs font-bold text-ink">
-              Source URL
+              Website address
             </label>
             <input
               id="source-url"
@@ -162,7 +167,7 @@ export default function SourcesPage() {
           </div>
           <div className="flex flex-col gap-1">
             <label htmlFor="source-type" className="text-xs font-bold text-ink">
-              Source type
+              Type
             </label>
             <select
               id="source-type"
@@ -178,32 +183,8 @@ export default function SourcesPage() {
             </select>
           </div>
           <div className="flex flex-col gap-1">
-            <label htmlFor="source-institution" className="text-xs font-bold text-ink">
-              Institution ID
-            </label>
-            <input
-              id="source-institution"
-              placeholder="institution id (e.g. ump) -- blank if not institution-specific"
-              value={form.institutionId}
-              onChange={(e) => setForm({ ...form, institutionId: e.target.value })}
-              className="min-h-11 rounded-xl border border-line bg-paper px-3.5 text-base text-ink focus:border-brand-teal focus:outline-none"
-            />
-          </div>
-          <div className="flex items-center gap-2 sm:col-span-2">
-            <input
-              id="source-robots-allowed"
-              type="checkbox"
-              checked={form.robotsAllowed}
-              onChange={(e) => setForm({ ...form, robotsAllowed: e.target.checked })}
-              className="h-4 w-4 rounded border-line text-brand-teal focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-            />
-            <label htmlFor="source-robots-allowed" className="text-sm text-ink-soft">
-              robots.txt allows fetching
-            </label>
-          </div>
-          <div className="flex flex-col gap-1">
             <label htmlFor="source-fetch-interval" className="text-xs font-bold text-ink">
-              Fetch interval (hours)
+              Check every (hours)
             </label>
             <input
               id="source-fetch-interval"
@@ -211,21 +192,6 @@ export default function SourcesPage() {
               min={1}
               value={form.fetchIntervalHours}
               onChange={(e) => setForm({ ...form, fetchIntervalHours: Number(e.target.value) })}
-              className="min-h-11 w-32 rounded-xl border border-line bg-paper px-3.5 text-base text-ink focus:border-brand-teal focus:outline-none"
-            />
-          </div>
-          <div className="flex flex-col gap-1">
-            <label htmlFor="source-reliability" className="text-xs font-bold text-ink">
-              Reliability (0-1)
-            </label>
-            <input
-              id="source-reliability"
-              type="number"
-              min={0}
-              max={1}
-              step={0.05}
-              value={form.reliabilityScore}
-              onChange={(e) => setForm({ ...form, reliabilityScore: Number(e.target.value) })}
               className="min-h-11 w-32 rounded-xl border border-line bg-paper px-3.5 text-base text-ink focus:border-brand-teal focus:outline-none"
             />
           </div>
@@ -246,15 +212,10 @@ export default function SourcesPage() {
           <thead>
             <tr className="border-b border-line bg-paper">
               <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Publisher</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Type</th>
               <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Institution</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">robots.txt</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Cadence (h)</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Reliability</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Last fetched</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Next due</th>
+              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Last checked</th>
+              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Next check</th>
               <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Health</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">HTTP</th>
               <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Enabled</th>
             </tr>
           </thead>
@@ -272,17 +233,12 @@ export default function SourcesPage() {
                   </a>
                   {source.notes && <div className="mt-0.5 text-xs text-ink-faint">{source.notes}</div>}
                 </td>
-                <td className="px-3 py-3 text-xs text-ink-soft">{source.type}</td>
                 <td className="px-3 py-3 font-mono text-xs text-ink-soft">{source.institutionId ?? "--"}</td>
-                <td className="px-3 py-3 text-xs text-ink-soft">{source.robotsAllowed ? "allowed" : "blocked"}</td>
-                <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{source.fetchIntervalHours}</td>
-                <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{source.reliabilityScore}</td>
                 <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{source.lastFetchedAt ?? "never"}</td>
                 <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{nextDue(source)}</td>
                 <td className="px-3 py-3 text-xs font-semibold text-ink">
                   <span title={source.lastFetchError ?? undefined}>{healthLabel(source)}</span>
                 </td>
-                <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{source.lastFetchStatusCode ?? "--"}</td>
                 <td className="px-3 py-3 text-xs">
                   <button
                     type="button"

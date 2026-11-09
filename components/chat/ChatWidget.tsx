@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { usePathname } from "next/navigation";
 import { MessageCircle, Send, X } from "lucide-react";
 import { LABELS } from "@/config/labels";
 import { splitSseFrames } from "@/lib/chat/sse";
@@ -34,6 +35,7 @@ function TypingDots() {
 
 export function ChatWidget() {
   const { user, displayName, isAdmin } = useAuth();
+  const pathname = usePathname();
   const [isOpen, setIsOpen] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
   const [isClosing, setIsClosing] = useState(false);
@@ -174,7 +176,10 @@ export function ChatWidget() {
   // The assistant is a learner support tool ("help with your application
   // journey") -- not relevant to a staff/admin account, which stays
   // admin-only (see AdminRedirect).
-  if (isAdmin) return null;
+  // Pathname check, not just isAdmin -- isAdmin depends on an async claim
+  // that isn't resolved yet on a fresh reload, which would otherwise let
+  // the launcher button flash into view on /admin for a moment first.
+  if (isAdmin || pathname.startsWith("/admin")) return null;
 
   return (
     <div className="no-print fixed bottom-20 right-4 z-40 sm:bottom-4" onKeyDown={handleKeyDown}>

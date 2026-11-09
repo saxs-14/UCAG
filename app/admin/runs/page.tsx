@@ -42,8 +42,9 @@ export default function RunsPage() {
       const body = await res.json().catch(() => ({}));
       if (res.ok) {
         setMessage(
-          `Run complete: ${body.itemsQueued} field${body.itemsQueued === 1 ? "" : "s"} queued for review, ` +
-            `${body.totalTokensUsed} tokens used. Check the Verification Queue page to review.`
+          body.itemsQueued > 0
+            ? `Done -- ${body.itemsQueued} change${body.itemsQueued === 1 ? "" : "s"} waiting for review in Course Approvals.`
+            : "Done -- nothing new found."
         );
       } else {
         setMessage(null);
@@ -72,49 +73,15 @@ export default function RunsPage() {
     }
   }
 
-  async function rerun(id: string) {
-    setBusyId(id);
-    setMessage(null);
-    setError(null);
-    try {
-      const res = await adminFetch(`/api/admin/runs/${id}/rerun`, { method: "POST" });
-      const body = await res.json().catch(() => ({}));
-      setMessage(res.ok ? "Re-run triggered." : (body.error ?? `Request failed (${res.status}).`));
-    } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
-    } finally {
-      setBusyId(null);
-    }
-  }
-
   return (
     <div className="flex w-full flex-col gap-5">
       <header className="rounded-2xl bg-brand-navy p-5 text-white sm:p-7">
-        <p className="text-xs font-extrabold uppercase tracking-[0.16em] text-brand-teal-soft">Ingestion pipeline</p>
-        <h1 className="mt-2 font-display text-2xl font-extrabold sm:text-3xl">Ingestion runs</h1>
-        <p className="mt-2 text-sm leading-6 text-white/80">
-          History of every ingestion pipeline run: token spend, cost, errors.
-        </p>
+        <h1 className="font-display text-2xl font-extrabold sm:text-3xl">Data syncs</h1>
+        <p className="mt-2 text-sm leading-6 text-white/80">Pull fresh data and see what each run found.</p>
       </header>
-      <p className="rounded-xl border border-line bg-paper-raised p-4 text-sm leading-6 text-ink-soft">
-        Application dates are never auto-published -- every proposed change lands in the
-        Verification Queue for a human to approve, no matter how confident the extraction.
-        Re-running a specific historical run by id (the per-row &quot;Re-run&quot; button) isn&apos;t
-        implemented -- use the buttons below to trigger a fresh run instead. Programme
-        requirements feed the APS engine directly, so proposals there matter even more than
-        most -- review carefully.
-      </p>
 
       <div className="rounded-2xl border border-line bg-paper-raised p-4 sm:p-5">
         <div className="flex flex-wrap gap-3">
-          <button
-            type="button"
-            disabled={busyId !== null}
-            onClick={recoverStaleRuns}
-            className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-soft hover:bg-slate-soft disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-          >
-            {busyId === "stale-recovery" ? "Recovering..." : "Recover stale runs"}
-          </button>
           <button
             type="button"
             disabled={runningTask !== null}
@@ -139,15 +106,15 @@ export default function RunsPage() {
           >
             {runningTask === "/api/admin/bursaries/run" ? "Running..." : "Run bursaries now"}
           </button>
+          <button
+            type="button"
+            disabled={busyId !== null}
+            onClick={recoverStaleRuns}
+            className="min-h-11 rounded-xl border border-line px-4 text-sm font-semibold text-ink-soft hover:bg-slate-soft disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
+          >
+            {busyId === "stale-recovery" ? "Recovering..." : "Recover stuck runs"}
+          </button>
         </div>
-        <p className="mt-3 text-xs leading-6 text-ink-faint">
-          All three require LLM_PROVIDER + LLM_API_KEY to be configured (see .env.example) --
-          return a clear error instead of a fake success if they aren&apos;t set. Bursaries are
-          additionally screened for scam patterns (keyword checks + a trained classifier,
-          lib/ingestion/bursaryScamModel/) before queuing -- every proposal, including a flagged
-          one, still lands in the Verification Queue for a human to see and decide on, never
-          auto-rejected silently.
-        </p>
       </div>
 
       {error && (
@@ -163,19 +130,23 @@ export default function RunsPage() {
       {loading && <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">Loading...</p>}
       {!loading && runs.length === 0 && (
         <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">
-          No ingestion runs on record yet -- expected until a live run happens (see README.md
-          Phase 4 status).
+          No runs yet -- use a button above to start one.
         </p>
       )}
 
       <div className="rounded-2xl border border-line bg-paper-raised p-4 text-sm">
-        <p className="font-display font-bold text-ink">Source monitor</p>
+        <p className="font-display font-bold text-ink">Totals, across every run</p>
         <div className="mt-3 grid gap-3 sm:grid-cols-4">
-          {["processed", "skipped", "noChange", "fetchError"].map((outcome) => {
+          {([
+            ["processed", "Checked"],
+            ["skipped", "Skipped"],
+            ["noChange", "No changes"],
+            ["fetchError", "Failed"],
+          ] as const).map(([outcome, label]) => {
             const count = runs.reduce((total, run) => total + (run.sourceResults?.filter((r) => r.outcome === outcome).length ?? 0), 0);
             return (
               <div key={outcome} className="rounded-xl border border-line bg-paper p-3">
-                <div className="text-xs text-ink-soft">{outcome}</div>
+                <div className="text-xs text-ink-soft">{label}</div>
                 <div className="font-display text-2xl font-extrabold tabular-nums text-ink">{count}</div>
               </div>
             );
@@ -188,44 +159,23 @@ export default function RunsPage() {
           <thead>
             <tr className="border-b border-line bg-paper">
               <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Started</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Finished</th>
               <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Status</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Sources</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Tokens</th>
+              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Found</th>
+              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Needs review</th>
               <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Cost (USD)</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Proposed</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Auto-published</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Queued</th>
-              <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Retries</th>
               <th className="px-3 py-3 text-xs font-bold uppercase tracking-wide text-ink-soft">Errors</th>
-              <th className="px-3 py-3" />
             </tr>
           </thead>
           <tbody>
             {runs.map((run) => (
               <tr key={run.id} className="border-b border-line align-top last:border-0">
                 <td className="px-3 py-3 text-xs font-semibold text-ink">{run.startedAt}</td>
-                <td className="px-3 py-3 text-xs text-ink-soft">{run.finishedAt ?? "in progress"}</td>
                 <td className="px-3 py-3 text-xs font-semibold text-ink">{run.status ?? (run.finishedAt ? "completed" : "running")}</td>
-                <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{run.sourceIds.length}</td>
-                <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{run.tokensUsed.toLocaleString()}</td>
-                <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">${run.costEstimate.toFixed(2)}</td>
                 <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{run.itemsProposed}</td>
-                <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{run.itemsAutoPublished}</td>
                 <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{run.itemsQueued}</td>
-                <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">{(run.sourceResults ?? []).reduce((n, r) => n + (r.retryCount ?? 0), 0)}</td>
+                <td className="px-3 py-3 text-xs tabular-nums text-ink-soft">${run.costEstimate.toFixed(2)}</td>
                 <td className="px-3 py-3 text-xs text-mark-red">
                   {run.errors.length > 0 ? run.errors.join("; ") : "-"}
-                </td>
-                <td className="px-3 py-3">
-                  <button
-                    type="button"
-                    disabled={busyId === run.id}
-                    onClick={() => rerun(run.id)}
-                    className="rounded-xl border border-line px-2.5 py-1 text-xs font-semibold text-ink-soft hover:bg-slate-soft disabled:opacity-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-focus"
-                  >
-                    Re-run
-                  </button>
                 </td>
               </tr>
             ))}

@@ -29,7 +29,7 @@ export default function LoginPage() {
           <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-brand-teal/10">
             <Logo size={26} showWordmark={false} />
           </span>
-          <h1 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-brand-navy">
+          <h1 className="font-display text-xl sm:text-2xl font-extrabold tracking-tight text-ink">
             Sign In to UCAG
           </h1>
           <p className="text-xs text-ink-soft">

@@ -182,7 +182,7 @@ export function AccountPage() {
     return (
       <div className="flex w-full max-w-xl flex-col gap-6">
         <section className="glass-blur rounded-3xl border border-glass-border bg-glass-surface p-6 shadow-sm sm:p-8">
-          <div className="inline-flex items-center rounded-full bg-brand-navy/10 px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-brand-navy">
+          <div className="inline-flex items-center rounded-full bg-brand-navy/10 px-3 py-1 text-xs font-extrabold uppercase tracking-widest text-ink">
             {LABELS.account.adminHeading}
           </div>
           <h2 className="mt-2 font-display text-2xl font-black text-ink">{displayName ?? user.email ?? user.uid}</h2>
