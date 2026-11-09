@@ -41,7 +41,7 @@ jobs:
       # negotiable "secrets never reach the browser" (and, by extension,
       # never reach the repo either).
       - name: Scan for committed secrets (gitleaks)
-        uses: gitleaks/gitleaks-action@v2
+        uses: gitleaks/gitleaks-action@v3
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
