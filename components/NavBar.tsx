@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { Logo } from "@/components/Logo";
 import { LABELS } from "@/config/labels";
@@ -10,6 +10,7 @@ import { getFirebaseAuth } from "@/lib/firebase/client";
 
 const PUBLIC_NAV_ITEMS = [
   { href: "/", label: LABELS.nav.calculator },
+  { href: "/institutions", label: LABELS.nav.institutions },
   { href: "/programmes", label: LABELS.nav.programmes },
   { href: "/bursaries", label: LABELS.nav.bursaries },
   { href: "/internships", label: LABELS.nav.internships },
@@ -17,6 +18,7 @@ const PUBLIC_NAV_ITEMS = [
 
 export function NavBar() {
   const pathname = usePathname();
+  const router = useRouter();
   const { user, loading, isAdmin } = useAuth();
   const isLoggedIn = !!user && !user.isAnonymous;
   // Known synchronously from the URL, unlike `isAdmin` -- which depends on
@@ -66,12 +68,26 @@ export function NavBar() {
             // lives), so without this an admin had no way to sign out at
             // all. Deliberately a sign-out action here, not a link back to
             // /admin -- the sidebar inside /admin already covers that.
+            //
+            // Explicitly pushed to /login after sign-out -- there is no
+            // separate admin login anywhere in this app (by design: the
+            // one sign-in/sign-up page everyone uses is what grants admin
+            // access, based on the account's own role claim), but once
+            // signed out while still on an /admin/* URL, nothing else
+            // navigates away on its own: AdminRedirect only acts while
+            // isAdmin is still true, and that flips false the instant
+            // sign-out completes. Left on the page, the admin layout would
+            // just show its "Staff Access Required" gate instead of
+            // actually returning to the shared sign-in page.
             <button
               type="button"
-              onClick={() => signOut(getFirebaseAuth())}
+              onClick={async () => {
+                await signOut(getFirebaseAuth());
+                router.push("/login");
+              }}
               className="inline-flex min-h-11 items-center rounded-2xl bg-slate-soft px-5 py-2.5 text-xs font-black text-ink shadow-sm transition-all hover:bg-slate-200"
             >
-              Admin -- Sign out
+              Logout
             </button>
           ) : isLoggedIn ? (
             <Link
