@@ -34,6 +34,24 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      # Scans this push/PR's own diff for accidentally-committed secrets
+      # (API keys, service-account JSON, etc.) -- a second, automated
+      # backstop behind the .gitignore + "only .env.example is tracked"
+      # check already done by hand each session, per CLAUDE.md's non-
+      # negotiable "secrets never reach the browser" (and, by extension,
+      # never reach the repo either).
+      - name: Scan for committed secrets (gitleaks)
+        uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # High/critical advisories fail the build; npm audit's own moderate-
+      # and-below noise (frequently un-actionable transitive dev-dependency
+      # findings with no real fix available yet) would otherwise train
+      # everyone to ignore a red CI check entirely.
+      - name: Dependency vulnerability scan (npm audit)
+        run: npm audit --audit-level=high
+
       - name: Typecheck (TypeScript)
         run: npm run typecheck
 

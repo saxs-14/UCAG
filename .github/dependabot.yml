@@ -1,0 +1,28 @@
+version: 2
+updates:
+  # npm: patch/minor bumps are grouped into one weekly PR instead of one PR
+  # per package -- firebase-admin/next/eslint alone routinely bump weekly,
+  # and one PR per dependency would bury the one that actually needs a
+  # human look (a major version, or one with a security advisory) under
+  # routine noise.
+  - package-ecosystem: npm
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      routine-updates:
+        patterns:
+          - "*"
+        update-types:
+          - minor
+          - patch
+
+  # Actions referenced by SHA/tag in .github/workflows/ (actions/checkout,
+  # actions/setup-node, etc.) can drift just like npm packages -- same
+  # grouping rationale as above.
+  - package-ecosystem: github-actions
+    directory: "/"
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
