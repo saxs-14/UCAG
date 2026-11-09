@@ -30,7 +30,7 @@
     "emulators:demo": "firebase emulators:start --only firestore,auth --import=./demo-data-export --export-on-exit"
   },
   "dependencies": {
-    "firebase": "^12.16.0",
+    "firebase": "^13.2.0",
     "firebase-admin": "^14.2.0",
     "lucide-react": "^1.66.0",
     "next": "15.5.28",
