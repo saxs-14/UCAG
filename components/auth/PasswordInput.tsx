@@ -1,11 +1,13 @@
 "use client";
 
-import { useId, useState, type CSSProperties } from "react";
+import { useId, useState } from "react";
 import { LABELS } from "@/config/labels";
 
-interface MaskedEmailInputProps {
+interface PasswordInputProps {
   value: string;
   onChange: (value: string) => void;
+  autoComplete?: string;
+  minLength?: number;
 }
 
 function EyeIcon() {
@@ -27,36 +29,23 @@ function EyeOffIcon() {
 }
 
 /**
- * Email entered once, with nothing to compare it against -- unlike a
- * password field (which a second "confirm password" field or the account
- * itself eventually catches a typo in), a mistyped email just silently
- * fails later (wrong inbox, bounced verification). Masking it by default
- * with a reveal toggle -- the exact pattern users already know from
- * password fields -- gives a deliberate "let me check this" moment before
- * submitting, instead of it sitting in plain sight the whole time where a
- * typo blends in.
- *
- * -webkit-text-security is the actual masking mechanism (Blink/WebKit
- * only; Firefox has no equivalent and simply shows the text, which just
- * means the "hide" state is a no-op there -- "view" still always works).
- * Kept as type="email" throughout (never swapped to type="password") so
- * the mobile email keyboard, native format validation, and autofill all
- * keep working regardless of the masked/revealed state.
+ * The conventional pattern: hidden by default (type="password"), click
+ * the eye icon to reveal it as plain text. Email fields are deliberately
+ * NOT masked anywhere in this app -- there's nothing to hide in an email
+ * address, and hiding it only makes it harder to catch a typo, not easier.
  */
-export function MaskedEmailInput({ value, onChange }: MaskedEmailInputProps) {
+export function PasswordInput({ value, onChange, autoComplete = "current-password", minLength }: PasswordInputProps) {
   const [visible, setVisible] = useState(false);
   const inputId = useId();
-  const maskStyle = { WebkitTextSecurity: "disc" } as unknown as CSSProperties;
 
   return (
     <div className="relative">
       <input
         id={inputId}
-        type="email"
+        type={visible ? "text" : "password"}
         required
-        autoComplete="email"
-        inputMode="email"
-        style={visible ? undefined : maskStyle}
+        minLength={minLength}
+        autoComplete={autoComplete}
         className="min-h-12 w-full rounded-xl border border-line bg-paper-raised px-4 pr-12 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20"
         value={value}
         onChange={(e) => onChange(e.target.value)}
@@ -64,7 +53,7 @@ export function MaskedEmailInput({ value, onChange }: MaskedEmailInputProps) {
       <button
         type="button"
         onClick={() => setVisible((v) => !v)}
-        aria-label={visible ? LABELS.account.hideEmailLabel : LABELS.account.showEmailLabel}
+        aria-label={visible ? LABELS.account.hidePasswordLabel : LABELS.account.showPasswordLabel}
         className="absolute inset-y-0 right-0 flex w-11 items-center justify-center text-ink-faint transition-colors hover:text-brand-teal focus-visible:text-brand-teal focus:outline-none"
       >
         {visible ? <EyeOffIcon /> : <EyeIcon />}

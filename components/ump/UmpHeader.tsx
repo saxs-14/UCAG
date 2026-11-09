@@ -75,7 +75,11 @@ export function UmpHeader() {
           </Link>
 
           <a
-            href="https://www.ump.ac.za/Admissions"
+            // Was /Admissions -- confirmed 404 by a direct fetch. This is
+            // the same application URL already verified and used as UMP's
+            // applicationPortalUrl in config/institutions.seed.ts (a real
+            // 200, confirmed the same way).
+            href="https://www.ump.ac.za/Study-with-us/Application-Process/Online-Applications"
             target="_blank"
             rel="noopener noreferrer"
             className="hidden sm:inline-flex items-center gap-2 rounded-2xl px-6 py-3 text-xs font-black shadow-lg transition-all duration-300 hover:-translate-y-0.5 hover:shadow-xl active:translate-y-0 flex-shrink-0"

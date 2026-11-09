@@ -64,11 +64,14 @@ const UMP_FUNDING: FundingItem[] = [
     forWhom: "UMP students not eligible for NSFAS or needing additional support",
     coverageNote:
       "The UMP Financial Aid Office administers various institutional bursaries and can advise on emergency aid, top-up grants, and external funding. Contact them directly for current offerings.",
+    // Was /Student-Life/Student-Services/Financial-Aid -- confirmed 404.
+    // Replaced with UMP's real current Student Funding page, confirmed
+    // live by a direct fetch (200).
     applicationUrl:
-      "https://www.ump.ac.za/Student-Life/Student-Services/Financial-Aid",
+      "https://www.ump.ac.za/Study-with-us/Student-Funding.aspx",
     sourceUrl:
-      "https://www.ump.ac.za/Student-Life/Student-Services/Financial-Aid",
-    verifiedOn: "2026-08-11",
+      "https://www.ump.ac.za/Study-with-us/Student-Funding.aspx",
+    verifiedOn: "2026-11-09",
     amountsBeingVerified: true,
   },
   {

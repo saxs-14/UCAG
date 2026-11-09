@@ -89,6 +89,29 @@ h1, h2, h3 { overflow-wrap: break-word; }
   }
 }
 
+/* Explicit light/dark override (ThemeToggle.tsx) -- a plain attribute
+   selector on :root always outranks the system-preference media query
+   above on specificity alone, regardless of source order, so this wins
+   whenever the user has chosen a theme instead of leaving it on "match
+   system." No attribute at all (the default) falls through to the media
+   query untouched -- this never changes that behavior. */
+:root[data-theme="dark"] .glass-blur {
+  backdrop-filter: blur(24px) saturate(150%) brightness(0.95);
+  -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(0.95);
+}
+:root[data-theme="dark"] .glass-blur-strong {
+  backdrop-filter: blur(34px) saturate(160%) brightness(0.92);
+  -webkit-backdrop-filter: blur(34px) saturate(160%) brightness(0.92);
+}
+:root[data-theme="light"] .glass-blur {
+  backdrop-filter: blur(24px) saturate(150%) brightness(1.06);
+  -webkit-backdrop-filter: blur(24px) saturate(150%) brightness(1.06);
+}
+:root[data-theme="light"] .glass-blur-strong {
+  backdrop-filter: blur(34px) saturate(160%) brightness(1.08);
+  -webkit-backdrop-filter: blur(34px) saturate(160%) brightness(1.08);
+}
+
 .card-learner {
   background: var(--color-paper-raised);
   border: 1px solid var(--color-line);
@@ -219,6 +242,73 @@ select, input[type="number"], input[type="text"], input[type="email"], input[typ
     --color-glass-border: rgba(255, 255, 255, 0.12);
     --color-glass-highlight: rgba(255, 255, 255, 0.22);
   }
+}
+
+/* Explicit override for ThemeToggle.tsx -- see the .glass-blur comment
+   above for why a plain attribute selector always beats the media query,
+   regardless of source order, so this correctly forces the theme even
+   against the opposite system preference. Values intentionally
+   duplicate the light (@theme, above) and dark (media query, above)
+   tokens -- there's no selector that can express "this media query OR
+   this attribute" in one rule, so both paths are spelled out. */
+:root[data-theme="dark"] {
+  --color-paper: #0b0a12;
+  --color-paper-raised: #15131f;
+  --color-paper-overlay: #201e2e;
+  --color-ink: #f5f4fa;
+  --color-ink-soft: #c7c4d6;
+  --color-ink-faint: #9b96ad;
+  --color-line: #2b2838;
+  --color-slate: #b6b2c9;
+  --color-slate-soft: #201e2e;
+  --color-mark-green: #34d399;
+  --color-mark-green-soft: #0b2e22;
+  --color-mark-gold: #fbbf24;
+  --color-mark-gold-soft: #2e2308;
+  --color-mark-red: #f87171;
+  --color-mark-red-soft: #2e1212;
+  --color-brand-teal: #8b83fb;
+  --color-brand-teal-soft: #221f3d;
+  --color-brand-coral: #fb923c;
+  --color-brand-coral-soft: #2e1c0d;
+  --color-brand-violet: #a78bfa;
+  --color-brand-violet-soft: #211a3d;
+  --color-brand-amber: #fbbf24;
+  --color-brand-amber-soft: #2e2308;
+  --color-glass-surface: rgba(21, 19, 31, 0.5);
+  --color-glass-surface-strong: rgba(11, 10, 18, 0.68);
+  --color-glass-border: rgba(255, 255, 255, 0.12);
+  --color-glass-highlight: rgba(255, 255, 255, 0.22);
+}
+
+:root[data-theme="light"] {
+  --color-paper: #fafaf8;
+  --color-paper-raised: #ffffff;
+  --color-paper-overlay: #f1effb;
+  --color-ink: #14121f;
+  --color-ink-soft: #45425a;
+  --color-ink-faint: #6b6880;
+  --color-line: #e3e1ee;
+  --color-mark-green: #047857;
+  --color-mark-green-soft: #ecfdf5;
+  --color-mark-gold: #b45309;
+  --color-mark-gold-soft: #fffbeb;
+  --color-mark-red: #b91c1c;
+  --color-mark-red-soft: #fef2f2;
+  --color-slate: #6b6880;
+  --color-slate-soft: #f1effb;
+  --color-brand-teal: #4c3df0;
+  --color-brand-teal-soft: #ecebfc;
+  --color-brand-coral: #c2410c;
+  --color-brand-coral-soft: #ffedd5;
+  --color-brand-violet: #6d28d9;
+  --color-brand-violet-soft: #f5f3ff;
+  --color-brand-amber: #b45309;
+  --color-brand-amber-soft: #fffbeb;
+  --color-glass-surface: rgba(255, 255, 255, 0.62);
+  --color-glass-surface-strong: rgba(255, 255, 255, 0.78);
+  --color-glass-border: rgba(255, 255, 255, 0.5);
+  --color-glass-highlight: rgba(255, 255, 255, 0.9);
 }
 
 @media print {

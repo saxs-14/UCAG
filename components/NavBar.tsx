@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { signOut } from "firebase/auth";
 import { Logo } from "@/components/Logo";
+import { ThemeToggle } from "@/components/ThemeToggle";
 import { LABELS } from "@/config/labels";
 import { useAuth } from "@/components/auth/AuthProvider";
 import { getFirebaseAuth } from "@/lib/firebase/client";
@@ -61,6 +62,7 @@ export function NavBar() {
         )}
 
         <div className="ml-auto flex shrink-0 items-center gap-3">
+          <ThemeToggle />
           {!loading && (isAdmin ? (
             // The one and only sign-out control for an admin account --
             // AdminRedirect keeps admins off every learner page (including

@@ -23,6 +23,19 @@ const RICH_FONTS_SCRIPT = `try {
   }
 } catch (e) {}`;
 
+// Applies a saved theme choice to <html> before first paint -- without
+// this, the page would always render with the system/default theme for
+// one frame, then visibly flip to the stored choice once ThemeToggle.tsx
+// mounts. beforeInteractive (below) runs early enough to avoid that;
+// suppressHydrationWarning on <html> (below) covers the attribute this
+// adds not being present in the server-rendered markup.
+const THEME_INIT_SCRIPT = `try {
+  var stored = localStorage.getItem('ucag-theme');
+  if (stored === 'light' || stored === 'dark') {
+    document.documentElement.setAttribute('data-theme', stored);
+  }
+} catch (e) {}`;
+
 const CHUNK_ERROR_RECOVERY_SCRIPT = `try {
   var RELOAD_KEY = 'ucagChunkReloadOnce';
   function isChunkError(message) {
@@ -121,6 +134,9 @@ export default async function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: safeJsonLd(organizationJsonLd) }}
         />
+        <Script id="theme-init" strategy="beforeInteractive">
+          {THEME_INIT_SCRIPT}
+        </Script>
         <Script id="rich-fonts-detect" strategy="beforeInteractive">
           {RICH_FONTS_SCRIPT}
         </Script>

@@ -14,7 +14,7 @@ import { createUserProfile } from "@/lib/auth/profile";
 import { formatAuthError } from "@/lib/auth/formatAuthError";
 import { LABELS } from "@/config/labels";
 import { useAuth } from "./AuthProvider";
-import { MaskedEmailInput } from "./MaskedEmailInput";
+import { PasswordInput } from "./PasswordInput";
 import type { ConsentRecord } from "@/lib/firestore/types";
 
 type Step = "ageGate" | "guardianConsent" | "details";
@@ -167,12 +167,12 @@ export function SignUpForm({ onSwitchToSignIn }: { onSwitchToSignIn: () => void 
       <p className="-mt-2 text-xs font-medium text-ink-faint px-1">{LABELS.account.fullNameNote}</p>
       <label className="flex flex-col gap-1.5 text-sm font-bold text-ink-soft">
         {LABELS.account.emailLabel}
-        <MaskedEmailInput value={email} onChange={setEmail} />
+        <input type="email" required autoComplete="email" className="min-h-12 rounded-xl border border-line bg-paper-raised px-4 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" value={email} onChange={(e) => setEmail(e.target.value)} />
       </label>
 
       <label className="flex flex-col gap-1.5 text-sm font-bold text-ink-soft">
         {LABELS.account.passwordLabel}
-        <input type="password" required minLength={6} className="min-h-12 rounded-xl border border-line bg-paper-raised px-4 text-base font-medium text-ink transition-all focus:border-brand-teal focus:outline-none focus:ring-4 focus:ring-brand-teal/20" value={password} onChange={(e) => setPassword(e.target.value)} />
+        <PasswordInput value={password} onChange={setPassword} autoComplete="new-password" minLength={6} />
       </label>
 
       {error && <p role="alert" className="rounded-xl bg-mark-red/10 p-3 text-sm font-medium text-mark-red">{error}</p>}

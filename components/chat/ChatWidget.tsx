@@ -179,7 +179,14 @@ export function ChatWidget() {
   // Pathname check, not just isAdmin -- isAdmin depends on an async claim
   // that isn't resolved yet on a fresh reload, which would otherwise let
   // the launcher button flash into view on /admin for a moment first.
-  if (isAdmin || pathname.startsWith("/admin")) return null;
+  //
+  // Also hidden on the sign-in/sign-up/password-reset pages -- a floating
+  // chat launcher has nothing to do with a focused auth task, and it
+  // visually crowds a page that's trying to be a single clear form.
+  const onAuthRoute = ["/login", "/register", "/forgot-password"].some((prefix) =>
+    pathname.startsWith(prefix)
+  );
+  if (isAdmin || pathname.startsWith("/admin") || onAuthRoute) return null;
 
   return (
     <div className="no-print fixed bottom-20 right-4 z-40 sm:bottom-4" onKeyDown={handleKeyDown}>

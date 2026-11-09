@@ -1,12 +1,74 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { collection, onSnapshot, query, where } from "firebase/firestore";
 import { getFirebaseDb } from "@/lib/firebase/firestoreClient";
 import { adminFetch } from "@/lib/admin/apiClient";
-import type { VerificationQueueItem } from "@/lib/firestore/types";
+import { isFactVerified } from "@/lib/firestore/types";
+import type { FactProvenance, VerificationQueueItem } from "@/lib/firestore/types";
 
 type QueueRow = VerificationQueueItem & { id: string };
+
+// Institutions/faculties/schools/programmes are public-read (firestore.rules),
+// so these subscribe directly rather than going through an admin API route.
+const UNVERIFIED_COLLECTIONS = ["institutions", "faculties", "schools", "programmes"] as const;
+type UnverifiedCollection = (typeof UNVERIFIED_COLLECTIONS)[number];
+type UnverifiedRow = {
+  collection: UnverifiedCollection;
+  id: string;
+  name: string;
+  missing: string[];
+};
+
+function displayNameFor(data: Record<string, unknown>): string {
+  return String(data.name ?? data.id ?? "(unnamed)");
+}
+
+function missingProvenanceFields(data: Record<string, unknown>): string[] {
+  const missing: string[] = [];
+  if (typeof data.sourceUrl !== "string" || !data.sourceUrl) missing.push("sourceUrl");
+  if (typeof data.verifiedOn !== "string" || !data.verifiedOn) missing.push("verifiedOn");
+  if (typeof data.academicYear !== "number" || !Number.isFinite(data.academicYear)) missing.push("academicYear");
+  return missing;
+}
+
+function useUnverifiedRecords() {
+  const [rows, setRows] = useState<UnverifiedRow[]>([]);
+  const [byCollection, setByCollection] = useState<Record<UnverifiedCollection, UnverifiedRow[]>>({
+    institutions: [],
+    faculties: [],
+    schools: [],
+    programmes: [],
+  });
+
+  useEffect(() => {
+    const unsubscribes = UNVERIFIED_COLLECTIONS.map((collectionName) =>
+      onSnapshot(collection(getFirebaseDb(), collectionName), (snap) => {
+        const unverified: UnverifiedRow[] = [];
+        snap.docs.forEach((doc) => {
+          const data = doc.data() as Record<string, unknown>;
+          if (!isFactVerified(data as Partial<FactProvenance>)) {
+            unverified.push({
+              collection: collectionName,
+              id: doc.id,
+              name: displayNameFor(data),
+              missing: missingProvenanceFields(data),
+            });
+          }
+        });
+        setByCollection((prev) => ({ ...prev, [collectionName]: unverified }));
+      })
+    );
+    return () => unsubscribes.forEach((unsub) => unsub());
+  }, []);
+
+  useEffect(() => {
+    setRows(UNVERIFIED_COLLECTIONS.flatMap((c) => byCollection[c]));
+  }, [byCollection]);
+
+  return rows;
+}
 
 function formatValue(value: unknown): string {
   if (value === undefined) return "(none)";
@@ -14,6 +76,7 @@ function formatValue(value: unknown): string {
 }
 
 export default function QueuePage() {
+  const unverifiedRecords = useUnverifiedRecords();
   const [items, setItems] = useState<QueueRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -191,6 +254,48 @@ export default function QueuePage() {
           </li>
         ))}
       </ul>
+
+      <div className="mt-4 flex flex-col gap-3 border-t border-line pt-6">
+        <div>
+          <h2 className="font-display text-xl font-extrabold text-ink">Pending verification</h2>
+          <p className="mt-1 text-sm text-ink-soft">
+            {unverifiedRecords.length} published record{unverifiedRecords.length === 1 ? "" : "s"} missing a
+            source, a verified date, or an academic year -- these are already live, but not yet
+            confirmed against a real source.
+          </p>
+        </div>
+        {unverifiedRecords.length === 0 ? (
+          <p className="rounded-xl border border-line p-4 text-sm text-ink-soft">
+            Everything published is verified.
+          </p>
+        ) : (
+          <ul className="flex flex-col gap-2">
+            {unverifiedRecords.map((row) => (
+              <li
+                key={`${row.collection}-${row.id}`}
+                className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-mark-gold/30 bg-mark-gold-soft p-3 text-sm"
+              >
+                <div>
+                  <span className="mr-2 rounded-full bg-paper-raised px-2.5 py-0.5 text-xs font-bold uppercase tracking-wide text-ink-soft">
+                    {row.collection.slice(0, -1)}
+                  </span>
+                  <span className="font-semibold text-ink">{row.name}</span>
+                  <span className="ml-2 font-mono text-xs text-ink-faint">{row.id}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span className="text-xs text-ink-soft">missing: {row.missing.join(", ")}</span>
+                  <Link
+                    href="/admin/editor"
+                    className="rounded-lg border border-line px-2.5 py-1 text-xs font-semibold text-ink-soft hover:bg-slate-soft"
+                  >
+                    Fix in Course Editor
+                  </Link>
+                </div>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
     </div>
   );
 }
