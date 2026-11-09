@@ -245,6 +245,21 @@ export default async function InstitutionDetailPage({ params }: PageProps) {
               Visit Official {inst.shortName} Website ({inst.websiteUrl}) ↗
             </a>
           )}
+
+          {(inst.phone || inst.email) && (
+            <div className="mt-3 flex flex-wrap gap-4 border-t border-line/60 pt-3">
+              {inst.phone && (
+                <a href={`tel:${inst.phone.replace(/\s+/g, "")}`} className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-teal hover:underline">
+                  📞 {inst.phone}
+                </a>
+              )}
+              {inst.email && (
+                <a href={`mailto:${inst.email}`} className="inline-flex items-center gap-1.5 text-xs font-bold text-brand-teal hover:underline">
+                  ✉️ {inst.email}
+                </a>
+              )}
+            </div>
+          )}
         </section>
 
         {/* Programmes by Campus -- real, verified per-programme campus data,

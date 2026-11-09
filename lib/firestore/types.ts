@@ -114,6 +114,12 @@ export interface Institution extends FactProvenance {
   statusCheckUrl: string | null;
   nbtRequired: boolean;
   logoUrl: string | null;
+  /** The institution's own general enquiries line/address, not an
+   * admissions-specific one unless that's the only public number/email
+   * the institution itself publishes. null until verified -- never guess
+   * one, a wrong contact number is worse than none. */
+  phone: string | null;
+  email: string | null;
 }
 
 export interface Faculty extends FactProvenance {

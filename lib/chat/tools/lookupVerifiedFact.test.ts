@@ -19,6 +19,8 @@ function makeInstitution(overrides: Partial<Institution> = {}): Institution {
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
+    phone: null,
+    email: null,
     ...PROVENANCE,
     ...overrides,
   };

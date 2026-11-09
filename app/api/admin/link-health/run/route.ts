@@ -30,6 +30,8 @@ const QA_TEST_BROKEN_LINK: Institution = {
   statusCheckUrl: null,
   nbtRequired: false,
   logoUrl: null,
+  phone: null,
+  email: null,
   sourceUrl: "https://www.ucag.co.za/",
   verifiedOn: "2026-11-09",
   academicYear: 2027,

@@ -38,6 +38,7 @@ const EDITABLE_FACT_FIELDS: Record<EditableFactCollection, readonly string[]> = 
   institutions: [
     "name","shortName","type","province","tier","campuses","websiteUrl",
     "applicationPortalUrl","appliesThroughThirdParty","statusCheckUrl","nbtRequired","logoUrl",
+    "phone","email",
   ],
   faculties: ["institutionId","name","code"],
   schools: ["facultyId","name","code"],

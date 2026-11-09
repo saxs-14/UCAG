@@ -42,6 +42,8 @@ export const SAMPLE_INSTITUTION: Institution = {
   statusCheckUrl: "https://example.test/status",
   nbtRequired: false,
   logoUrl: null,
+  phone: null,
+  email: null,
   sourceUrl: SAMPLE_SOURCE_URL,
   verifiedOn: SAMPLE_VERIFIED_ON,
   academicYear: SAMPLE_ACADEMIC_YEAR,

@@ -37,8 +37,12 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
+    // Switchboard + general email, both read directly from the live
+    // ump.ac.za homepage footer (not a third-party directory) 2026-11-09.
+    phone: "013 002 0001",
+    email: "info@ump.ac.za",
     sourceUrl: "https://www.ump.ac.za/",
-    verifiedOn: VERIFIED_ON,
+    verifiedOn: "2026-11-09",
     academicYear: ACADEMIC_YEAR,
   },
   {
@@ -62,6 +66,12 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     // since NBT is a real part of UP's admission process.
     nbtRequired: true,
     logoUrl: null,
+    // up.ac.za blocks automated requests site-wide (every page tried
+    // returned 403, including its own published contact-us page) --
+    // couldn't confirm a phone/email directly against the official site,
+    // so left null rather than use a third-party directory's number.
+    phone: null,
+    email: null,
     sourceUrl: "https://www.up.ac.za/",
     verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
@@ -82,6 +92,12 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
+    // Switchboard read directly from wits.ac.za/about-wits/contact-us/
+    // 2026-11-09 -- that page publishes no single general email, only
+    // department-specific addresses, so email stays null rather than
+    // picking one department's address to stand in for "general."
+    phone: "+27 (0)11 717 1000",
+    email: null,
     sourceUrl: "https://www.wits.ac.za/undergraduate/entry-requirements/",
     verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
@@ -105,6 +121,11 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     // see apsRules.nbtPolicy note above.
     nbtRequired: true,
     logoUrl: null,
+    // su.ac.za blocks automated requests site-wide (403 on every page
+    // tried) -- couldn't confirm a phone/email directly against the
+    // official site, so left null rather than use a third-party listing.
+    phone: null,
+    email: null,
     sourceUrl: "https://www.su.ac.za/",
     verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
@@ -127,6 +148,11 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     statusCheckUrl: null,
     nbtRequired: true,
     logoUrl: null,
+    // General number read directly from the uct.ac.za homepage footer
+    // 2026-11-09; no general email published there (only department-
+    // specific addresses elsewhere on the site).
+    phone: "+27 (0)21 650 9111",
+    email: null,
     sourceUrl:
       "https://uct.ac.za/students/applications-admission-requirements/eligibility-admission",
     verifiedOn: VERIFIED_ON,
@@ -148,8 +174,13 @@ export const TIER_1_INSTITUTIONS: Institution[] = [
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
+    // Switchboard + general email, both read directly from the live
+    // mandela.ac.za homepage footer (not a third-party directory)
+    // 2026-11-09.
+    phone: "+27 (0) 41 504 1111",
+    email: "info@mandela.ac.za",
     sourceUrl: "https://www.mandela.ac.za/Study-at-Mandela/Discovery/Entry-requirements",
-    verifiedOn: VERIFIED_ON,
+    verifiedOn: "2026-11-09",
     academicYear: ACADEMIC_YEAR,
   },
 ];
@@ -164,13 +195,29 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
     type: "traditionalUniversity",
     province: "Gauteng",
     tier: 2,
-    campuses: [],
+    // uj.ac.za blocks automated requests site-wide (403 on every page
+    // tried, including /about/campuses/), so this list couldn't be
+    // confirmed against the institution's own site. Cross-checked instead
+    // against its Wikipedia article, which names exactly these four as
+    // UJ's current operating campuses (and explicitly notes a former
+    // fifth, East Rand Campus, closed in 2007 -- not included here).
+    campuses: [
+      "Auckland Park Kingsway Campus",
+      "Auckland Park Bunting Road Campus",
+      "Doornfontein Campus",
+      "Soweto Campus",
+    ],
     websiteUrl: "https://www.uj.ac.za/",
     applicationPortalUrl: "https://apply.online.uj.ac.za/Start-Now/Apply-Now",
     appliesThroughThirdParty: null,
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
+    // Couldn't confirm a phone/email against the official site for the
+    // same reason as the campus list above -- left null rather than use a
+    // third-party directory's number.
+    phone: null,
+    email: null,
     sourceUrl: "https://www.uj.ac.za/",
     verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
@@ -198,6 +245,13 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
+    // Both read directly from nwu.ac.za/content/nwu-contact-details
+    // 2026-11-09 -- the page labels no single number "general," so this
+    // is the toll line it lists against every campus (the closest thing
+    // to a general enquiries number), and the email the applications page
+    // itself already pointed admissions enquiries to.
+    phone: "0860 169 698",
+    email: "studies@nwu.ac.za",
     sourceUrl: "https://studies.nwu.ac.za/studies/apply",
     verifiedOn: "2026-11-09",
     academicYear: ACADEMIC_YEAR,
@@ -217,8 +271,14 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
-    sourceUrl: "https://www.unisa.ac.za/",
-    verifiedOn: VERIFIED_ON,
+    // Both read directly from UNISA's own contact page 2026-11-09 -- a
+    // toll-free centralised number, UNISA's own label for it, and the
+    // address for "student misdirected enquiries," the closest thing to
+    // a general inbox the page names.
+    phone: "0800 00 1870",
+    email: "enquire@unisa.ac.za",
+    sourceUrl: "https://www.unisa.ac.za/sites/corporate/default/Contact-us",
+    verifiedOn: "2026-11-09",
     academicYear: ACADEMIC_YEAR,
   },
   {
@@ -240,6 +300,11 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
+    // General switchboard read directly from ukzn.ac.za; email is the
+    // Student Enquiries Centre's own address, read directly from its
+    // official subdomain (stec.ukzn.ac.za/contact-us/) -- both 2026-11-09.
+    phone: "+27 31 260 1111",
+    email: "stec@ukzn.ac.za",
     sourceUrl: "https://cao.ac.za/",
     verifiedOn: VERIFIED_ON,
     academicYear: ACADEMIC_YEAR,
@@ -271,8 +336,13 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
       "https://ienabler.tut.ac.za/pls/prodi41/wtut012pkg.startup",
     nbtRequired: false,
     logoUrl: null,
+    // Contact Centre line + general email, both read directly from the
+    // live tut.ac.za homepage footer (not a third-party directory)
+    // 2026-11-09.
+    phone: "+27 (0)86 110 2421",
+    email: "general@tut.ac.za",
     sourceUrl: "https://www.tut.ac.za/",
-    verifiedOn: VERIFIED_ON,
+    verifiedOn: "2026-11-09",
     academicYear: ACADEMIC_YEAR,
   },
   {
@@ -282,15 +352,29 @@ export const TIER_2_INSTITUTIONS: Institution[] = [
     type: "universityOfTechnology",
     province: "Western Cape",
     tier: 2,
-    campuses: [],
+    // Read directly off the live cput.ac.za homepage 2026-11-09.
+    campuses: [
+      "Granger Bay Campus",
+      "Bellville Campus",
+      "District 6 Campus",
+      "Wellington Campus",
+      "Mowbray Campus",
+    ],
     websiteUrl: "https://www.cput.ac.za/",
     applicationPortalUrl: "https://www.cput.ac.za/study-at-cput/undergraduate/apply/step-1",
     appliesThroughThirdParty: null,
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
+    // General email read directly from the cput.ac.za homepage footer.
+    // The phone numbers published there are explicitly labelled
+    // "Applications, Admissions and Registration Enquiries," not a
+    // general switchboard, so phone stays null rather than mislabel one
+    // of those as a general contact number.
+    phone: null,
+    email: "info@cput.ac.za",
     sourceUrl: "https://www.cput.ac.za/",
-    verifiedOn: VERIFIED_ON,
+    verifiedOn: "2026-11-09",
     academicYear: ACADEMIC_YEAR,
   },
 ];

@@ -17,6 +17,8 @@ function makeInstitution(overrides: Partial<Institution>): Institution {
     statusCheckUrl: null,
     nbtRequired: false,
     logoUrl: null,
+    phone: null,
+    email: null,
     sourceUrl: "https://test.example/",
     verifiedOn: "2026-07-23",
     academicYear: 2027,
